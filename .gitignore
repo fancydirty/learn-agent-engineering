@@ -1,0 +1,35 @@
+# Dependencies
+/node_modules/
+/.pnp
+.pnp.*
+
+# Next.js and OpenNext build output
+/.next/
+/.open-next/
+/out/
+/build/
+
+# Cloudflare local state
+/.wrangler/
+.dev.vars*
+
+# Test output
+/coverage/
+/test-results/
+/playwright-report/
+
+# Environment and credentials
+.env*
+*.pem
+
+# Tooling
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# OS and editors
+.DS_Store
+.vercel/

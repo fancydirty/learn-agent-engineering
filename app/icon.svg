@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- agentmentor site mark: "a·" (the a of agentmentor; the dot is the mentor
+       node from the header trail mark). 48 grid, line-art, favicon-weight
+       strokes (6 units, about 2px at 16px render). Dual-scheme via embedded
+       media query: light uses the accent token #9a3b1b, dark uses the
+       dark-theme accent #7aa2f7. Safari ignores the media query and falls
+       back to the light colors. NOTE: no double hyphen in this comment;
+       it would make the XML invalid. -->
+  <style>
+    .s { stroke: #9a3b1b; }
+    .f { fill: #9a3b1b; }
+    @media (prefers-color-scheme: dark) {
+      .s { stroke: #7aa2f7; }
+      .f { fill: #7aa2f7; }
+    }
+  </style>
+  <circle class="s" cx="21" cy="30" r="10" stroke-width="6"/>
+  <path class="s" d="M31 20v20" stroke-width="6" stroke-linecap="round"/>
+  <circle class="f" cx="39" cy="9" r="5"/>
+</svg>

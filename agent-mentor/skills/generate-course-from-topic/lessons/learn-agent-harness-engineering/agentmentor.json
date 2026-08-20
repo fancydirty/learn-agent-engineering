@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "为独立的 Agent 热点课程站复用原 Agent Mentor 产课 skill，第一门课程必须与 Agent 直接相关、时兴，并保留复制给 Agent 与本地练习能力。",
+  "learnerBrief": "目标读者已经会在本地仓库中使用 Claude Code、Codex 或同类 coding agent，希望把偶发成功变成有边界、有状态、有验证证据的稳定执行。课程必须静态公开，不依赖账户、支付、托管推理或站内 AI。",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "用户明确要求课程全部与 Agent 相关且选题时兴，站点保留课程阅读、练习和复制给 Agent，同时移除 Ask AI、Review、账户、支付和播客等逻辑；本轮又指定用 Agent Reach 读取一手来源。"
+  },
+  "learnerModel": {
+    "targetReader": "已经能让 coding agent 编辑本地仓库，但尚未系统设计仓库级 harness 的开发者或技术型独立创作者。",
+    "knownConcepts": [
+      "本地文件与目录",
+      "在终端运行项目命令",
+      "与 coding agent 对话并检查改动"
+    ],
+    "unknownConcepts": [
+      "Agent harness 的组成边界",
+      "跨会话状态工件",
+      "Agent eval 的 task、trial、grader、transcript 与 outcome",
+      "机器可检查的完成标准"
+    ],
+    "assumedEnvironment": "读者有一个可安全修改的 Git 仓库和一个能读写文件、运行命令的 coding agent；课程不假设特定 Agent 产品、云平台、付费 API 或 Agent SDK。",
+    "firstIndependentAction": "从最近一次失败的 Agent 任务中写出期望、观察、缺失证据三行诊断记录。",
+    "noviceRamp": [
+      "第一讲从读者已经见过的失败结果出发，再引出 harness，而不是先讲抽象框架。",
+      "每条命令都说明运行位置、成功信号和失败时应复制给 Agent 的输出；最终文件使用普通 Markdown、JSON 与 shell 命令。"
+    ]
+  },
+  "scope": "覆盖 coding agent 在仓库中的 instructions、state、scope、verification 与 session lifecycle，并以一个最小 harness 落地；不覆盖模型训练、Agent SDK、浏览器 Agent、部署平台、多 Agent 编排或企业级评测基础设施。",
+  "topicCurrency": {
+    "checkedAt": "2026-08-20",
+    "evidence": [
+      "OpenAI 的 Harness engineering 一手工程文章发布于 2026-02-11，浏览器读取于 2026-08-20。",
+      "Anthropic 的 long-running agent harness、context engineering 与 agent evals 一手文章在 2025-09 至 2026-01 发布，浏览器读取于 2026-08-20。",
+      "walkinglabs/learn-harness-engineering 仓库于 2026-08-19 仍有推送，2026-08-20 查询为 12,892 stars、1,330 forks。"
+    ],
+    "staleRisk": "具体 Agent 产品的默认上下文管理、指令文件发现规则、工具权限和内置评测能力变化很快；课程刻意使用产品中立的文件与验证模式，但每次更新仍需重查官方文档。"
+  },
+  "status": {
+    "stage": "ready",
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-harness-engineering",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "第 1 讲用反馈链图区分模型输出与环境证据；第 3 讲用会话交接图降低跨上下文状态关系的负担；第 5 讲用生命周期图呈现最小 harness 的闭环。其余内容用表格与短文件示例即可，未增加装饰图。",
+    "weakestPoints": [
+      "课程大纲在用户已说开始并继续补充来源方法的上下文中执行，没有单独增加一次只为确认大纲的停顿；需要在首批读者反馈中核对五讲深度。",
+      "最终练习采用产品中立的 shell 与 Markdown，无法覆盖每个 coding agent 对 AGENTS.md 或同类指令文件的独有发现规则。",
+      "评测一讲只实现仓库级确定性 grader，没有展开 LLM grader 的校准、统计显著性和大规模并发基础设施。"
+    ],
+    "followUpChecks": [
+      "每月重查六个一手来源的可达性与版本边界，并用至少一个全新仓库完成最终练习。",
+      "收集前十名读者在哪一讲需要复制给 Agent 求助，据此修订术语密度和 faded example。"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 4,
+      "exercises": 5,
+      "load": 4,
+      "readable": 4
+    },
+    "terminalTask": "读者在自己的真实仓库中创建或修订 AGENTS.md、scripts/init-agent.sh、agent-task.json 与 scripts/check-agent-task.sh，运行检查脚本并保留可复查输出。",
+    "interactionCheck": "五讲各使用一个本地确定性判断块：分别检查失败归因、记录系统边界、跨会话状态来源、transcript 与 outcome 区别、闭环责任节点；第 5 讲的 Agent action 只用于审计最终 harness，均对应具体误解。",
+    "learnerFitCheck": "目标读者会运行终端命令和让 Agent 修改文件，但不要求知道 harness 或 eval 术语；课程先用三行失败记录完成第一步，再逐步引入文件、状态和 grader，因此第一项独立动作不依赖未知概念。",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "首次公开后，用真实读者的复制给 Agent 记录检查练习上下文是否足够。",
+      "若具体产品改变指令文件或权限发现机制，只在新增产品注释中更新，不把产品默认值写成通用事实。"
+    ]
+  },
+  "nextSteps": [
+    "完成第 1 讲的三行失败诊断，再决定自己的仓库缺哪类 harness 工件。",
+    "完成第 5 讲后，把四个 harness 文件和检查输出复制给 Agent 做一次边界审计。"
+  ],
+  "memoryBoundary": "course-local only; do not write host long-term memory from this file."
+}

@@ -1,0 +1,7 @@
+# robots.txt for learn.agentmentor.dev
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://learn.agentmentor.dev/sitemap.xml

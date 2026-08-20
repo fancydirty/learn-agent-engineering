@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "The user's original course request, in their exact words or a faithful paraphrase — not a placeholder.",
+  "learnerBrief": "The learner's starting point, goals, and constraints, as inferred or clarified by the author.",
+  "briefCompleteness": {
+    "status": "user-provided | clarified | insufficient",
+    "evidence": "State which starting-point/goal/constraint the user's own words or a follow-up clarification provided; if the original request was only 'I want to learn X', you MUST clarify first and cannot mark it user-provided."
+  },
+  "learnerModel": {
+    "targetReader": "One sentence on who this course is actually for, e.g. 'a learner who doesn't know React/Next.js at all and has only a little web-page knowledge'.",
+    "knownConcepts": [
+      "Existing concepts or tools the course may safely rely on."
+    ],
+    "unknownConcepts": [
+      "Concepts or tools the course must not sneak in as a prerequisite."
+    ],
+    "assumedEnvironment": "State the environment the learner already has, and what the course does not assume.",
+    "firstIndependentAction": "The smallest action the learner can complete independently after lesson 1; it must not depend on unknownConcepts.",
+    "noviceRamp": [
+      "Explain how to bridge from knownConcepts to the first unknownConcept.",
+      "Explain how commands, tools, diagrams, or exercises avoid hidden prerequisites."
+    ]
+  },
+  "scope": "What this course actually covers, and what it deliberately leaves out.",
+  "topicCurrency": {
+    "checkedAt": "YYYY-MM-DD",
+    "evidence": [
+      "A dated first-party source or release that shows why this Agent topic is current."
+    ],
+    "staleRisk": "Name the product versions, APIs, or practices most likely to need re-verification."
+  },
+  "status": {
+    "stage": "ready",
+    "guardCommand": "node scripts/course-guard.mjs agent-mentor/skills/generate-course-from-topic/lessons/learn-topic-slug",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "State where this course uses / does not use a mermaid diagram, and which kind of cognitive load each diagram reduces.",
+    "weakestPoints": [
+      "Weakest point 1: state a concrete risk, not a vague 'could be improved further'.",
+      "Weakest point 2: state where the course may mislead or is not grounded enough.",
+      "Weakest point 3: state a shortfall in exercises, sources, load, or readability."
+    ],
+    "followUpChecks": [
+      "The check most worth verifying or improving in the next pass."
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 4,
+      "grounded": 4,
+      "pedagogy": 4,
+      "exercises": 4,
+      "load": 4,
+      "readable": 4
+    },
+    "terminalTask": "State the real action the course has the learner complete at the end, e.g. run a script, edit a page, read a real file, or complete a workflow.",
+    "interactionCheck": "State whether the interaction blocks and agentmentor-action all serve a specific misconception; if no interaction is used, state why none is needed.",
+    "learnerFitCheck": "State which learner persona this targets, which hidden prerequisites were removed, and why the first action is achievable for that learner.",
+    "decision": "ship | revise-before-example | archive",
+    "blockers": [
+      "If decision is not ship, state the concrete issues blocking release or promotion to examples; if ship, use an empty array."
+    ],
+    "promotionNotes": [
+      "If this may later be submitted into examples, state the remaining source review, slug cleanup, real-environment verification, or content strengthening still needed."
+    ]
+  },
+  "nextSteps": [
+    "Read lesson 1 and note where you get stuck.",
+    "Feed the sticking points back to the agent and iterate the course in small steps."
+  ],
+  "memoryBoundary": "course-local only; do not write host long-term memory from this file."
+}
