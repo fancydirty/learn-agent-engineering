@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "删除现有课程，从零重写一门与 Agent 直接相关、面向公开流量的时兴课程。",
+  "learnerBrief": "课程面向已经使用 Claude Code、Codex 或同类 coding agent，但还没有把重复工作封装成可复用 Skill 的创作者与独立开发者。终点是完成一个可被 Agent 发现、按需读取、带测试和安全边界的中文 Skill 文件夹。",
+  "briefCompleteness": {
+    "status": "clarified",
+    "evidence": "用户明确要求课程全部与 Agent 相关且选题时兴，并要求从零删除旧课；前期选题调查将目标收敛为 Agent Skills 工作流复用，终点收敛为一个可复测 Skill 文件夹。"
+  },
+  "learnerModel": {
+    "targetReader": "已经能在本地使用 coding agent 完成一次任务，但每次都要重新解释同一工作流的创作者或独立开发者。",
+    "knownConcepts": ["创建目录和文件", "编辑 Markdown", "向 coding agent 描述任务", "在终端复制命令输出"],
+    "unknownConcepts": ["Agent Skill 与一次性提示词的边界", "SKILL.md frontmatter", "渐进披露", "references/assets/scripts 的职责", "触发测试与安全审计"],
+    "assumedEnvironment": "读者有一个可安全练习的本地目录和至少一种能读取 Skill 的 coding agent；课程不假设编程语言、API key、云平台或私有业务数据。",
+    "firstIndependentAction": "从最近重复过的 Agent 任务中写出触发条件、输入、输出和不应处理的边界四行记录。",
+    "noviceRamp": ["第一讲先用读者已经经历过的重复任务，再引出 Skill 作为目录和工作流的正式名称。", "所有命令都说明运行目录、成功信号和失败时应复制给 Agent 的内容；脚本示例先用伪脚本边界，再在后文讨论实际语言。"]
+  },
+  "scope": "覆盖开放 Agent Skills 规范中的目录、SKILL.md 元数据、渐进披露、资源分层、确定性脚本、触发测试和安全审计；不覆盖 MCP server、模型训练、插件商店、托管推理或具体业务领域的完整技能方法论。",
+  "topicCurrency": {
+    "checkedAt": "2026-08-21",
+    "evidence": ["Anthropic 的 Agent Skills 工程文章标注开放标准更新于 2025-12-18，并说明 Skills 已用于 Claude 产品与平台。", "Agent Skills specification 当前公开定义 SKILL.md 的 frontmatter、目录和渐进披露约束。", "OpenAI/Codex 官方 Build skills 文档当前说明 ChatGPT 与 Codex 使用开放 Agent Skills 标准。"],
+    "staleRisk": "不同 Agent 对仓库扫描路径、支持的 frontmatter 字段、脚本权限和上传方式会变化；课程只把开放规范与当前官方文档作为边界，每次发布前需重查。"
+  },
+  "status": {"stage": "ready", "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-skills-reuse", "guardStatus": "pass"},
+  "qualitySelfReview": {
+    "diagramUse": "第 3 讲用 Mermaid 分层流程图解释元数据、SKILL.md 正文和按需资源的加载关系；第 5 讲用测试矩阵并列触发、资源、输出与禁止动作。其余内容使用短文件树和表格，不添加装饰图。",
+    "weakestPoints": ["开放标准跨产品实现仍有差异，课程刻意避免把某一客户端的扫描路径写成通用事实；发布前仍需重查目标客户端文档。", "最终练习要求读者在自己的 Agent 上复测，公开 reader 无法自动证明外部 Agent 的真实触发结果。", "课程用虚构的访谈纪要和发布说明贯穿示例，读者仍需把边界迁移到自己的业务输入，并检查是否出现新的敏感数据或写入动作。"],
+    "followUpChecks": ["用至少三个不同的真实任务检查 description 是否漏触发或误触发。", "重新打开官方规范，核对 frontmatter 限制和安全建议是否有变化。"]
+  },
+  "acceptanceReview": {
+    "rubricScores": {"structure": 5, "grounded": 4, "pedagogy": 4, "exercises": 4, "load": 4, "readable": 4},
+    "terminalTask": "在自己的工作流上创建 SKILL.md、一个 references 文件、一个模板或脚本边界说明，并用三条代表性任务完成触发、边界与输出审计。",
+    "interactionCheck": "第 1 讲的边界选择检查学习者是否把纪要、跟进和排期塞进同一个 Skill；第 2 讲的检查题区分泛泛 description 与带能力和触发条件的 description；第 3 讲的排序题检查元数据、正文、需求判断和资源读取的先后依赖；第 4 讲的选择题区分固定标题检查与语义判断；第 5 讲的边界题要求加入不应接管的相邻任务；第 6 讲不再添加静态测验，而用一个 action card 把最终文件夹交回 Agent 做分区审计。每个互动都对应正文中已解释的判断点，Markdown 仍可独立复习。",
+    "learnerFitCheck": "目标读者会使用 Agent 和编辑文件，但不知道 Skill 规范；第一讲先从重复任务记录开始，之后才引入 frontmatter、资源目录和测试，因此首个行动不依赖未知工具。",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": ["若要把课程提升为长期示例，需在目标客户端的最新版本上重跑安装、显式可见性和隐式触发测试，并更新三条测试记录。"]
+  },
+  "nextSteps": ["用自己的一个重复工作流完成四行 Skill brief。", "在目标客户端安装 Skill，先用技能列表或显式调用确认可见，再用新会话跑两条正例和一条边界用例。", "把 observed 与 revision 写回 tests/trigger-tests.md，并重新检查安全审计。"],
+  "memoryBoundary": "course-local only; do not write host long-term memory from this file."
+}

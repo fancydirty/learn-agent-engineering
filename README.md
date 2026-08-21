@@ -35,10 +35,10 @@ agent-mentor/skills/generate-course-from-topic/
 第一门课程位于：
 
 ```text
-agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-harness-engineering/
+agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-skills-reuse/
 ```
 
-公开路由去掉 `learn-` 前缀，因此课程地址是 `/agent-harness-engineering`。
+公开路由去掉 `learn-` 前缀，因此课程地址是 `/agent-skills-reuse`。
 
 ## 本地运行
 
@@ -55,10 +55,10 @@ npm run build
 
 ```bash
 node scripts/course-guard.mjs \
-  "$PWD/agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-harness-engineering"
+  "$PWD/agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-skills-reuse"
 
 node scripts/course-interaction-report.mjs \
-  "$PWD/agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-harness-engineering"
+  "$PWD/agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-skills-reuse"
 ```
 
 ## Cloudflare Workers
