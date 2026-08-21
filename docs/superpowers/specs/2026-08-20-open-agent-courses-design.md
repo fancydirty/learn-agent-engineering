@@ -15,7 +15,7 @@ The repository, deployment, content license, release cadence, analytics, and run
 - Storage: checked-in course files. No database, KV, D1, R2, account data, or runtime content generation.
 - Code license: MIT.
 - Course content license: CC BY 4.0.
-- Languages: each course declares one language; the initial course is Chinese. Language expansion requires a separately reviewed course, not automatic bulk translation.
+- Languages: courses may have reviewed locale variants under one course family. The initial six-locale architecture, translation boundary, routes, and quality gates are defined in `2026-08-21-course-localization-design.md`; runtime or unreviewed bulk translation remains excluded.
 
 ## Product Boundary
 
@@ -111,4 +111,3 @@ Completion requires:
 - A successful Next.js production build.
 - A successful OpenNext build.
 - A successful local preview in Cloudflare `workerd` with HTTP checks for HTML, canonical metadata, robots, sitemap, and real 404s.
-
