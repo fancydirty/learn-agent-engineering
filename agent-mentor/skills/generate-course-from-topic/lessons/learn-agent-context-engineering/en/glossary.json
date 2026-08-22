@@ -1,0 +1,769 @@
+[
+  {
+    "term": "context engineering",
+    "def": "The set of strategies for curating and maintaining the optimal set of tokens available to a model during inference, covering everything that lands in the window rather than only the prompt you wrote.",
+    "source": "[^S1]",
+    "related": [
+      "context window",
+      "attention budget",
+      "context rot"
+    ],
+    "deeper": "Anthropic frames it as covering \"all the other information that may land there outside of the prompts\" — tool definitions, file contents, memory, and history, not just instructions.[^S1] The practical consequence is that most of a window's contents were never typed by anyone, so improving a prompt cannot fix a context problem.",
+    "pitfall": "Treating it as prompt engineering with a new name, so the response to a degrading long run is to rewrite the instruction — which adds tokens to a window whose problem is that it already has too many.",
+    "distractor_rationale": "Anyone whose successes with models have come from better phrasing generalises that habit, because for single-turn work the prompt genuinely is the whole context, and the distinction only becomes visible once tool output and file reads dominate the window."
+  },
+  {
+    "term": "context rot",
+    "def": "The degradation in a model's ability to accurately recall and use information as the number of tokens in its context window increases.",
+    "source": "[^S1]",
+    "related": [
+      "attention budget",
+      "context engineering",
+      "lost in the middle"
+    ],
+    "deeper": "Chroma measured it across 18 models and reported that \"performance grows increasingly unreliable as input length grows,\" with degradation appearing well inside every model's claimed context length.[^S2] It is a gradient rather than a threshold, which is why nothing visibly fails at the moment the run starts getting worse.",
+    "pitfall": "Believing it starts near the window limit, so a session at 40% capacity is treated as safe — when the measured degradation begins far earlier and accumulates continuously.",
+    "distractor_rationale": "The container metaphor is built into the phrase \"context window\" itself, and every UI reinforces it with a fill indicator, so a partially-full bar reads as a partially-used resource rather than as an already-taxed one."
+  },
+  {
+    "term": "attention budget",
+    "def": "The framing of a model's capacity to attend to context as a finite resource that every additional token depletes, rather than as a container with room until it is full.",
+    "source": "[^S1]",
+    "related": [
+      "context rot",
+      "context window",
+      "context budget"
+    ],
+    "pitfall": "Assuming that irrelevant tokens are free because they are ignored — Anthropic's framing is that \"every new token introduced depletes this budget by some amount,\" so useless content still costs.[^S1]",
+    "distractor_rationale": "It maps onto how people read: a reader skims past irrelevant paragraphs at little cost, so the intuition that a model does the same is a reasonable transfer from human experience that happens not to hold."
+  },
+  {
+    "term": "context window",
+    "def": "The total span of tokens a model can read on one call, holding the system prompt, instructions, memory, tool definitions, file contents, command output, and conversation history at once.",
+    "source": "[^S10]",
+    "related": [
+      "attention budget",
+      "context rot",
+      "compaction"
+    ],
+    "pitfall": "Estimating how full it is from how much you have typed, when file reads and tool output are usually the largest occupants and appear in your terminal as one-line notices.",
+    "distractor_rationale": "The interface only shows you your own side of the exchange, so the visible transcript is a poor proxy for the window's real contents, and there is no signal that the gap exists until something is measured."
+  },
+  {
+    "term": "poisoning",
+    "def": "The long-context failure in which a hallucination or other error enters the context and is then repeatedly referenced by later turns.",
+    "source": "[^S8]",
+    "related": [
+      "clash",
+      "distraction",
+      "confusion"
+    ],
+    "pitfall": "Correcting it by telling the agent the error is wrong, which leaves the original error in the window alongside the correction and converts a poisoning problem into a clash problem.",
+    "distractor_rationale": "Correction is what works with a person, who updates and discards the old belief; a model re-reads the entire history each turn, so the discarded belief is still present and still being read."
+  },
+  {
+    "term": "distraction",
+    "def": "The long-context failure in which the context grows long enough that the model over-focuses on it and neglects what it learned during training.",
+    "source": "[^S8]",
+    "related": [
+      "poisoning",
+      "confusion",
+      "context rot"
+    ],
+    "pitfall": "Mistaking it for a knowledge gap and adding more explanation, when the problem is that there is already too much in the window competing with the model's own capability.",
+    "distractor_rationale": "The symptom — the agent doing something clumsy it obviously knows better than — looks exactly like a model that was never told, and adding instruction is the response that has worked for every other kind of misunderstanding."
+  },
+  {
+    "term": "confusion",
+    "def": "The long-context failure in which superfluous content present in the window gets used and produces a low-quality response.",
+    "source": "[^S8]",
+    "related": [
+      "distraction",
+      "clash",
+      "tool surface"
+    ],
+    "pitfall": "Repairing it with a prohibition — telling the agent not to use the irrelevant tool — when the repair is absence, since the schema is still loaded and still being read every turn.",
+    "distractor_rationale": "A prohibition feels like the direct fix because it addresses the observed behaviour, and it spends tokens to counteract tokens rather than removing the cause, which leaves the window larger than before."
+  },
+  {
+    "term": "clash",
+    "def": "The long-context failure in which newly accrued information or tools conflict with information already in the context.",
+    "source": "[^S8]",
+    "related": [
+      "poisoning",
+      "confusion",
+      "compaction"
+    ],
+    "pitfall": "Believing a correction supersedes what it corrects — both versions sit in the window with equal standing, and nothing marks the earlier one as dead.",
+    "distractor_rationale": "Conversation with a person has an implicit rule that later statements win, so the habit of correcting rather than removing transfers directly, and it works often enough that the failures look random."
+  },
+  {
+    "term": "lost in the middle",
+    "def": "The finding that models use information at the very beginning or very end of their input more reliably than information in the middle, producing a U-shaped performance curve by position.",
+    "source": "[^S4]",
+    "related": [
+      "context rot",
+      "compaction",
+      "context window"
+    ],
+    "deeper": "The original study measured it on multi-document question answering and key-value retrieval with 2023-era models, so the specific numbers are stale; the shape has since been observed on current frontier models, where \"detection is worst in the middle\" of long transcripts.[^S6] Treat it as a durable design principle about where to place load-bearing material, not as a current benchmark.",
+    "pitfall": "Concluding an instruction is safe because it is present in the window, when its position determines whether it is actually used — which is why an instruction quoted correctly on request can still be ignored in practice.",
+    "distractor_rationale": "Presence and use feel like the same thing when you can verify presence by asking, and asking the agent to recall an item puts that item at the end of the context, which is exactly the position where recall works best."
+  },
+  {
+    "term": "write",
+    "def": "The context lever that saves material outside the context window so it survives boundaries and can be pulled back when needed.",
+    "source": "[^S7]",
+    "related": [
+      "select",
+      "compress",
+      "structured note-taking"
+    ],
+    "pitfall": "Treating it as interchangeable with compression because both shrink the window — writing keeps the material at full fidelity and recoverable, while compression destroys the copy.",
+    "distractor_rationale": "Both moves produce the same immediate effect on window size, so someone optimising for space treats them as equivalent, and the difference only shows up later when the discarded detail turns out to matter."
+  },
+  {
+    "term": "select",
+    "def": "The context lever that pulls material into the window when it is needed, rather than loading it in advance.",
+    "source": "[^S7]",
+    "related": [
+      "write",
+      "isolate",
+      "context window"
+    ],
+    "pitfall": "Loading whole documents or file sets up front so nothing is missing later, which fills the window with material that will not be needed for most of the run.",
+    "distractor_rationale": "Front-loading feels safer because a missing piece of context is a visible failure while a bloated window is an invisible one, so the cautious choice systematically produces the worse outcome."
+  },
+  {
+    "term": "compress",
+    "def": "The context lever that retains only the tokens required for the task, either by clearing spent content or by summarizing history.",
+    "source": "[^S7]",
+    "related": [
+      "write",
+      "tool result clearing",
+      "compaction"
+    ],
+    "pitfall": "Collapsing its two very different forms into one — clearing is deterministic and costs nothing but the cache, while summarizing costs a model call and discards detail you never got to inspect.",
+    "distractor_rationale": "Most tools expose summarization as a single command and clearing as an invisible automatic behaviour, so the expensive form is the one that comes to mind as \"compressing the context.\""
+  },
+  {
+    "term": "isolate",
+    "def": "The context lever that splits work across separate windows so one workstream's detail never enters another's.",
+    "source": "[^S7]",
+    "related": [
+      "subagent",
+      "delegation message",
+      "select"
+    ],
+    "pitfall": "Noticing only the outbound narrowing — that detail does not come back — and missing that the boundary is symmetric, so your session's decisions do not travel out to the isolated work either.",
+    "distractor_rationale": "The token saving is the visible, quantifiable half of the trade, and it is what every description of subagents leads with, so the inbound cost is discovered only when a delegated task returns something reasonable and wrong."
+  },
+  {
+    "term": "tool result clearing",
+    "def": "Removing tool outputs from conversation history once the model has processed them, on the grounds that raw results have no future reader.",
+    "source": "[^S15]",
+    "related": [
+      "compress",
+      "prompt cache",
+      "spent context"
+    ],
+    "deeper": "Anthropic calls it \"one of the safest lightest touch forms of compaction\" because it requires no judgment about importance — the material is provably spent.[^S1] The one real cost is that clearing \"invalidates cached prompt prefixes,\" which is why clearing a large block once beats trickling out small amounts.[^S15]",
+    "pitfall": "Clearing small amounts frequently, which pays the cache-invalidation cost repeatedly for gains too small to justify it.",
+    "distractor_rationale": "Clearing looks free because no model call is involved, so the natural policy is to clear whenever anything is spent — the cache cost is invisible until it shows up as slower, more expensive turns."
+  },
+  {
+    "term": "spent context",
+    "def": "Material in the window that has already been processed and will not be read again, such as a test log whose failure names the agent has extracted.",
+    "source": "[^S1]",
+    "related": [
+      "tool result clearing",
+      "compress",
+      "attention budget"
+    ],
+    "pitfall": "Assuming it is harmless because nothing is consulting it, when every token in the window draws on the same attention budget regardless of whether it is useful.",
+    "distractor_rationale": "The word \"spent\" suggests something already paid for and therefore costless from here, which is exactly backwards — the cost is recurring, charged on every subsequent turn."
+  },
+  {
+    "term": "compaction",
+    "def": "Taking a conversation nearing the context window limit, summarizing its contents, and continuing in a fresh window from that summary.",
+    "source": "[^S1]",
+    "related": [
+      "compaction boundary",
+      "compress",
+      "survival rule"
+    ],
+    "deeper": "Anthropic's API documentation states the mechanism precisely: the system \"automatically drops all content blocks prior to the compaction block, continuing the conversation from the summary.\"[^S14] Its documented weakness is selection rather than fidelity — \"overly aggressive compaction can result in the loss of subtle but critical context whose importance only becomes apparent later.\"[^S1]",
+    "pitfall": "Believing it is sufficient for work spanning several windows, when Anthropic's own evaluation reports that \"compaction isn't sufficient\" and observed agents starting sessions with half-implemented features they had to guess about.[^S9]",
+    "distractor_rationale": "It works well enough on single-window conversational work that its success there generalises, and its failures on long tasks arrive as vague drift rather than as an error anyone attributes to the summary."
+  },
+  {
+    "term": "compaction boundary",
+    "def": "The point in a session where a summary replaces prior history, after which every content block before it is dropped from the conversation.",
+    "source": "[^S14]",
+    "related": [
+      "compaction",
+      "survival rule",
+      "structured note-taking"
+    ],
+    "pitfall": "Treating what crosses it as unpredictable, when it is determined by how each item was loaded — disk-loaded material is re-read, message history is summarized away.",
+    "distractor_rationale": "Summarization is a model call, and model calls feel nondeterministic, so the whole boundary gets classified as a matter of luck — which forecloses the planning that would actually protect the important items."
+  },
+  {
+    "term": "survival rule",
+    "def": "The single rule predicting what a compaction boundary keeps: material re-read from disk survives, material loaded into message history is summarized away.",
+    "source": "[^S10]",
+    "related": [
+      "compaction boundary",
+      "structured note-taking",
+      "write"
+    ],
+    "deeper": "Claude Code's documentation publishes the per-mechanism outcomes, and every row follows from this rule: project-root instructions and auto memory are \"re-injected from disk,\" while path-scoped rules and nested instruction files are \"lost until a matching file is read again,\" because they entered history when their trigger file was read.[^S10] Version-specific caps in that table move between releases; the rule underneath does not.",
+    "pitfall": "Expecting importance or emphasis to protect an instruction, so a constraint stated forcefully in turn one is assumed safe — the loading mechanism decides, and nothing about how you said it changes which side of the boundary it is on.",
+    "distractor_rationale": "In every other context, saying something emphatically or repeating it does increase the chance it is honoured, so the intuition is well-earned; it fails here because the summarizer is optimising for continuity of work rather than weighing emphasis."
+  },
+  {
+    "term": "structured note-taking",
+    "def": "The practice of having an agent regularly write notes to persistent storage outside the context window, to be read back into a later window.",
+    "source": "[^S1]",
+    "related": [
+      "write",
+      "briefing",
+      "survival rule"
+    ],
+    "pitfall": "Writing a chronological log of what happened rather than a briefing for what to do next, which reads well and leaves a fresh session unable to act.",
+    "distractor_rationale": "Chronology is the shape of your own memory of the session, so it is what comes out when you sit down to write — and it looks like a complete record, which makes the omission of next actions and constraints hard to notice."
+  },
+  {
+    "term": "briefing",
+    "def": "A note organised around what the next session should do and must not break, rather than around what the previous session did.",
+    "source": "[^S9]",
+    "related": [
+      "structured note-taking",
+      "log",
+      "briefing sections"
+    ],
+    "pitfall": "Recording a decision without the reason behind it, so a later turn re-opens a settled question that the conclusion alone cannot defend.",
+    "distractor_rationale": "The reason feels like background you already know, and the conclusion feels like the actionable part — so the half that survives is the half that cannot argue for itself when something makes it inconvenient."
+  },
+  {
+    "term": "log",
+    "def": "A backward-looking record of what happened in a session, which documents work without constraining the next action.",
+    "source": "[^S9]",
+    "related": [
+      "briefing",
+      "structured note-taking"
+    ],
+    "pitfall": "Accepting it as sufficient handoff because it is accurate and complete about the past, when a fresh agent needs the next action, the constraints, and the settled decisions — none of which a log contains.",
+    "distractor_rationale": "Accuracy is the quality people check a note for, and a log passes that check completely; nothing in the reading experience signals that the reader who matters is one who was not there."
+  },
+  {
+    "term": "briefing sections",
+    "def": "The four parts of a working note — NEXT, DONE, DECIDED, DO NOT — each preventing a specific documented failure of a session that starts with no memory.",
+    "source": "[^S9]",
+    "related": [
+      "briefing",
+      "structured note-taking",
+      "compaction boundary"
+    ],
+    "pitfall": "Treating the four as a fixed schema, when a task whose accumulating value is a set of conventions needs a section the default four have no home for.",
+    "distractor_rationale": "A named structure invites being followed exactly, and deviating from a template feels like doing it wrong — so the convention material gets forced into DECIDED or omitted rather than given its own place."
+  },
+  {
+    "term": "subagent",
+    "def": "An agent that runs in its own context window with its own system prompt and tool access, doing focused work and returning only a summary.",
+    "source": "[^S12]",
+    "related": [
+      "isolate",
+      "delegation message",
+      "coupling"
+    ],
+    "deeper": "The asymmetry is what makes it a context lever: a subagent \"might explore extensively, using tens of thousands of tokens or more, but returns only a condensed, distilled summary of its work (often 1,000-2,000 tokens).\"[^S1] The inbound direction is equally narrow — it \"doesn't see your conversation history, the skills you've already invoked, or the files Claude has already read.\"[^S12]",
+    "pitfall": "Delegating by size, so anything large gets sent behind the boundary — when the deciding property is coupling, and a large task that depends on session decisions comes back reasonable and wrong.",
+    "distractor_rationale": "Token saving is the benefit every description leads with, and it scales with size, so \"delegate the big things\" is the rule the framing itself suggests."
+  },
+  {
+    "term": "delegation message",
+    "def": "The summary of a task that a main agent composes for a subagent, and the entire context the subagent starts from.",
+    "source": "[^S12]",
+    "related": [
+      "subagent",
+      "isolate",
+      "coupling"
+    ],
+    "pitfall": "Omitting a report format, which leaves the return size to the subagent's judgment and can put the very noise you were isolating back in your window.",
+    "distractor_rationale": "Specifying the output feels like micromanagement of a capable agent, and in a normal conversation you would just ask a follow-up — but the return channel is the only channel, and a follow-up means running the whole search again."
+  },
+  {
+    "term": "coupling",
+    "def": "The degree to which a piece of work depends on decisions and context accumulated in the current session, and therefore cannot be specified independently.",
+    "source": "[^S13]",
+    "related": [
+      "subagent",
+      "delegation message",
+      "isolate"
+    ],
+    "deeper": "Cognition's argument names the mechanism: \"Actions carry implicit decisions, and conflicting decisions carry bad results.\"[^S13] A subagent working without your session's decisions makes its own and does not report them, so a coupled delegation returns something defensible on its own terms and wrong for your task.",
+    "pitfall": "Trying to fix high coupling by writing a longer delegation message, when the difficulty of writing that message is the measurement telling you the work belongs in your own window.",
+    "distractor_rationale": "Every other prompting problem does yield to a more detailed prompt, so writing more is the trained response; here the length of what you have to write is itself the signal, and pushing through it hides the signal."
+  },
+  {
+    "term": "context budget",
+    "def": "A written allocation of a task's context window across named categories, each with a lever and a trigger that fires before the window is in trouble.",
+    "source": "[^S10]",
+    "related": [
+      "trigger",
+      "attention budget",
+      "checkpoint"
+    ],
+    "pitfall": "Writing it as a set of token caps, which cannot be enforced and produces a plan you abandon — the enforceable content is what happens when a category exceeds its allocation.",
+    "distractor_rationale": "The word \"budget\" implies limits you hold to, which is how financial budgets work; here you have no mechanism to stop a file read from being large, only a prior decision about what to do once it is."
+  },
+  {
+    "term": "trigger",
+    "def": "A pre-decided condition that fires a context lever without requiring a judgment call at the moment it fires.",
+    "source": "[^S15]",
+    "related": [
+      "context budget",
+      "checkpoint",
+      "tool result clearing"
+    ],
+    "pitfall": "Writing one that assumes a particular shape of output, so an unexpected failure mode means the condition never becomes true and the lever silently never fires.",
+    "distractor_rationale": "Triggers are written while imagining the run going roughly as planned, and the conditions they name are the ones visible from that vantage point — the shapes that break them are by definition the ones you did not picture."
+  },
+  {
+    "term": "checkpoint",
+    "def": "A point in the work where you stop and inspect the context deliberately, used where a condition cannot be stated as an automatic rule.",
+    "source": "[^S10]",
+    "related": [
+      "trigger",
+      "context budget",
+      "compaction boundary"
+    ],
+    "pitfall": "Placing it by elapsed time or token count rather than at a unit-of-work boundary, which lands compaction mid-implementation — the condition that produced half-built, undocumented features in Anthropic's evaluation.[^S9]",
+    "distractor_rationale": "Time and token thresholds are measurable and easy to automate, while \"end of a unit of work\" requires knowing what the units are — so the easier-to-implement version wins even though it fires at the worst moment."
+  },
+  {
+    "term": "prompt cache",
+    "def": "The reuse of an already-processed prefix of a conversation across turns, which any edit to that prefix invalidates.",
+    "source": "[^S15]",
+    "related": [
+      "tool result clearing",
+      "compaction",
+      "context budget"
+    ],
+    "pitfall": "Ignoring it when planning how often to clear or compact, so a budget that trims frequently pays a re-processing cost that can exceed the savings.",
+    "distractor_rationale": "Caching is a performance concern and context management feels like a quality concern, so the two get optimised separately — and the interaction only shows up as unexplained cost or latency rather than as a context symptom."
+  },
+  {
+    "term": "standing instructions",
+    "def": "The instruction files, memory, and output style that load into every session automatically and reload after every compaction pass.",
+    "source": "[^S10]",
+    "related": [
+      "survival rule",
+      "context budget",
+      "tool surface"
+    ],
+    "pitfall": "Letting the file accumulate across months so it carries material irrelevant to the current task, which is then paid for at every session start and after every boundary.",
+    "distractor_rationale": "Each addition is individually small and individually justified, and the file is never read end-to-end by the person maintaining it — so its total size is invisible in exactly the way the window's contents are."
+  },
+  {
+    "term": "tool surface",
+    "def": "The tool names, schemas, and skill descriptions loaded into a window because of what is installed, independent of what the current task needs.",
+    "source": "[^S10]",
+    "related": [
+      "standing instructions",
+      "confusion",
+      "context budget"
+    ],
+    "pitfall": "Never revisiting it after installation, so tools added for one project keep loading in every session and contribute to confusion failures on tasks that have no use for them.",
+    "distractor_rationale": "Installation is a one-time act that feels complete, and an unused tool appears to cost nothing because it is never called — the cost is in the schema being present and readable, not in its invocation."
+  },
+  {
+    "term": "message history",
+    "def": "The accumulated sequence of turns, tool calls, and tool results that makes up a conversation, and the one category of context a compaction boundary consumes.",
+    "source": "[^S10]",
+    "related": [
+      "survival rule",
+      "compaction boundary",
+      "on disk"
+    ],
+    "pitfall": "Assuming that anything visible in the transcript is durable, when message history is precisely the material a summary replaces — visibility now says nothing about presence after a boundary.",
+    "distractor_rationale": "The transcript is the part of the session a person actually reads and scrolls, so it feels like the authoritative record; the disk-loaded material that survives is the part they never see rendered."
+  },
+  {
+    "term": "on disk",
+    "def": "The side of a compaction boundary where material is re-read from a file rather than carried in conversation, and therefore survives intact.",
+    "source": "[^S10]",
+    "related": [
+      "survival rule",
+      "message history",
+      "structured note-taking"
+    ],
+    "pitfall": "Putting something in a file and assuming that alone protects it, when a file loaded on a trigger — a path-scoped rule, a nested instruction file — enters message history when the trigger fires and is summarized away with everything else.",
+    "distractor_rationale": "\"It's in a file\" reads as durable because files persist on the filesystem, and the distinction that matters is not where it is stored but whether it is re-read after the boundary."
+  },
+  {
+    "term": "CLAUDE.md",
+    "def": "A project or global instruction file that a coding agent loads at session start and re-injects from disk after a compaction pass.",
+    "source": "[^S10]",
+    "related": [
+      "standing instructions",
+      "on disk",
+      "survival rule"
+    ],
+    "pitfall": "Using it as an inbox for every rule ever needed, so it grows into a large block loading at every session start and after every boundary, competing with the task for the same attention budget.",
+    "distractor_rationale": "Each individual addition is small and clearly useful at the moment it is written, and nobody re-reads the file end to end afterwards — so growth is invisible in the same way the window's contents are."
+  },
+  {
+    "term": "auto memory",
+    "def": "Notes an agent accumulates about a project across sessions and reloads automatically, re-injected from disk after a compaction boundary.",
+    "source": "[^S10]",
+    "related": [
+      "standing instructions",
+      "on disk",
+      "structured note-taking"
+    ],
+    "pitfall": "Never reviewing it, so a stale fact learned weeks ago is carried faithfully through every session and every boundary with the same authority as a correct one.",
+    "distractor_rationale": "It is written by the agent rather than by you, so it feels like infrastructure rather than content — and infrastructure is not the kind of thing people think to proofread."
+  },
+  {
+    "term": "path-scoped",
+    "def": "An instruction that loads only when a file matching its pattern is read, entering message history at that moment rather than at session start.",
+    "source": "[^S10]",
+    "related": [
+      "survival rule",
+      "message history",
+      "CLAUDE.md"
+    ],
+    "deeper": "Claude Code's documentation records these as \"Lost until a matching file is read again\" after compaction, and explains why: they \"load into message history when their trigger file is read, so compaction summarizes them away with everything else.\"[^S10] The repair for a rule that must persist is to remove the scoping and move it to a file loaded at startup.",
+    "pitfall": "Treating a scoped rule as always active because it fires reliably before a boundary, when after one it stays absent until another matching file happens to be read.",
+    "distractor_rationale": "Scoping is presented as an efficiency feature — load only what is relevant — so it reads as a smarter version of an always-on rule rather than as a different survival category."
+  },
+  {
+    "term": "system prompt",
+    "def": "The instructions defining an agent's behaviour, loaded outside message history and therefore unaffected by a compaction boundary.",
+    "source": "[^S10]",
+    "related": [
+      "standing instructions",
+      "survival rule",
+      "context window"
+    ],
+    "pitfall": "Counting it as free because you did not write it and cannot edit it, when it occupies part of the same window every turn and belongs in a context budget's standing-instruction allocation.",
+    "distractor_rationale": "Anything you cannot change tends to drop out of planning altogether, and its invisibility in the interface reinforces the sense that the budget starts from zero when you type."
+  },
+  {
+    "term": "tool output",
+    "def": "The results of commands, searches, and file reads that enter the window during a run, typically the largest reclaimable category in a long session.",
+    "source": "[^S15]",
+    "related": [
+      "spent context",
+      "tool result clearing",
+      "context budget"
+    ],
+    "pitfall": "Judging its size from the one-line notice in your terminal rather than from the underlying content, which is what the model actually receives.",
+    "distractor_rationale": "The interface deliberately collapses tool output so the transcript stays readable, and that design choice makes the largest occupant of the window the least visible one."
+  },
+  {
+    "term": "context pollution",
+    "def": "The accumulation of irrelevant or superseded material in a window, which persists as a concern at every window size rather than being solved by a larger one.",
+    "source": "[^S1]",
+    "related": [
+      "context rot",
+      "confusion",
+      "attention budget"
+    ],
+    "pitfall": "Expecting a larger context window to resolve it, when Anthropic's stated expectation is that \"context windows of all sizes will be subject to context pollution and information relevance concerns.\"[^S1]",
+    "distractor_rationale": "Every capacity problem in computing has historically been eased by more capacity, so waiting for bigger windows is a well-trained response — it fails because the constraint is attention allocation rather than storage."
+  },
+  {
+    "term": "fresh session",
+    "def": "A session starting with a new context window and no memory of any previous one, holding only what is loaded from disk.",
+    "source": "[^S11]",
+    "related": [
+      "structured note-taking",
+      "briefing",
+      "on disk"
+    ],
+    "deeper": "Anthropic frames this as the defining constraint of long-running work: agents \"must work in discrete sessions, and each new session begins with no memory of what came before.\"[^S9] Their evaluation observed a downstream failure that is hard to anticipate — an agent arriving fresh, seeing that progress had been made, and declaring the job done.[^S9]",
+    "pitfall": "Testing a handoff note in the same session where you wrote it, where the agent still holds the conversation and appears to understand the note perfectly.",
+    "distractor_rationale": "The tool looks identical across the boundary and the agent responds in the same voice, so continuity is the natural assumption — nothing in the interface signals that the reader has changed."
+  },
+  {
+    "term": "half-implemented",
+    "def": "The state left when a context window runs out mid-task, giving the next session work in progress with no record of its intent.",
+    "source": "[^S9]",
+    "related": [
+      "fresh session",
+      "checkpoint",
+      "briefing"
+    ],
+    "pitfall": "Letting an automatic compaction pass fire mid-implementation, which is exactly the condition that produced this failure in Anthropic's evaluation — the next session then has to guess at what happened.[^S9]",
+    "distractor_rationale": "Automatic compaction is presented as a safety net that prevents running out of context, so it reads as protection rather than as an event whose timing matters — and the timing is chosen by a token count, not by where you are in the work."
+  },
+  {
+    "term": "load-bearing",
+    "def": "The property of a piece of context that the run would go wrong without it, distinguishing what must be protected from what merely happens to be present.",
+    "source": "[^S10]",
+    "related": [
+      "survival rule",
+      "briefing",
+      "context budget"
+    ],
+    "pitfall": "Judging it by how large or recent an item is rather than by what breaks in its absence, which protects file contents and lets a one-line constraint disappear.",
+    "distractor_rationale": "Size is measurable at a glance and consequence is not, so the available signal substitutes for the relevant one — and the smallest items are often the ones carrying the most weight."
+  },
+  {
+    "term": "steering",
+    "def": "Running a compaction pass deliberately with instructions about what to keep, instead of waiting for the automatic pass to choose.",
+    "source": "[^S10]",
+    "related": [
+      "compaction boundary",
+      "checkpoint",
+      "default summarization"
+    ],
+    "pitfall": "Relying on it for an unattended run, when an automatic pass fires at a threshold you are not present for and every constraint's survival then rests on a default prompt written without your task in mind.",
+    "distractor_rationale": "Once you know the lever exists it feels like the answer to the whole problem, and it genuinely is when you are watching — the gap only appears on the long unattended runs where the stakes are highest."
+  },
+  {
+    "term": "default summarization",
+    "def": "The built-in instruction a compaction pass follows when none is supplied, which asks for state, next steps, and learnings.",
+    "source": "[^S14]",
+    "related": [
+      "compaction",
+      "steering",
+      "survival rule"
+    ],
+    "deeper": "The published prompt asks the model to \"write down anything that would be helpful, including the state, next steps, learnings etc.\" for the purpose of continuing the task.[^S14] Nothing in it asks for constraints, rejected approaches, or the reasons behind decisions, which is why those are the categories that systematically fail to cross.",
+    "pitfall": "Reading its omissions as summarizer error, when the prompt is doing exactly what it asks — a prohibition is not state, not a next step, and not a learning.",
+    "distractor_rationale": "A summary that drops something important looks like a quality failure, and framing it that way suggests waiting for a better model rather than moving the item to the disk side of the boundary."
+  },
+  {
+    "term": "boundary audit",
+    "def": "Reviewing a session's load-bearing items before a compaction pass, predicting each one's survival, and relocating what will not survive.",
+    "source": "[^S10]",
+    "related": [
+      "survival rule",
+      "load-bearing",
+      "relocation"
+    ],
+    "pitfall": "Stopping at the prediction, when the prediction is only diagnostic — the deliverable is moving the at-risk items to a file before the pass runs.",
+    "distractor_rationale": "Producing the correct prediction feels like completing the exercise, because it is the part that requires understanding; the relocation is mechanical and therefore easy to defer past the moment it would have helped."
+  },
+  {
+    "term": "relocation",
+    "def": "Moving a load-bearing item from conversation into a file so it sits on the surviving side of a compaction boundary.",
+    "source": "[^S11]",
+    "related": [
+      "boundary audit",
+      "on disk",
+      "structured note-taking"
+    ],
+    "pitfall": "Relocating everything, which turns the instruction file into a second context problem — it loads in full at every session start and competes for the same attention budget.",
+    "distractor_rationale": "Once the survival rule is understood, moving things to disk looks strictly protective, and the cost is deferred and diffuse while the benefit is immediate and specific."
+  },
+  {
+    "term": "unit of work",
+    "def": "A bounded chunk of a task with a natural end, used as the place to write notes and take a compaction boundary.",
+    "source": "[^S9]",
+    "related": [
+      "checkpoint",
+      "half-implemented",
+      "context budget"
+    ],
+    "pitfall": "Defining boundaries by token count or elapsed time instead, which lands a compaction pass mid-implementation rather than at a point where the state is clean and describable.",
+    "distractor_rationale": "Token thresholds are automatic and require no judgment, while identifying units of work requires knowing the shape of your own task — so the mechanical option wins even though it fires at the worst moment."
+  },
+  {
+    "term": "working set",
+    "def": "The files a task is actively reading and editing, as distinct from material that has passed through the window and been spent.",
+    "source": "[^S10]",
+    "related": [
+      "context budget",
+      "spent context",
+      "task scope"
+    ],
+    "pitfall": "Clearing it under budget pressure when the files are the subject of the work rather than scratch material — if it will not fit, the task needs splitting, not more aggressive clearing.",
+    "distractor_rationale": "Clearing is the cheapest lever and the working set is often the largest category, so the arithmetic points straight at it; what the arithmetic misses is that this is the one category the task cannot proceed without."
+  },
+  {
+    "term": "task scope",
+    "def": "How much work one session is asked to cover, which determines whether a context budget is achievable or arithmetically impossible.",
+    "source": "[^S9]",
+    "related": [
+      "working set",
+      "context budget",
+      "unit of work"
+    ],
+    "pitfall": "Treating an over-large task as a context management problem, when Anthropic's observed failure was an agent attempting to \"one-shot\" a whole app and running out of context mid-implementation — the repair was smaller units, not better compression.[^S9]",
+    "distractor_rationale": "Context techniques are the tools freshly in hand, so every problem gets read as a context problem; scope is a planning decision that feels like it belongs to a different discipline entirely."
+  },
+  {
+    "term": "coupling test",
+    "def": "Judging whether work can be delegated by attempting to write its delegation message, on the principle that difficulty writing it measures the context it needs.",
+    "source": "[^S12]",
+    "related": [
+      "coupling",
+      "delegation message",
+      "subagent"
+    ],
+    "pitfall": "Pushing through the difficulty with a longer message, which hides the signal — the length you have to write is itself the answer the test is giving you.",
+    "distractor_rationale": "Every other prompting difficulty does yield to more detail, so persistence is the trained response, and it succeeds just often enough that the failures look like bad luck rather than a category error."
+  },
+  {
+    "term": "unstated decisions",
+    "def": "The judgment calls a subagent makes while working, which shape its result and do not cross the boundary with it.",
+    "source": "[^S13]",
+    "related": [
+      "coupling",
+      "subagent",
+      "verify"
+    ],
+    "pitfall": "Acting on a delegated result without verifying any of it, when you cannot see what the subagent counted as a match, how it scoped its search, or where it gave up.",
+    "distractor_rationale": "A confident, well-formatted report reads as a finding rather than as one process's output, and the very isolation that saved your window is what removed the trace you would need to audit it."
+  },
+  {
+    "term": "verify",
+    "def": "Checking at least one claim in a delegated result against its source directly, to test whether the subagent's reading of the task matched yours.",
+    "source": "[^S13]",
+    "related": [
+      "unstated decisions",
+      "delegation message",
+      "subagent"
+    ],
+    "pitfall": "Skipping it because the result looks complete, when the failure mode of a summarizing subagent is confident omission — gaps appear as clean results rather than as gaps.",
+    "distractor_rationale": "Verification feels like distrust of a capable model, and the report's format gives no visual cue that anything is missing, so there is nothing prompting the check."
+  },
+  {
+    "term": "high volume, low conclusion",
+    "def": "The workstream shape that suits isolation: it reads a great deal and concludes very little, so the boundary discards material nobody will want.",
+    "source": "[^S12]",
+    "related": [
+      "subagent",
+      "isolate",
+      "coupling"
+    ],
+    "pitfall": "Applying it alone, when it is one of three properties — a high-volume task that depends on session decisions still fails on coupling no matter how favourable the ratio.",
+    "distractor_rationale": "The volume ratio is the property that produces the visible token saving, so it is the one that gets checked; coupling has no number attached and is easy to skip."
+  },
+  {
+    "term": "read-only",
+    "def": "The property of delegated work that it reports rather than acts, so its unstated decisions arrive as text you can inspect rather than as changes already made.",
+    "source": "[^S12]",
+    "related": [
+      "unstated decisions",
+      "subagent",
+      "verify"
+    ],
+    "pitfall": "Delegating work that writes, so decisions made without your session's context are applied to your repository before you see them.",
+    "distractor_rationale": "Having the subagent finish the job looks like a strictly better use of the same delegation, and the difference only shows up when you have to reconstruct why a file changed the way it did."
+  },
+  {
+    "term": "fork",
+    "def": "A subagent that inherits the parent conversation instead of starting fresh, keeping noise out of the main window while giving up inbound isolation.",
+    "source": "[^S12]",
+    "related": [
+      "subagent",
+      "isolate",
+      "coupling"
+    ],
+    "pitfall": "Reaching for it whenever a delegation feels underspecified, when the real signal is that the work is coupled — a fork carries the context but still returns only a result, so genuinely coupled work still belongs in your own window.",
+    "distractor_rationale": "It appears to solve the coupling problem by removing the inbound restriction, which makes it look like a strict upgrade over a plain subagent rather than a different trade with its own cost."
+  },
+  {
+    "term": "report format",
+    "def": "The fields a delegation message asks a subagent to return, which bound what comes back into your window.",
+    "source": "[^S12]",
+    "related": [
+      "delegation message",
+      "subagent",
+      "context budget"
+    ],
+    "pitfall": "Leaving it unspecified and then needing a field the subagent did not report, which means running the whole search again rather than asking a follow-up.",
+    "distractor_rationale": "In ordinary conversation an unasked question is one message away, so specifying output up front feels like unnecessary formality — the return channel being one-shot is what makes it necessary."
+  },
+  {
+    "term": "over-allocated",
+    "def": "A budget category that came in far under its share, meaning capacity was reserved on a guess and taken from somewhere that needed it.",
+    "source": "[^S16]",
+    "related": [
+      "context budget",
+      "per-category readout",
+      "trigger"
+    ],
+    "pitfall": "Only reviewing the categories that blew through, so the reserved-and-unused capacity is never redistributed and the same misallocation repeats every task.",
+    "distractor_rationale": "A category under budget registers as a success, and successes are not what anyone reviews — so the finding hides behind the appearance of things going well."
+  },
+  {
+    "term": "per-category readout",
+    "def": "A live breakdown of what is currently occupying a context window, by category, used to check a budget while the task is still running.",
+    "source": "[^S10]",
+    "related": [
+      "context budget",
+      "session total",
+      "checkpoint"
+    ],
+    "pitfall": "Taking it only at the end of a run, when the useful comparison needs readings at checkpoints along the way to show which category grew and when.",
+    "distractor_rationale": "A final measurement is what a budget review sounds like it needs, and it does answer whether you stayed under — it just cannot answer the more useful question of where the drift started."
+  },
+  {
+    "term": "session total",
+    "def": "The aggregate token and cost figures for one session, which reset when a new session starts.",
+    "source": "[^S16]",
+    "related": [
+      "per-category readout",
+      "context budget",
+      "prompt cache"
+    ],
+    "pitfall": "Comparing totals across sessions of different lengths and concluding a technique failed, when the figure resets at each new session and the comparison needs to be per unit of work.",
+    "distractor_rationale": "A single number invites direct comparison, and nothing about it signals that its denominator changed between the two runs being compared."
+  },
+  {
+    "term": "conventions",
+    "def": "The standards a task accumulates as it proceeds — voice, formatting, level of detail — which exist only in conversation until written down.",
+    "source": "[^S10]",
+    "related": [
+      "briefing sections",
+      "survival rule",
+      "relocation"
+    ],
+    "pitfall": "Assuming the four default note sections have a home for them, when conventions are neither a next action, a completed item, a single decision, nor a prohibition — and so get omitted from the note entirely.",
+    "distractor_rationale": "A named four-part structure invites being followed exactly, so material that does not fit gets dropped rather than prompting a fifth section, and deviating from the template feels like doing it wrong."
+  },
+  {
+    "term": "chronology",
+    "def": "The ordering of a note by what happened when, which matches how the writer remembers the session and not what a fresh reader needs.",
+    "source": "[^S9]",
+    "related": [
+      "log",
+      "briefing",
+      "structured note-taking"
+    ],
+    "pitfall": "Writing a note in the order events occurred, which buries the next action at the end and gives a rejected approach the same prominence as the one that worked.",
+    "distractor_rationale": "Time order is the default structure for any record of a day, and it produces something that reads as complete and accurate — qualities that are genuinely present and beside the point for a reader who was not there."
+  },
+  {
+    "term": "degradation",
+    "def": "The measured decline in a model's task performance as input length grows, distinct from any hard failure at the window limit.",
+    "source": "[^S2]",
+    "related": [
+      "context rot",
+      "attention budget",
+      "lost in the middle"
+    ],
+    "deeper": "A peer-reviewed study isolated length as the cause, finding drops of 13.9% to 85% across its model-and-task grid even with retrieval held perfect and distraction removed by whitespace padding and masking.[^S3] That range spans the whole grid at the longest padding tested, so it bounds the effect rather than predicting any particular task's drop.",
+    "pitfall": "Quoting a headline range as what to expect on your own task, when such figures are the span across an experimental grid at deliberately extreme lengths.",
+    "distractor_rationale": "A published number carries the authority of the study behind it, and the experimental setting that qualifies it is usually left behind when the figure gets repeated."
+  },
+  {
+    "term": "U-shape",
+    "def": "The curve describing how reliably a model uses information by its position: strongest at the start and end of the input, weakest in the middle.",
+    "source": "[^S4]",
+    "related": [
+      "lost in the middle",
+      "context rot",
+      "compaction"
+    ],
+    "pitfall": "Concluding that a mid-context item is unusable, when the finding is about relative reliability — the practical use is choosing where to put load-bearing material, not writing off the middle.",
+    "distractor_rationale": "A named curve with a dramatic shape invites being read as a rule about what works and what does not, rather than as a gradient that shifts the odds."
+  }
+]
