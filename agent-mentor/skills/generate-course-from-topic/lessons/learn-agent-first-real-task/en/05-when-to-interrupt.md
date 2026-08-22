@@ -21,7 +21,7 @@ That is the real problem this lesson addresses. Not "should you supervise" — o
 
 ### Attention is the scarce resource
 
-You have an attention budget: a fixed supply of careful looking per run. Spending it evenly is the worst allocation, because it means spending most of it on steps that were never going to matter, and arriving at the one that does with nothing left.
+You have a review budget: a fixed supply of careful looking per run. Spending it evenly is the worst allocation, because it means spending most of it on steps that were never going to matter, and arriving at the one that does with nothing left.
 
 Two consequences follow, and the second is counterintuitive:
 

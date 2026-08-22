@@ -245,8 +245,8 @@
     "distractor_rationale": "A recap is easier to read than a raw trail, and it appears to contain the same information in a friendlier form."
   },
   {
-    "term": "attention budget",
-    "def": "The limited supply of careful looking a person has during a run, which is smaller than the number of moments competing for it.",
+    "term": "review budget",
+    "def": "The limited supply of careful looking a person has during a run, which is smaller than the number of moments competing for it. Distinct from a model's attention budget, which is about tokens rather than human review.",
     "source": "[^S4]",
     "pitfall": "Spending it evenly across a run, which leaves nothing for the one decision that actually mattered.",
     "distractor_rationale": "Vigilance is experienced as a matter of will, so treating it as a finite quantity to allocate feels like making an excuse."

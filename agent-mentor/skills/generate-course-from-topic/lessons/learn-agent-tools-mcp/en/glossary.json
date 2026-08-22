@@ -4,7 +4,11 @@
     "def": "An open protocol for connecting agent applications to external systems, built on JSON-RPC and organised around a client-host-server architecture.",
     "source": "[^S4]",
     "deeper": "The specification describes it as providing \"a protocol focused on context exchange and sampling coordination between clients and servers,\" and as of the 2026-07-28 revision it is explicitly stateless: \"every request is self-contained and carries its own protocol version and capabilities.\"[^S4] The protocol standardises how capabilities are described, discovered, and invoked — it does not standardise what any particular server does, which is why two servers for the same system can differ completely in quality.",
-    "related": ["MCP server", "protocol revision", "stateless protocol"],
+    "related": [
+      "MCP server",
+      "protocol revision",
+      "stateless protocol"
+    ],
     "pitfall": "Treating MCP as a product or a service you sign up for, rather than a wire protocol — so the question 'is MCP secure?' gets asked instead of the answerable one, 'is this server, with these credentials, at this permission gate, safe for what I am doing?'",
     "distractor_rationale": "It arrived attached to one vendor's products and is discussed in the same breath as apps and directories, so it reads as a platform. The protocol layer is invisible in normal use — you experience a client's UI, never the JSON-RPC underneath."
   },
@@ -13,7 +17,11 @@
     "def": "A process, local or remote, that exposes tools, resources, or prompts over MCP and executes them against a system it has access to.",
     "source": "[^S4]",
     "deeper": "Servers \"Operate independently with focused responsibilities\" and \"Can be local processes or remote services.\"[^S4] The design intent is that they are small: the first design principle is that \"Servers should be extremely easy to build,\" with host applications handling \"complex orchestration responsibilities.\"[^S4] A server that is doing orchestration is usually one that should have been several tools.",
-    "related": ["MCP client", "host", "tool"],
+    "related": [
+      "MCP client",
+      "host",
+      "tool"
+    ],
     "pitfall": "Assuming a server is a remote service somewhere. Many are local processes launched on your own machine with your own privileges, which is a completely different risk profile — the security guidance treats local server compromise as its own attack class.",
     "distractor_rationale": "\"Server\" in every other context means a machine elsewhere that you connect to over a network. Here it names a role in a protocol conversation, and the role is frequently played by a script running beside your editor."
   },
@@ -22,7 +30,11 @@
     "def": "A connector created by the host that speaks the protocol to exactly one server and maintains the boundary between that server and the rest of the session.",
     "source": "[^S4]",
     "deeper": "The 1:1 rule is what makes per-server policy possible: \"A host application creates and manages multiple clients, with each client having a 1:1 relationship with a particular server.\"[^S4] Its documented duties are routing, attaching \"protocol version and capabilities to every request,\" managing subscriptions, and maintaining \"security boundaries between servers.\"[^S4] You will rarely interact with one directly — it is the part of your agent application that most looks like plumbing.",
-    "related": ["host", "MCP server", "client capabilities"],
+    "related": [
+      "host",
+      "MCP server",
+      "client capabilities"
+    ],
     "pitfall": "Conflating the client with the application you are using, so that 'my client supports X' is asserted about the whole product when the relevant question is whether this connector, for this server, declared that capability on the request.",
     "distractor_rationale": "In everyday usage the client is the app — email client, chat client. MCP splits the app into host and client, and the word keeps its familiar meaning right up until you need to reason about which one enforces consent."
   },
@@ -31,7 +43,11 @@
     "def": "The application that holds the conversation and the model, creates clients, and makes authorization and consent decisions.",
     "source": "[^S4]",
     "deeper": "The specification's list of host duties is the argument for why permission lives here: it \"Controls client connection permissions and lifecycle,\" \"Enforces security policies and consent requirements,\" \"Handles user authorization decisions,\" and \"Manages context aggregation across clients.\"[^S4] It is the only component that sees both the whole conversation and the pending call, which is precisely what a consent decision requires.",
-    "related": ["MCP client", "consent boundary", "server isolation"],
+    "related": [
+      "MCP client",
+      "consent boundary",
+      "server isolation"
+    ],
     "pitfall": "Looking for the permission boundary in the model's judgment or the server's validation, when the specification puts it in the host — a mistake that produces designs relying on the model declining to do something it was persuaded to do.",
     "distractor_rationale": "The model is the visible decision-maker in an agent session, so it feels like the thing granting or withholding. And the server is where the dangerous action lands, so it feels like the natural gate. Both intuitions point away from the component that actually holds the decision."
   },
@@ -40,7 +56,11 @@
     "def": "A function a server exposes that the model can choose to call, described by a name, a description, and an input schema.",
     "source": "[^S6]",
     "deeper": "The defining property is in the specification's phrase \"model-controlled\": \"the language model can discover and invoke tools automatically based on its contextual understanding and the user's prompts.\"[^S6] Two consequences follow directly. Because the model chooses from text, the description is an interface rather than documentation. And because the model chooses, something else must be able to refuse — which is why the same page states that there \"**SHOULD** always be a human in the loop with the ability to deny tool invocations.\"[^S6]",
-    "related": ["tool definition", "model-controlled", "resource"],
+    "related": [
+      "tool definition",
+      "model-controlled",
+      "resource"
+    ],
     "pitfall": "Thinking of a tool as a function you call, so its description gets written like an API reference for a developer who will read it once, rather than as text a model reads at decision time on every request.",
     "distractor_rationale": "Everything about the implementation looks like a function — you write a function body, give it typed parameters, and return a value. The part that differs is invisible from inside the code: nobody calls it deterministically, a model decides whether it fits."
   },
@@ -48,7 +68,11 @@
     "term": "resource",
     "def": "An MCP primitive exposing file-like data a client can read, such as API responses or file contents.",
     "source": "[^S12]",
-    "related": ["tool", "prompt", "MCP server"],
+    "related": [
+      "tool",
+      "prompt",
+      "MCP server"
+    ],
     "pitfall": "Reaching for a tool when the thing you want to expose is simply readable data, which puts a model decision in front of something that could have been read directly.",
     "distractor_rationale": "Tools are the primitive everyone learns first and the one most examples use, so the tool-shaped solution is the one that comes to mind. The distinction only becomes obvious when the tool you wrote takes no meaningful arguments."
   },
@@ -56,15 +80,23 @@
     "term": "prompt",
     "def": "An MCP primitive exposing a pre-written template that helps a user accomplish a specific task.",
     "source": "[^S12]",
-    "related": ["tool", "resource", "Agent Skill"],
+    "related": [
+      "tool",
+      "resource",
+      "Agent Skill"
+    ],
     "pitfall": "Expecting a prompt to give the agent reach, when it carries wording only — the systems it mentions are no more reachable than before.",
     "distractor_rationale": "It arrives through the same connection as tools, in the same list of what a server offers, so it inherits the assumption that anything a server exposes extends what the agent can do."
   },
   {
     "term": "Agent Skill",
-    "def": "A portable workflow written for an agent to read and act on, as distinct from an external capability the agent calls.",
+    "def": "A portable workflow packaged as a directory containing a SKILL.md plus optional resources, written for an agent to read and act on — as distinct from an MCP server, which is an external capability the agent calls.",
     "source": "[^S11]",
-    "related": ["tool", "MCP server", "reach"],
+    "related": [
+      "tool",
+      "MCP server",
+      "reach"
+    ],
     "pitfall": "Trying to solve a reach problem by writing a better procedure, so effort goes into documenting a system the agent still has no connection to.",
     "distractor_rationale": "When an agent fails at a task, the failure often looks like not knowing how — it says something plausible and wrong. Writing down the how is the natural response, and it works often enough that it becomes the reflex even when the blocker is a missing connection."
   },
@@ -72,7 +104,11 @@
     "term": "reach",
     "def": "Whether an agent can actually connect to the system holding the data, as opposed to whether it knows what to do with it.",
     "source": "[^S13]",
-    "related": ["Agent Skill", "MCP server", "tool"],
+    "related": [
+      "Agent Skill",
+      "MCP server",
+      "tool"
+    ],
     "pitfall": "Sorting a capability by how difficult or important the task feels rather than by whether a connection exists, which is the classification error that produces a beautifully documented workflow nobody can run.",
     "distractor_rationale": "Difficulty and reach correlate loosely — hard tasks often do involve other systems — so sorting by difficulty gets the right answer often enough to feel like a working method until it silently fails on a simple task that needs a connection."
   },
@@ -81,7 +117,11 @@
     "def": "The property that the language model, not the calling code, decides which tool to invoke and when.",
     "source": "[^S6]",
     "deeper": "The specification pairs the property with a caveat: \"implementations are free to expose tools through any interface pattern that suits their needs — the protocol itself does not mandate any specific user interaction model.\"[^S6] So model-controlled describes who selects, not who approves. The approval is a separate requirement and it lands on the host.",
-    "related": ["tool", "host", "consent boundary"],
+    "related": [
+      "tool",
+      "host",
+      "consent boundary"
+    ],
     "pitfall": "Reading 'model-controlled' as 'the model is in charge', and concluding that safety therefore depends on the model's restraint rather than on a gate outside it.",
     "distractor_rationale": "The phrase does say the model controls something, and in an agent session the model is visibly driving. Nothing in the term itself signals that selection and permission were deliberately split between two components."
   },
@@ -90,7 +130,11 @@
     "def": "The request a client sends to discover the tools a server currently exposes.",
     "source": "[^S6]",
     "deeper": "Under the 2026-07-28 revision the returned set \"**MUST NOT** vary per-connection or as a side effect of other requests on the connection\" — a direct consequence of statelessness — although it \"**MAY** vary by the authorization presented on the request... since credentials are per-request input, not connection state.\"[^S6] Servers \"**SHOULD** return tools in a deterministic order\" so clients can cache and prompt caches can hit.[^S6]",
-    "related": ["tools/call", "tool definition", "stateless protocol"],
+    "related": [
+      "tools/call",
+      "tool definition",
+      "stateless protocol"
+    ],
     "pitfall": "Assuming the tool list is fixed per server, when it can legitimately differ by the credential presented — two people connecting the same server may see different tools, which makes 'it works for me' an unreliable diagnosis.",
     "distractor_rationale": "A server's capabilities feel like a property of the server, and in the common case the list really is identical for everyone. Authorization-varying lists are correct behaviour that looks like a bug the first time you meet one."
   },
@@ -98,7 +142,11 @@
     "term": "tools/call",
     "def": "The request that invokes a named tool with a set of arguments.",
     "source": "[^S6]",
-    "related": ["tools/list", "tool execution error", "task handle"],
+    "related": [
+      "tools/list",
+      "tool execution error",
+      "task handle"
+    ],
     "pitfall": "Expecting one call to always produce one final result, when under an extension the same call may return a task handle instead, and under the core it may return an input-required result that has to be retried.",
     "distractor_rationale": "Request-response is the model everyone brings, and most calls do behave that way. The polymorphic result shapes only appear with long-running work or mid-flight input, so a client written against the common case looks correct until it meets one."
   },
@@ -107,7 +155,11 @@
     "def": "The object describing one tool — its name, optional title, description, input schema, and optional output schema and annotations.",
     "source": "[^S6]",
     "deeper": "The `inputSchema` \"**MUST** be a valid JSON Schema object (not `null`)\" and defaults to JSON Schema 2020-12 when no `$schema` is present.[^S6] The reason to treat the whole object as prose rather than configuration is that all of it is loaded into the model's context at decision time — which is why the guidance calls editing it \"prompt-engineering your tool descriptions and specs.\"[^S10]",
-    "related": ["tool description", "input schema", "tool annotations"],
+    "related": [
+      "tool description",
+      "input schema",
+      "tool annotations"
+    ],
     "pitfall": "Treating the definition as metadata that documents the tool for developers, so it is written once and never revised — when it is the actual interface the model reads before every decision, and revising it is how wrong calls get fixed.",
     "distractor_rationale": "It looks exactly like an OpenAPI entry or a JSON schema file, both of which are genuinely reference material. Nothing in its shape signals that its audience is a model making a judgment call rather than a developer looking something up."
   },
@@ -116,7 +168,11 @@
     "def": "The human-readable text explaining what a tool does, which the model reads when deciding whether to call it.",
     "source": "[^S10]",
     "deeper": "The most usable test for one is the new-hire framing: \"think of how you would describe your tool to a new hire on your team. Consider the context that you might implicitly bring — specialized query formats, definitions of niche terminology, relationships between underlying resources — and make it explicit.\"[^S10] The measurable version is that \"Even small refinements to tool descriptions can yield dramatic improvements.\"[^S10]",
-    "related": ["tool definition", "input schema", "namespacing"],
+    "related": [
+      "tool definition",
+      "input schema",
+      "namespacing"
+    ],
     "pitfall": "Making a description longer without removing a specific guess, so it costs more context on every request and changes nothing about the call — length is mistaken for the improvement when the improvement is the guess removed.",
     "distractor_rationale": "\"Be more descriptive\" is genuinely the right diagnosis, and adding sentences is the obvious way to act on it. The difference between a sentence that removes ambiguity and one that restates the tool's name is invisible until you check whether the wrong call stopped."
   },
@@ -124,7 +180,11 @@
     "term": "input schema",
     "def": "The JSON Schema declaring a tool's parameters, which the model uses to construct arguments.",
     "source": "[^S6]",
-    "related": ["tool definition", "output schema", "structured content"],
+    "related": [
+      "tool definition",
+      "output schema",
+      "structured content"
+    ],
     "pitfall": "Declaring a parameter's type but not its format — a string parameter with no example or enum, which the model fills with a plausible value drawn from other systems rather than yours.",
     "distractor_rationale": "Type checking feels like the job a schema does, and a correctly typed string genuinely does satisfy the schema. The failure happens one level up, where a valid string is still the wrong string."
   },
@@ -132,7 +192,11 @@
     "term": "output schema",
     "def": "An optional JSON Schema declaring the structure of a tool's structured result.",
     "source": "[^S6]",
-    "related": ["input schema", "structured content", "tool definition"],
+    "related": [
+      "input schema",
+      "structured content",
+      "tool definition"
+    ],
     "pitfall": "Publishing an output schema and then returning results that do not conform, when the specification requires that servers \"**MUST** provide structured results that conform to this schema.\"",
     "distractor_rationale": "Input schemas are validated by the caller and failures surface immediately; output schemas are validated by clients that may or may not check, so a non-conforming result often works for months before a stricter client rejects it."
   },
@@ -140,7 +204,11 @@
     "term": "structured content",
     "def": "A JSON value returned in a tool result's `structuredContent` field, conforming to the tool's output schema if one is declared.",
     "source": "[^S6]",
-    "related": ["output schema", "tool result", "tools/call"],
+    "related": [
+      "output schema",
+      "tool result",
+      "tools/call"
+    ],
     "pitfall": "Confusing it with schema-constrained model generation — the specification notes it \"is server-produced result data and is unrelated to LLM 'structured outputs'.\"",
     "distractor_rationale": "Both phrases pair 'structured' with a schema in an LLM context, and both are about making output machine-readable. One constrains what a model generates; the other describes what a server returned."
   },
@@ -148,7 +216,11 @@
     "term": "tool annotations",
     "def": "Optional properties on a tool definition describing its behaviour, which clients must treat as untrusted unless the server is trusted.",
     "source": "[^S6]",
-    "related": ["tool definition", "untrusted content", "consent boundary"],
+    "related": [
+      "tool definition",
+      "untrusted content",
+      "consent boundary"
+    ],
     "pitfall": "Using an annotation such as a read-only hint as a safety control, when the specification requires clients to \"consider tool annotations to be untrusted unless they come from trusted servers\" — the tool declares its own behaviour, and a hostile server can declare anything.",
     "distractor_rationale": "An annotation that says a tool is read-only reads exactly like a permission bit, and it is genuinely useful for display. The gap is that the assertion is made by the party you are deciding whether to trust."
   },
@@ -157,7 +229,11 @@
     "def": "Grouping related tools under a common prefix so boundaries between many tools stay legible to the model.",
     "source": "[^S10]",
     "deeper": "The guidance recommends it while refusing to prescribe a scheme: \"We have found selecting between prefix- and suffix-based namespacing to have non-trivial effects on our tool-use evaluations. Effects vary by LLM and we encourage you to choose a naming scheme according to your own evaluations.\"[^S10] There is also a mechanical driver — tool name uniqueness \"is scoped to a single server,\" so a client aggregating several may meet collisions.[^S6]",
-    "related": ["tool description", "tool definition", "tools/list"],
+    "related": [
+      "tool description",
+      "tool definition",
+      "tools/list"
+    ],
     "pitfall": "Adopting a prefix convention as a settled best practice, when the source that recommends it explicitly says the effect varies by model and should be measured rather than assumed.",
     "distractor_rationale": "Naming conventions are normally decided once by taste and left alone, and the advice does read as a recommendation. The caveat sits one sentence later and is easy to drop when the guidance is summarised."
   },
@@ -165,7 +241,11 @@
     "term": "protocol error",
     "def": "A JSON-RPC error reporting a problem with the request structure itself, which a model is unlikely to be able to fix.",
     "source": "[^S6]",
-    "related": ["tool execution error", "isError", "_meta"],
+    "related": [
+      "tool execution error",
+      "isError",
+      "_meta"
+    ],
     "pitfall": "Returning one for an input validation failure, which classifies a fixable problem as unfixable — clients only \"**MAY**\" pass protocol errors to the model, so the information needed to retry may never reach it.",
     "distractor_rationale": "An invalid argument genuinely is an invalid parameter, and `-32602` is literally named Invalid params, so the mapping feels exact. The distinction the specification draws is about who can act on the error, not about where the invalidity is."
   },
@@ -174,7 +254,11 @@
     "def": "A failure reported inside a tool result with `isError: true`, carrying feedback a model can act on to retry.",
     "source": "[^S6]",
     "deeper": "The definition is functional rather than structural: these errors \"contain actionable feedback that language models can use to self-correct and retry with adjusted parameters,\" covering API failures, input validation and business logic.[^S6] Clients \"**SHOULD** provide tool execution errors to language models to enable self-correction,\"[^S6] which is why error text is worth writing as carefully as a description: \"prompt-engineer your error responses to clearly communicate specific and actionable improvements, rather than opaque error codes or tracebacks.\"[^S10]",
-    "related": ["protocol error", "isError", "tool description"],
+    "related": [
+      "protocol error",
+      "isError",
+      "tool description"
+    ],
     "pitfall": "Putting the failure on the right channel but writing text nobody can act on — a stack trace or an error code, which reaches the model intact and tells it nothing about what to change.",
     "distractor_rationale": "Getting the channel right feels like the whole fix, because it is the part with a specification requirement attached. The content of the message has no MUST on it, so it inherits whatever the underlying exception said."
   },
@@ -182,7 +266,11 @@
     "term": "isError",
     "def": "The field on a tool result marking it as a tool execution error rather than a successful result.",
     "source": "[^S6]",
-    "related": ["tool execution error", "protocol error", "tool result"],
+    "related": [
+      "tool execution error",
+      "protocol error",
+      "tool result"
+    ],
     "pitfall": "Omitting it and returning failure text as an ordinary successful result, so the client has no way to distinguish 'here is your answer' from 'this went wrong' and cannot apply its error handling.",
     "distractor_rationale": "The text of the result already says something failed, and a model reading it will usually understand. What is lost is everything programmatic — retry logic, logging, and the client's decision about whether to surface it."
   },
@@ -190,7 +278,11 @@
     "term": "tool result",
     "def": "What a tool call returns: unstructured content items, optional structured content, and an error flag.",
     "source": "[^S6]",
-    "related": ["structured content", "isError", "untrusted content"],
+    "related": [
+      "structured content",
+      "isError",
+      "untrusted content"
+    ],
     "pitfall": "Treating the returned content as data the model will summarise, forgetting it enters the model's context as ordinary text — including any instructions a stranger placed in the underlying record.",
     "distractor_rationale": "It is a return value, and return values are data in every other programming context. The idea that the return path is also an input channel for text aimed at your agent has no analogue in ordinary function calls."
   },
@@ -199,7 +291,11 @@
     "def": "A protocol where every request carries everything needed to process it, and no state is inferred from previous requests.",
     "source": "[^S5]",
     "deeper": "The specification's own phrasing is stronger than the summary: \"A server processes each request independently; no state should be inferred from previous requests, even those on the same connection or stream,\" with the note that an open connection \"is not a conversation or session: clients may interleave unrelated requests on the same transport.\"[^S5] The maintainers described the shift as \"MCP is transforming from a bidirectional stateful protocol into a request/response stateless protocol.\"[^S3]",
-    "related": ["_meta", "state handle", "protocol revision"],
+    "related": [
+      "_meta",
+      "state handle",
+      "protocol revision"
+    ],
     "pitfall": "Reading it as a performance characteristic rather than a normative constraint — the specification says servers \"**MUST NOT** rely on prior requests over the same connection to establish context,\" so a server keying state by connection is non-conforming, not merely unfashionable.",
     "distractor_rationale": "\"Stateless\" is usually a scaling adjective — it describes how a service is deployed rather than what it is forbidden to do. Applied to a protocol revision it names a rule with a MUST NOT attached."
   },
@@ -208,7 +304,11 @@
     "def": "A dated version identifier in `YYYY-MM-DD` form, naming the last date backwards-incompatible changes were made.",
     "source": "[^S1]",
     "deeper": "Revisions are marked Draft, Current, or Final, and the version is not incremented for backwards-compatible changes — \"This allows for incremental improvements while preserving interoperability.\"[^S1] As of 2026-08-23 the current revision is 2026-07-28.[^S1] Because the marking lives on one page that names the current version in a sentence, checking whether a claim has aged takes about ten seconds.",
-    "related": ["server/discover", "stateless protocol", "extension"],
+    "related": [
+      "server/discover",
+      "stateless protocol",
+      "extension"
+    ],
     "pitfall": "Treating the revision date you learned as the current one indefinitely, so mechanics that were removed keep getting designed around — the handshake and sessions are the standing example.",
     "distractor_rationale": "A date-shaped version looks like a release stamp rather than a moving pointer, and documentation written against any revision reads as present-tense truth. Nothing in a tutorial's prose signals which revision it described."
   },
@@ -217,7 +317,11 @@
     "def": "The metadata field on requests and results that carries protocol-level information such as version and capabilities.",
     "source": "[^S5]",
     "deeper": "Key names are namespaced, and \"Any prefix where the second label is `modelcontextprotocol` or `mcp` is **reserved** for MCP use.\"[^S5] Two client fields are required on every request — `io.modelcontextprotocol/protocolVersion` and `io.modelcontextprotocol/clientCapabilities` — and \"A request missing any required field is malformed; the server **MUST** reject it with JSON-RPC error code `-32602`.\"[^S5]",
-    "related": ["stateless protocol", "client capabilities", "protocol error"],
+    "related": [
+      "stateless protocol",
+      "client capabilities",
+      "protocol error"
+    ],
     "pitfall": "Assuming it is optional decoration because an SDK fills it in automatically, so an invalid-params error gets debugged as an argument problem when the metadata is the other thing that can be wrong.",
     "distractor_rationale": "A field named `_meta` with a leading underscore reads as an extension point for optional extras, which is what it is for third-party keys. The required protocol fields live in the same place and look the same."
   },
@@ -225,7 +329,11 @@
     "term": "client capabilities",
     "def": "The declaration of what a client supports, sent in `_meta` on every request.",
     "source": "[^S5]",
-    "related": ["server capabilities", "extension", "_meta"],
+    "related": [
+      "server capabilities",
+      "extension",
+      "_meta"
+    ],
     "pitfall": "Thinking of it as a one-time negotiation done at connection setup, when statelessness moved it onto every individual request — there is no earlier moment where it could have been established.",
     "distractor_rationale": "Capability negotiation is a handshake in nearly every other protocol, and MCP itself worked that way before this revision, so both prior experience and older documentation point the same wrong direction."
   },
@@ -233,7 +341,11 @@
     "term": "server capabilities",
     "def": "The declaration of what a server supports, returned in response to `server/discover`.",
     "source": "[^S8]",
-    "related": ["client capabilities", "server/discover", "extension"],
+    "related": [
+      "client capabilities",
+      "server/discover",
+      "extension"
+    ],
     "pitfall": "Expecting a server to declare capabilities to you unprompted, when under this revision it advertises them in a discovery response the client has to ask for — and asking is optional.",
     "distractor_rationale": "In a handshake-based protocol the server announces itself as part of connecting. Removing the handshake removed the moment when that announcement would have happened, and the replacement is a request rather than a greeting."
   },
@@ -242,7 +354,11 @@
     "def": "A mandatory server RPC returning the protocol versions, capabilities, and identity a server supports, in one request.",
     "source": "[^S2]",
     "deeper": "The asymmetry is the design: \"servers MUST implement this RPC,\"[^S2] while for clients \"Calling it is optional: a client is free to send any request directly and handle a version error if one comes back.\"[^S1] It is also the documented backward-compatibility probe on stdio.[^S2] For a developer debugging a connection, it is the fastest way to learn what the other side actually speaks rather than inferring it from a failure.",
-    "related": ["protocol revision", "server capabilities", "UnsupportedProtocolVersionError"],
+    "related": [
+      "protocol revision",
+      "server capabilities",
+      "UnsupportedProtocolVersionError"
+    ],
     "pitfall": "Assuming a client calls it on every connection, so its absence from a trace is read as a broken client — when a client that goes straight to `tools/list` and handles a version error is behaving exactly as specified.",
     "distractor_rationale": "It occupies the slot the handshake used to occupy and looks like the replacement for it. Mandatory-to-implement and mandatory-to-call are different properties, and only one of them holds."
   },
@@ -250,7 +366,11 @@
     "term": "UnsupportedProtocolVersionError",
     "def": "The error a server returns when it does not support the protocol version a request declared, listing the versions it does support.",
     "source": "[^S1]",
-    "related": ["protocol revision", "server/discover", "protocol error"],
+    "related": [
+      "protocol revision",
+      "server/discover",
+      "protocol error"
+    ],
     "pitfall": "Expecting it whenever a client and server are mismatched, when a client too old to attach the required metadata produces a malformed-request error instead — the version never gets far enough to be compared.",
     "distractor_rationale": "Version mismatch is the obvious diagnosis when an old client meets a new server, and it is often the underlying cause. The error you actually receive depends on which check fails first."
   },
@@ -259,7 +379,11 @@
     "def": "An explicit identifier minted by a server and passed back as an ordinary argument, carrying state across requests that the protocol no longer carries.",
     "source": "[^S6]",
     "deeper": "The base protocol makes it the only option: state spanning requests \"**MUST** be referenced by an explicit identifier the client passes on each request.\"[^S5] The tools guidance adds design constraints — validate authorization on every call, keep handles opaque because \"Handles that encode internal structure invite parsing or guessing,\" state the lifetime in the creation tool's description, and return an expiry error the model can recover from.[^S6] The consequence people underestimate: \"The model is responsible for carrying `basket_id` forward.\"[^S6]",
-    "related": ["stateless protocol", "state handle hijacking", "task handle"],
+    "related": [
+      "stateless protocol",
+      "state handle hijacking",
+      "task handle"
+    ],
     "pitfall": "Treating possession of a handle as proof of who is calling, when the security guidance states that servers \"**MUST NOT** treat possession of a state handle as authentication\" — a leaked handle is otherwise a working credential.",
     "distractor_rationale": "It behaves like a session token in every visible respect: minted by the server, held by the client, presented on each call. Session tokens genuinely are authentication, so the analogy imports a property this identifier does not have."
   },
@@ -267,7 +391,11 @@
     "term": "state handle hijacking",
     "def": "An attack where an unauthorized party obtains or guesses a state handle and uses it to reach another user's state.",
     "source": "[^S7]",
-    "related": ["state handle", "token passthrough", "consent boundary"],
+    "related": [
+      "state handle",
+      "token passthrough",
+      "consent boundary"
+    ],
     "pitfall": "Mitigating it with entropy alone — long random handles resist guessing but a leaked one still works, which is why the guidance asks servers to bind handles server-side to the authenticated user.",
     "distractor_rationale": "The attack description includes guessing, so unguessability reads as the fix. It addresses one of the two ways an attacker gets a handle and does nothing about the other."
   },
@@ -276,7 +404,11 @@
     "def": "The anti-pattern of a server accepting tokens that were not issued to it and forwarding them to a downstream API.",
     "source": "[^S7]",
     "deeper": "The guidance identifies two dimensions: audience validation failures, where a server accepts tokens \"originally issued for other services,\" and the forwarding itself, which can create a confused deputy where \"the downstream API may incorrectly trust the token as if it came from the MCP server.\"[^S7] The rule admits no exceptions: \"MCP servers **MUST NOT** accept any tokens that were not explicitly issued for the MCP server.\"[^S7]",
-    "related": ["confused deputy problem", "scope minimization", "state handle hijacking"],
+    "related": [
+      "confused deputy problem",
+      "scope minimization",
+      "state handle hijacking"
+    ],
     "pitfall": "Treating it as a convenience trade-off for a proxy that is 'just passing things along', when the guidance names it an anti-pattern with a MUST NOT, partly because \"Even if an MCP Server starts as a 'pure proxy' today, it might need to add security controls later.\"",
     "distractor_rationale": "Not re-issuing a token feels like avoiding needless indirection, and the user did authorise the downstream system. What is skipped is the audience check, which is invisible when everything works and is the thing that breaks the trust boundary when it does not."
   },
@@ -284,7 +416,11 @@
     "term": "confused deputy problem",
     "def": "An attack where a trusted intermediary is induced to use its own authority on an attacker's behalf, typically by exploiting static client IDs and cached consent.",
     "source": "[^S7]",
-    "related": ["token passthrough", "consent boundary", "scope minimization"],
+    "related": [
+      "token passthrough",
+      "consent boundary",
+      "scope minimization"
+    ],
     "pitfall": "Assuming a consent screen the user saw once still represents consent for a later request, when a cached consent cookie is exactly what lets the authorization server skip the screen for a differently-registered client.",
     "distractor_rationale": "Consent feels like a durable property of a user-and-service pair, and reusing it is what makes OAuth pleasant to use. The attack turns that reuse into the vulnerability by changing which client is asking."
   },
@@ -293,7 +429,11 @@
     "def": "Granting only the narrow permissions an operation needs, and elevating when a privileged operation is first attempted.",
     "source": "[^S7]",
     "deeper": "The documented model starts from a \"Minimal initial scope set (e.g., `mcp:tools-basic`) containing only low-risk discovery/read operations,\" with \"Incremental elevation via targeted `WWW-Authenticate` `scope=\\\"...\\\"` challenges.\"[^S7] The failure it prevents is blast radius: a stolen broad token \"enables lateral data access, privilege chaining, and difficult revocation without re-consenting the entire surface.\"[^S7]",
-    "related": ["consent boundary", "token passthrough", "read-only credential"],
+    "related": [
+      "consent boundary",
+      "token passthrough",
+      "read-only credential"
+    ],
     "pitfall": "Requesting everything up front to avoid re-prompting later, which the guidance lists among common mistakes — publishing all possible scopes and \"Bundling unrelated privileges to preempt future prompts.\"",
     "distractor_rationale": "Broad scopes genuinely reduce friction, and friction is the thing users complain about. The cost is invisible until a token leaks, at which point it determines how much is reachable."
   },
@@ -301,7 +441,11 @@
     "term": "read-only credential",
     "def": "A credential granted to a server that permits reads but not writes, bounding the worst outcome of a call to disclosure.",
     "source": "[^S7]",
-    "related": ["scope minimization", "consent boundary", "prompt injection"],
+    "related": [
+      "scope minimization",
+      "consent boundary",
+      "prompt injection"
+    ],
     "pitfall": "Treating it as full protection, when a read-only credential still permits disclosure — data can be read and then carried somewhere else by a different tool in the same session.",
     "distractor_rationale": "It removes the outcome people fear most — data being changed or destroyed — which makes the remaining risk feel handled. Exfiltration needs no write on the system being read."
   },
@@ -310,7 +454,11 @@
     "def": "The point where a human can deny a tool invocation before it reaches the system, located in the host.",
     "source": "[^S6]",
     "deeper": "Two requirements define it. The specification states there \"**SHOULD** always be a human in the loop with the ability to deny tool invocations,\"[^S6] and separately that clients **SHOULD** \"Show tool inputs to the user before calling the server, to avoid malicious or accidental data exfiltration.\"[^S6] The second is the one people drop: approving a tool by name is not the same as seeing what it was about to send.",
-    "related": ["host", "untrusted content", "scope minimization"],
+    "related": [
+      "host",
+      "untrusted content",
+      "scope minimization"
+    ],
     "pitfall": "Approving a server once at connection time and treating that as the boundary, when the requirement is about denying invocations — a per-call capability that a one-time approval removes entirely.",
     "distractor_rationale": "Connecting a server involves a real dialog with real stakes, so it feels like the security decision. It is a decision about trusting a party; the per-call gate is a decision about a specific action with specific arguments."
   },
@@ -318,7 +466,11 @@
     "term": "untrusted content",
     "def": "Text entering the model's context from a source you did not write — tool results, descriptions, annotations, and self-reported identity.",
     "source": "[^S13]",
-    "related": ["prompt injection", "tool result", "server isolation"],
+    "related": [
+      "prompt injection",
+      "tool result",
+      "server isolation"
+    ],
     "pitfall": "Scoping the question to whether the server is trustworthy, when an entirely honest server returning issue bodies or web pages is delivering text written by strangers — the tracker is not the attacker, the person who filed the ticket is.",
     "distractor_rationale": "Vendor trust is the question everyone is trained to ask about a dependency, and it has a satisfying answer. It assesses who wrote the code, not who wrote the content the code returns."
   },
@@ -327,7 +479,11 @@
     "def": "Instructions embedded in content the model reads, aimed at causing actions the user did not request.",
     "source": "[^S13]",
     "deeper": "The documented warning ties it directly to connecting servers: \"Verify you trust each server before connecting it. Servers that fetch external content can expose you to prompt injection risk.\"[^S13] The architecture does not prevent it — server isolation governs what a server can pull, not what it returns, and the returned text reaches the model as ordinary context.",
-    "related": ["untrusted content", "server isolation", "consent boundary"],
+    "related": [
+      "untrusted content",
+      "server isolation",
+      "consent boundary"
+    ],
     "pitfall": "Expecting server isolation to contain it, when the path runs through the model rather than between servers — content returned by one server shapes a call to another, with the isolation guarantee entirely intact.",
     "distractor_rationale": "Isolation is stated forcefully in the architecture and genuinely does prevent servers from seeing each other. It is a guarantee about a different path than the one this attack uses."
   },
@@ -336,7 +492,11 @@
     "def": "The architectural property that a server cannot read the conversation or see other servers, enforced by the host.",
     "source": "[^S4]",
     "deeper": "The design principle spells out five clauses: servers \"receive only necessary contextual information,\" \"Full conversation history stays with the host,\" \"Each server maintains isolation,\" \"Cross-server interactions are controlled by the host,\" and \"Host process enforces security boundaries.\"[^S4] Every clause is about what a server can obtain. None is about what it can return, which is why the return path needs its own treatment.",
-    "related": ["host", "prompt injection", "untrusted content"],
+    "related": [
+      "host",
+      "prompt injection",
+      "untrusted content"
+    ],
     "pitfall": "Reading it as a guarantee that content cannot cross between servers, when content routinely does — via the model, which reads one server's result and composes another server's call.",
     "distractor_rationale": "The principle is stated in absolute terms and it is absolutely true as written. The gap is between 'cannot see into' and 'cannot influence', which the wording does not invite you to distinguish."
   },
@@ -345,7 +505,11 @@
     "def": "An optional addition to the specification defining capabilities beyond the core protocol, identified by a namespaced string.",
     "source": "[^S8]",
     "deeper": "Two properties decide availability. \"Extensions are always disabled by default and require explicit opt-in from the developer,\" and \"SDKs can choose to implement extensions, but it's not required for protocol conformance.\"[^S8] When one side lacks support, \"the supporting side needs to either fall back to core protocol behavior or reject the request with an appropriate error if the extension is mandatory.\"[^S8] Extensions also \"evolve independently of the core protocol.\"[^S8]",
-    "related": ["Tasks extension", "core protocol", "server capabilities"],
+    "related": [
+      "Tasks extension",
+      "core protocol",
+      "server capabilities"
+    ],
     "pitfall": "Concluding that a feature described in MCP documentation is available to you, when being specified and being implemented by both your client and your server are three separate conditions.",
     "distractor_rationale": "Everything lives on the same documentation site under the same protocol name, so the core and its extensions read as one feature set. The opt-in default is stated once, in a note, away from the feature pages themselves."
   },
@@ -353,7 +517,11 @@
     "term": "core protocol",
     "def": "The part of the specification every conforming implementation must support: base messages, versioning, and message patterns.",
     "source": "[^S5]",
-    "related": ["extension", "stateless protocol", "protocol revision"],
+    "related": [
+      "extension",
+      "stateless protocol",
+      "protocol revision"
+    ],
     "pitfall": "Assuming the core is where all the important features live, when capabilities as central as long-running work were deliberately moved out of it into extensions in the 2026-07-28 revision.",
     "distractor_rationale": "\"Core\" implies both essential and complete, and for a long time tasks genuinely were in it. The move out was a decision about release cadence and optionality, not about importance."
   },
@@ -362,7 +530,11 @@
     "def": "The official extension that lets a server return a durable handle instead of blocking, for work that takes longer than a request can be held open.",
     "source": "[^S9]",
     "deeper": "Identified as `io.modelcontextprotocol/tasks`, it was moved out of the experimental core in the 2026-07-28 revision and redesigned around polling: `tasks/get` replaced a blocking result method, `tasks/update` was added for client-to-server input, and `tasks/list` was removed.[^S2] Its own documentation is direct about availability: \"Host support varies by client.\"[^S9]",
-    "related": ["task handle", "task lifecycle", "extension"],
+    "related": [
+      "task handle",
+      "task lifecycle",
+      "extension"
+    ],
     "pitfall": "Designing around it without checking that both your client and your server implement it, when extensions are off by default and SDK support is explicitly optional.",
     "distractor_rationale": "It is an official extension, documented on the specification site with a full lifecycle and a mermaid diagram, which reads as settled infrastructure. Official describes governance, not deployment."
   },
@@ -370,7 +542,11 @@
     "term": "task handle",
     "def": "The `taskId` returned in place of a final result, which the client polls against and which survives disconnection.",
     "source": "[^S9]",
-    "related": ["Tasks extension", "task lifecycle", "state handle"],
+    "related": [
+      "Tasks extension",
+      "task lifecycle",
+      "state handle"
+    ],
     "pitfall": "Treating the TTL as a limit on how long the work may take, when it governs how long the task record lives — a task can complete and then expire unretrieved, losing the result of work that actually succeeded.",
     "distractor_rationale": "A time-to-live attached to a long-running operation reads naturally as a deadline for that operation. It is a retention window for the record, and the two only coincide when someone polls promptly."
   },
@@ -379,7 +555,11 @@
     "def": "The five states a task moves through: `working`, `input_required`, `completed`, `failed`, and `cancelled`.",
     "source": "[^S9]",
     "deeper": "Three of the five end the story: \"`completed`, `failed`, and `cancelled` are terminal — once reached, the task's state does not change.\"[^S9] The interesting non-terminal state is `input_required`, which is not a failure but a pause — the task \"needs input (e.g., an elicitation for user confirmation)\" and \"The client responds via `tasks/update` — no second connection or unsolicited server-to-client messages required.\"[^S9]",
-    "related": ["task handle", "cooperative cancellation", "Tasks extension"],
+    "related": [
+      "task handle",
+      "cooperative cancellation",
+      "Tasks extension"
+    ],
     "pitfall": "Reading `input_required` as an error and restarting the original call, which re-triggers the underlying work instead of answering the question the existing task is waiting on.",
     "distractor_rationale": "Any status that is not `working` or `completed` looks like a problem, and the recovery reflex for a stuck call is to retry it. Retrying is the specific wrong move here, because the task is alive and holding the work."
   },
@@ -387,7 +567,11 @@
     "term": "cooperative cancellation",
     "def": "Cancellation as a request the server acknowledges but is not obliged to honour.",
     "source": "[^S9]",
-    "related": ["task lifecycle", "task handle", "consent boundary"],
+    "related": [
+      "task lifecycle",
+      "task handle",
+      "consent boundary"
+    ],
     "pitfall": "Designing an irreversible operation on the assumption it can be cancelled once started, when the documentation says the task \"may still reach a non-`cancelled` terminal status\" — the gate has to come before the step, not after.",
     "distractor_rationale": "Cancel buttons elsewhere generally work, and the API name promises the action rather than the request. The qualifier lives in prose beside the method, not in its signature."
   },
@@ -395,7 +579,11 @@
     "term": "polling",
     "def": "Repeatedly calling `tasks/get` with a task ID until the task reaches a terminal state.",
     "source": "[^S9]",
-    "related": ["task lifecycle", "task handle", "Tasks extension"],
+    "related": [
+      "task lifecycle",
+      "task handle",
+      "Tasks extension"
+    ],
     "pitfall": "Choosing your own polling rate instead of respecting the `pollIntervalMs` the server suggested, which either hammers the server or leaves a finished task unnoticed for longer than necessary.",
     "distractor_rationale": "The interval looks like a hint about server load, which the client is free to weigh against its own responsiveness needs. It is the server's statement about how often the underlying state can meaningfully change."
   },
@@ -403,7 +591,11 @@
     "term": "blocking call",
     "def": "A tool call that holds the request open until the work finishes and returns the final result directly.",
     "source": "[^S9]",
-    "related": ["Tasks extension", "task handle", "stream resumability"],
+    "related": [
+      "Tasks extension",
+      "task handle",
+      "stream resumability"
+    ],
     "pitfall": "Fixing a timeout by raising it, which moves the failure to whichever intermediary closes the connection next rather than removing the dependence on a connection you do not control.",
     "distractor_rationale": "The error names a timeout, so a larger timeout is the literal fix, and it works for a while. The underlying issue is that connection lifetime is set by parties other than you — proxies, clients, sleeping laptops."
   },
@@ -411,7 +603,11 @@
     "term": "stream resumability",
     "def": "The removed ability to resume a broken response stream and redeliver missed messages.",
     "source": "[^S2]",
-    "related": ["blocking call", "task handle", "protocol revision"],
+    "related": [
+      "blocking call",
+      "task handle",
+      "protocol revision"
+    ],
     "pitfall": "Writing retry logic that assumes a dropped stream can be picked up, when the 2026-07-28 revision requires that clients \"re-issue it as a new request with a new request ID\" — and re-issuing may repeat any side effects the first attempt had.",
     "distractor_rationale": "Resumable streams existed in earlier revisions and are standard in SSE generally, with `Last-Event-ID` as a well-known mechanism. Its removal is a line in a changelog, invisible to anyone working from a library's general documentation."
   },
@@ -419,7 +615,11 @@
     "term": "Streamable HTTP",
     "def": "The HTTP-based MCP transport, which as of the 2026-07-28 revision carries no session identifier and no resumable stream.",
     "source": "[^S2]",
-    "related": ["stdio transport", "stream resumability", "stateless protocol"],
+    "related": [
+      "stdio transport",
+      "stream resumability",
+      "stateless protocol"
+    ],
     "pitfall": "Carrying over knowledge of the session header from earlier revisions, when both protocol-level sessions and the header were removed — leaving code that sets a header nothing reads.",
     "distractor_rationale": "The transport kept its name across the change, so documentation and libraries referring to Streamable HTTP span both the version that had sessions and the one that does not."
   },
@@ -427,7 +627,11 @@
     "term": "stdio transport",
     "def": "The transport where a server runs as a local process communicating over standard input and output.",
     "source": "[^S12]",
-    "related": ["Streamable HTTP", "local server", "stateless protocol"],
+    "related": [
+      "Streamable HTTP",
+      "local server",
+      "stateless protocol"
+    ],
     "pitfall": "Treating the process lifetime as a session boundary, when the specification states that an open connection \"is not a conversation or session\" and that clients \"**SHOULD NOT** use an individual task, thread, or conversation as the lifetime boundary for the stdio process.\"",
     "distractor_rationale": "A process you launched, that lives as long as your session and exits with it, is the most session-like thing in the whole architecture. The protocol's refusal to treat it that way is counterintuitive precisely because the correlation usually holds."
   },
@@ -436,7 +640,11 @@
     "def": "An MCP server that runs on the user's own machine, with the privileges of the user who launched it.",
     "source": "[^S7]",
     "deeper": "The security guidance treats compromise here as its own attack class: local servers \"may have direct access to the user's system and may be accessible to other processes running on the user's machine.\"[^S7] The listed risks include \"Arbitrary code execution\" with client privileges and \"No visibility. Users have no insight into what commands are being executed.\"[^S7] The client-side duty is a consent dialog showing \"the exact command that will be executed, without truncation.\"[^S7]",
-    "related": ["stdio transport", "consent boundary", "untrusted content"],
+    "related": [
+      "stdio transport",
+      "consent boundary",
+      "untrusted content"
+    ],
     "pitfall": "Reading past a launch command like `npx -y some-package` because it looks like ordinary install boilerplate, when it fetches and runs code you have not seen with your own privileges.",
     "distractor_rationale": "That exact command shape appears in the setup instructions for tools people install constantly without incident, so it reads as a package manager invocation rather than as arbitrary code execution."
   },
@@ -444,7 +652,11 @@
     "term": "JSON-RPC",
     "def": "The message format MCP is built on, defining request, response, and notification shapes.",
     "source": "[^S5]",
-    "related": ["protocol error", "_meta", "core protocol"],
+    "related": [
+      "protocol error",
+      "_meta",
+      "core protocol"
+    ],
     "pitfall": "Assuming familiarity with plain JSON-RPC covers MCP requests, when MCP adds required `_meta` fields and a required `resultType` that plain JSON-RPC knows nothing about.",
     "distractor_rationale": "The envelope is genuinely standard JSON-RPC 2.0 and validates as such, so a request can look completely correct while missing everything MCP layers on top."
   },
@@ -452,7 +664,11 @@
     "term": "resultType",
     "def": "The required field on every result indicating what kind of result it is, such as `complete` or `input_required`.",
     "source": "[^S5]",
-    "related": ["input-required result", "tools/call", "task handle"],
+    "related": [
+      "input-required result",
+      "tools/call",
+      "task handle"
+    ],
     "pitfall": "Assuming a result is final because it arrived, when a result may be an interim one asking for more input — and treating it as final means silently dropping the second half of the interaction.",
     "distractor_rationale": "A response to a request is the end of the exchange in ordinary request-response, and it was the end in earlier MCP revisions too. Polymorphic results are a newer shape that older client code has no branch for."
   },
@@ -461,7 +677,11 @@
     "def": "An interim result signalling that a server needs more information before it can complete the request.",
     "source": "[^S6]",
     "deeper": "It carries an `inputRequests` field with the requests for what is needed, and the client answers by retrying the original request with `inputResponses` and any `requestState` the server supplied.[^S6] One mechanical detail matters when implementing: \"the JSON-RPC `id` **MUST** be different between the initial request and the retry.\"[^S6] This pattern replaced server-initiated requests in the 2026-07-28 revision.[^S2]",
-    "related": ["resultType", "task lifecycle", "tools/call"],
+    "related": [
+      "resultType",
+      "task lifecycle",
+      "tools/call"
+    ],
     "pitfall": "Handling it by starting a fresh unrelated call, losing the `requestState` that lets the server resume where it paused — so the server has no way to connect the answer to the question.",
     "distractor_rationale": "It looks like a failed call that needs to be redone, and redoing a call from scratch is the standard recovery. The state that must be carried forward is in a field whose purpose is not obvious from its name."
   },
@@ -469,7 +689,11 @@
     "term": "cache scope",
     "def": "The field on a cacheable result stating whether shared intermediaries may cache it, `public` or `private`.",
     "source": "[^S2]",
-    "related": ["tools/list", "stateless protocol", "server capabilities"],
+    "related": [
+      "tools/list",
+      "stateless protocol",
+      "server capabilities"
+    ],
     "pitfall": "Leaving a result marked public when it varies by the caller's authorization, so one caller's tool list or resource contents can be served to another from a shared cache.",
     "distractor_rationale": "Tool lists feel like static server metadata, and for unauthenticated servers they are. The specification explicitly permits the set to vary by authorization, which makes the caching decision a per-server judgment rather than a default."
   },
@@ -477,7 +701,11 @@
     "term": "deterministic order",
     "def": "Returning the same ordering across requests when the underlying set has not changed, which servers should do for tool lists.",
     "source": "[^S6]",
-    "related": ["tools/list", "cache scope", "tool definition"],
+    "related": [
+      "tools/list",
+      "cache scope",
+      "tool definition"
+    ],
     "pitfall": "Building a list from an unordered map or a directory scan, producing a stable-looking order that reshuffles on restart and quietly costs every downstream prompt cache hit.",
     "distractor_rationale": "Order looks cosmetic when the client is going to present the tools its own way, and the reshuffling is invisible locally because a single process usually iterates consistently."
   },
@@ -485,7 +713,11 @@
     "term": "clientInfo",
     "def": "The optional self-reported name and version of the client, sent in request metadata.",
     "source": "[^S5]",
-    "related": ["serverInfo", "_meta", "consent boundary"],
+    "related": [
+      "serverInfo",
+      "_meta",
+      "consent boundary"
+    ],
     "pitfall": "Using it to decide what a server exposes, when the specification says these fields are \"not verified by the protocol\" and implementations \"**SHOULD NOT** rely on them for security decisions\" — the value is whatever the caller chose to send.",
     "distractor_rationale": "It arrives in protocol-level metadata alongside genuinely enforced fields like the version, which lends it an air of being checked. Nothing in its position distinguishes a verified field from a self-reported one."
   },
@@ -493,7 +725,11 @@
     "term": "serverInfo",
     "def": "The optional self-reported name and version of the server, returned in result metadata.",
     "source": "[^S5]",
-    "related": ["clientInfo", "tool annotations", "untrusted content"],
+    "related": [
+      "clientInfo",
+      "tool annotations",
+      "untrusted content"
+    ],
     "pitfall": "Using it to disambiguate tools across servers, when the specification warns that it \"is not guaranteed to be unique across servers and **SHOULD NOT** be relied upon for disambiguation.\"",
     "distractor_rationale": "It is the only name a server offers about itself, so it looks like the natural key when two servers collide on a tool name. Uniqueness is never established by anything."
   },
@@ -501,7 +737,11 @@
     "term": "tool name",
     "def": "The unique identifier for a tool, scoped for uniqueness to a single server.",
     "source": "[^S6]",
-    "related": ["namespacing", "tool definition", "serverInfo"],
+    "related": [
+      "namespacing",
+      "tool definition",
+      "serverInfo"
+    ],
     "pitfall": "Assuming names are unique across everything connected, when a client aggregating several servers \"**MAY** encounter naming collisions (for example, two servers each exposing a `search` tool)\" and must implement its own disambiguation.",
     "distractor_rationale": "Uniqueness is stated in the specification, and the qualifier — within one server — is easy to read past when you are looking at a single server's definitions. The collision only appears once a second server is connected."
   },
@@ -509,7 +749,11 @@
     "term": "x-mcp-header",
     "def": "A schema annotation designating a tool parameter to be mirrored into an HTTP header, so intermediaries can route on it without parsing the body.",
     "source": "[^S6]",
-    "related": ["input schema", "Streamable HTTP", "tool definition"],
+    "related": [
+      "input schema",
+      "Streamable HTTP",
+      "tool definition"
+    ],
     "pitfall": "Marking a sensitive parameter with it — the specification warns that developers \"**SHOULD NOT** mark sensitive parameters (passwords, API keys, tokens, PII) with `x-mcp-header`, as header values are visible to network intermediaries.\"",
     "distractor_rationale": "Headers are where authorization normally travels, so putting a credential-shaped value in one feels idiomatic. The purpose here is the opposite — exposing a value to intermediaries so they can act on it."
   },
@@ -517,7 +761,11 @@
     "term": "the new-hire test",
     "def": "A heuristic for writing a tool description: state the context you would make explicit for someone joining your team.",
     "source": "[^S10]",
-    "related": ["tool description", "input schema", "agent-computer interface"],
+    "related": [
+      "tool description",
+      "input schema",
+      "agent-computer interface"
+    ],
     "pitfall": "Applying it to the summary line only, leaving parameters documented as 'the query' or 'the ID' — where most of the implicit context actually hides.",
     "distractor_rationale": "The advice is phrased as being about descriptions, and the description is the field named `description`. The same source separately asks that \"input parameters should be unambiguously named,\" which is the parameter-level half of the same idea."
   },
@@ -526,7 +774,11 @@
     "def": "The framing that the surface between a model and a system is a designed interface deserving the attention given to a user interface.",
     "source": "[^S11]",
     "deeper": "The essay that names it is direct about the effort implied: \"Tool definitions and specifications should be given just as much prompt engineering attention as your overall prompts,\" backed by the report that \"While building our agent for SWE-bench, we actually spent more time optimizing our tools than the overall prompt.\"[^S11] Published 2024-12-19, it predates the current protocol revision by well over a year — it is cited here for a design principle, not for protocol mechanics.",
-    "related": ["tool description", "the new-hire test", "tool definition"],
+    "related": [
+      "tool description",
+      "the new-hire test",
+      "tool definition"
+    ],
     "pitfall": "Treating tool design as an export step — mechanically wrapping existing endpoints — when the guidance warns specifically against tools \"that merely wrap existing software functionality or API endpoints.\"",
     "distractor_rationale": "An API is already a well-designed interface for its intended consumer, so exposing it feels like reuse rather than a design task. Agents have different affordances than the code the API was designed for."
   },
@@ -534,7 +786,11 @@
     "term": "tool count",
     "def": "The number of tools loaded into the model's context, each costing description tokens on every request.",
     "source": "[^S10]",
-    "related": ["namespacing", "tool description", "reach"],
+    "related": [
+      "namespacing",
+      "tool description",
+      "reach"
+    ],
     "pitfall": "Adding a server for one useful tool and inheriting its other twenty, which spend context on every request and widen what an injected instruction could reach.",
     "distractor_rationale": "Unused tools feel free — you simply do not call them. Their names and descriptions are loaded regardless, because the model needs them to decide, so the cost is paid whether or not the tool is ever used."
   },
@@ -542,7 +798,11 @@
     "term": "worked example",
     "def": "In this course, a fully demonstrated case where each step states why it is taken, before the reader attempts a faded version.",
     "source": "https://www.cmu.edu/teaching/designteach/teach/instructionalstrategies/lectures.html",
-    "related": ["tool description", "the new-hire test", "consent boundary"],
+    "related": [
+      "tool description",
+      "the new-hire test",
+      "consent boundary"
+    ],
     "pitfall": "Reading the worked example as the answer to copy rather than as a demonstration of the decision procedure, so the reasoning does not transfer to a system with different facts.",
     "distractor_rationale": "A complete example with a stated conclusion looks like a template, and templates are usually the fastest route. The transferable part is the sequence of questions, which is easy to skip past on the way to the result."
   },
@@ -550,7 +810,11 @@
     "term": "terminal task",
     "def": "The real action this course ends in: completing one tool call in your own environment behind a permission boundary you wrote down first.",
     "source": "[^S6]",
-    "related": ["consent boundary", "reach", "read-only credential"],
+    "related": [
+      "consent boundary",
+      "reach",
+      "read-only credential"
+    ],
     "pitfall": "Declaring the boundary after the call rather than before, which turns it into a description of what happened instead of a constraint that could have refused something.",
     "distractor_rationale": "Writing it up afterwards produces the same document and takes less time, and the call usually goes fine. A gate that has never been in a position to fire has not been tested."
   },
@@ -558,7 +822,11 @@
     "term": "elicitation",
     "def": "A server's request for information from the user, delivered as part of an interim result rather than as a separate server-initiated call.",
     "source": "[^S6]",
-    "related": ["input-required result", "task lifecycle", "resultType"],
+    "related": [
+      "input-required result",
+      "task lifecycle",
+      "resultType"
+    ],
     "pitfall": "Expecting the server to reach out to the client on its own, when under the 2026-07-28 revision the request arrives inside a result the client already asked for, and the answer comes back on a retry.",
     "distractor_rationale": "Earlier revisions did use server-initiated requests, and a server asking a question intuitively implies the server speaking first. The current pattern inverts that — the server can only answer, and it answers with a question."
   },
@@ -566,7 +834,11 @@
     "term": "durable handle",
     "def": "An identifier that remains valid across disconnection and client restart, allowing work to be recovered rather than repeated.",
     "source": "[^S9]",
-    "related": ["task handle", "state handle", "blocking call"],
+    "related": [
+      "task handle",
+      "state handle",
+      "blocking call"
+    ],
     "pitfall": "Assuming durability of the identifier means durability of the result, when a completed task can still expire unretrieved after its TTL — the handle survived, and the answer did not.",
     "distractor_rationale": "\"Durable\" is doing a specific job — the handle outlives the connection — which reads as a general promise that nothing will be lost. Retention of the record is a separate, time-bounded property."
   },
@@ -574,7 +846,11 @@
     "term": "capability negotiation",
     "def": "The process by which client and server establish which features are in play, conducted per request rather than once per connection.",
     "source": "[^S4]",
-    "related": ["client capabilities", "server capabilities", "extension"],
+    "related": [
+      "client capabilities",
+      "server capabilities",
+      "extension"
+    ],
     "pitfall": "Picturing it as a setup phase, when statelessness removed the phase — capabilities ride in each request's metadata, and the only up-front option is an optional discovery call.",
     "distractor_rationale": "Negotiation implies a conversation with a beginning, and every protocol most developers have used does it once at connection time. MCP did too, until this revision removed the moment it happened in."
   },
@@ -582,7 +858,11 @@
     "term": "graceful degradation",
     "def": "Falling back to core protocol behaviour when one side does not support an extension, rather than failing.",
     "source": "[^S8]",
-    "related": ["extension", "Tasks extension", "capability negotiation"],
+    "related": [
+      "extension",
+      "Tasks extension",
+      "capability negotiation"
+    ],
     "pitfall": "Assuming a missing extension produces a clear error, when the documented expectation is a fallback — so a feature can simply be absent, with nothing in the logs to explain why it never appeared.",
     "distractor_rationale": "Unsupported features usually announce themselves through an error, which is how you learn they were unsupported. Silent fallback is the better user experience and the harder debugging story."
   },
@@ -590,7 +870,11 @@
     "term": "confirmation prompt",
     "def": "The dialog through which a client asks a user to approve a tool invocation before it is sent.",
     "source": "[^S6]",
-    "related": ["consent boundary", "host", "untrusted content"],
+    "related": [
+      "consent boundary",
+      "host",
+      "untrusted content"
+    ],
     "pitfall": "Approving on the tool's name alone, when the specification separately asks clients to \"Show tool inputs to the user before calling the server\" — a safe-sounding tool with a dangerous argument passes a name-only review.",
     "distractor_rationale": "The tool name is the prominent thing in most dialogs and it is what you recognise, so review naturally happens at that level. The arguments are the part that varies per call and the part an injection would control."
   },
@@ -598,7 +882,11 @@
     "term": "one real tool call",
     "def": "The course's measurable endpoint: an agent reaching a system it could not reach before, through a gate you set deliberately.",
     "source": "[^S13]",
-    "related": ["terminal task", "reach", "consent boundary"],
+    "related": [
+      "terminal task",
+      "reach",
+      "consent boundary"
+    ],
     "pitfall": "Counting a successful call as the finish line without checking which gate fired, so a boundary that was never exercised gets recorded as one that works.",
     "distractor_rationale": "The call succeeding is the visible, satisfying outcome and it does prove the connection works. Whether any control engaged is a separate question that success does not answer."
   },
@@ -606,7 +894,11 @@
     "term": "self-reported identity",
     "def": "Name and version fields a client or server sends about itself, intended for display and logging rather than for trust decisions.",
     "source": "[^S5]",
-    "related": ["clientInfo", "serverInfo", "untrusted content"],
+    "related": [
+      "clientInfo",
+      "serverInfo",
+      "untrusted content"
+    ],
     "pitfall": "Building an allowlist keyed on these fields, when nothing verifies them — an allowlist checking a string the caller chose is a check that always passes for anyone who reads the documentation.",
     "distractor_rationale": "Identity fields in a protocol header are usually populated by something authoritative, and these look identical to fields that would be. The specification's warning about them sits in a note beneath the table that defines them."
   }
