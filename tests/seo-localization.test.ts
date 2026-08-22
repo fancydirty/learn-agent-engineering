@@ -97,11 +97,13 @@ describe("sitemap", () => {
 });
 
 describe("robots", () => {
-  it("exists and points at the sitemap", () => {
-    expect(existsSync(join(process.cwd(), "app/robots.ts"))).toBe(true);
-    const source = readFileSync(join(process.cwd(), "app/robots.ts"), "utf8");
-    expect(source).toContain("sitemap");
-    expect(source).toContain("SITE_URL");
+  it("is served as a static public file pointing at the sitemap", () => {
+    // app/robots.ts would collide with public/robots.txt (Next.js E212), so the
+    // static file stays the single source.
+    expect(existsSync(join(process.cwd(), "app/robots.ts"))).toBe(false);
+    const source = readFileSync(join(process.cwd(), "public/robots.txt"), "utf8");
+    expect(source).toContain("Sitemap:");
+    expect(source).toContain(SITE_URL);
   });
 });
 
