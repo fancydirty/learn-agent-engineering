@@ -7,6 +7,7 @@ import { groupCoursesByDomain } from "@/lib/domains";
 import { coursesLocaleLinks } from "@/lib/i18n";
 import { isLocale, LOCALES, siteCopyFor } from "@/lib/locales";
 import { coursesDir } from "@/lib/paths";
+import { libraryAlternates } from "@/lib/seo";
 
 export function generateStaticParams() {
   return LOCALES.map((info) => ({ locale: info.code }));
@@ -16,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const copy = siteCopyFor(locale).reader.library;
-  return { title: copy.title, description: copy.intro };
+  return { title: copy.title, description: copy.intro, alternates: libraryAlternates(locale) };
 }
 
 export default async function CoursesPage({ params }: { params: Promise<{ locale: string }> }) {

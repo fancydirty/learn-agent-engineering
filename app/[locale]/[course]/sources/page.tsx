@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { findCourseFamily, findCourseVariant, scanCourseFamilies } from "@/lib/courses";
@@ -6,6 +7,7 @@ import { coursesDir } from "@/lib/paths";
 import { parseFrontmatter } from "@/lib/frontmatter";
 import { localePath, samePageLocaleLinks } from "@/lib/i18n";
 import { isLocale, siteCopyFor } from "@/lib/locales";
+import { localizedAlternates } from "@/lib/seo";
 import { CourseNav } from "@/components/course-nav";
 import { CourseMarkdown } from "@/components/course-markdown";
 import { Breadcrumbs } from "@/components/breadcrumbs";
@@ -15,6 +17,20 @@ export function generateStaticParams() {
   return scanCourseFamilies(coursesDir()).flatMap((family) =>
     family.variants.filter((variant) => variant.hasSources).map((variant) => ({ locale: variant.locale, course: family.slug })),
   );
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; course: string }> }): Promise<Metadata> {
+  const { locale, course } = await params;
+  if (!isLocale(locale)) return {};
+  const family = findCourseFamily(scanCourseFamilies(coursesDir()), course);
+  const variant = family && findCourseVariant(family, locale);
+  if (!family || !variant || !variant.hasSources) return {};
+  const copy = siteCopyFor(locale).reader;
+  return {
+    title: `${copy.sources.breadcrumbSelf} · ${variant.title}`,
+    description: variant.intro,
+    alternates: localizedAlternates(family, { kind: "sources" }, locale),
+  };
 }
 
 export default async function SourcesPage({

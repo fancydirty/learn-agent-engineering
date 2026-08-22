@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import GithubSlugger from "github-slugger";
@@ -9,6 +10,7 @@ import { glossarySourceRef } from "@/lib/glossary-source";
 import { loadGlossaryTerms } from "@/lib/glossary-load";
 import { localePath, samePageLocaleLinks } from "@/lib/i18n";
 import { isLocale, siteCopyFor } from "@/lib/locales";
+import { localizedAlternates } from "@/lib/seo";
 import { CourseNav } from "@/components/course-nav";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { GlossaryTargetHighlight } from "@/components/glossary-target-highlight";
@@ -18,6 +20,20 @@ export function generateStaticParams() {
   return scanCourseFamilies(coursesDir()).flatMap((family) =>
     family.variants.filter((variant) => variant.hasGlossary).map((variant) => ({ locale: variant.locale, course: family.slug })),
   );
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; course: string }> }): Promise<Metadata> {
+  const { locale, course } = await params;
+  if (!isLocale(locale)) return {};
+  const family = findCourseFamily(scanCourseFamilies(coursesDir()), course);
+  const variant = family && findCourseVariant(family, locale);
+  if (!family || !variant || !variant.hasGlossary) return {};
+  const copy = siteCopyFor(locale).reader;
+  return {
+    title: `${copy.glossary.title} · ${variant.title}`,
+    description: copy.glossary.subtitle(loadGlossaryTerms(variant.dir).length, variant.title),
+    alternates: localizedAlternates(family, { kind: "glossary" }, locale),
+  };
 }
 
 export default async function GlossaryPage({

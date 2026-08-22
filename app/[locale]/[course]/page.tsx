@@ -18,6 +18,7 @@ import { loadGlossaryTerms } from "@/lib/glossary-load";
 import { localePath, samePageLocaleLinks } from "@/lib/i18n";
 import { isLocale, siteCopyFor } from "@/lib/locales";
 import { coursesDir } from "@/lib/paths";
+import { localizedAlternates } from "@/lib/seo";
 import { tocFromMarkdown } from "@/lib/toc";
 
 export function generateStaticParams() {
@@ -31,8 +32,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   if (!isLocale(locale)) return {};
   const family = findCourseFamily(scanCourseFamilies(coursesDir()), course.replace(/^learn-/, ""));
   const variant = family && findCourseVariant(family, locale);
-  if (!variant) return {};
-  return { title: variant.title, description: variant.intro };
+  if (!family || !variant) return {};
+  return { title: variant.title, description: variant.intro, alternates: localizedAlternates(family, { kind: "course" }, locale) };
 }
 
 export default async function CoursePage({ params }: { params: Promise<{ locale: string; course: string }> }) {

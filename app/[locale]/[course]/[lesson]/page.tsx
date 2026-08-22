@@ -24,6 +24,7 @@ import { stripLessonNumberPrefix } from "@/lib/lesson-title";
 import { loadGlossaryTerms } from "@/lib/glossary-load";
 import { isLocale, siteCopyFor } from "@/lib/locales";
 import { coursesDir } from "@/lib/paths";
+import { localizedAlternates } from "@/lib/seo";
 import { tocFromMarkdown } from "@/lib/toc";
 
 const SITE_URL = "https://learn.agentmentor.dev";
@@ -42,8 +43,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const family = findCourseFamily(scanCourseFamilies(coursesDir()), course);
   const variant = family && findCourseVariant(family, locale);
   const current = variant?.lessons.find((item) => item.slug === lesson);
-  if (!variant || !current) return {};
-  return { title: `${stripLessonNumberPrefix(current.title)} · ${variant.title}`, description: variant.intro };
+  if (!family || !variant || !current) return {};
+  return {
+    title: `${stripLessonNumberPrefix(current.title)} · ${variant.title}`,
+    description: variant.intro,
+    alternates: localizedAlternates(family, { kind: "lesson", lesson: current.slug }, locale),
+  };
 }
 
 export default async function LessonPage({ params }: { params: Promise<{ locale: string; course: string; lesson: string }> }) {
