@@ -162,10 +162,10 @@ This gate is separate from the Stage 1 "ask when information is insufficient" ru
 - Exercises are always framed as "in your own IDE/terminal/on paper" — never assume an embedded runtime environment; split into Level 1/2 (Level 3 optional).
 
 ## Stage 7 Delivery — definition of done: correct directory shape
-- `lessons/learn-<slug>/`: `README.md` (follows readme-template) + `NN-*.md` (two-digit numbering) + `sources.md` + `glossary.json` + `agentmentor.json`.
+- `lessons/learn-<slug>/<locale>/`: `README.md` (follows readme-template) + `NN-*.md` (two-digit numbering) + `sources.md` + `glossary.json` + `agentmentor.json`. The `<locale>` directory is one of the registered launch locales (`en`, `zh`, `ja`, `ko`, `es`, `pt-BR`); `logo.svg` is shared at the family root `lessons/learn-<slug>/`.
 - **Confirm the path (do this before writing files)**: use `pwd` to confirm you're at the skill repo root, and resolve the target into an absolute path. **Copy-pasteable path template**:
   ```bash
-  courseDir="<skill repo root>/agent-mentor/skills/generate-course-from-topic/lessons/learn-<slug>"
+  courseDir="<skill repo root>/agent-mentor/skills/generate-course-from-topic/lessons/learn-<slug>/<locale>"
   ```
   **Before writing any file, first print the resolved `courseDir` absolute path and confirm it sits inside the skill's install directory**. This workspace may have both an outer `agent-mentor/` and an inner `agent-mentor-skill/agent-mentor/` at the same time — don't let a relative path write the course into the outer sibling directory by mistake. Run `mkdir -p "$courseDir"` then immediately `test -d "$courseDir"`; right after writing the first file, run `ls -la "$courseDir"` to confirm `README.md` or the lesson files are in **the same** directory you'll pass to `course-guard.mjs`. If guard reports missing core files, first check whether they were accidentally written to a same-named sibling path before deciding to move or rewrite them.
 - **Minimal complete skeleton first**: weak models, subagents, or non-interactive runs most easily get stuck at "directory created but course not written." Once the lesson count is decided, write out a minimal-but-valid version of `README.md`, all `NN-*.md` files, `sources.md`, `glossary.json`, and `agentmentor.json` all at once, even if the content is still rough. **Skeleton file checklist**:

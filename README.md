@@ -32,13 +32,13 @@ agent-mentor/skills/generate-course-from-topic/
 └── lessons/
 ```
 
-第一门课程位于：
+第一门课程位于（family → locale 变体结构）：
 
 ```text
-agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-skills-reuse/
+agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-skills-reuse/zh
 ```
 
-公开路由去掉 `learn-` 前缀，因此课程地址是 `/agent-skills-reuse`。
+公开路由去掉 `learn-` 前缀并以语言开头，因此课程地址是 `/zh/agent-skills-reuse`。
 
 ## 本地运行
 

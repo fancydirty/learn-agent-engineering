@@ -19,9 +19,9 @@ This repository reuses Agent Mentor's original course-authoring system: the same
 
 Resolve the repository root first. Write the course to:
 
-`<repo>/agent-mentor/skills/generate-course-from-topic/lessons/learn-<slug>/`
+`<repo>/agent-mentor/skills/generate-course-from-topic/lessons/learn-<slug>/<locale>/`
 
-The public route strips `learn-`: `learn-agent-harness-engineering` becomes `/agent-harness-engineering`.
+One `learn-<slug>` family holds one subdirectory per locale (`en`, `zh`, `ja`, `ko`, `es`, `pt-BR`); author one source locale first, translations become sibling variants. The public route strips `learn-` and is locale-first: `learn-agent-skills-reuse/zh` serves `/zh/agent-skills-reuse`. The shared `logo.svg` lives at the family root.
 
 Create a minimal complete skeleton before deep polishing: `README.md`, all planned `NN-*.md` files, `sources.md`, `glossary.json`, `agentmentor.json`, and `logo.svg`. Verify the absolute path before running the guard.
 
