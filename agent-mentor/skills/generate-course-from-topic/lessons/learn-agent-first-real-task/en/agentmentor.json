@@ -51,8 +51,7 @@
   "status": {
     "stage": "ready",
     "guardCommand": "NODE_OPTIONS=--dns-result-order=ipv4first node scripts/course-guard.mjs agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-first-real-task/en",
-    "guardStatus": "pass",
-    "guardEnvironmentNote": "The guard passes cleanly, but on this machine it must be run with NODE_OPTIONS=--dns-result-order=ipv4first. Without it the URL check reports 'fetch failed' for platform.claude.com and intermittently code.claude.com. That is an environment fault, not a bad source: this host has no working IPv6 route (curl -6 to platform.claude.com times out, curl -4 returns 200 from 160.79.104.10), and those hosts resolve to an IPv6 address first, so Node's fetch resets the connection before the guard's GET fallback can run. All twelve source URLs were confirmed to return HTTP 200 over IPv4 on 2026-08-23. On a host with working IPv6 the plain command should pass unchanged."
+    "guardStatus": "pass"
   },
   "qualitySelfReview": {
     "diagramUse": "One mermaid diagram in the whole course, in Lesson 2, showing a task splitting into definition of done, work area, and approval gates before converging on a gradeable run. It earns its place because the three parts are a decomposition rather than a sequence, and prose kept implying an ordering that does not exist. Lesson 4's four trail checks are a table instead, because they are independent lookups with no structural relationship to draw. Lesson 3's failure patterns are prose because each needs a paragraph of mechanism that would not fit in a node. Lesson 1's chat-versus-run contrast is a two-column table since it is a comparison across fixed dimensions. Lesson 3 uses an agentmentor-hotspot as its one interactive diagram, where clicking the node at which a run stopped being trustworthy is the actual judgment being taught; no decorative diagram was added anywhere.",

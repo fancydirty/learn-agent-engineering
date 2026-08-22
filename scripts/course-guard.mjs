@@ -6,6 +6,17 @@ import { fileURLToPath } from "node:url";
 import { basename, dirname, isAbsolute, join, resolve } from "node:path";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+
+// Node resolves IPv6 first by default. On a host with no working IPv6 route every
+// source URL on an IPv6-advertising domain then fails (or redirects to a
+// region-block page), failing the guard on sources that are actually reachable.
+// Preferring IPv4 is safe everywhere: dual-stack hosts still connect normally.
+try {
+  const dns = await import("node:dns");
+  dns.setDefaultResultOrder("ipv4first");
+} catch {
+  // Older runtimes without the API keep Node's default ordering.
+}
 const DEFAULT_MAX_LINES = 300;
 
 if (process.argv.includes("--help")) {
@@ -1780,19 +1791,25 @@ function comparableUrl(url) {
   }
 }
 
-async function requestUrl(url, fetchImpl, timeoutMs) {
-  const signal = typeof AbortSignal !== "undefined" && AbortSignal.timeout
+// Each attempt gets its OWN abort signal. Sharing one across HEAD and the GET
+// fallback meant that once the HEAD exhausted the timeout the signal was already
+// aborted, so the fallback died instantly and a reachable URL was reported dead.
+function freshSignal(timeoutMs) {
+  return typeof AbortSignal !== "undefined" && AbortSignal.timeout
     ? AbortSignal.timeout(timeoutMs)
     : undefined;
+}
+
+async function requestUrl(url, fetchImpl, timeoutMs) {
   let res;
   try {
-    res = await fetchImpl(url, { method: "HEAD", redirect: "follow", signal });
+    res = await fetchImpl(url, { method: "HEAD", redirect: "follow", signal: freshSignal(timeoutMs) });
   } catch {
-    res = await fetchImpl(url, { method: "GET", redirect: "follow", signal });
+    res = await fetchImpl(url, { method: "GET", redirect: "follow", signal: freshSignal(timeoutMs) });
   }
   if ([400, 403, 404, 405].includes(res.status)) {
     try {
-      res = await fetchImpl(url, { method: "GET", redirect: "follow", signal });
+      res = await fetchImpl(url, { method: "GET", redirect: "follow", signal: freshSignal(timeoutMs) });
     } catch {
       // Keep HEAD result as diagnosable failure.
     }
