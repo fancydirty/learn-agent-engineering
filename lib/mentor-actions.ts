@@ -1,4 +1,5 @@
 import type { Lang } from "./i18n";
+import { bilingualLang, type BilingualLang } from "./locales";
 import { promptScaffold, field } from "./prompt-copy";
 
 export interface MentorActionContext {
@@ -34,7 +35,7 @@ export type MentorActionPart =
 
 // Builder-specific copy, double-keyed like site-copy.ts. Shared field/mode scaffolding
 // comes from prompt-copy.ts; the mentor-action-specific phrasing lives here.
-const COPY: Record<Lang, {
+const COPY: Record<BilingualLang, {
   copyToAgent: string;
   defaultRules: string[];
   interactionRules: string;
@@ -122,11 +123,11 @@ export function parseMentorActionBlock(src: string, context: MentorActionContext
   const lesson = scalars.get("lesson") || context.lessonFile;
   return {
     mode: scalars.get("mode") || "mentor_action",
-    label: scalars.get("label") || COPY[lang].copyToAgent,
+    label: scalars.get("label") || COPY[bilingualLang(lang)].copyToAgent,
     description: scalars.get("description") || "",
     purpose: scalars.get("purpose") || "",
     lesson,
-    rules: lists.get("rules")?.length ? lists.get("rules")! : COPY[lang].defaultRules,
+    rules: lists.get("rules")?.length ? lists.get("rules")! : COPY[bilingualLang(lang)].defaultRules,
     courseUrl: context.courseUrl,
     courseTitle: context.courseTitle,
     lessonTitle: context.lessonTitle,
@@ -150,7 +151,7 @@ export function splitMentorActions(md: string, context: MentorActionContext, lan
 
 export function buildMentorActionPrompt(action: MentorAction, lang: Lang): string {
   const s = promptScaffold(lang);
-  const t = COPY[lang];
+  const t = COPY[bilingualLang(lang)];
   return [
     s.enterMode(action.mode),
     "",
@@ -172,7 +173,7 @@ export function buildMentorActionPrompt(action: MentorAction, lang: Lang): strin
 }
 
 export function buildExerciseMentorAction(input: ExerciseMentorActionInput): MentorAction {
-  const t = COPY[input.lang];
+  const t = COPY[bilingualLang(input.lang)];
   const level = input.level.trim() || t.exerciseFallback(input.exerciseIndex + 1);
   const checks = input.checks.length
     ? [t.completionCriteria, ...input.checks.map((check) => `- ${check}`)].join("\n")

@@ -1,5 +1,6 @@
 import type { MentorActionContext } from "./mentor-actions";
 import type { Lang } from "./i18n";
+import { bilingualLang, type BilingualLang } from "./locales";
 import { promptScaffold, promptContextLines, field, readFilesLine } from "./prompt-copy";
 
 export type CodeExerciseLanguage =
@@ -217,7 +218,7 @@ export function runCodeExerciseChecks(block: CodeExerciseBlock, code: string): C
 
 // Builder-specific copy. Shared scaffolding lives in prompt-copy.ts; only the phrasing
 // unique to code/fix exercises lives here, double-keyed like site-copy.ts.
-const COPY: Record<Lang, {
+const COPY: Record<BilingualLang, {
   brokenBehavior: string;
   language: string;
   myCurrentCode: string;
@@ -252,7 +253,7 @@ export function buildCodeExercisePrompt(
   context?: MentorActionContext,
 ) {
   const s = promptScaffold(lang);
-  const t = COPY[lang];
+  const t = COPY[bilingualLang(lang)];
   const status = results.length
     ? results.map((result) => `- ${result.passed ? s.pass : s.fail}: ${result.message}`).join("\n")
     : t.noLocalCheck;

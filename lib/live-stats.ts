@@ -2,6 +2,7 @@
 // Live block local learning telemetry: counts only, no network upload. statsSummaryLines produces the "Learning process" section for copy-to-agent.
 import type { LiveFiles } from "./live-sandbox";
 import type { Lang } from "./i18n";
+import { bilingualLang, type BilingualLang } from "./locales";
 import { changedLineNumbers } from "./live-sandbox-ui";
 
 export interface LiveStats {
@@ -26,7 +27,7 @@ export function markEdit(s: LiveStats, now: number): LiveStats {
 }
 
 // Copy for the "Learning process" section in copy-to-agent prompts; double-keyed by site language (same as site-copy.ts).
-const COPY: Record<Lang, {
+const COPY: Record<BilingualLang, {
   learningProcess: string;
   goalAchieved: string;
   goalAchievedTime: (mins: number) => string;
@@ -67,7 +68,7 @@ const COPY: Record<Lang, {
 // "Learning process" section for copy-to-agent. All zeros (no activity) → [], don't feed agent empty filler.
 export function statsSummaryLines(s: LiveStats, currentFiles: LiveFiles, solution: Partial<LiveFiles>, hasChecks = false, lang: Lang = "zh"): string[] {
   if (s.edits === 0 && s.resets === 0 && s.solutionViews === 0) return [];
-  const t = COPY[lang];
+  const t = COPY[bilingualLang(lang)];
   const lines = [t.learningProcess];
   if (hasChecks) {
     if (s.achievedTs !== null) {

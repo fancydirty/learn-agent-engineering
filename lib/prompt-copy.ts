@@ -3,6 +3,7 @@
 // site-copy.ts. en users get English, zh stays byte-for-byte unchanged. Machine
 // fields (mode names, ids, JSON keys, file names) stay English on both sides.
 import type { Lang } from "./i18n";
+import { bilingualLang, type BilingualLang } from "./locales";
 import type { MentorActionContext } from "./mentor-actions";
 
 export type PromptContextKind = "interactive" | "code";
@@ -44,10 +45,10 @@ const SCAFFOLD = {
     pass: "Passed",
     fail: "Not passed",
   },
-} as const satisfies Record<Lang, unknown>;
+} as const satisfies Record<BilingualLang, unknown>;
 
 export function promptScaffold(lang: Lang) {
-  return SCAFFOLD[lang];
+  return SCAFFOLD[bilingualLang(lang)];
 }
 
 /** `${label}:\n${value}` — the one field shape every prompt block reuses. */
@@ -66,7 +67,7 @@ const READ_FILES = {
       `Use the public lesson URL and inline exercise above; if the URL is unavailable, rely on the copied context and ${focus}.`,
     standalone: (focus: string) => `The exercise, my answer, and the local feedback are all above; ${focus}.`,
   },
-} as const satisfies Record<Lang, unknown>;
+} as const satisfies Record<BilingualLang, unknown>;
 
 /**
  * `focus` is the tail clause (e.g. "probe my selection" / "围绕我的选择追问").
@@ -78,7 +79,7 @@ export function readFilesLine(
   lang: Lang,
   focus: string,
 ): string {
-  return context?.courseUrl.trim() ? READ_FILES[lang].inCourse(focus) : READ_FILES[lang].standalone(focus);
+  return context?.courseUrl.trim() ? READ_FILES[bilingualLang(lang)].inCourse(focus) : READ_FILES[bilingualLang(lang)].standalone(focus);
 }
 
 /** The course-context header lines shared by all copy prompts (with "" gaps between fields). */
@@ -87,7 +88,7 @@ export function promptContextLines(
   lang: Lang,
   kind: PromptContextKind = "interactive",
 ): string[] {
-  const s = SCAFFOLD[lang];
+  const s = SCAFFOLD[bilingualLang(lang)];
   if (!context) return [s.contextFallback[kind]];
   const fields: [string, string][] = [
     [s.courseTitle, context.courseTitle],

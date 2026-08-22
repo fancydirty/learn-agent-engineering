@@ -1,27 +1,61 @@
-export type Lang = "zh" | "en";
+import { pageVariants, type CourseFamily, type PageSpec } from "./courses";
+import { localeInfo, type Locale } from "./locales";
 
-export type SearchParamsLike =
-  | Record<string, string | string[] | undefined>
-  | Promise<Record<string, string | string[] | undefined>>
-  | undefined;
+export type { Locale } from "./locales";
 
-// en is canonical default: only explicit "zh" is Chinese; everything else (missing/unknown) → en.
-export function normalizeLang(value: unknown): Lang {
-  const raw = Array.isArray(value) ? value[0] : value;
-  return raw === "zh" ? "zh" : "en";
+/**
+ * @deprecated Use `Locale` from lib/locales.ts. The alias keeps long-tail
+ * component props (`lang: Lang`) compiling while pages migrate to URL locales.
+ */
+export type Lang = Locale;
+
+// Every official course URL is locale-first: /{locale}/courses, /{locale}/{course}, …
+// No query-param language state anywhere.
+export function localePath(locale: Locale, path: string): string {
+  const bare = path.startsWith("/") ? path : `/${path}`;
+  return `/${locale}${bare === "/" ? "" : bare}`;
 }
 
-export async function langFromSearchParams(searchParams: SearchParamsLike): Promise<Lang> {
-  const resolved = await searchParams;
-  return normalizeLang(resolved?.lang);
+// Bare (locale-less) path for a page inside a course family.
+export function pageBarePath(courseSlug: string, page: PageSpec): string {
+  switch (page.kind) {
+    case "course":
+      return `/${courseSlug}`;
+    case "lesson":
+      return `/${courseSlug}/${page.lesson}`;
+    case "glossary":
+      return `/${courseSlug}/glossary`;
+    case "sources":
+      return `/${courseSlug}/sources`;
+  }
 }
 
-// en = bare URL (strip param); zh = ?lang=zh.
-export function withLang(path: string, lang: Lang): string {
+export interface LocaleLink {
+  locale: Locale;
+  label: string;
+  href: string;
+}
+
+// Language-switcher links for the exact current page. Only locales whose variant
+// really has this page (same lesson slug, glossary, …) appear — never a silent
+// fallback to a different page.
+export function samePageLocaleLinks(family: CourseFamily, page: PageSpec): LocaleLink[] {
+  return pageVariants(family, page).map((variant) => ({
+    locale: variant.locale,
+    label: localeInfo(variant.locale).label,
+    href: localePath(variant.locale, pageBarePath(family.slug, page)),
+  }));
+}
+
+/**
+ * @deprecated Legacy `?lang=zh` helper kept so pre-migration components still
+ * compile. Removed in the locale-route task once its last callers are gone.
+ */
+export function withLang(path: string, lang: Locale): string {
   if (lang === "en") return stripLang(path);
   const [base, hash] = path.split("#");
   const sep = base.includes("?") ? "&" : "?";
-  return `${base}${sep}lang=zh${hash ? `#${hash}` : ""}`;
+  return `${base}${sep}lang=${lang}${hash ? `#${hash}` : ""}`;
 }
 
 function stripLang(path: string): string {

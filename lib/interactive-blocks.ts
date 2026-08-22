@@ -1,5 +1,6 @@
 import type { MentorActionContext } from "./mentor-actions";
 import type { Lang } from "./i18n";
+import { bilingualLang, type BilingualLang } from "./locales";
 import { promptScaffold, promptContextLines, field, readFilesLine } from "./prompt-copy";
 
 export type InteractiveLanguage = "agentmentor-check" | "agentmentor-order";
@@ -191,7 +192,7 @@ export function runOrderBlock(block: OrderBlock, orderedItems: OrderItem[]): Ord
 
 // Builder-specific copy. Shared context/field/mode scaffolding lives in prompt-copy.ts;
 // only the phrasing unique to check/order lives here, double-keyed like site-copy.ts.
-const COPY: Record<Lang, {
+const COPY: Record<BilingualLang, {
   mySelection: string;
   noSelection: string;
   localFeedback: string;
@@ -235,11 +236,11 @@ const COPY: Record<Lang, {
 };
 
 function defaultCheckPurpose(block: CheckBlock, lang: Lang) {
-  return `${COPY[lang].checkPurpose(block.mode === "multi")}${block.prompt}`;
+  return `${COPY[bilingualLang(lang)].checkPurpose(block.mode === "multi")}${block.prompt}`;
 }
 
 function defaultOrderPurpose(block: OrderBlock, lang: Lang) {
-  return `${COPY[lang].orderPurpose}${block.prompt}`;
+  return `${COPY[bilingualLang(lang)].orderPurpose}${block.prompt}`;
 }
 
 export function buildCheckPrompt(
@@ -249,7 +250,7 @@ export function buildCheckPrompt(
   context?: MentorActionContext,
 ) {
   const s = promptScaffold(lang);
-  const t = COPY[lang];
+  const t = COPY[bilingualLang(lang)];
   const choices = result.selectedChoices.length
     ? result.selectedChoices.map((choice) => `- ${choice.text} (id=${choice.id})`).join("\n")
     : t.noSelection;
@@ -290,7 +291,7 @@ export function buildOrderPrompt(
   context?: MentorActionContext,
 ) {
   const s = promptScaffold(lang);
-  const t = COPY[lang];
+  const t = COPY[bilingualLang(lang)];
   const order = result.orderedItems.map((item, index) => `${index + 1}. ${item.text} (id=${item.id})`).join("\n");
 
   return [

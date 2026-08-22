@@ -1,5 +1,6 @@
 import type { MentorActionContext } from "./mentor-actions";
 import type { Lang } from "./i18n";
+import { bilingualLang, type BilingualLang } from "./locales";
 import { promptScaffold, promptContextLines, field } from "./prompt-copy";
 
 export type LearningInteractionLanguage =
@@ -617,7 +618,7 @@ export function runTraceChecks(block: TraceBlock, values: Record<string, string>
 
 // Builder-specific copy. Shared context/field/mode scaffolding lives in prompt-copy.ts;
 // only the phrasing unique to predict/trace/diff/hotspot lives here, double-keyed like site-copy.ts.
-const COPY: Record<Lang, {
+const COPY: Record<BilingualLang, {
   exerciseMaterial: string;
   changeLanguage: string;
   changeSource: string;
@@ -690,7 +691,7 @@ const COPY: Record<Lang, {
 
 function snippetLines(block: { language: SnippetLanguage | ""; snippet: string }, lang: Lang) {
   return [
-    `${COPY[lang].exerciseMaterial}:`,
+    `${COPY[bilingualLang(lang)].exerciseMaterial}:`,
     `\`\`\`${block.language || "text"}`,
     block.snippet,
     "```",
@@ -698,7 +699,7 @@ function snippetLines(block: { language: SnippetLanguage | ""; snippet: string }
 }
 
 function diffLines(block: DiffBlock, lang: Lang) {
-  const t = COPY[lang];
+  const t = COPY[bilingualLang(lang)];
   return [
     field(t.changeLanguage, block.language || "text"),
     "",
@@ -711,13 +712,13 @@ function diffLines(block: DiffBlock, lang: Lang) {
 
 function hotspotNodeLines(block: HotspotBlock, lang: Lang) {
   return [
-    `${COPY[lang].diagramNodes}:`,
+    `${COPY[bilingualLang(lang)].diagramNodes}:`,
     ...block.nodes.map((node) => `- ${node.id}: ${node.label} (${node.x}, ${node.y})`),
   ];
 }
 
 function hotspotEdgeLines(block: HotspotBlock, lang: Lang) {
-  const t = COPY[lang];
+  const t = COPY[bilingualLang(lang)];
   if (!block.edges.length) return [`${t.diagramEdges}:\n${t.none}`];
   return [
     `${t.diagramEdges}:`,
@@ -727,7 +728,7 @@ function hotspotEdgeLines(block: HotspotBlock, lang: Lang) {
 
 export function buildPredictPrompt(block: PredictBlock, answer: string, result: PredictResult, lang: Lang, context?: MentorActionContext) {
   const s = promptScaffold(lang);
-  const t = COPY[lang];
+  const t = COPY[bilingualLang(lang)];
   return [
     s.enterMode("predict_output_coach"),
     "",
@@ -760,7 +761,7 @@ export function buildTracePrompt(
   context?: MentorActionContext,
 ) {
   const s = promptScaffold(lang);
-  const t = COPY[lang];
+  const t = COPY[bilingualLang(lang)];
   const rows = block.rows.map((row) => {
     const cells = block.columns.map((column) => {
       const key = traceCellKey(row.id, column.id);
@@ -804,7 +805,7 @@ export function buildDiffPrompt(
   context?: MentorActionContext,
 ) {
   const s = promptScaffold(lang);
-  const t = COPY[lang];
+  const t = COPY[bilingualLang(lang)];
   const selected = result.choice || block.choices.find((choice) => choice.id === selectedChoiceId);
   return [
     s.enterMode("diff_patch_coach"),
@@ -840,7 +841,7 @@ export function buildHotspotPrompt(
   context?: MentorActionContext,
 ) {
   const s = promptScaffold(lang);
-  const t = COPY[lang];
+  const t = COPY[bilingualLang(lang)];
   const selected = result.node || block.nodes.find((node) => node.id === selectedNodeId);
   return [
     s.enterMode("hotspot_diagram_coach"),
