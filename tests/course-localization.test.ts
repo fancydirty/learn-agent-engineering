@@ -9,11 +9,15 @@ import {
   scanCourseFamilies,
 } from "@/lib/courses";
 import { localePath, samePageLocaleLinks } from "@/lib/i18n";
-import { isLocale, localeInfo, LOCALES, siteCopyFor } from "@/lib/locales";
+import { isLocale, localeInfo, LOCALES, siteCopyFor, DEFAULT_LOCALE } from "@/lib/locales";
 
 describe("locale registry", () => {
   it("lists exactly the six launch locales in order", () => {
     expect(LOCALES.map((x) => x.code)).toEqual(["en", "zh", "ja", "ko", "es", "pt-BR"]);
+  });
+
+  it("pins the default locale used by the root redirect", () => {
+    expect(DEFAULT_LOCALE).toBe("en");
   });
 
   it("carries local names and html language tags from the design spec", () => {

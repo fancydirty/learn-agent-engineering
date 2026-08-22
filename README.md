@@ -55,10 +55,10 @@ npm run build
 
 ```bash
 node scripts/course-guard.mjs \
-  "$PWD/agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-skills-reuse"
+  "$PWD/agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-skills-reuse/zh"
 
 node scripts/course-interaction-report.mjs \
-  "$PWD/agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-skills-reuse"
+  "$PWD/agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-skills-reuse/zh"
 ```
 
 ## Cloudflare Workers

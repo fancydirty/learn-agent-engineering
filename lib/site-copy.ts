@@ -2,6 +2,7 @@ import type { Locale } from "./locales";
 
 const zh = {
   a11y: { breadcrumb: "面包屑导航" },
+  header: { siteLink: "Agent Mentor 官网 ↗" },
   drill: {
     glossaryMore: "复制术语给 Agent →",
     deeper: "再深一层",
@@ -10,8 +11,26 @@ const zh = {
     copyFail: "复制失败",
   },
   reader: {
+    breadcrumbCourses: "课程",
+    library: {
+      title: "把正在发生的 Agent 变化，讲成能立刻上手的课。",
+      intro: "这里只收录与 Agent 直接相关、仍在快速变化的选题。课程免费阅读，练习、代码和选中文本都能一键复制给 Claude Code、Codex 或其他 Agent 继续做。",
+      emptyTitle: "首门课程正在生成",
+      emptyBody: "课程必须通过来源、互动与 Agent 相关性检查后才会出现在这里。",
+      ctaTitle: "想让 Agent 为你的目标定制一门课？",
+      ctaBody: "Agent Mentor 把课程、练习与来源保存到本地，交给你自己的 Agent 使用。",
+      ctaButton: "了解 Agent Mentor ↗",
+      courseCount: (n: number) => `${n} 门课`,
+    },
+    course: {
+      start: "开始学习",
+      glossary: "术语表",
+      sources: "来源",
+      ctaTitle: "想学自己的主题？",
+      ctaBody: "Agent Mentor 会在你的本机生成带来源、练习和互动的课程。",
+      ctaButton: "了解 Agent Mentor ↗",
+    },
     glossary: {
-      breadcrumbLibrary: "课程",
       breadcrumbSelf: "术语表",
       title: "术语表",
       subtitle: (n: number, courseTitle: string) => `${n} 个术语，来自《${courseTitle}》。正文首次出现时可悬停查看释义。`,
@@ -19,7 +38,7 @@ const zh = {
       thDef: "释义",
       thSource: "来源",
     },
-    sources: { breadcrumbLibrary: "课程", breadcrumbSelf: "来源" },
+    sources: { breadcrumbSelf: "来源" },
     card: {
       lessons: (n: number) => `${n} 节`,
       minutes: (n: number) => `约 ${n} 分钟`,
@@ -115,6 +134,7 @@ export type SiteCopy = typeof zh;
 
 const en: SiteCopy = {
   a11y: { breadcrumb: "Breadcrumb" },
+  header: { siteLink: "Agent Mentor ↗" },
   drill: {
     glossaryMore: "Copy term to Agent →",
     deeper: "One level deeper",
@@ -123,8 +143,26 @@ const en: SiteCopy = {
     copyFail: "Copy failed",
   },
   reader: {
+    breadcrumbCourses: "Courses",
+    library: {
+      title: "Agent changes, turned into courses you can use right away.",
+      intro: "Only topics that are directly about Agents and still moving fast. Courses are free; exercises, code, and selected text copy straight into Claude Code, Codex, or your Agent of choice.",
+      emptyTitle: "The first course is being generated",
+      emptyBody: "Courses appear here only after passing source, interaction, and Agent-relevance checks.",
+      ctaTitle: "Want a course built around your own goal?",
+      ctaBody: "Agent Mentor saves courses, exercises, and sources locally, ready for your own Agent.",
+      ctaButton: "Explore Agent Mentor ↗",
+      courseCount: (n: number) => `${n} ${n === 1 ? "course" : "courses"}`,
+    },
+    course: {
+      start: "Start course",
+      glossary: "Glossary",
+      sources: "Sources",
+      ctaTitle: "Want a course for your own goal?",
+      ctaBody: "Agent Mentor generates sourced, interactive courses on your machine.",
+      ctaButton: "Explore Agent Mentor ↗",
+    },
     glossary: {
-      breadcrumbLibrary: "Courses",
       breadcrumbSelf: "Glossary",
       title: "Glossary",
       subtitle: (n: number, courseTitle: string) => `${n} ${n === 1 ? "term" : "terms"} from “${courseTitle}.” Hover the first occurrence in the lesson for its definition.`,
@@ -132,7 +170,7 @@ const en: SiteCopy = {
       thDef: "Definition",
       thSource: "Source",
     },
-    sources: { breadcrumbLibrary: "Courses", breadcrumbSelf: "Sources" },
+    sources: { breadcrumbSelf: "Sources" },
     card: {
       lessons: (n: number) => `${n} ${n === 1 ? "lesson" : "lessons"}`,
       minutes: (n: number) => `~${n} min`,
@@ -226,6 +264,7 @@ const en: SiteCopy = {
 
 const ja: SiteCopy = {
   a11y: { breadcrumb: "パンくずリスト" },
+  header: { siteLink: "Agent Mentor 公式サイト ↗" },
   drill: {
     glossaryMore: "用語を Agent にコピー →",
     deeper: "もう一段深く",
@@ -234,8 +273,26 @@ const ja: SiteCopy = {
     copyFail: "コピーに失敗しました",
   },
   reader: {
+    breadcrumbCourses: "コース",
+    library: {
+      title: "いま起きている Agent の変化を、すぐ使えるレッスンに。",
+      intro: "Agent に直接関係し、いまも急速に変化しているテーマだけを収録しています。コースはすべて無料。練習・コード・選択したテキストはワンクリックで Claude Code、Codex などの Agent にコピーして続けられます。",
+      emptyTitle: "最初のコースを生成中です",
+      emptyBody: "出典・インタラクション・Agent 関連性のチェックを通過したコースだけがここに表示されます。",
+      ctaTitle: "自分の目標に合わせたコースを Agent に作ってもらいたい方へ",
+      ctaBody: "Agent Mentor はコース・練習・出典をローカルに保存し、あなた自身の Agent に渡せます。",
+      ctaButton: "Agent Mentor を見る ↗",
+      courseCount: (n: number) => `${n} コース`,
+    },
+    course: {
+      start: "コースを始める",
+      glossary: "用語集",
+      sources: "出典",
+      ctaTitle: "自分のテーマで学びたい方へ",
+      ctaBody: "Agent Mentor があなたのマシン上で、出典・練習・インタラクション付きのコースを生成します。",
+      ctaButton: "Agent Mentor を見る ↗",
+    },
     glossary: {
-      breadcrumbLibrary: "コース",
       breadcrumbSelf: "用語集",
       title: "用語集",
       subtitle: (n: number, courseTitle: string) => `『${courseTitle}』の用語 ${n} 件。レッスン本文で初出の箇所にホバーすると定義を確認できます。`,
@@ -243,7 +300,7 @@ const ja: SiteCopy = {
       thDef: "定義",
       thSource: "出典",
     },
-    sources: { breadcrumbLibrary: "コース", breadcrumbSelf: "出典" },
+    sources: { breadcrumbSelf: "出典" },
     card: {
       lessons: (n: number) => `${n} レッスン`,
       minutes: (n: number) => `約 ${n} 分`,
@@ -337,6 +394,7 @@ const ja: SiteCopy = {
 
 const ko: SiteCopy = {
   a11y: { breadcrumb: "탐색 경로" },
+  header: { siteLink: "Agent Mentor 공식 사이트 ↗" },
   drill: {
     glossaryMore: "용어를 Agent에 복사 →",
     deeper: "한 단계 더 깊이",
@@ -345,8 +403,26 @@ const ko: SiteCopy = {
     copyFail: "복사 실패",
   },
   reader: {
+    breadcrumbCourses: "코스",
+    library: {
+      title: "지금 일어나는 Agent 변화를, 바로 써먹는 강의로.",
+      intro: "Agent와 직접 관련되고 아직도 빠르게 변화하는 주제만 다룹니다. 강의는 무료이며, 연습·코드·선택한 텍스트를 Claude Code, Codex 등의 Agent에 한 번에 복사해 이어갈 수 있습니다.",
+      emptyTitle: "첫 번째 강의를 생성하는 중입니다",
+      emptyBody: "출처, 인터랙션, Agent 관련성 검사를 통과한 강의만 여기에 표시됩니다.",
+      ctaTitle: "내 목표에 맞는 강의를 Agent에게 만들게 하고 싶으신가요?",
+      ctaBody: "Agent Mentor는 강의·연습·출처를 로컬에 저장해 당신의 Agent가 사용할 수 있게 합니다.",
+      ctaButton: "Agent Mentor 알아보기 ↗",
+      courseCount: (n: number) => `강의 ${n}개`,
+    },
+    course: {
+      start: "강의 시작하기",
+      glossary: "용어집",
+      sources: "출처",
+      ctaTitle: "내 주제로 배우고 싶으신가요?",
+      ctaBody: "Agent Mentor가 당신의 컴퓨터에서 출처·연습·인터랙션이 포함된 강의를 생성합니다.",
+      ctaButton: "Agent Mentor 알아보기 ↗",
+    },
     glossary: {
-      breadcrumbLibrary: "코스",
       breadcrumbSelf: "용어집",
       title: "용어집",
       subtitle: (n: number, courseTitle: string) => `《${courseTitle}》의 용어 ${n}개. 레슨 본문에서 처음 등장하는 용어에 마우스를 올리면 정의를 볼 수 있습니다.`,
@@ -354,7 +430,7 @@ const ko: SiteCopy = {
       thDef: "정의",
       thSource: "출처",
     },
-    sources: { breadcrumbLibrary: "코스", breadcrumbSelf: "출처" },
+    sources: { breadcrumbSelf: "출처" },
     card: {
       lessons: (n: number) => `레슨 ${n}개`,
       minutes: (n: number) => `약 ${n}분`,
@@ -448,6 +524,7 @@ const ko: SiteCopy = {
 
 const es: SiteCopy = {
   a11y: { breadcrumb: "Navegación de migas de pan" },
+  header: { siteLink: "Sitio de Agent Mentor ↗" },
   drill: {
     glossaryMore: "Copiar término al Agent →",
     deeper: "Un nivel más profundo",
@@ -456,8 +533,26 @@ const es: SiteCopy = {
     copyFail: "Error al copiar",
   },
   reader: {
+    breadcrumbCourses: "Cursos",
+    library: {
+      title: "Los cambios del mundo Agent, convertidos en cursos prácticos.",
+      intro: "Solo temas directamente relacionados con Agent y que aún cambian rápido. Los cursos son gratuitos: ejercicios, código y texto seleccionado se copian con un clic a Claude Code, Codex u otro Agent para continuar.",
+      emptyTitle: "El primer curso se está generando",
+      emptyBody: "Solo aparecen aquí los cursos que superan las comprobaciones de fuentes, interacción y relevancia para Agent.",
+      ctaTitle: "¿Quieres que un Agent cree un curso para tu objetivo?",
+      ctaBody: "Agent Mentor guarda cursos, ejercicios y fuentes en tu máquina, listos para tu propio Agent.",
+      ctaButton: "Descubrir Agent Mentor ↗",
+      courseCount: (n: number) => `${n} ${n === 1 ? "curso" : "cursos"}`,
+    },
+    course: {
+      start: "Empezar el curso",
+      glossary: "Glosario",
+      sources: "Fuentes",
+      ctaTitle: "¿Quieres un curso sobre tu propio tema?",
+      ctaBody: "Agent Mentor genera cursos con fuentes, ejercicios e interacción en tu máquina.",
+      ctaButton: "Descubrir Agent Mentor ↗",
+    },
     glossary: {
-      breadcrumbLibrary: "Cursos",
       breadcrumbSelf: "Glosario",
       title: "Glosario",
       subtitle: (n: number, courseTitle: string) => `${n} ${n === 1 ? "término" : "términos"} de «${courseTitle}». Pasa el cursor sobre la primera aparición en la lección para ver la definición.`,
@@ -465,7 +560,7 @@ const es: SiteCopy = {
       thDef: "Definición",
       thSource: "Fuente",
     },
-    sources: { breadcrumbLibrary: "Cursos", breadcrumbSelf: "Fuentes" },
+    sources: { breadcrumbSelf: "Fuentes" },
     card: {
       lessons: (n: number) => `${n} ${n === 1 ? "lección" : "lecciones"}`,
       minutes: (n: number) => `~${n} min`,
@@ -559,6 +654,7 @@ const es: SiteCopy = {
 
 const ptBR: SiteCopy = {
   a11y: { breadcrumb: "Trilha de navegação" },
+  header: { siteLink: "Site do Agent Mentor ↗" },
   drill: {
     glossaryMore: "Copiar termo para o Agent →",
     deeper: "Um nível mais fundo",
@@ -567,8 +663,26 @@ const ptBR: SiteCopy = {
     copyFail: "Falha ao copiar",
   },
   reader: {
+    breadcrumbCourses: "Cursos",
+    library: {
+      title: "As mudanças do ecossistema Agent, em cursos prontos para usar.",
+      intro: "Só temas diretamente ligados a Agent e ainda em rápida mudança. Os cursos são gratuitos: exercícios, código e texto selecionado podem ser copiados com um clique para o Claude Code, Codex ou outro Agent continuar.",
+      emptyTitle: "O primeiro curso está sendo gerado",
+      emptyBody: "Somente cursos que passam pelas verificações de fontes, interação e relevância para Agent aparecem aqui.",
+      ctaTitle: "Quer um Agent criando um curso para o seu objetivo?",
+      ctaBody: "O Agent Mentor salva cursos, exercícios e fontes na sua máquina, prontos para o seu próprio Agent.",
+      ctaButton: "Conhecer o Agent Mentor ↗",
+      courseCount: (n: number) => `${n} ${n === 1 ? "curso" : "cursos"}`,
+    },
+    course: {
+      start: "Começar o curso",
+      glossary: "Glossário",
+      sources: "Fontes",
+      ctaTitle: "Quer aprender sobre seu próprio tema?",
+      ctaBody: "O Agent Mentor gera cursos com fontes, exercícios e interação na sua máquina.",
+      ctaButton: "Conhecer o Agent Mentor ↗",
+    },
     glossary: {
-      breadcrumbLibrary: "Cursos",
       breadcrumbSelf: "Glossário",
       title: "Glossário",
       subtitle: (n: number, courseTitle: string) => `${n} ${n === 1 ? "termo" : "termos"} de “${courseTitle}”. Passe o cursor sobre a primeira ocorrência na lição para ver a definição.`,
@@ -576,7 +690,7 @@ const ptBR: SiteCopy = {
       thDef: "Definição",
       thSource: "Fonte",
     },
-    sources: { breadcrumbLibrary: "Cursos", breadcrumbSelf: "Fontes" },
+    sources: { breadcrumbSelf: "Fontes" },
     card: {
       lessons: (n: number) => `${n} ${n === 1 ? "lição" : "lições"}`,
       minutes: (n: number) => `~${n} min`,

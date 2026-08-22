@@ -2,56 +2,61 @@ import { notFound } from "next/navigation";
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import GithubSlugger from "github-slugger";
-import { scanCourses } from "@/lib/courses";
+import { findCourseFamily, findCourseVariant, scanCourseFamilies } from "@/lib/courses";
 import { coursesDir } from "@/lib/paths";
 import { parseSources } from "@/lib/footnotes";
 import { glossarySourceRef } from "@/lib/glossary-source";
 import { loadGlossaryTerms } from "@/lib/glossary-load";
+import { localePath } from "@/lib/i18n";
+import { isLocale, siteCopyFor } from "@/lib/locales";
 import { CourseNav } from "@/components/course-nav";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { GlossaryTargetHighlight } from "@/components/glossary-target-highlight";
 import { CoursePageShell } from "@/components/course-page-shell";
-import { siteCopy } from "@/lib/site-copy";
 
 export function generateStaticParams() {
-  return scanCourses(coursesDir()).map((c) => ({ course: c.slug }));
+  return scanCourseFamilies(coursesDir()).flatMap((family) =>
+    family.variants.filter((variant) => variant.hasGlossary).map((variant) => ({ locale: variant.locale, course: family.slug })),
+  );
 }
 
 export default async function GlossaryPage({
   params,
 }: {
-  params: Promise<{ course: string }>;
+  params: Promise<{ locale: string; course: string }>;
 }) {
-  const { course } = await params;
-  const c = scanCourses(coursesDir()).find((x) => x.slug === course);
-  if (!c) notFound();
-  const lang = c.lang;
-  const copy = siteCopy[lang].reader.glossary;
-  const entries = loadGlossaryTerms(c.dir);
+  const { locale, course } = await params;
+  if (!isLocale(locale)) notFound();
+  const family = findCourseFamily(scanCourseFamilies(coursesDir()), course);
+  const variant = family && findCourseVariant(family, locale);
+  if (!variant) notFound();
+  const lang = variant.locale;
+  const copy = siteCopyFor(lang).reader;
+  const entries = loadGlossaryTerms(variant.dir);
   if (entries.length === 0) notFound();
 
   const slugger = new GithubSlugger();
-  const sourcesMd = existsSync(join(c.dir, "sources.md")) ? readFileSync(join(c.dir, "sources.md"), "utf8") : "";
+  const sourcesMd = existsSync(join(variant.dir, "sources.md")) ? readFileSync(join(variant.dir, "sources.md"), "utf8") : "";
   const sources = parseSources(sourcesMd);
   return (
     <CoursePageShell>
-      <CourseNav course={c} current={null} lang={lang} />
+      <CourseNav course={variant} current={null} />
       <main className="course-page-main min-w-0 flex-1">
-        <Breadcrumbs items={[{ label: copy.breadcrumbLibrary, href: "/courses" }, { label: c.title, href: `/${c.slug}` }, { label: copy.breadcrumbSelf }]} lang={lang} />
-        <h1 className="mb-1 text-3xl font-semibold" style={{ color: "var(--ink-strong)" }}>{copy.title}</h1>
+        <Breadcrumbs items={[{ label: copy.breadcrumbCourses, href: localePath(lang, "/courses") }, { label: variant.title, href: localePath(lang, `/${variant.slug}`) }, { label: copy.glossary.breadcrumbSelf }]} lang={lang} />
+        <h1 className="mb-1 text-3xl font-semibold" style={{ color: "var(--ink-strong)" }}>{copy.glossary.title}</h1>
         <p className="mb-8" style={{ color: "var(--muted-foreground)" }}>
-          {copy.subtitle(entries.length, c.title)}
+          {copy.glossary.subtitle(entries.length, variant.title)}
         </p>
         <GlossaryTargetHighlight />
         <div className="glossary-table">
           <table>
             <thead>
-              <tr><th>{copy.thTerm}</th><th>{copy.thDef}</th><th>{copy.thSource}</th></tr>
+              <tr><th>{copy.glossary.thTerm}</th><th>{copy.glossary.thDef}</th><th>{copy.glossary.thSource}</th></tr>
             </thead>
             <tbody>
               {entries.map((e) => {
                 const id = slugger.slug(e.term);
-                const sh = glossarySourceRef(e.source ?? "", sources, c.slug, (t) => new GithubSlugger().slug(t));
+                const sh = glossarySourceRef(e.source ?? "", sources, variant.slug, (t) => new GithubSlugger().slug(t));
                 return (
                   <tr key={id} id={id} className="glossary-row">
                     <td className="glossary-term-cell">

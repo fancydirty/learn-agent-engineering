@@ -1,6 +1,4 @@
-import type { Course } from "./courses";
-import type { Lang } from "./i18n";
-import { bilingualLang, type BilingualLang } from "./locales";
+import { bilingualLang, type Locale } from "./locales";
 
 export const DOMAIN_ORDER = ["软件", "量化", "生活技艺", "音乐"];
 
@@ -26,15 +24,15 @@ const DOMAIN_LABELS: Record<string, { zh: string; en: string }> = {
 };
 
 // Canonical domain keys stay as stored in course data; map to labels only at display time.
-export function domainLabel(domain: string, lang: Lang): string {
+export function domainLabel(domain: string, lang: Locale): string {
   const entry = DOMAIN_LABELS[domain];
   return entry ? entry[bilingualLang(lang)] : domain;
 }
 
-export interface DomainGroup { domain: string; courses: Course[]; }
+export interface DomainGroup<T extends { domain: string; slug: string }> { domain: string; courses: T[]; }
 
-export function groupCoursesByDomain(courses: Course[]): DomainGroup[] {
-  const byDomain = new Map<string, Course[]>();
+export function groupCoursesByDomain<T extends { domain: string; slug: string }>(courses: T[]): DomainGroup<T>[] {
+  const byDomain = new Map<string, T[]>();
   for (const c of courses) {
     if (!byDomain.has(c.domain)) byDomain.set(c.domain, []);
     byDomain.get(c.domain)!.push(c);

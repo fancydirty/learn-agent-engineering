@@ -1,17 +1,16 @@
 import Link from "next/link";
 import type { CourseCardData } from "@/lib/courses";
 import { domainColor } from "@/lib/domains";
-import { withLang, type Lang } from "@/lib/i18n";
-import { siteCopy } from "@/lib/site-copy";
+import { localePath } from "@/lib/i18n";
+import { siteCopyFor, type Locale } from "@/lib/locales";
 
-// href/logoSrc overrides for public /s/<token>/ site — worker assets, not local /api/course-logo
-export function CourseTile({ course, lang, href, lead = false }: { course: CourseCardData; lang: Lang; href?: string; lead?: boolean }) {
-  const copy = siteCopy[lang].reader.card;
+export function CourseTile({ course, lang, href, lead = false }: { course: CourseCardData; lang: Locale; href?: string; lead?: boolean }) {
+  const copy = siteCopyFor(lang).reader.card;
   const cat = domainColor(course.domain);
 
   return (
     <Link
-      href={withLang(href ?? `/${course.slug}`, lang)}
+      href={href ?? localePath(lang, `/${course.slug}`)}
       data-lead={lead || undefined}
       className="group relative flex min-h-[128px] flex-col rounded-xl border bg-[var(--card)] p-5 shadow-sm transition-colors hover:bg-[var(--card-hover)]"
       style={{ borderColor: "var(--border)", boxShadow: "var(--shadow-card)", ["--cat" as string]: cat }}

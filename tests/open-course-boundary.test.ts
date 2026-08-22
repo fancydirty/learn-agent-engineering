@@ -13,6 +13,10 @@ function filesBelow(directory: string): string[] {
     .sort();
 }
 
+function productionFiles(): string[] {
+  return [...filesBelow("app"), ...filesBelow("components"), ...filesBelow("lib")];
+}
+
 describe("open course site boundary", () => {
   it("ships no server API or product-account routes", () => {
     expect(existsSync(join(ROOT, "app/api"))).toBe(false);
@@ -37,14 +41,12 @@ describe("open course site boundary", () => {
   });
 
   it("contains no Ask, review, podcast, publishing, payment, or learner-state modules", () => {
-    const productionFiles = [...filesBelow("app"), ...filesBelow("components"), ...filesBelow("lib")];
     const forbiddenPath = /(?:^|[-/])(?:ask|review|podcast|publish(?:ed|ing)?|paddle|entitlement|progress|learner-memory|lesson-notes|live-appendix|eve-quiz|blog|purchase|showcase)(?:[-./]|$)/i;
 
-    expect(productionFiles.filter((file) => forbiddenPath.test(file))).toEqual([]);
+    expect(productionFiles().filter((file) => forbiddenPath.test(file))).toEqual([]);
   });
 
   it("contains no removed product surfaces in production source", () => {
-    const productionFiles = [...filesBelow("app"), ...filesBelow("components"), ...filesBelow("lib")];
     const forbidden = [
       /podcast/i,
       /ask[- ]?ai/i,
@@ -57,7 +59,7 @@ describe("open course site boundary", () => {
       /publish-copy/i,
     ];
 
-    const violations = productionFiles.flatMap((file) => {
+    const violations = productionFiles().flatMap((file) => {
       const source = readFileSync(join(ROOT, file), "utf8");
       return forbidden
         .filter((pattern) => pattern.test(source))
@@ -78,14 +80,21 @@ describe("open course site boundary", () => {
     expect(dependencies).not.toContain("qrcode");
   });
 
-  it("derives reader language from course frontmatter instead of URL search params", () => {
-    const productionFiles = [...filesBelow("app"), ...filesBelow("components"), ...filesBelow("lib")]
-      .filter((file) => /\.(?:ts|tsx)$/.test(file));
-    const queryLocaleFiles = productionFiles.filter((file) =>
-      readFileSync(join(ROOT, file), "utf8").includes("useSearchParams"),
-    );
+  it("derives the page locale from the URL, never from query params", () => {
+    const queryLocaleFiles = productionFiles()
+      .filter((file) => /\.(?:ts|tsx)$/.test(file))
+      .filter((file) => readFileSync(join(ROOT, file), "utf8").includes("useSearchParams"));
 
     expect(queryLocaleFiles).toEqual([]);
+  });
+
+  it("keeps no query-param language helper or ?lang= links in production source", () => {
+    const withQueryLang = productionFiles().filter((file) => {
+      const source = readFileSync(join(ROOT, file), "utf8");
+      return source.includes("withLang") || source.includes("?lang=");
+    });
+
+    expect(withQueryLang).toEqual([]);
   });
 
   it("serves prerendered course routes from read-only Worker static assets", () => {
@@ -96,33 +105,60 @@ describe("open course site boundary", () => {
     expect(openNextConfig).toContain("enableCacheInterception: true");
   });
 
-  it("keeps the original course, lesson, glossary, and sources surfaces", () => {
+  it("serves courses from locale-first routes only", () => {
     const required = [
-      "app/courses/page.tsx",
-      "app/[course]/page.tsx",
-      "app/[course]/[lesson]/page.tsx",
-      "app/[course]/glossary/page.tsx",
-      "app/[course]/sources/page.tsx",
+      "app/[locale]/layout.tsx",
+      "app/[locale]/courses/page.tsx",
+      "app/[locale]/[course]/page.tsx",
+      "app/[locale]/[course]/[lesson]/page.tsx",
+      "app/[locale]/[course]/glossary/page.tsx",
+      "app/[locale]/[course]/sources/page.tsx",
       "components/course-markdown.tsx",
       "components/copy-markdown-text.tsx",
       "components/selection-copy.tsx",
       "lib/courses.ts",
     ];
-
     expect(required.filter((file) => !existsSync(join(ROOT, file)))).toEqual([]);
+
+    // No duplicate un-prefixed canonical course routes may survive.
+    const retired = [
+      "app/courses/page.tsx",
+      "app/[course]/page.tsx",
+      "app/[course]/[lesson]/page.tsx",
+      "app/[course]/glossary/page.tsx",
+      "app/[course]/sources/page.tsx",
+    ];
+    expect(retired.filter((file) => existsSync(join(ROOT, file)))).toEqual([]);
   });
 
-  it("matches course language in the site chrome and keeps the desktop page outline", () => {
-    const layout = readFileSync(join(ROOT, "app/layout.tsx"), "utf8");
+  it("redirects the root to the default locale course library", () => {
+    const rootPage = readFileSync(join(ROOT, "app/(root)/page.tsx"), "utf8");
+
+    // The literal target is pinned via DEFAULT_LOCALE (asserted === "en" in
+    // course-localization.test.ts); here we guard the redirect wiring itself.
+    expect(rootPage).toContain("DEFAULT_LOCALE");
+    expect(rootPage).toContain("/courses");
+    expect(rootPage).toContain("redirect(");
+    expect(rootPage).not.toContain("?lang=");
+  });
+
+  it("sets <html lang> from the locale segment and cleans the header", () => {
+    const localeLayout = readFileSync(join(ROOT, "app/[locale]/layout.tsx"), "utf8");
     const header = readFileSync(join(ROOT, "components/site-header.tsx"), "utf8");
     const outline = readFileSync(join(ROOT, "components/on-this-page.tsx"), "utf8");
-    const lessonPage = readFileSync(join(ROOT, "app/[course]/[lesson]/page.tsx"), "utf8");
+    const lessonPage = readFileSync(join(ROOT, "app/[locale]/[course]/[lesson]/page.tsx"), "utf8");
 
-    expect(layout).toContain("courseLanguages");
-    expect(header).toContain("usePathname");
-    expect(header).toContain("当前 Agent 课程");
-    expect(outline).toContain('lang === "zh" ? "本页目录" : "On this page"');
+    // Separate root layouts: the old fixed-locale root layout is gone.
+    expect(existsSync(join(ROOT, "app/layout.tsx"))).toBe(false);
+    expect(localeLayout).toContain("htmlLang");
+    expect(localeLayout).toContain("isLocale");
+    expect(lessonPage).toContain("params");
+
+    // The obsolete header course label is removed for good.
+    expect(header).not.toContain("当前 Agent 课程");
+    expect(header).not.toContain("Current Agent courses");
+
+    // Desktop page outline stays.
     expect(outline).toContain("lg:block");
-    expect(lessonPage).toContain("<OnThisPage items={tocFromMarkdown(lessonMarkdown)} lang={found.lang} />");
   });
 });

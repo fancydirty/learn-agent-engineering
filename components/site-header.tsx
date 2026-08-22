@@ -1,15 +1,11 @@
-"use client";
-
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { StickyHeader } from "./sticky-header";
 import { ThemeToggle } from "./theme-toggle";
-import type { Lang } from "@/lib/i18n";
+import { localePath } from "@/lib/i18n";
+import { siteCopyFor, type Locale } from "@/lib/locales";
 
-export function SiteHeader({ courseLanguages }: { courseLanguages: Record<string, Lang> }) {
-  const pathname = usePathname();
-  const courseSlug = pathname.split("/").filter(Boolean)[0] ?? "";
-  const lang = courseLanguages[courseSlug] ?? "zh";
+export function SiteHeader({ locale }: { locale: Locale }) {
+  const copy = siteCopyFor(locale);
 
   return (
     <StickyHeader>
@@ -24,24 +20,18 @@ export function SiteHeader({ courseLanguages }: { courseLanguages: Record<string
           WebkitBackdropFilter: "blur(var(--nav-blur))",
         }}
       >
-        <Link href="/courses" className="font-semibold tracking-tight" style={{ color: "var(--ink-strong)" }}>
+        <Link href={localePath(locale, "/courses")} className="font-semibold tracking-tight" style={{ color: "var(--ink-strong)" }}>
           Agent Mentor Learn
         </Link>
-        <span
-          className="hidden text-xs sm:inline"
-          style={{ color: "var(--ink-subtle)", fontFamily: "var(--font-kicker), monospace" }}
-        >
-          {lang === "zh" ? "当前 Agent 课程" : "Current Agent courses"}
-        </span>
         <div className="flex-1" />
         <a
           href="https://agentmentor.dev/?utm_source=learn&utm_medium=header&utm_campaign=open_courses"
           className="text-sm hover:underline"
           style={{ color: "var(--accent)" }}
         >
-          {lang === "zh" ? "Agent Mentor 官网 ↗" : "Agent Mentor ↗"}
+          {copy.header.siteLink}
         </a>
-        <ThemeToggle lang={lang} />
+        <ThemeToggle lang={locale} />
       </header>
     </StickyHeader>
   );

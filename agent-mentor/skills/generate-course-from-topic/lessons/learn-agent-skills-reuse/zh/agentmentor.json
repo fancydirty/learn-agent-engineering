@@ -20,7 +20,7 @@
     "evidence": ["Anthropic 的 Agent Skills 工程文章标注开放标准更新于 2025-12-18，并说明 Skills 已用于 Claude 产品与平台。", "Agent Skills specification 当前公开定义 SKILL.md 的 frontmatter、目录和渐进披露约束。", "OpenAI/Codex 官方 Build skills 文档当前说明 ChatGPT 与 Codex 使用开放 Agent Skills 标准。"],
     "staleRisk": "不同 Agent 对仓库扫描路径、支持的 frontmatter 字段、脚本权限和上传方式会变化；课程只把开放规范与当前官方文档作为边界，每次发布前需重查。"
   },
-  "status": {"stage": "ready", "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-skills-reuse", "guardStatus": "pass"},
+  "status": {"stage": "ready", "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-skills-reuse/zh", "guardStatus": "pass"},
   "qualitySelfReview": {
     "diagramUse": "第 3 讲用 Mermaid 分层流程图解释元数据、SKILL.md 正文和按需资源的加载关系；第 5 讲用测试矩阵并列触发、资源、输出与禁止动作。其余内容使用短文件树和表格，不添加装饰图。",
     "weakestPoints": ["开放标准跨产品实现仍有差异，课程刻意避免把某一客户端的扫描路径写成通用事实；发布前仍需重查目标客户端文档。", "最终练习要求读者在自己的 Agent 上复测，公开 reader 无法自动证明外部 Agent 的真实触发结果。", "课程用虚构的访谈纪要和发布说明贯穿示例，读者仍需把边界迁移到自己的业务输入，并检查是否出现新的敏感数据或写入动作。"],

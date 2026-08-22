@@ -6,7 +6,6 @@ import { loadGlossaryTerms } from "./glossary-load";
 import { isLocale, LOCALES, type Locale } from "./locales";
 
 export interface LessonMeta { num: number; slug: string; title: string; file: string; }
-export interface Course { slug: string; title: string; intro: string; dir: string; lessons: LessonMeta[]; domain: string; tags: string[]; minutes: number; lang: Locale; hasLogo: boolean; }
 // dir is the on-disk course directory absolute path used during static generation.
 export interface CourseCardData { slug: string; title: string; intro: string; domain: string; tags: string[]; lessonCount: number; minutes: number; hasLogo: boolean; }
 
@@ -46,48 +45,8 @@ export function courseIntro(md: string): string {
   return stripInlineMarkdown((p || "").replace(/\n/g, " "));
 }
 
-export function parseCourse(coursesRoot: string, dirName: string): Course {
-  const dir = join(coursesRoot, dirName);
-  const slug = dirName.replace(/^learn-/, "");
-  const readmePath = join(dir, "README.md");
-  const readmeRaw = existsSync(readmePath) ? readFileSync(readmePath, "utf8") : "";
-  const { data: fm, body: readme } = parseFrontmatter(readmeRaw);
-  const lessonTexts: string[] = [];
-  // .live.md is buyer BYOK sediment appendix per lesson (spec 2026-07-19 §二 L2), not a lesson file:
-  // without excluding it, 01-x.live.md collides with 01-x.md at the same lesson number.
-  const lessons: LessonMeta[] = readdirSync(dir)
-    .filter((f) => /^\d+-.*\.md$/.test(f) && !f.endsWith(".live.md"))
-    .map((f) => {
-      const md = readFileSync(join(dir, f), "utf8");
-      lessonTexts.push(md);
-      return { num: parseInt(f, 10), slug: f.replace(/\.md$/, ""), title: (courseH1(md) || f).replace(/^#\s*/, ""), file: f };
-    })
-    .sort((a, b) => a.num - b.num);
-  return {
-    slug,
-    title: courseH1(readme) || slug,
-    intro: courseIntro(readme),
-    dir,
-    lessons,
-    domain: fm.domain || DOMAIN_FALLBACK,
-    tags: fm.tags || [],
-    minutes: estimateMinutes(lessonTexts),
-    lang: fm.lang === "en" ? "en" : "zh",
-    hasLogo: existsSync(join(dir, "logo.svg")),
-  };
-}
-
-export function scanCourses(coursesRoot: string): Course[] {
-  if (!existsSync(coursesRoot)) return [];
-  return readdirSync(coursesRoot)
-    .filter((d) => d.startsWith("learn-") && existsSync(join(coursesRoot, d)))
-    .map((d) => parseCourse(coursesRoot, d))
-    .filter((c) => c.lessons.length > 0)
-    .sort((a, b) => a.slug.localeCompare(b.slug));
-}
-
-export function toCardData(c: Course): CourseCardData {
-  return { slug: c.slug, title: c.title, intro: c.intro, domain: c.domain, tags: c.tags, lessonCount: c.lessons.length, minutes: c.minutes, hasLogo: c.hasLogo };
+export function toCardData(variant: CourseVariant): CourseCardData {
+  return { slug: variant.slug, title: variant.title, intro: variant.intro, domain: variant.domain, tags: variant.tags, lessonCount: variant.lessons.length, minutes: variant.minutes, hasLogo: variant.hasLogo };
 }
 
 // --- Course families and locale variants (2026-08-21 localization design) ---

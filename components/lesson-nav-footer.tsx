@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { withLang, type Lang } from "@/lib/i18n";
-import { siteCopy } from "@/lib/site-copy";
+import { localePath } from "@/lib/i18n";
+import { siteCopyFor, type Locale } from "@/lib/locales";
 
 // Footer "continue reading" card pair: previous left, next right; placeholder when one side is missing. Not sticky.
 const stripPrefix = (t: string) => t.replace(/^第\s*\d+\s*节\s*[:：]\s*/, "");
@@ -18,12 +18,12 @@ function NavCard({ href, kicker, title, align }: { href: string; kicker: string;
   );
 }
 
-export function LessonNavFooter({ courseSlug, prev, next, lang }: { courseSlug: string; prev?: { slug: string; title: string }; next?: { slug: string; title: string }; lang: Lang }) {
-  const copy = siteCopy[lang].reader.lessonNav;
+export function LessonNavFooter({ courseSlug, prev, next, lang }: { courseSlug: string; prev?: { slug: string; title: string }; next?: { slug: string; title: string }; lang: Locale }) {
+  const copy = siteCopyFor(lang).reader.lessonNav;
   return (
     <nav className="mt-16 flex gap-4 border-t pt-6" style={{ borderColor: "var(--border)" }}>
-      {prev ? <NavCard href={withLang(`/${courseSlug}/${prev.slug}`, lang)} kicker={copy.prev} title={stripPrefix(prev.title)} align="left" /> : <span className="flex-1" />}
-      {next ? <NavCard href={withLang(`/${courseSlug}/${next.slug}`, lang)} kicker={copy.next} title={stripPrefix(next.title)} align="right" /> : <span className="flex-1" />}
+      {prev ? <NavCard href={localePath(lang, `/${courseSlug}/${prev.slug}`)} kicker={copy.prev} title={stripPrefix(prev.title)} align="left" /> : <span className="flex-1" />}
+      {next ? <NavCard href={localePath(lang, `/${courseSlug}/${next.slug}`)} kicker={copy.next} title={stripPrefix(next.title)} align="right" /> : <span className="flex-1" />}
     </nav>
   );
 }

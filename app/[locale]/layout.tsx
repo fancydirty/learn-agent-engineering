@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono } from "next/font/google";
+import { notFound } from "next/navigation";
 import "katex/dist/katex.min.css";
 import "@xyflow/react/dist/style.css";
-import "./globals.css";
+import "../globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { ThemeBoot } from "@/components/theme-boot";
-import { scanCourses } from "@/lib/courses";
-import { coursesDir } from "@/lib/paths";
+import { isLocale, localeInfo } from "@/lib/locales";
 
 const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
@@ -18,19 +18,21 @@ const plexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://learn.agentmentor.dev"),
   title: { default: "Agent Mentor Learn", template: "%s | Agent Mentor Learn" },
-  description: "紧跟 Agent 生态变化的开源课程。读课程、做练习，把上下文直接复制给你的 Agent。",
+  description: "Open courses that track the Agent ecosystem. Read lessons, do exercises, and copy context straight to your Agent.",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const courseLanguages = Object.fromEntries(
-    scanCourses(coursesDir()).map((course) => [course.slug, course.lang]),
-  );
+export default async function LocaleLayout({
+  children,
+  params,
+}: Readonly<{ children: React.ReactNode; params: Promise<{ locale: string }> }>) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
 
   return (
-    <html lang="zh-CN" suppressHydrationWarning className={`h-full antialiased ${plexMono.variable}`}>
+    <html lang={localeInfo(locale).htmlLang} suppressHydrationWarning className={`h-full antialiased ${plexMono.variable}`}>
       <body className="min-h-full flex flex-col">
         <ThemeBoot />
-        <SiteHeader courseLanguages={courseLanguages} />
+        <SiteHeader locale={locale} />
         {children}
       </body>
     </html>

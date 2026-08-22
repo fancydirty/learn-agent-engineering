@@ -46,24 +46,3 @@ export function samePageLocaleLinks(family: CourseFamily, page: PageSpec): Local
     href: localePath(variant.locale, pageBarePath(family.slug, page)),
   }));
 }
-
-/**
- * @deprecated Legacy `?lang=zh` helper kept so pre-migration components still
- * compile. Removed in the locale-route task once its last callers are gone.
- */
-export function withLang(path: string, lang: Locale): string {
-  if (lang === "en") return stripLang(path);
-  const [base, hash] = path.split("#");
-  const sep = base.includes("?") ? "&" : "?";
-  return `${base}${sep}lang=${lang}${hash ? `#${hash}` : ""}`;
-}
-
-function stripLang(path: string): string {
-  const [base, hash] = path.split("#");
-  const [pathname, query] = base.split("?");
-  if (!query) return hash ? `${pathname}#${hash}` : pathname;
-  const params = new URLSearchParams(query);
-  params.delete("lang");
-  const next = params.toString();
-  return `${pathname}${next ? `?${next}` : ""}${hash ? `#${hash}` : ""}`;
-}
