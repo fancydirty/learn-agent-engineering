@@ -1,5 +1,5 @@
 import { pageVariants, type CourseFamily, type PageSpec } from "./courses";
-import { localeInfo, type Locale } from "./locales";
+import { localeInfo, LOCALES, type Locale } from "./locales";
 
 export type { Locale } from "./locales";
 
@@ -44,5 +44,15 @@ export function samePageLocaleLinks(family: CourseFamily, page: PageSpec): Local
     locale: variant.locale,
     label: localeInfo(variant.locale).label,
     href: localePath(variant.locale, pageBarePath(family.slug, page)),
+  }));
+}
+
+// The library page exists in every launch locale, so its switcher always lists
+// the full registry in registry order.
+export function coursesLocaleLinks(): LocaleLink[] {
+  return LOCALES.map((info) => ({
+    locale: info.code,
+    label: info.label,
+    href: localePath(info.code, "/courses"),
   }));
 }

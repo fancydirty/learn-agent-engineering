@@ -15,7 +15,7 @@ import { findCourseFamily, findCourseVariant, scanCourseFamilies } from "@/lib/c
 import { resolveFootnotes } from "@/lib/footnotes";
 import { parseFrontmatter } from "@/lib/frontmatter";
 import { loadGlossaryTerms } from "@/lib/glossary-load";
-import { localePath } from "@/lib/i18n";
+import { localePath, samePageLocaleLinks } from "@/lib/i18n";
 import { isLocale, siteCopyFor } from "@/lib/locales";
 import { coursesDir } from "@/lib/paths";
 import { tocFromMarkdown } from "@/lib/toc";
@@ -59,7 +59,7 @@ export default async function CoursePage({ params }: { params: Promise<{ locale:
   const firstLesson = variant.lessons[0];
 
   return (
-    <CoursePageShell>
+    <CoursePageShell locale={lang} languageLinks={samePageLocaleLinks(family, { kind: "course" })}>
       <CourseNav course={variant} current={null} />
       <main className="course-page-main min-w-0 flex-1">
         <Breadcrumbs items={[{ label: copy.reader.breadcrumbCourses, href: localePath(lang, "/courses") }, { label: variant.title }]} lang={lang} />

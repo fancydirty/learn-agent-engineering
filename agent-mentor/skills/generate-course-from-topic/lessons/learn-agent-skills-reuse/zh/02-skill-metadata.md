@@ -100,13 +100,13 @@ description: Turns customer interview transcripts into Chinese Markdown notes wi
   "choices": [
     {
       "id": "vague",
-      "text": "Helps with customer content.",
+      "text": "泛化描述：Helps with customer content.",
       "correct": false,
       "feedback": "它没有说明稳定输入、输出或触发关键词，Agent 很难判断何时加载。"
     },
     {
       "id": "specific",
-      "text": "Turns customer interview transcripts into Chinese Markdown notes with quotes and themes. Use when summarizing interviews, research calls, or transcript notes.",
+      "text": "明确能力与触发条件：Turns customer interview transcripts into Chinese Markdown notes with quotes and themes. Use when summarizing interviews, research calls, or transcript notes.",
       "correct": true,
       "feedback": "它同时写出能力、输出形态和触发场景，适合元数据层快速判断。"
     }

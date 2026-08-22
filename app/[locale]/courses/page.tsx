@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CourseTile } from "@/components/course-tile";
+import { SiteHeader } from "@/components/site-header";
 import { scanCourseFamilies, toCardData } from "@/lib/courses";
 import { groupCoursesByDomain } from "@/lib/domains";
+import { coursesLocaleLinks } from "@/lib/i18n";
 import { isLocale, LOCALES, siteCopyFor } from "@/lib/locales";
 import { coursesDir } from "@/lib/paths";
 
@@ -26,7 +28,9 @@ export default async function CoursesPage({ params }: { params: Promise<{ locale
   const groups = groupCoursesByDomain(variants);
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-6 py-14 sm:py-20">
+    <>
+      <SiteHeader locale={locale} languageLinks={coursesLocaleLinks()} />
+      <main className="mx-auto w-full max-w-5xl px-6 py-14 sm:py-20">
       <section className="mb-14 max-w-3xl">
         <p className="mb-4 text-xs font-medium tracking-[0.18em]" style={{ color: "var(--accent)", fontFamily: "var(--font-kicker), monospace" }}>
           AGENT MENTOR · OPEN COURSES
@@ -76,6 +80,7 @@ export default async function CoursesPage({ params }: { params: Promise<{ locale
           {copy.reader.library.ctaButton}
         </a>
       </aside>
-    </main>
+      </main>
+    </>
   );
 }

@@ -1,10 +1,11 @@
 import Link from "next/link";
+import { LanguageSwitcher } from "./language-switcher";
 import { StickyHeader } from "./sticky-header";
 import { ThemeToggle } from "./theme-toggle";
-import { localePath } from "@/lib/i18n";
+import { localePath, type LocaleLink } from "@/lib/i18n";
 import { siteCopyFor, type Locale } from "@/lib/locales";
 
-export function SiteHeader({ locale }: { locale: Locale }) {
+export function SiteHeader({ locale, languageLinks }: { locale: Locale; languageLinks: LocaleLink[] }) {
   const copy = siteCopyFor(locale);
 
   return (
@@ -31,6 +32,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
         >
           {copy.header.siteLink}
         </a>
+        <LanguageSwitcher links={languageLinks} current={locale} ariaLabel={copy.header.switcher} />
         <ThemeToggle lang={locale} />
       </header>
     </StickyHeader>

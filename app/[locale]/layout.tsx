@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import "katex/dist/katex.min.css";
 import "@xyflow/react/dist/style.css";
 import "../globals.css";
-import { SiteHeader } from "@/components/site-header";
 import { ThemeBoot } from "@/components/theme-boot";
 import { isLocale, localeInfo } from "@/lib/locales";
 
@@ -32,7 +31,6 @@ export default async function LocaleLayout({
     <html lang={localeInfo(locale).htmlLang} suppressHydrationWarning className={`h-full antialiased ${plexMono.variable}`}>
       <body className="min-h-full flex flex-col">
         <ThemeBoot />
-        <SiteHeader locale={locale} />
         {children}
       </body>
     </html>

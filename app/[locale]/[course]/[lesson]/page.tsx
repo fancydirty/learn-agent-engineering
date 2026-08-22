@@ -17,7 +17,7 @@ import { SelectionCopy } from "@/components/selection-copy";
 import { findCourseFamily, findCourseVariant, scanCourseFamilies } from "@/lib/courses";
 import { splitLesson, parseExercises } from "@/lib/exercises";
 import { resolveFootnotes } from "@/lib/footnotes";
-import { localePath } from "@/lib/i18n";
+import { localePath, samePageLocaleLinks } from "@/lib/i18n";
 import { lessonClipboardText } from "@/lib/lesson-clip";
 import { lessonKicker } from "@/lib/lesson-kicker";
 import { stripLessonNumberPrefix } from "@/lib/lesson-title";
@@ -82,7 +82,7 @@ export default async function LessonPage({ params }: { params: Promise<{ locale:
   };
 
   return (
-    <CoursePageShell>
+    <CoursePageShell locale={lang} languageLinks={samePageLocaleLinks(family, { kind: "lesson", lesson: current.slug })}>
       <CourseNav course={variant} current={current.slug} />
       <main className="course-page-main min-w-0 flex-1">
         <div className="flex flex-wrap items-start justify-between gap-3 sm:gap-4">

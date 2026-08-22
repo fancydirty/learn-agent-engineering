@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { findCourseFamily, findCourseVariant, scanCourseFamilies } from "@/lib/courses";
 import { coursesDir } from "@/lib/paths";
 import { parseFrontmatter } from "@/lib/frontmatter";
-import { localePath } from "@/lib/i18n";
+import { localePath, samePageLocaleLinks } from "@/lib/i18n";
 import { isLocale, siteCopyFor } from "@/lib/locales";
 import { CourseNav } from "@/components/course-nav";
 import { CourseMarkdown } from "@/components/course-markdown";
@@ -33,7 +33,7 @@ export default async function SourcesPage({
   if (!existsSync(sourcesPath)) notFound();
   const md = parseFrontmatter(readFileSync(sourcesPath, "utf8")).body;
   return (
-    <CoursePageShell>
+    <CoursePageShell locale={lang} languageLinks={samePageLocaleLinks(family, { kind: "sources" })}>
       <CourseNav course={variant} current={null} />
       <main className="course-page-main min-w-0 flex-1">
         <Breadcrumbs items={[{ label: copy.breadcrumbCourses, href: localePath(lang, "/courses") }, { label: variant.title, href: localePath(lang, `/${variant.slug}`) }, { label: copy.sources.breadcrumbSelf }]} lang={lang} />

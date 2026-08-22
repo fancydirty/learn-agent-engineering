@@ -2,7 +2,7 @@ import type { Locale } from "./locales";
 
 const zh = {
   a11y: { breadcrumb: "面包屑导航" },
-  header: { siteLink: "Agent Mentor 官网 ↗" },
+  header: { siteLink: "Agent Mentor 官网 ↗", switcher: "切换语言" },
   drill: {
     glossaryMore: "复制术语给 Agent →",
     deeper: "再深一层",
@@ -134,7 +134,7 @@ export type SiteCopy = typeof zh;
 
 const en: SiteCopy = {
   a11y: { breadcrumb: "Breadcrumb" },
-  header: { siteLink: "Agent Mentor ↗" },
+  header: { siteLink: "Agent Mentor ↗", switcher: "Switch language" },
   drill: {
     glossaryMore: "Copy term to Agent →",
     deeper: "One level deeper",
@@ -264,7 +264,7 @@ const en: SiteCopy = {
 
 const ja: SiteCopy = {
   a11y: { breadcrumb: "パンくずリスト" },
-  header: { siteLink: "Agent Mentor 公式サイト ↗" },
+  header: { siteLink: "Agent Mentor 公式サイト ↗", switcher: "言語を切り替え" },
   drill: {
     glossaryMore: "用語を Agent にコピー →",
     deeper: "もう一段深く",
@@ -394,7 +394,7 @@ const ja: SiteCopy = {
 
 const ko: SiteCopy = {
   a11y: { breadcrumb: "탐색 경로" },
-  header: { siteLink: "Agent Mentor 공식 사이트 ↗" },
+  header: { siteLink: "Agent Mentor 공식 사이트 ↗", switcher: "언어 변경" },
   drill: {
     glossaryMore: "용어를 Agent에 복사 →",
     deeper: "한 단계 더 깊이",
@@ -524,7 +524,7 @@ const ko: SiteCopy = {
 
 const es: SiteCopy = {
   a11y: { breadcrumb: "Navegación de migas de pan" },
-  header: { siteLink: "Sitio de Agent Mentor ↗" },
+  header: { siteLink: "Sitio de Agent Mentor ↗", switcher: "Cambiar idioma" },
   drill: {
     glossaryMore: "Copiar término al Agent →",
     deeper: "Un nivel más profundo",
@@ -654,7 +654,7 @@ const es: SiteCopy = {
 
 const ptBR: SiteCopy = {
   a11y: { breadcrumb: "Trilha de navegação" },
-  header: { siteLink: "Site do Agent Mentor ↗" },
+  header: { siteLink: "Site do Agent Mentor ↗", switcher: "Mudar idioma" },
   drill: {
     glossaryMore: "Copiar termo para o Agent →",
     deeper: "Um nível mais fundo",

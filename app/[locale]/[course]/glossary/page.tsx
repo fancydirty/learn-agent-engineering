@@ -7,7 +7,7 @@ import { coursesDir } from "@/lib/paths";
 import { parseSources } from "@/lib/footnotes";
 import { glossarySourceRef } from "@/lib/glossary-source";
 import { loadGlossaryTerms } from "@/lib/glossary-load";
-import { localePath } from "@/lib/i18n";
+import { localePath, samePageLocaleLinks } from "@/lib/i18n";
 import { isLocale, siteCopyFor } from "@/lib/locales";
 import { CourseNav } from "@/components/course-nav";
 import { Breadcrumbs } from "@/components/breadcrumbs";
@@ -39,7 +39,7 @@ export default async function GlossaryPage({
   const sourcesMd = existsSync(join(variant.dir, "sources.md")) ? readFileSync(join(variant.dir, "sources.md"), "utf8") : "";
   const sources = parseSources(sourcesMd);
   return (
-    <CoursePageShell>
+    <CoursePageShell locale={lang} languageLinks={samePageLocaleLinks(family, { kind: "glossary" })}>
       <CourseNav course={variant} current={null} />
       <main className="course-page-main min-w-0 flex-1">
         <Breadcrumbs items={[{ label: copy.breadcrumbCourses, href: localePath(lang, "/courses") }, { label: variant.title, href: localePath(lang, `/${variant.slug}`) }, { label: copy.glossary.breadcrumbSelf }]} lang={lang} />

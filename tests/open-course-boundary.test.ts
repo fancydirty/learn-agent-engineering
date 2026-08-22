@@ -158,6 +158,9 @@ describe("open course site boundary", () => {
     expect(header).not.toContain("当前 Agent 课程");
     expect(header).not.toContain("Current Agent courses");
 
+    // The header renders the same-page language switcher.
+    expect(header).toContain("LanguageSwitcher");
+
     // Desktop page outline stays.
     expect(outline).toContain("lg:block");
   });

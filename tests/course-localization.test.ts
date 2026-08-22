@@ -8,7 +8,7 @@ import {
   pageVariants,
   scanCourseFamilies,
 } from "@/lib/courses";
-import { localePath, samePageLocaleLinks } from "@/lib/i18n";
+import { localePath, samePageLocaleLinks, coursesLocaleLinks } from "@/lib/i18n";
 import { isLocale, localeInfo, LOCALES, siteCopyFor, DEFAULT_LOCALE } from "@/lib/locales";
 
 describe("locale registry", () => {
@@ -160,6 +160,27 @@ describe("pageVariants", () => {
     expect(pageVariants(family, { kind: "lesson", lesson: "02-beta" }).map((v) => v.locale)).toEqual(["zh"]);
     expect(pageVariants(family, { kind: "glossary" }).map((v) => v.locale)).toEqual(["zh"]);
     expect(pageVariants(family, { kind: "sources" }).map((v) => v.locale)).toEqual(["en", "zh"]);
+  });
+});
+
+describe("coursesLocaleLinks", () => {
+  it("links the library page across all six launch locales", () => {
+    expect(coursesLocaleLinks().map((l) => l.href)).toEqual([
+      "/en/courses",
+      "/zh/courses",
+      "/ja/courses",
+      "/ko/courses",
+      "/es/courses",
+      "/pt-BR/courses",
+    ]);
+    expect(coursesLocaleLinks().map((l) => l.label)).toEqual([
+      "English",
+      "简体中文",
+      "日本語",
+      "한국어",
+      "Español",
+      "Português (Brasil)",
+    ]);
   });
 });
 
