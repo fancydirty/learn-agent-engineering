@@ -10,6 +10,8 @@ import {
 } from "@/lib/courses";
 import { localePath, samePageLocaleLinks, coursesLocaleLinks } from "@/lib/i18n";
 import { isLocale, localeInfo, LOCALES, siteCopyFor, DEFAULT_LOCALE } from "@/lib/locales";
+import { guardCourseFamily } from "../scripts/course-family-guard.mjs";
+import { stripLessonNumberPrefix } from "@/lib/lesson-title";
 
 describe("locale registry", () => {
   it("lists exactly the six launch locales in order", () => {
@@ -210,5 +212,117 @@ describe("samePageLocaleLinks", () => {
       "/en/demo/sources",
       "/zh/demo/sources",
     ]);
+  });
+});
+
+describe("lesson number prefixes across locales", () => {
+  it("strips every launch locale's counter from H1 titles", () => {
+    expect(stripLessonNumberPrefix("第 2 讲：SKILL.md 元数据结构")).toBe("SKILL.md 元数据结构");
+    expect(stripLessonNumberPrefix("Lesson 2: SKILL.md Metadata")).toBe("SKILL.md Metadata");
+    expect(stripLessonNumberPrefix("第2回：SKILL.md のメタデータ")).toBe("SKILL.md のメタデータ");
+    expect(stripLessonNumberPrefix("제2강: SKILL.md 메타데이터")).toBe("SKILL.md 메타데이터");
+    expect(stripLessonNumberPrefix("Lección 2: Metadatos de SKILL.md")).toBe("Metadatos de SKILL.md");
+    expect(stripLessonNumberPrefix("Lição 2: Metadados do SKILL.md")).toBe("Metadados do SKILL.md");
+  });
+});
+
+// --- course family guard ---
+
+const guardRoot = mkdtempSync(join(tmpdir(), "course-family-guard-"));
+
+function writeGuardFixture(rel: string, content: string) {
+  const path = join(guardRoot, rel);
+  mkdirSync(join(path, ".."), { recursive: true });
+  writeFileSync(path, content);
+}
+
+const SKILL_ARTIFACT = `---
+name: interview-notes
+description: Turns customer interview transcripts into Chinese Markdown notes with quotes and themes. Use when summarizing interviews, research calls, or transcript notes.
+---
+
+# Interview Notes
+`;
+
+function guardReadme(lang: string, title: string) {
+  return `---\ndomain: Agent Engineering\ntags: [Agent Skills]\nlang: ${lang}\n---\n# ${title}\n\nIntro.\n\n| # | 主题 |\n|---|---|\n| 01 | [一](./01-alpha.md) |\n| 02 | [二](./02-beta.md) |\n`;
+}
+
+function guardLesson(title: string, artifact: string, blockId: string) {
+  return `# ${title}\n\n## 背景\n\n正文解释。\n\n## 示例\n\n\`\`\`yaml\n${artifact}\`\`\`\n\n## 练习前\n\n\`\`\`agentmentor-check\n{"id": "${blockId}", "label": "检查理解", "prompt": "哪个描述更具体？", "whyHere": "检查点。", "mode": "single", "choices": [{"id": "a", "text": "泛化描述：Helps with customer content.", "correct": false, "feedback": "缺少触发条件。"}, {"id": "b", "text": "明确能力：Turns customer interview transcripts into notes.", "correct": true, "feedback": "能力触发俱全。"}]}\n\`\`\`\n\n## 练习\n\n练习内容。\n\n## 小结\n\n收尾。\n`;
+}
+
+function buildFamily(name: string, options: { lessonRename?: string; translateArtifact?: boolean; langMismatch?: boolean; unknownLocale?: boolean; missingFile?: string; idMismatch?: boolean }) {
+  const base = `learn-${name}`;
+  writeGuardFixture(`${base}/logo.svg`, "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\"><path d=\"M4 4h40v40H4z\" fill=\"none\" stroke=\"currentColor\"/></svg>\n");
+  for (const locale of ["zh", "en"]) {
+    const lang = options.langMismatch && locale === "en" ? "zh" : locale;
+    writeGuardFixture(`${base}/${locale}/README.md`, guardReadme(lang, `Demo ${locale}`));
+    const zhArtifact = options.translateArtifact && locale === "zh"
+      ? SKILL_ARTIFACT.replace("Turns customer interview transcripts into Chinese Markdown notes with quotes and themes. Use when summarizing interviews, research calls, or transcript notes.", "把客户访谈 transcript 整理成中文纪要。")
+      : SKILL_ARTIFACT;
+    const secondId = options.idMismatch && locale === "en" ? "different-id" : "shared-check-2";
+    writeGuardFixture(`${base}/${locale}/01-alpha.md`, guardLesson(`Alpha ${locale}`, zhArtifact, "shared-check-1"));
+    writeGuardFixture(`${base}/${locale}/${options.lessonRename && locale === "en" ? options.lessonRename : "02-beta.md"}`, guardLesson(`Beta ${locale}`, SKILL_ARTIFACT, secondId));
+    if (options.missingFile !== "glossary.json" || locale !== "en") {
+      writeGuardFixture(`${base}/${locale}/glossary.json`, JSON.stringify([{ term: "术语", def: "定义", source: "https://example.com" }]));
+    }
+    writeGuardFixture(`${base}/${locale}/sources.md`, "# 来源\n\n## S1 — Spec\n\n- URL: https://example.com\n");
+    writeGuardFixture(`${base}/${locale}/agentmentor.json`, JSON.stringify({ schemaVersion: 2 }));
+  }
+  if (options.unknownLocale) {
+    writeGuardFixture(`${base}/fr/README.md`, guardReadme("fr", "Démo"));
+    writeGuardFixture(`${base}/fr/01-alpha.md`, guardLesson("Alpha fr", SKILL_ARTIFACT, "shared-check-1"));
+  }
+  return join(guardRoot, base);
+}
+
+afterAll(() => {
+  rmSync(guardRoot, { recursive: true, force: true });
+});
+
+describe("course family guard", () => {
+  it("passes a consistent two-locale family", () => {
+    const dir = buildFamily("consistent", {});
+    const result = guardCourseFamily(dir);
+    expect(result.violations).toEqual([]);
+    expect(result.ok).toBe(true);
+    expect(result.warnings.join("\n")).toContain("首发六语尚缺");
+  });
+
+  it("fails when a variant misses required files", () => {
+    const result = guardCourseFamily(buildFamily("missing-file", { missingFile: "glossary.json" }));
+    expect(result.ok).toBe(false);
+    expect(result.violations.some((v) => v.includes("en") && v.includes("glossary.json"))).toBe(true);
+  });
+
+  it("fails when lesson slug sets differ across variants", () => {
+    const result = guardCourseFamily(buildFamily("slug-mismatch", { lessonRename: "02-other.md" }));
+    expect(result.ok).toBe(false);
+    expect(result.violations.some((v) => v.includes("课节文件集合"))).toBe(true);
+  });
+
+  it("fails when a SKILL.md frontmatter block is translated", () => {
+    const result = guardCourseFamily(buildFamily("translated-artifact", { translateArtifact: true }));
+    expect(result.ok).toBe(false);
+    expect(result.violations.some((v) => v.includes("zh/01-alpha.md") && v.includes("不得翻译"))).toBe(true);
+  });
+
+  it("fails when README lang disagrees with the locale directory", () => {
+    const result = guardCourseFamily(buildFamily("lang-mismatch", { langMismatch: true }));
+    expect(result.ok).toBe(false);
+    expect(result.violations.some((v) => v.includes("en") && v.includes("frontmatter lang"))).toBe(true);
+  });
+
+  it("fails on locale directories outside the registry", () => {
+    const result = guardCourseFamily(buildFamily("unknown-locale", { unknownLocale: true }));
+    expect(result.ok).toBe(false);
+    expect(result.violations.some((v) => v.includes("fr"))).toBe(true);
+  });
+
+  it("fails when interaction block ids diverge across variants", () => {
+    const result = guardCourseFamily(buildFamily("id-mismatch", { idMismatch: true }));
+    expect(result.ok).toBe(false);
+    expect(result.violations.some((v) => v.includes("互动块 id"))).toBe(true);
   });
 });

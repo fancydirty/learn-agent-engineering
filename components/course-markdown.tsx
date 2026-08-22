@@ -176,7 +176,7 @@ export function CourseMarkdown({
         // static markdown — disable parseIncompleteMarkdown to avoid escaped fence JSON
         parseIncompleteMarkdown={false}
         remarkPlugins={[remarkGfm, remarkMath]}
-        rehypePlugins={[rehypeDetailsWhitelist, rehypeRaw, rehypeKatex, rehypeSlug, [rehypeRewriteMdLinks, { courseSlug }], rehypeFixFootnoteLinks]}
+        rehypePlugins={[rehypeDetailsWhitelist, rehypeRaw, rehypeKatex, rehypeSlug, [rehypeRewriteMdLinks, { courseSlug, locale: lang }], rehypeFixFootnoteLinks]}
         plugins={plugins}
         controls={streamdownControls}
         linkSafety={{ enabled: false }}

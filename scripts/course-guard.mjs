@@ -1879,7 +1879,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     ...checkGlossaryBodyPresence(dir),
     ...checkGlossaryDensity(dir),
   ];
-  if (!existsSync(join(dir, "logo.svg"))) {
+  const familyLogo = basename(dirname(dir)).startsWith("learn-") && existsSync(join(dirname(dir), "logo.svg"));
+  if (!existsSync(join(dir, "logo.svg")) && !familyLogo) {
     warnings.push("logo.svg missing — courses minted after 2026-07 should carry an emblem (authoring guide Stage 7)");
   }
 

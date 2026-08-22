@@ -5,9 +5,11 @@
 import { useState } from "react";
 import { CopyGlyph } from "@/components/motion/copy-glyph";
 import type { Lang } from "@/lib/i18n";
+import { siteCopyFor } from "@/lib/locales";
 
 export function CopyMarkdownText({ text, lang }: { text: string; lang: Lang }) {
   const [label, setLabel] = useState<"idle" | "done" | "fail">("idle");
+  const copyText = siteCopyFor(lang);
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(text);
@@ -17,9 +19,9 @@ export function CopyMarkdownText({ text, lang }: { text: string; lang: Lang }) {
     }
     window.setTimeout(() => setLabel("idle"), 1600);
   };
-  const idle = lang === "zh" ? "复制给 Agent" : "Copy to Agent";
-  const done = lang === "zh" ? "已复制" : "Copied";
-  const fail = lang === "zh" ? "复制失败" : "Copy failed";
+  const idle = copyText.blocks.common.copyToAgent;
+  const done = copyText.reader.copy.copied;
+  const fail = copyText.reader.copy.failed;
   return (
     <button
       type="button"

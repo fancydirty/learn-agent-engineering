@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import type { Lang } from "@/lib/i18n";
+import { siteCopyFor } from "@/lib/locales";
 import { buildSelectionAgentPrompt, type DrillContext } from "@/lib/drilldown";
 
 export function SelectionCopy({ ctx, lang }: { ctx: DrillContext; lang: Lang }) {
@@ -10,7 +11,8 @@ export function SelectionCopy({ ctx, lang }: { ctx: DrillContext; lang: Lang }) 
     const root = document.querySelector(".reading-prose");
     if (!root) return;
 
-    const idle = lang === "zh" ? "复制给 Agent" : "Copy to Agent";
+    const copyDeck = siteCopyFor(lang);
+    const idle = copyDeck.blocks.common.copyToAgent;
     const chip = document.createElement("button");
     chip.type = "button";
     chip.className = "selection-ask-chip";
@@ -50,9 +52,9 @@ export function SelectionCopy({ ctx, lang }: { ctx: DrillContext; lang: Lang }) 
       if (!current) return;
       try {
         await navigator.clipboard.writeText(buildSelectionAgentPrompt(current, ctx, lang));
-        chip.textContent = lang === "zh" ? "已复制" : "Copied";
+        chip.textContent = copyDeck.reader.copy.copied;
       } catch {
-        chip.textContent = lang === "zh" ? "复制失败" : "Copy failed";
+        chip.textContent = copyDeck.reader.copy.failed;
       }
       window.setTimeout(() => {
         chip.textContent = idle;

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import type { TocItem } from "@/lib/toc";
 import type { Lang } from "@/lib/i18n";
+import { siteCopyFor } from "@/lib/locales";
 
 // Scroll-spy: pick the last heading whose top has crossed a top band.
 // IntersectionObserver with a narrow rootMargin fails when lesson blocks
@@ -36,11 +37,11 @@ export function OnThisPage({ items, lang }: { items: TocItem[]; lang: Lang }) {
   }, [items]);
 
   if (!items.length) return null;
-  const label = lang === "zh" ? "本页目录" : "On this page";
+  const label = siteCopyFor(lang).reader.onThisPage;
   return (
     <aside className="sticky top-24 hidden h-fit w-44 shrink-0 lg:block xl:w-48" data-on-this-page="" aria-label={label}>
       <div style={{ fontSize: 11, letterSpacing: ".05em", textTransform: "uppercase", color: "var(--ink-subtle)", marginBottom: 8 }}>
-        {lang === "zh" ? "本页目录" : "On this page"}
+        {label}
       </div>
       <ul style={{ listStyle: "none", margin: 0, padding: 0, fontSize: 13, lineHeight: 1.5 }}>
         {items.map((it) => (

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { nextTheme, normalizeTheme, type Theme } from "@/lib/theme";
 import type { Lang } from "@/lib/i18n";
+import { siteCopyFor } from "@/lib/locales";
 
 // Always paint a button. Reading the real theme happens after mount so SSR HTML
 // matches the first client render (both default to the light-mode moon icon).
@@ -13,6 +14,7 @@ export function ThemeToggle({ lang = "zh" }: { lang?: Lang }) {
   }, []);
 
   const goingDark = theme === "light";
+  const a11y = siteCopyFor(lang).a11y;
   const toggle = () => {
     const next = nextTheme(theme);
     document.documentElement.setAttribute("data-theme", next);
@@ -24,11 +26,7 @@ export function ThemeToggle({ lang = "zh" }: { lang?: Lang }) {
     <button
       type="button"
       onClick={toggle}
-      aria-label={
-        lang === "zh"
-          ? goingDark ? "切换到深色模式" : "切换到浅色模式"
-          : goingDark ? "Switch to dark mode" : "Switch to light mode"
-      }
+      aria-label={goingDark ? a11y.themeToDark : a11y.themeToLight}
       data-theme-toggle=""
       className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border transition-colors motion-reduce:transition-none hover:bg-[var(--card-hover)]"
       style={{ background: "var(--card)", borderColor: "var(--border)", color: "var(--ink-strong)", boxShadow: "var(--shadow-card)" }}

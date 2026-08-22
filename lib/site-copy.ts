@@ -1,7 +1,7 @@
 import type { Locale } from "./locales";
 
 const zh = {
-  a11y: { breadcrumb: "面包屑导航" },
+  a11y: { breadcrumb: "面包屑导航", themeToDark: "切换到深色模式", themeToLight: "切换到浅色模式" },
   header: { siteLink: "Agent Mentor 官网 ↗", switcher: "切换语言" },
   drill: {
     glossaryMore: "复制术语给 Agent →",
@@ -12,6 +12,9 @@ const zh = {
   },
   reader: {
     breadcrumbCourses: "课程",
+    kicker: (n: number, total: number) => `第 ${n} / ${total} 节`,
+    onThisPage: "本页目录",
+    actions: { group: "本课动作", share: "分享", shared: "已分享" },
     library: {
       title: "把正在发生的 Agent 变化，讲成能立刻上手的课。",
       intro: "这里只收录与 Agent 直接相关、仍在快速变化的选题。课程免费阅读，练习、代码和选中文本都能一键复制给 Claude Code、Codex 或其他 Agent 继续做。",
@@ -133,7 +136,7 @@ const zh = {
 export type SiteCopy = typeof zh;
 
 const en: SiteCopy = {
-  a11y: { breadcrumb: "Breadcrumb" },
+  a11y: { breadcrumb: "Breadcrumb", themeToDark: "Switch to dark mode", themeToLight: "Switch to light mode" },
   header: { siteLink: "Agent Mentor ↗", switcher: "Switch language" },
   drill: {
     glossaryMore: "Copy term to Agent →",
@@ -144,6 +147,9 @@ const en: SiteCopy = {
   },
   reader: {
     breadcrumbCourses: "Courses",
+    kicker: (n: number, total: number) => `Lesson ${n} of ${total}`,
+    onThisPage: "On this page",
+    actions: { group: "Lesson actions", share: "Share", shared: "Shared" },
     library: {
       title: "Agent changes, turned into courses you can use right away.",
       intro: "Only topics that are directly about Agents and still moving fast. Courses are free; exercises, code, and selected text copy straight into Claude Code, Codex, or your Agent of choice.",
@@ -263,7 +269,7 @@ const en: SiteCopy = {
 };
 
 const ja: SiteCopy = {
-  a11y: { breadcrumb: "パンくずリスト" },
+  a11y: { breadcrumb: "パンくずリスト", themeToDark: "ダークモードに切り替え", themeToLight: "ライトモードに切り替え" },
   header: { siteLink: "Agent Mentor 公式サイト ↗", switcher: "言語を切り替え" },
   drill: {
     glossaryMore: "用語を Agent にコピー →",
@@ -274,6 +280,9 @@ const ja: SiteCopy = {
   },
   reader: {
     breadcrumbCourses: "コース",
+    kicker: (n: number, total: number) => `第 ${n} 回 / 全 ${total} 回`,
+    onThisPage: "このページの目次",
+    actions: { group: "レッスン操作", share: "共有", shared: "共有しました" },
     library: {
       title: "いま起きている Agent の変化を、すぐ使えるレッスンに。",
       intro: "Agent に直接関係し、いまも急速に変化しているテーマだけを収録しています。コースはすべて無料。練習・コード・選択したテキストはワンクリックで Claude Code、Codex などの Agent にコピーして続けられます。",
@@ -393,7 +402,7 @@ const ja: SiteCopy = {
 };
 
 const ko: SiteCopy = {
-  a11y: { breadcrumb: "탐색 경로" },
+  a11y: { breadcrumb: "탐색 경로", themeToDark: "다크 모드로 전환", themeToLight: "라이트 모드로 전환" },
   header: { siteLink: "Agent Mentor 공식 사이트 ↗", switcher: "언어 변경" },
   drill: {
     glossaryMore: "용어를 Agent에 복사 →",
@@ -404,6 +413,9 @@ const ko: SiteCopy = {
   },
   reader: {
     breadcrumbCourses: "코스",
+    kicker: (n: number, total: number) => `${n} / ${total}강`,
+    onThisPage: "이 페이지 목차",
+    actions: { group: "레슨 작업", share: "공유", shared: "공유됨" },
     library: {
       title: "지금 일어나는 Agent 변화를, 바로 써먹는 강의로.",
       intro: "Agent와 직접 관련되고 아직도 빠르게 변화하는 주제만 다룹니다. 강의는 무료이며, 연습·코드·선택한 텍스트를 Claude Code, Codex 등의 Agent에 한 번에 복사해 이어갈 수 있습니다.",
@@ -523,7 +535,7 @@ const ko: SiteCopy = {
 };
 
 const es: SiteCopy = {
-  a11y: { breadcrumb: "Navegación de migas de pan" },
+  a11y: { breadcrumb: "Navegación de migas de pan", themeToDark: "Cambiar a modo oscuro", themeToLight: "Cambiar a modo claro" },
   header: { siteLink: "Sitio de Agent Mentor ↗", switcher: "Cambiar idioma" },
   drill: {
     glossaryMore: "Copiar término al Agent →",
@@ -534,6 +546,9 @@ const es: SiteCopy = {
   },
   reader: {
     breadcrumbCourses: "Cursos",
+    kicker: (n: number, total: number) => `Lección ${n} de ${total}`,
+    onThisPage: "En esta página",
+    actions: { group: "Acciones de la lección", share: "Compartir", shared: "Compartido" },
     library: {
       title: "Los cambios del mundo Agent, convertidos en cursos prácticos.",
       intro: "Solo temas directamente relacionados con Agent y que aún cambian rápido. Los cursos son gratuitos: ejercicios, código y texto seleccionado se copian con un clic a Claude Code, Codex u otro Agent para continuar.",
@@ -653,7 +668,7 @@ const es: SiteCopy = {
 };
 
 const ptBR: SiteCopy = {
-  a11y: { breadcrumb: "Trilha de navegação" },
+  a11y: { breadcrumb: "Trilha de navegação", themeToDark: "Mudar para modo escuro", themeToLight: "Mudar para modo claro" },
   header: { siteLink: "Site do Agent Mentor ↗", switcher: "Mudar idioma" },
   drill: {
     glossaryMore: "Copiar termo para o Agent →",
@@ -664,6 +679,9 @@ const ptBR: SiteCopy = {
   },
   reader: {
     breadcrumbCourses: "Cursos",
+    kicker: (n: number, total: number) => `Lição ${n} de ${total}`,
+    onThisPage: "Nesta página",
+    actions: { group: "Ações da lição", share: "Compartilhar", shared: "Compartilhado" },
     library: {
       title: "As mudanças do ecossistema Agent, em cursos prontos para usar.",
       intro: "Só temas diretamente ligados a Agent e ainda em rápida mudança. Os cursos são gratuitos: exercícios, código e texto selecionado podem ser copiados com um clique para o Claude Code, Codex ou outro Agent continuar.",
