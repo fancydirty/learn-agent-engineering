@@ -249,7 +249,7 @@ git commit -m "feat: add the first-real-agent-task course (en)"
 
 ### Task 2: 课程 `brief-an-agent`（L1-2，英文）
 
-同 Task 1 的十步流程，替换课程规格如下：
+**课程规格：**
 
 - 目标读者：agent 能跑起来、但产出经常"不是我要的"的人。
 - 终点任务：把一个真实的模糊需求改写成含验收条件的 brief，并用它跑通一次 agent 任务。
@@ -259,13 +259,67 @@ git commit -m "feat: add the first-real-agent-task course (en)"
 - 边界：不写提示词技巧清单；聚焦"把需求说清楚"这一件事。
 - 与 L1-1 的边界：L1-1 讲怎么委托一次任务，本课讲怎么把需求说到 agent 不会做错。
 
-验收命令中的 slug 为 `learn-brief-an-agent`。
+**执行步骤：**
+
+- [ ] **Step 1: 读产课流程**
+
+按顺序读：`agent-mentor/skills/generate-course-from-topic/SKILL.md`、`course-authoring-guide.md`、`docs/learner-model-contract.md`、`docs/interaction-selection-guide.md`、`docs/course-quality-rubric.md`、`templates/` 下的全部模板。另读已交付的 `lessons/learn-agent-skills-reuse/en/` 作为质量基准。
+
+- [ ] **Step 2: Stage 2 实时抓源**
+
+先读 `agent-learning-sources.md` 注册表，再实时抓取一手源（见本任务"必查来源"）。至少 5 个来源，优先官方文档与一手工程文。每条都要当次打开确认现状，不得凭记忆。关键事实用两个独立来源交叉验证。`sources.md` 顶部记录用到的注册表 id。
+
+- [ ] **Step 3: Stage 3 大纲（不回头确认）**
+
+按本任务给定的讲题方向定讲数，构建先修 DAG。不要停下来找人确认——把"大纲由设计文档预先确定、未经逐门人工确认"写进 `agentmentor.json.qualitySelfReview.weakestPoints`。
+
+- [ ] **Step 4: 先落最小完整骨架**
+
+一次性创建全部文件（README、各讲、sources、glossary、agentmentor、family 根 logo），内容可粗但结构完整。立即 `ls -la` 确认它们真的在目标目录里。
+
+- [ ] **Step 5: Stage 4 写正文**
+
+用 `templates/lesson-template.md`。每讲从读者的真实失败或决策开场，具体到抽象，含 worked example → faded example，收尾是读者能对 agent 做的一个动作。每讲收束标题必须各不相同。互动块每讲 0–1 个，全课至少一个 `agentmentor-action`。
+
+- [ ] **Step 6: Stage 6 练习**
+
+每讲练习含：做法引导、可量化的完成标准、参考答案、渐进提示。练习指向读者自己的 IDE/终端/纸笔，不假设内嵌运行环境。
+
+- [ ] **Step 7: 跑闸门并修到干净**
+
+```bash
+cd /Users/dirtyfancy/projects/agent-mentor-open-courses
+node scripts/course-guard.mjs agent-mentor/skills/generate-course-from-topic/lessons/learn-brief-an-agent/en
+node scripts/course-interaction-report.mjs agent-mentor/skills/generate-course-from-topic/lessons/learn-brief-an-agent/en
+```
+
+Expected: `GUARD ok ✓` 且 `warnings: - none`。glossary 每个 term 必须在正文逐字出现，写脚本自查。
+
+- [ ] **Step 8: Stage 5 验收自评**
+
+如实填 `qualitySelfReview`（至少 3 条弱点）与 `acceptanceReview`（六维打分、终点任务、逐块互动说明、来源复核）。六维任一低于 4 就回去改课，不要调分过关。`decision` 必须是 `ship`。
+
+- [ ] **Step 9: 站点构建验证**
+
+```bash
+npm test && npm run build
+```
+
+Expected: 测试全过；构建产物出现 `/en/brief-an-agent` 及其课节路由。
+
+- [ ] **Step 10: 提交**
+
+```bash
+git add -A agent-mentor
+git commit -m "feat: add the brief-an-agent course (en)"
+```
+
 
 ---
 
 ### Task 3: 课程 `agent-context-engineering`（L2-2，英文）
 
-同 Task 1 的十步流程，替换课程规格如下：
+**课程规格：**
 
 - 目标读者：长任务里 agent 开始遗忘、重复、偏航的使用者。
 - 终点任务：为一个真实长任务设计上下文预算，并用外部笔记 + 压缩把它跑完。
@@ -275,13 +329,67 @@ git commit -m "feat: add the first-real-agent-task course (en)"
 - 与竞品边界：竞品第 5 讲触及跨会话连续性；本课不讲 harness 构件，只讲上下文本身的经济学与四杠杆决策。
 - 与 L3-3 的边界：本课把子代理当作**上下文隔离手段**来讲；L3-3 才讲编排与并行。
 
-验收命令中的 slug 为 `learn-agent-context-engineering`。
+**执行步骤：**
+
+- [ ] **Step 1: 读产课流程**
+
+按顺序读：`agent-mentor/skills/generate-course-from-topic/SKILL.md`、`course-authoring-guide.md`、`docs/learner-model-contract.md`、`docs/interaction-selection-guide.md`、`docs/course-quality-rubric.md`、`templates/` 下的全部模板。另读已交付的 `lessons/learn-agent-skills-reuse/en/` 作为质量基准。
+
+- [ ] **Step 2: Stage 2 实时抓源**
+
+先读 `agent-learning-sources.md` 注册表，再实时抓取一手源（见本任务"必查来源"）。至少 5 个来源，优先官方文档与一手工程文。每条都要当次打开确认现状，不得凭记忆。关键事实用两个独立来源交叉验证。`sources.md` 顶部记录用到的注册表 id。
+
+- [ ] **Step 3: Stage 3 大纲（不回头确认）**
+
+按本任务给定的讲题方向定讲数，构建先修 DAG。不要停下来找人确认——把"大纲由设计文档预先确定、未经逐门人工确认"写进 `agentmentor.json.qualitySelfReview.weakestPoints`。
+
+- [ ] **Step 4: 先落最小完整骨架**
+
+一次性创建全部文件（README、各讲、sources、glossary、agentmentor、family 根 logo），内容可粗但结构完整。立即 `ls -la` 确认它们真的在目标目录里。
+
+- [ ] **Step 5: Stage 4 写正文**
+
+用 `templates/lesson-template.md`。每讲从读者的真实失败或决策开场，具体到抽象，含 worked example → faded example，收尾是读者能对 agent 做的一个动作。每讲收束标题必须各不相同。互动块每讲 0–1 个，全课至少一个 `agentmentor-action`。
+
+- [ ] **Step 6: Stage 6 练习**
+
+每讲练习含：做法引导、可量化的完成标准、参考答案、渐进提示。练习指向读者自己的 IDE/终端/纸笔，不假设内嵌运行环境。
+
+- [ ] **Step 7: 跑闸门并修到干净**
+
+```bash
+cd /Users/dirtyfancy/projects/agent-mentor-open-courses
+node scripts/course-guard.mjs agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-context-engineering/en
+node scripts/course-interaction-report.mjs agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-context-engineering/en
+```
+
+Expected: `GUARD ok ✓` 且 `warnings: - none`。glossary 每个 term 必须在正文逐字出现，写脚本自查。
+
+- [ ] **Step 8: Stage 5 验收自评**
+
+如实填 `qualitySelfReview`（至少 3 条弱点）与 `acceptanceReview`（六维打分、终点任务、逐块互动说明、来源复核）。六维任一低于 4 就回去改课，不要调分过关。`decision` 必须是 `ship`。
+
+- [ ] **Step 9: 站点构建验证**
+
+```bash
+npm test && npm run build
+```
+
+Expected: 测试全过；构建产物出现 `/en/agent-context-engineering` 及其课节路由。
+
+- [ ] **Step 10: 提交**
+
+```bash
+git add -A agent-mentor
+git commit -m "feat: add the agent-context-engineering course (en)"
+```
+
 
 ---
 
 ### Task 4: 课程 `verify-agent-output`（L2-3，英文）
 
-同 Task 1 的十步流程，替换课程规格如下：
+**课程规格：**
 
 - 目标读者：已在用 agent 产出、但不知道何时能信任产出的人。
 - 终点任务：为自己的真实项目建立三层验证闸门，并用它推翻一次 agent 的"已完成"声明。
@@ -294,13 +402,67 @@ git commit -m "feat: add the first-real-agent-task course (en)"
   - 必须有一个判断类互动块（`agentmentor-check` 或 `agentmentor-order`），让读者判断"这个完成声明该不该信"。
 - 与 L1-1 的边界：L1-1 讲怎么读 agent 的动作；本课讲怎么建立不依赖人工阅读的验证闸门。
 
-验收命令中的 slug 为 `learn-verify-agent-output`。
+**执行步骤：**
+
+- [ ] **Step 1: 读产课流程**
+
+按顺序读：`agent-mentor/skills/generate-course-from-topic/SKILL.md`、`course-authoring-guide.md`、`docs/learner-model-contract.md`、`docs/interaction-selection-guide.md`、`docs/course-quality-rubric.md`、`templates/` 下的全部模板。另读已交付的 `lessons/learn-agent-skills-reuse/en/` 作为质量基准。
+
+- [ ] **Step 2: Stage 2 实时抓源**
+
+先读 `agent-learning-sources.md` 注册表，再实时抓取一手源（见本任务"必查来源"）。至少 5 个来源，优先官方文档与一手工程文。每条都要当次打开确认现状，不得凭记忆。关键事实用两个独立来源交叉验证。`sources.md` 顶部记录用到的注册表 id。
+
+- [ ] **Step 3: Stage 3 大纲（不回头确认）**
+
+按本任务给定的讲题方向定讲数，构建先修 DAG。不要停下来找人确认——把"大纲由设计文档预先确定、未经逐门人工确认"写进 `agentmentor.json.qualitySelfReview.weakestPoints`。
+
+- [ ] **Step 4: 先落最小完整骨架**
+
+一次性创建全部文件（README、各讲、sources、glossary、agentmentor、family 根 logo），内容可粗但结构完整。立即 `ls -la` 确认它们真的在目标目录里。
+
+- [ ] **Step 5: Stage 4 写正文**
+
+用 `templates/lesson-template.md`。每讲从读者的真实失败或决策开场，具体到抽象，含 worked example → faded example，收尾是读者能对 agent 做的一个动作。每讲收束标题必须各不相同。互动块每讲 0–1 个，全课至少一个 `agentmentor-action`。
+
+- [ ] **Step 6: Stage 6 练习**
+
+每讲练习含：做法引导、可量化的完成标准、参考答案、渐进提示。练习指向读者自己的 IDE/终端/纸笔，不假设内嵌运行环境。
+
+- [ ] **Step 7: 跑闸门并修到干净**
+
+```bash
+cd /Users/dirtyfancy/projects/agent-mentor-open-courses
+node scripts/course-guard.mjs agent-mentor/skills/generate-course-from-topic/lessons/learn-verify-agent-output/en
+node scripts/course-interaction-report.mjs agent-mentor/skills/generate-course-from-topic/lessons/learn-verify-agent-output/en
+```
+
+Expected: `GUARD ok ✓` 且 `warnings: - none`。glossary 每个 term 必须在正文逐字出现，写脚本自查。
+
+- [ ] **Step 8: Stage 5 验收自评**
+
+如实填 `qualitySelfReview`（至少 3 条弱点）与 `acceptanceReview`（六维打分、终点任务、逐块互动说明、来源复核）。六维任一低于 4 就回去改课，不要调分过关。`decision` 必须是 `ship`。
+
+- [ ] **Step 9: 站点构建验证**
+
+```bash
+npm test && npm run build
+```
+
+Expected: 测试全过；构建产物出现 `/en/verify-agent-output` 及其课节路由。
+
+- [ ] **Step 10: 提交**
+
+```bash
+git add -A agent-mentor
+git commit -m "feat: add the verify-agent-output course (en)"
+```
+
 
 ---
 
 ### Task 5: 课程 `agent-readable-repo`（L3-1，英文）
 
-同 Task 1 的十步流程，替换课程规格如下：
+**课程规格：**
 
 - 目标读者：团队或个人项目里已有多人/多工具用 agent 的开发者。
 - 终点任务：为一个真实仓库写出 AGENTS.md，并验证 agent 行为发生了可观测变化。
@@ -310,13 +472,67 @@ git commit -m "feat: add the first-real-agent-task course (en)"
 - 与竞品边界：竞品第 3、4 讲相邻。本课以开放标准与可验证的行为变化为主线，不讲 harness 全套构件。
 - 时效风险：工具支持矩阵变化快，须在 `topicCurrency.staleRisk` 说明。
 
-验收命令中的 slug 为 `learn-agent-readable-repo`。
+**执行步骤：**
+
+- [ ] **Step 1: 读产课流程**
+
+按顺序读：`agent-mentor/skills/generate-course-from-topic/SKILL.md`、`course-authoring-guide.md`、`docs/learner-model-contract.md`、`docs/interaction-selection-guide.md`、`docs/course-quality-rubric.md`、`templates/` 下的全部模板。另读已交付的 `lessons/learn-agent-skills-reuse/en/` 作为质量基准。
+
+- [ ] **Step 2: Stage 2 实时抓源**
+
+先读 `agent-learning-sources.md` 注册表，再实时抓取一手源（见本任务"必查来源"）。至少 5 个来源，优先官方文档与一手工程文。每条都要当次打开确认现状，不得凭记忆。关键事实用两个独立来源交叉验证。`sources.md` 顶部记录用到的注册表 id。
+
+- [ ] **Step 3: Stage 3 大纲（不回头确认）**
+
+按本任务给定的讲题方向定讲数，构建先修 DAG。不要停下来找人确认——把"大纲由设计文档预先确定、未经逐门人工确认"写进 `agentmentor.json.qualitySelfReview.weakestPoints`。
+
+- [ ] **Step 4: 先落最小完整骨架**
+
+一次性创建全部文件（README、各讲、sources、glossary、agentmentor、family 根 logo），内容可粗但结构完整。立即 `ls -la` 确认它们真的在目标目录里。
+
+- [ ] **Step 5: Stage 4 写正文**
+
+用 `templates/lesson-template.md`。每讲从读者的真实失败或决策开场，具体到抽象，含 worked example → faded example，收尾是读者能对 agent 做的一个动作。每讲收束标题必须各不相同。互动块每讲 0–1 个，全课至少一个 `agentmentor-action`。
+
+- [ ] **Step 6: Stage 6 练习**
+
+每讲练习含：做法引导、可量化的完成标准、参考答案、渐进提示。练习指向读者自己的 IDE/终端/纸笔，不假设内嵌运行环境。
+
+- [ ] **Step 7: 跑闸门并修到干净**
+
+```bash
+cd /Users/dirtyfancy/projects/agent-mentor-open-courses
+node scripts/course-guard.mjs agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-readable-repo/en
+node scripts/course-interaction-report.mjs agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-readable-repo/en
+```
+
+Expected: `GUARD ok ✓` 且 `warnings: - none`。glossary 每个 term 必须在正文逐字出现，写脚本自查。
+
+- [ ] **Step 8: Stage 5 验收自评**
+
+如实填 `qualitySelfReview`（至少 3 条弱点）与 `acceptanceReview`（六维打分、终点任务、逐块互动说明、来源复核）。六维任一低于 4 就回去改课，不要调分过关。`decision` 必须是 `ship`。
+
+- [ ] **Step 9: 站点构建验证**
+
+```bash
+npm test && npm run build
+```
+
+Expected: 测试全过；构建产物出现 `/en/agent-readable-repo` 及其课节路由。
+
+- [ ] **Step 10: 提交**
+
+```bash
+git add -A agent-mentor
+git commit -m "feat: add the agent-readable-repo course (en)"
+```
+
 
 ---
 
 ### Task 6: 课程 `agent-tools-mcp`（L3-2，英文）
 
-同 Task 1 的十步流程，替换课程规格如下：
+**课程规格：**
 
 - 目标读者：想让 agent 接触真实系统（数据、API、内部服务）的开发者。
 - 终点任务：接入或最小实现一个 MCP server，并完成一次带权限边界的真实工具调用。
@@ -326,13 +542,67 @@ git commit -m "feat: add the first-real-agent-task course (en)"
 - 时效风险：MCP 规范演进极快，`topicCurrency` 必须写明所依据的规范版本与失效条件。
 - 与 L2-1 的边界：L2-1 讲 Skill（给 agent 工作流）；本课讲 MCP（给 agent 外部能力）。第 1 讲必须讲清这两者的区别。
 
-验收命令中的 slug 为 `learn-agent-tools-mcp`。
+**执行步骤：**
+
+- [ ] **Step 1: 读产课流程**
+
+按顺序读：`agent-mentor/skills/generate-course-from-topic/SKILL.md`、`course-authoring-guide.md`、`docs/learner-model-contract.md`、`docs/interaction-selection-guide.md`、`docs/course-quality-rubric.md`、`templates/` 下的全部模板。另读已交付的 `lessons/learn-agent-skills-reuse/en/` 作为质量基准。
+
+- [ ] **Step 2: Stage 2 实时抓源**
+
+先读 `agent-learning-sources.md` 注册表，再实时抓取一手源（见本任务"必查来源"）。至少 5 个来源，优先官方文档与一手工程文。每条都要当次打开确认现状，不得凭记忆。关键事实用两个独立来源交叉验证。`sources.md` 顶部记录用到的注册表 id。
+
+- [ ] **Step 3: Stage 3 大纲（不回头确认）**
+
+按本任务给定的讲题方向定讲数，构建先修 DAG。不要停下来找人确认——把"大纲由设计文档预先确定、未经逐门人工确认"写进 `agentmentor.json.qualitySelfReview.weakestPoints`。
+
+- [ ] **Step 4: 先落最小完整骨架**
+
+一次性创建全部文件（README、各讲、sources、glossary、agentmentor、family 根 logo），内容可粗但结构完整。立即 `ls -la` 确认它们真的在目标目录里。
+
+- [ ] **Step 5: Stage 4 写正文**
+
+用 `templates/lesson-template.md`。每讲从读者的真实失败或决策开场，具体到抽象，含 worked example → faded example，收尾是读者能对 agent 做的一个动作。每讲收束标题必须各不相同。互动块每讲 0–1 个，全课至少一个 `agentmentor-action`。
+
+- [ ] **Step 6: Stage 6 练习**
+
+每讲练习含：做法引导、可量化的完成标准、参考答案、渐进提示。练习指向读者自己的 IDE/终端/纸笔，不假设内嵌运行环境。
+
+- [ ] **Step 7: 跑闸门并修到干净**
+
+```bash
+cd /Users/dirtyfancy/projects/agent-mentor-open-courses
+node scripts/course-guard.mjs agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-tools-mcp/en
+node scripts/course-interaction-report.mjs agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-tools-mcp/en
+```
+
+Expected: `GUARD ok ✓` 且 `warnings: - none`。glossary 每个 term 必须在正文逐字出现，写脚本自查。
+
+- [ ] **Step 8: Stage 5 验收自评**
+
+如实填 `qualitySelfReview`（至少 3 条弱点）与 `acceptanceReview`（六维打分、终点任务、逐块互动说明、来源复核）。六维任一低于 4 就回去改课，不要调分过关。`decision` 必须是 `ship`。
+
+- [ ] **Step 9: 站点构建验证**
+
+```bash
+npm test && npm run build
+```
+
+Expected: 测试全过；构建产物出现 `/en/agent-tools-mcp` 及其课节路由。
+
+- [ ] **Step 10: 提交**
+
+```bash
+git add -A agent-mentor
+git commit -m "feat: add the agent-tools-mcp course (en)"
+```
+
 
 ---
 
 ### Task 7: 课程 `orchestrating-agents`（L3-3，英文）
 
-同 Task 1 的十步流程，替换课程规格如下：
+**课程规格：**
 
 - 目标读者：单 agent 已用熟、任务开始超出单会话承载的人。
 - 终点任务：把一个真实大任务拆成可并行的子任务，编排执行，并给出可复核的汇总。
@@ -343,7 +613,61 @@ git commit -m "feat: add the first-real-agent-task course (en)"
 - 与 L2-2 的边界：L2-2 把子代理当上下文隔离手段；本课讲编排本身——拆分、并行、汇总、失败处理。
 - **真实素材**：本项目自身的经验可作为案例——五个子代理并发打同一 API 网关导致全部失败、串行后稳定；以及子代理汇报"文件已写入"但磁盘上并不存在，因此需要独立复核。这是第一手的失败模式，比二手论述更有教学价值。
 
-验收命令中的 slug 为 `learn-orchestrating-agents`。
+**执行步骤：**
+
+- [ ] **Step 1: 读产课流程**
+
+按顺序读：`agent-mentor/skills/generate-course-from-topic/SKILL.md`、`course-authoring-guide.md`、`docs/learner-model-contract.md`、`docs/interaction-selection-guide.md`、`docs/course-quality-rubric.md`、`templates/` 下的全部模板。另读已交付的 `lessons/learn-agent-skills-reuse/en/` 作为质量基准。
+
+- [ ] **Step 2: Stage 2 实时抓源**
+
+先读 `agent-learning-sources.md` 注册表，再实时抓取一手源（见本任务"必查来源"）。至少 5 个来源，优先官方文档与一手工程文。每条都要当次打开确认现状，不得凭记忆。关键事实用两个独立来源交叉验证。`sources.md` 顶部记录用到的注册表 id。
+
+- [ ] **Step 3: Stage 3 大纲（不回头确认）**
+
+按本任务给定的讲题方向定讲数，构建先修 DAG。不要停下来找人确认——把"大纲由设计文档预先确定、未经逐门人工确认"写进 `agentmentor.json.qualitySelfReview.weakestPoints`。
+
+- [ ] **Step 4: 先落最小完整骨架**
+
+一次性创建全部文件（README、各讲、sources、glossary、agentmentor、family 根 logo），内容可粗但结构完整。立即 `ls -la` 确认它们真的在目标目录里。
+
+- [ ] **Step 5: Stage 4 写正文**
+
+用 `templates/lesson-template.md`。每讲从读者的真实失败或决策开场，具体到抽象，含 worked example → faded example，收尾是读者能对 agent 做的一个动作。每讲收束标题必须各不相同。互动块每讲 0–1 个，全课至少一个 `agentmentor-action`。
+
+- [ ] **Step 6: Stage 6 练习**
+
+每讲练习含：做法引导、可量化的完成标准、参考答案、渐进提示。练习指向读者自己的 IDE/终端/纸笔，不假设内嵌运行环境。
+
+- [ ] **Step 7: 跑闸门并修到干净**
+
+```bash
+cd /Users/dirtyfancy/projects/agent-mentor-open-courses
+node scripts/course-guard.mjs agent-mentor/skills/generate-course-from-topic/lessons/learn-orchestrating-agents/en
+node scripts/course-interaction-report.mjs agent-mentor/skills/generate-course-from-topic/lessons/learn-orchestrating-agents/en
+```
+
+Expected: `GUARD ok ✓` 且 `warnings: - none`。glossary 每个 term 必须在正文逐字出现，写脚本自查。
+
+- [ ] **Step 8: Stage 5 验收自评**
+
+如实填 `qualitySelfReview`（至少 3 条弱点）与 `acceptanceReview`（六维打分、终点任务、逐块互动说明、来源复核）。六维任一低于 4 就回去改课，不要调分过关。`decision` 必须是 `ship`。
+
+- [ ] **Step 9: 站点构建验证**
+
+```bash
+npm test && npm run build
+```
+
+Expected: 测试全过；构建产物出现 `/en/orchestrating-agents` 及其课节路由。
+
+- [ ] **Step 10: 提交**
+
+```bash
+git add -A agent-mentor
+git commit -m "feat: add the orchestrating-agents course (en)"
+```
+
 
 ---
 
