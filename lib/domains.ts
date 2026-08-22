@@ -1,4 +1,4 @@
-import { bilingualLang, type Locale } from "./locales";
+import type { Locale } from "./locales";
 
 export const DOMAIN_ORDER = ["软件", "量化", "生活技艺", "音乐"];
 
@@ -13,20 +13,22 @@ export function domainColor(domain: string): string {
   return COLORS[domain] || "var(--ink-subtle)";
 }
 
-const DOMAIN_LABELS: Record<string, { zh: string; en: string }> = {
-  软件: { zh: "软件", en: "Software" },
-  数字素养: { zh: "数字素养", en: "Digital Literacy" },
-  产品: { zh: "产品", en: "Product" },
-  量化: { zh: "量化", en: "Quant" },
-  生活技艺: { zh: "生活技艺", en: "Life Skills" },
-  音乐: { zh: "音乐", en: "Music" },
-  其他: { zh: "其他", en: "Other" },
+// Every domain is an ordinary subject noun, so all six locales get a real translation.
+// "Software" is genuinely the Spanish/Portuguese word for the field, not an untranslated fallback.
+const DOMAIN_LABELS: Record<string, Record<Locale, string>> = {
+  软件: { zh: "软件", en: "Software", ja: "ソフトウェア", ko: "소프트웨어", es: "Software", "pt-BR": "Software" },
+  数字素养: { zh: "数字素养", en: "Digital Literacy", ja: "デジタルリテラシー", ko: "디지털 리터러시", es: "Alfabetización digital", "pt-BR": "Letramento digital" },
+  产品: { zh: "产品", en: "Product", ja: "プロダクト", ko: "프로덕트", es: "Producto", "pt-BR": "Produto" },
+  量化: { zh: "量化", en: "Quant", ja: "クオンツ", ko: "퀀트", es: "Cuantitativo", "pt-BR": "Quantitativo" },
+  生活技艺: { zh: "生活技艺", en: "Life Skills", ja: "生活の技", ko: "생활 기술", es: "Habilidades de vida", "pt-BR": "Habilidades de vida" },
+  音乐: { zh: "音乐", en: "Music", ja: "音楽", ko: "음악", es: "Música", "pt-BR": "Música" },
+  其他: { zh: "其他", en: "Other", ja: "その他", ko: "기타", es: "Otros", "pt-BR": "Outros" },
 };
 
 // Canonical domain keys stay as stored in course data; map to labels only at display time.
 export function domainLabel(domain: string, lang: Locale): string {
   const entry = DOMAIN_LABELS[domain];
-  return entry ? entry[bilingualLang(lang)] : domain;
+  return entry ? entry[lang] : domain;
 }
 
 export interface DomainGroup<T extends { domain: string; slug: string }> { domain: string; courses: T[]; }

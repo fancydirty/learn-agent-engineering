@@ -1,5 +1,6 @@
 {
   "schemaVersion": 2,
+  "sourceLocale": "zh",
   "originalRequest": "删除现有课程，从零重写一门与 Agent 直接相关、面向公开流量的时兴课程。",
   "learnerBrief": "El curso se dirige a creadores y desarrolladores independientes que ya usan Claude Code, Codex u otro coding agent similar, pero que aún no han empaquetado su trabajo repetido en un Skill reutilizable. El punto de llegada es completar una carpeta de Skill en español que el Agent pueda descubrir, leer bajo demanda y volver a probar, con pruebas y límites de seguridad.",
   "briefCompleteness": {

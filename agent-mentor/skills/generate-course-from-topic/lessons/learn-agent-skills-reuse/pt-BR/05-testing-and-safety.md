@@ -88,7 +88,7 @@ O papel da matriz é expor inconsistências entre `description`, corpo e limites
 
 Um Skill é uma pasta, com escopo maior que o `SKILL.md`; ele pode conter instruções, scripts e recursos. A recomendação de segurança da Anthropic é auditar o Skill como se audita a instalação de um software, verificando sobretudo scripts, recursos e conexões externas de rede.[^S1][^S3] Isso significa que a auditoria de segurança precisa olhar todos os arquivos empacotados; o arquivo de entrada é só uma parte.
 
-Divida a auditoria em cinco limites:
+Divida a auditoria em cinco limites: o limite de arquivos, o limite de escrita, o limite de segredos, o limite de rede e o limite de scripts:
 
 - Limite de arquivos: quais caminhos o Skill lê? Ele pede ao Agent para varrer o diretório home inteiro?
 - Limite de escrita: o Skill modifica, apaga ou sobrescreve arquivos originais do usuário?

@@ -37,16 +37,3 @@ export function localeInfo(locale: Locale): LocaleInfo {
 export function siteCopyFor(locale: Locale): SiteCopy {
   return siteCopy[locale];
 }
-
-/**
- * Copy decks that predate the six-locale launch exist only in zh/en — Agent-prompt
- * scaffolding (prompt-copy, mentor-actions, interactive blocks) and domain labels.
- * Map any launch locale onto those decks: zh stays zh, everything else falls back
- * to en. On-page UI copy MUST NOT use this fallback; it belongs in site-copy.ts,
- * which is fully translated per locale.
- */
-export type BilingualLang = "zh" | "en";
-
-export function bilingualLang(locale: Locale): BilingualLang {
-  return locale === "zh" ? "zh" : "en";
-}

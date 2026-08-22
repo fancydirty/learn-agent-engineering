@@ -1,5 +1,6 @@
 {
   "schemaVersion": 2,
+  "sourceLocale": "zh",
   "originalRequest": "删除现有课程，从零重写一门与 Agent 直接相关、面向公开流量的时兴课程。",
   "learnerBrief": "이 코스는 Claude Code, Codex 또는 유사한 coding agent를 이미 쓰고 있지만 반복 작업을 아직 재사용 가능한 Skill로 묶지 못한 크리에이터와 독립 개발자를 대상으로 합니다. 종점은 Agent가 발견하고, 필요할 때 읽고, 다시 테스트할 수 있으며 테스트와 보안 경계를 갖춘 Skill 폴더 하나를 완성하는 것입니다.",
   "briefCompleteness": {

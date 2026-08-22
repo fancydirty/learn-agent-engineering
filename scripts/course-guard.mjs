@@ -478,8 +478,17 @@ export function checkGlossaryLive(courseDir) {
   return violations;
 }
 
+// ASCII markers need word boundaries: substring matching flagged Romance-language prose
+// ("todos", "toda", "metodologia" contain "todo") as unfilled placeholders. CJK markers keep
+// substring semantics — CJK writes without word breaks, so \b never fires between characters.
+const PLACEHOLDER_RE = /<[^>]+>|\bTODO\b|\bTBD\b|\bxxx\b|待补|待定/i;
+
+export function hasPlaceholderText(s) {
+  return PLACEHOLDER_RE.test(s);
+}
+
 function hasPlaceholder(s) {
-  return /<[^>]+>|TODO|TBD|待补|待定|xxx/i.test(s);
+  return hasPlaceholderText(s);
 }
 
 function checkNonEmptyString(value, path, violations) {

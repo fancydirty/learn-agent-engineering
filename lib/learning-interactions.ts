@@ -1,6 +1,6 @@
 import type { MentorActionContext } from "./mentor-actions";
 import type { Lang } from "./i18n";
-import { bilingualLang, type BilingualLang } from "./locales";
+import type { Locale } from "./locales";
 import { promptScaffold, promptContextLines, field } from "./prompt-copy";
 
 export type LearningInteractionLanguage =
@@ -618,7 +618,7 @@ export function runTraceChecks(block: TraceBlock, values: Record<string, string>
 
 // Builder-specific copy. Shared context/field/mode scaffolding lives in prompt-copy.ts;
 // only the phrasing unique to predict/trace/diff/hotspot lives here, double-keyed like site-copy.ts.
-const COPY: Record<BilingualLang, {
+const COPY: Record<Locale, {
   exerciseMaterial: string;
   changeLanguage: string;
   changeSource: string;
@@ -687,11 +687,103 @@ const COPY: Record<BilingualLang, {
     diffClose: "First read the course files and the current lesson, then ask me to explain why the key change fixes the problem. Do not give the standard answer or a full rewrite outright; first make me say which line changed the mechanism.",
     hotspotClose: "First read the course files and the current lesson, then probe the node I clicked. Do not redraw the whole diagram outright; first make me explain what this node is responsible for, and why the other adjacent nodes are not.",
   },
+  ja: {
+    exerciseMaterial: "問題の素材",
+    changeLanguage: "変更の言語",
+    changeSource: "変更の原文",
+    readDiffHint: "diff の読み方",
+    diagramType: "図の種類",
+    diagramNodes: "図中のノード",
+    diagramEdges: "図中のエッジ",
+    none: "(なし)",
+    emptyCell: "(空)",
+    myPrediction: "私の予測:",
+    noPrediction: "(まだ予測を書いていません)",
+    myTrace: "私のトレース表:",
+    allCellsPassedTail: "入力可能なセルはすべて合格しました。",
+    wrongCellsHeader: "ローカルチェックに通らなかったセル:",
+    mySelection: "私の選択:",
+    noSelection: "(未選択)",
+    myClick: "私のクリック:",
+    predictClose: "まずコースの文脈を読み、それから私の予測について掘り下げて質問してください。模範解答をそのまま与えないでください。まず各ステップがなぜこの出力になるのかを私に説明させてください。",
+    traceClose: "まずコースの文脈を読み、それから私のトレース表について掘り下げて質問してください。正解の表全体をそのまま与えないでください。まず最初に間違えたセルで変数がどう変化するのかを私に説明させてください。",
+    diffClose: "まずコースのファイルと現在のレッスンを読み、それから重要な変更がなぜ問題を解決するのかを私に説明させてください。模範解答や全面的な書き直しをそのまま与えないでください。まずどの行が仕組みを変えたのかを私に言わせてください。",
+    hotspotClose: "まずコースのファイルと現在のレッスンを読み、それから私がクリックしたノードについて掘り下げて質問してください。図全体を描き直さないでください。まずこのノードが何を担うのか、そしてなぜ隣接する他のノードがそれを担わないのかを私に説明させてください。",
+  },
+  ko: {
+    exerciseMaterial: "문제 자료",
+    changeLanguage: "변경 언어",
+    changeSource: "변경 원문",
+    readDiffHint: "diff 읽는 법",
+    diagramType: "다이어그램 유형",
+    diagramNodes: "다이어그램 노드",
+    diagramEdges: "다이어그램 연결선",
+    none: "(없음)",
+    emptyCell: "(비어 있음)",
+    myPrediction: "내 예측:",
+    noPrediction: "(아직 예측을 작성하지 않았습니다)",
+    myTrace: "내 추적 표:",
+    allCellsPassedTail: "입력 가능한 칸이 모두 통과했습니다.",
+    wrongCellsHeader: "로컬 검사를 통과하지 못한 칸:",
+    mySelection: "내 선택:",
+    noSelection: "(선택 없음)",
+    myClick: "내 클릭:",
+    predictClose: "먼저 코스 맥락을 읽고, 그다음 내 예측을 파고들어 질문해 주세요. 표준 답을 바로 주지 마세요. 먼저 각 단계가 왜 이 출력을 내는지 제가 설명하게 해 주세요.",
+    traceClose: "먼저 코스 맥락을 읽고, 그다음 내 추적 표를 파고들어 질문해 주세요. 정답 표 전체를 바로 주지 마세요. 먼저 첫 번째로 틀린 칸에서 변수가 어떻게 바뀌는지 제가 설명하게 해 주세요.",
+    diffClose: "먼저 코스 파일과 현재 레슨을 읽고, 그다음 핵심 변경이 왜 문제를 해결하는지 제가 설명하도록 물어봐 주세요. 표준 답이나 전면 재작성을 바로 주지 마세요. 먼저 어느 줄이 메커니즘을 바꿨는지 제가 말하게 해 주세요.",
+    hotspotClose: "먼저 코스 파일과 현재 레슨을 읽고, 그다음 제가 클릭한 노드를 파고들어 질문해 주세요. 다이어그램 전체를 다시 그리지 마세요. 먼저 이 노드가 어떤 책임을 지는지, 그리고 왜 인접한 다른 노드는 그 책임을 지지 않는지 제가 설명하게 해 주세요.",
+  },
+  es: {
+    exerciseMaterial: "Material del ejercicio",
+    changeLanguage: "Lenguaje del cambio",
+    changeSource: "Origen del cambio",
+    readDiffHint: "Cómo leer el diff",
+    diagramType: "Tipo de diagrama",
+    diagramNodes: "Nodos del diagrama",
+    diagramEdges: "Aristas del diagrama",
+    none: "(ninguna)",
+    emptyCell: "(vacío)",
+    myPrediction: "Mi predicción:",
+    noPrediction: "(todavía no he escrito una predicción)",
+    myTrace: "Mi tabla de seguimiento:",
+    allCellsPassedTail: "Todas las celdas rellenables han pasado.",
+    wrongCellsHeader: "Celdas que no pasaron la comprobación local:",
+    mySelection: "Mi selección:",
+    noSelection: "(sin selección)",
+    myClick: "Mi clic:",
+    predictClose: "Lee primero el contexto del curso y luego pregunta sobre mi predicción. No des la respuesta estándar sin más; hazme explicar primero por qué cada paso produce esta salida.",
+    traceClose: "Lee primero el contexto del curso y luego pregunta sobre mi tabla de seguimiento. No des la tabla correcta completa sin más; hazme explicar primero el cambio de variable en la primera celda equivocada.",
+    diffClose: "Lee primero los archivos del curso y la lección actual, y luego pídeme que explique por qué el cambio clave resuelve el problema. No des la respuesta estándar ni una reescritura completa sin más; hazme decir primero qué línea cambió el mecanismo.",
+    hotspotClose: "Lee primero los archivos del curso y la lección actual, y luego pregunta sobre el nodo en el que hice clic. No vuelvas a dibujar todo el diagrama sin más; hazme explicar primero de qué se encarga este nodo y por qué no lo hacen los nodos vecinos.",
+  },
+  "pt-BR": {
+    exerciseMaterial: "Material do exercício",
+    changeLanguage: "Linguagem da mudança",
+    changeSource: "Origem da mudança",
+    readDiffHint: "Como ler o diff",
+    diagramType: "Tipo de diagrama",
+    diagramNodes: "Nós do diagrama",
+    diagramEdges: "Arestas do diagrama",
+    none: "(nenhuma)",
+    emptyCell: "(vazio)",
+    myPrediction: "Minha previsão:",
+    noPrediction: "(ainda não escrevi uma previsão)",
+    myTrace: "Minha tabela de rastreamento:",
+    allCellsPassedTail: "Todas as células preenchíveis passaram.",
+    wrongCellsHeader: "Células que não passaram na verificação local:",
+    mySelection: "Minha seleção:",
+    noSelection: "(sem seleção)",
+    myClick: "Meu clique:",
+    predictClose: "Leia primeiro o contexto do curso e depois pergunte sobre a minha previsão. Não dê a resposta padrão de imediato; primeiro me faça explicar por que cada passo produz esta saída.",
+    traceClose: "Leia primeiro o contexto do curso e depois pergunte sobre a minha tabela de rastreamento. Não dê a tabela correta inteira de imediato; primeiro me faça explicar a mudança de variável na primeira célula errada.",
+    diffClose: "Leia primeiro os arquivos do curso e a lição atual e depois me peça para explicar por que a mudança principal resolve o problema. Não dê a resposta padrão nem uma reescrita completa de imediato; primeiro me faça dizer qual linha mudou o mecanismo.",
+    hotspotClose: "Leia primeiro os arquivos do curso e a lição atual e depois pergunte sobre o nó em que cliquei. Não redesenhe o diagrama inteiro de imediato; primeiro me faça explicar do que este nó é responsável e por que os nós vizinhos não são.",
+  },
 };
 
 function snippetLines(block: { language: SnippetLanguage | ""; snippet: string }, lang: Lang) {
   return [
-    `${COPY[bilingualLang(lang)].exerciseMaterial}:`,
+    `${COPY[lang].exerciseMaterial}:`,
     `\`\`\`${block.language || "text"}`,
     block.snippet,
     "```",
@@ -699,7 +791,7 @@ function snippetLines(block: { language: SnippetLanguage | ""; snippet: string }
 }
 
 function diffLines(block: DiffBlock, lang: Lang) {
-  const t = COPY[bilingualLang(lang)];
+  const t = COPY[lang];
   return [
     field(t.changeLanguage, block.language || "text"),
     "",
@@ -712,13 +804,13 @@ function diffLines(block: DiffBlock, lang: Lang) {
 
 function hotspotNodeLines(block: HotspotBlock, lang: Lang) {
   return [
-    `${COPY[bilingualLang(lang)].diagramNodes}:`,
+    `${COPY[lang].diagramNodes}:`,
     ...block.nodes.map((node) => `- ${node.id}: ${node.label} (${node.x}, ${node.y})`),
   ];
 }
 
 function hotspotEdgeLines(block: HotspotBlock, lang: Lang) {
-  const t = COPY[bilingualLang(lang)];
+  const t = COPY[lang];
   if (!block.edges.length) return [`${t.diagramEdges}:\n${t.none}`];
   return [
     `${t.diagramEdges}:`,
@@ -728,7 +820,7 @@ function hotspotEdgeLines(block: HotspotBlock, lang: Lang) {
 
 export function buildPredictPrompt(block: PredictBlock, answer: string, result: PredictResult, lang: Lang, context?: MentorActionContext) {
   const s = promptScaffold(lang);
-  const t = COPY[bilingualLang(lang)];
+  const t = COPY[lang];
   return [
     s.enterMode("predict_output_coach"),
     "",
@@ -761,7 +853,7 @@ export function buildTracePrompt(
   context?: MentorActionContext,
 ) {
   const s = promptScaffold(lang);
-  const t = COPY[bilingualLang(lang)];
+  const t = COPY[lang];
   const rows = block.rows.map((row) => {
     const cells = block.columns.map((column) => {
       const key = traceCellKey(row.id, column.id);
@@ -805,7 +897,7 @@ export function buildDiffPrompt(
   context?: MentorActionContext,
 ) {
   const s = promptScaffold(lang);
-  const t = COPY[bilingualLang(lang)];
+  const t = COPY[lang];
   const selected = result.choice || block.choices.find((choice) => choice.id === selectedChoiceId);
   return [
     s.enterMode("diff_patch_coach"),
@@ -841,7 +933,7 @@ export function buildHotspotPrompt(
   context?: MentorActionContext,
 ) {
   const s = promptScaffold(lang);
-  const t = COPY[bilingualLang(lang)];
+  const t = COPY[lang];
   const selected = result.node || block.nodes.find((node) => node.id === selectedNodeId);
   return [
     s.enterMode("hotspot_diagram_coach"),

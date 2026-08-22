@@ -1,5 +1,6 @@
 {
   "schemaVersion": 2,
+  "sourceLocale": "zh",
   "originalRequest": "删除现有课程，从零重写一门与 Agent 直接相关、面向公开流量的时兴课程。",
   "learnerBrief": "The course targets creators and indie developers who already use Claude Code, Codex, or a similar coding agent, but have not yet packaged repeated work into a reusable Skill. The terminal deliverable is a Skill folder that an agent can discover, read on demand, and re-test, with tests and safety boundaries included.",
   "briefCompleteness": {

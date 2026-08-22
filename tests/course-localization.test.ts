@@ -11,6 +11,7 @@ import {
 import { localePath, samePageLocaleLinks, coursesLocaleLinks } from "@/lib/i18n";
 import { isLocale, localeInfo, LOCALES, siteCopyFor, DEFAULT_LOCALE } from "@/lib/locales";
 import { guardCourseFamily } from "../scripts/course-family-guard.mjs";
+import { hasPlaceholderText } from "../scripts/course-guard.mjs";
 import { stripLessonNumberPrefix } from "@/lib/lesson-title";
 
 describe("locale registry", () => {
@@ -324,5 +325,22 @@ describe("course family guard", () => {
     const result = guardCourseFamily(buildFamily("id-mismatch", { idMismatch: true }));
     expect(result.ok).toBe(false);
     expect(result.violations.some((v) => v.includes("互动块 id"))).toBe(true);
+  });
+});
+
+// --- placeholder detection ---
+
+describe("placeholder detection", () => {
+  it("flags real placeholders", () => {
+    expect(hasPlaceholderText("still <fill this in>")).toBe(true);
+    expect(hasPlaceholderText("TODO: write this")).toBe(true);
+    expect(hasPlaceholderText("TBD")).toBe(true);
+    expect(hasPlaceholderText("待补")).toBe(true);
+  });
+
+  it("does not flag Romance-language words containing todo", () => {
+    expect(hasPlaceholderText("Empilhar todos os sinônimos")).toBe(false);
+    expect(hasPlaceholderText("una metodologia completa")).toBe(false);
+    expect(hasPlaceholderText("leen todos los recursos")).toBe(false);
   });
 });

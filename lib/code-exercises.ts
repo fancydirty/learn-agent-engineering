@@ -1,6 +1,6 @@
 import type { MentorActionContext } from "./mentor-actions";
 import type { Lang } from "./i18n";
-import { bilingualLang, type BilingualLang } from "./locales";
+import type { Locale } from "./locales";
 import { promptScaffold, promptContextLines, field, readFilesLine } from "./prompt-copy";
 
 export type CodeExerciseLanguage =
@@ -217,8 +217,8 @@ export function runCodeExerciseChecks(block: CodeExerciseBlock, code: string): C
 }
 
 // Builder-specific copy. Shared scaffolding lives in prompt-copy.ts; only the phrasing
-// unique to code/fix exercises lives here, double-keyed like site-copy.ts.
-const COPY: Record<BilingualLang, {
+// unique to code/fix exercises lives here, keyed by locale like site-copy.ts.
+const COPY: Record<Locale, {
   brokenBehavior: string;
   language: string;
   myCurrentCode: string;
@@ -243,6 +243,38 @@ const COPY: Record<BilingualLang, {
     codeFocus: "probe my current code",
     codePedagogy: "Do not paste the full model answer outright; first point out the smallest verifiable next step. If my approach only passed the check by luck, ask why I wrote it this way.",
   },
+  ja: {
+    brokenBehavior: "壊れている現象",
+    language: "言語",
+    myCurrentCode: "私の現在のコード:",
+    noLocalCheck: "- ローカルチェックはまだ実行していません。",
+    codeFocus: "私の現在のコードについて掘り下げて質問してください",
+    codePedagogy: "完全な模範解答をそのまま貼らないでください。まず検証可能な最小の次の一歩を示してください。私のやり方がたまたまチェックを通っただけなら、なぜそう書いたのかを問い返してください。",
+  },
+  ko: {
+    brokenBehavior: "고장난 현상",
+    language: "언어",
+    myCurrentCode: "내 현재 코드:",
+    noLocalCheck: "- 아직 로컬 검사를 실행하지 않았습니다.",
+    codeFocus: "내 현재 코드를 파고들어 질문해 주세요",
+    codePedagogy: "완전한 모범 답안을 그대로 붙여넣지 마세요. 먼저 검증 가능한 가장 작은 다음 단계를 짚어 주세요. 내 접근이 우연히 검사를 통과한 것이라면 왜 그렇게 썼는지 되물어 주세요.",
+  },
+  es: {
+    brokenBehavior: "Comportamiento roto",
+    language: "Lenguaje",
+    myCurrentCode: "Mi código actual:",
+    noLocalCheck: "- Todavía no he ejecutado la comprobación local.",
+    codeFocus: "pregunta sobre mi código actual",
+    codePedagogy: "No pegues la respuesta modelo completa; señala primero el siguiente paso verificable más pequeño. Si mi enfoque solo superó la comprobación por suerte, pregúntame por qué lo escribí así.",
+  },
+  "pt-BR": {
+    brokenBehavior: "Comportamento quebrado",
+    language: "Linguagem",
+    myCurrentCode: "Meu código atual:",
+    noLocalCheck: "- Ainda não executei a verificação local.",
+    codeFocus: "pergunte sobre o meu código atual",
+    codePedagogy: "Não cole a resposta modelo completa; aponte primeiro o menor próximo passo verificável. Se minha abordagem passou na verificação por sorte, pergunte por que escrevi assim.",
+  },
 };
 
 export function buildCodeExercisePrompt(
@@ -253,7 +285,7 @@ export function buildCodeExercisePrompt(
   context?: MentorActionContext,
 ) {
   const s = promptScaffold(lang);
-  const t = COPY[bilingualLang(lang)];
+  const t = COPY[lang];
   const status = results.length
     ? results.map((result) => `- ${result.passed ? s.pass : s.fail}: ${result.message}`).join("\n")
     : t.noLocalCheck;

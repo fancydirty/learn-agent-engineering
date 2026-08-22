@@ -226,7 +226,7 @@ Se a description não sair, mescle as linhas "gatilho" e "saída" da lição ant
 
 ### Level 2 (Avançado)
 
-Para o mesmo Skill, escreva três pedidos de usuário representativos e verifique se a sua `description` dispara por engano ou deixa de disparar. Pelo menos um pedido deve ser uma tarefa vizinha que não deveria disparar.
+Para o mesmo Skill, escreva três pedidos de usuário representativos e verifique se a sua `description` produz um falso gatilho ou um gatilho perdido. Pelo menos um pedido deve ser uma tarefa vizinha que não deveria disparar.
 
 Como fazer: crie no diretório de prática um rascunho `trigger-cases.md`, listando "deve disparar 1", "deve disparar 2" e "não deve disparar 1". Compare um a um com as palavras-chave e os limites da `description`.
 <!-- rubric -->

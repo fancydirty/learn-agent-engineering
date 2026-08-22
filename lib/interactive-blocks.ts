@@ -1,6 +1,6 @@
 import type { MentorActionContext } from "./mentor-actions";
 import type { Lang } from "./i18n";
-import { bilingualLang, type BilingualLang } from "./locales";
+import type { Locale } from "./locales";
 import { promptScaffold, promptContextLines, field, readFilesLine } from "./prompt-copy";
 
 export type InteractiveLanguage = "agentmentor-check" | "agentmentor-order";
@@ -191,8 +191,8 @@ export function runOrderBlock(block: OrderBlock, orderedItems: OrderItem[]): Ord
 }
 
 // Builder-specific copy. Shared context/field/mode scaffolding lives in prompt-copy.ts;
-// only the phrasing unique to check/order lives here, double-keyed like site-copy.ts.
-const COPY: Record<BilingualLang, {
+// only the phrasing unique to check/order lives here, keyed by locale like site-copy.ts.
+const COPY: Record<Locale, {
   mySelection: string;
   noSelection: string;
   localFeedback: string;
@@ -233,14 +233,66 @@ const COPY: Record<BilingualLang, {
     orderFocus: "probe my ordering",
     orderPedagogy: "Do not give the full correct order outright; first make me explain why the first ordering relation must be arranged that way.",
   },
+  ja: {
+    mySelection: "私の選択:",
+    noSelection: "- (まだ何も選んでいません)",
+    localFeedback: "ローカルのフィードバック:",
+    noFeedback: "- ローカルのフィードバックはまだ見ていません。",
+    myOrder: "私の現在の並び順:",
+    checkPurpose: (multi) => `この${multi ? "複数選択" : "単一選択"}問題について、私が本当に理解しているか確認してください: `,
+    orderPurpose: "この並べ替え問題について、私が工程の依存関係を本当に理解しているか確認してください: ",
+    checkFocus: "私の選択について掘り下げて質問してください",
+    checkPedagogy: "正解の選択肢をそのまま教えないでください。まず、それぞれの選択の背後にある仕組みの判断を私に説明させてください。たまたま正解しただけなら、その理由を問い返してください。",
+    orderFocus: "私の並び順について掘り下げて質問してください",
+    orderPedagogy: "完全な正しい順序をそのまま与えないでください。まず、最初の順序関係がなぜそうなるべきかを私に説明させてください。",
+  },
+  ko: {
+    mySelection: "내 선택:",
+    noSelection: "- (아직 아무것도 선택하지 않았습니다)",
+    localFeedback: "로컬 피드백:",
+    noFeedback: "- 아직 로컬 피드백을 확인하지 않았습니다.",
+    myOrder: "내 현재 순서:",
+    checkPurpose: (multi) => `이 ${multi ? "복수 선택" : "단일 선택"} 문제에 대해 내가 정말 이해하고 있는지 확인해 주세요: `,
+    orderPurpose: "이 순서 맞추기 문제에서 내가 공정의 의존 관계를 정말 이해하고 있는지 확인해 주세요: ",
+    checkFocus: "내 선택을 파고들어 질문해 주세요",
+    checkPedagogy: "정답 선택지를 바로 알려주지 마세요. 먼저 각 선택 뒤에 있는 메커니즘 판단을 제가 설명하게 해 주세요. 우연히 맞힌 것이라면 왜 그런지 되물어 주세요.",
+    orderFocus: "내 순서를 파고들어 질문해 주세요",
+    orderPedagogy: "완전한 정답 순서를 바로 주지 마세요. 먼저 첫 번째 순서 관계가 왜 그렇게 배치되어야 하는지 제가 설명하게 해 주세요.",
+  },
+  es: {
+    mySelection: "Mi selección:",
+    noSelection: "- (todavía no he seleccionado nada)",
+    localFeedback: "Comentarios locales:",
+    noFeedback: "- Todavía no he revisado ningún comentario local.",
+    myOrder: "Mi orden actual:",
+    checkPurpose: (multi) => `Comprueba si entiendo de verdad esta pregunta de ${multi ? "opción múltiple" : "opción única"}: `,
+    orderPurpose: "Comprueba si entiendo de verdad las dependencias de secuencia de este ejercicio de ordenación: ",
+    checkFocus: "pregunta sobre mi selección",
+    checkPedagogy: "No me digas las opciones correctas sin más; hazme explicar primero el mecanismo detrás de cada elección. Si solo acerté por suerte, pregúntame por qué.",
+    orderFocus: "pregunta sobre mi ordenación",
+    orderPedagogy: "No des el orden correcto completo sin más; hazme explicar primero por qué la primera relación de orden debe ser así.",
+  },
+  "pt-BR": {
+    mySelection: "Minha seleção:",
+    noSelection: "- (ainda não selecionei nada)",
+    localFeedback: "Feedback local:",
+    noFeedback: "- Ainda não revisei nenhum feedback local.",
+    myOrder: "Minha ordem atual:",
+    checkPurpose: (multi) => `Verifique se eu realmente entendi esta questão de ${multi ? "múltipla escolha" : "escolha única"}: `,
+    orderPurpose: "Verifique se eu realmente entendi as dependências de sequência deste exercício de ordenação: ",
+    checkFocus: "pergunte sobre a minha seleção",
+    checkPedagogy: "Não me diga as opções corretas de imediato; primeiro me faça explicar o mecanismo por trás de cada escolha. Se eu só acertei por sorte, pergunte por quê.",
+    orderFocus: "pergunte sobre a minha ordenação",
+    orderPedagogy: "Não dê a ordem correta completa de imediato; primeiro me faça explicar por que a primeira relação de ordem precisa ser assim.",
+  },
 };
 
 function defaultCheckPurpose(block: CheckBlock, lang: Lang) {
-  return `${COPY[bilingualLang(lang)].checkPurpose(block.mode === "multi")}${block.prompt}`;
+  return `${COPY[lang].checkPurpose(block.mode === "multi")}${block.prompt}`;
 }
 
 function defaultOrderPurpose(block: OrderBlock, lang: Lang) {
-  return `${COPY[bilingualLang(lang)].orderPurpose}${block.prompt}`;
+  return `${COPY[lang].orderPurpose}${block.prompt}`;
 }
 
 export function buildCheckPrompt(
@@ -250,7 +302,7 @@ export function buildCheckPrompt(
   context?: MentorActionContext,
 ) {
   const s = promptScaffold(lang);
-  const t = COPY[bilingualLang(lang)];
+  const t = COPY[lang];
   const choices = result.selectedChoices.length
     ? result.selectedChoices.map((choice) => `- ${choice.text} (id=${choice.id})`).join("\n")
     : t.noSelection;
@@ -291,7 +343,7 @@ export function buildOrderPrompt(
   context?: MentorActionContext,
 ) {
   const s = promptScaffold(lang);
-  const t = COPY[bilingualLang(lang)];
+  const t = COPY[lang];
   const order = result.orderedItems.map((item, index) => `${index + 1}. ${item.text} (id=${item.id})`).join("\n");
 
   return [
