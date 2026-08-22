@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "删除现有课程，从零重写一门与 Agent 直接相关、面向公开流量的时兴课程。",
+  "learnerBrief": "El curso se dirige a creadores y desarrolladores independientes que ya usan Claude Code, Codex u otro coding agent similar, pero que aún no han empaquetado su trabajo repetido en un Skill reutilizable. El punto de llegada es completar una carpeta de Skill en español que el Agent pueda descubrir, leer bajo demanda y volver a probar, con pruebas y límites de seguridad.",
+  "briefCompleteness": {
+    "status": "clarified",
+    "evidence": "La persona usuaria pidió de forma explícita que el curso girara entero en torno al Agent y que el tema fuera de actualidad, y que se borrara el curso anterior para reescribirlo desde cero. La investigación previa de tema estrechó el objetivo hacia la reutilización de flujos de trabajo con Agent Skills, y el punto de llegada hacia una carpeta de Skill que se pueda volver a probar."
+  },
+  "learnerModel": {
+    "targetReader": "Creador o desarrollador independiente que ya sabe completar una tarea en local con un coding agent, pero que vuelve a explicar el mismo flujo de trabajo cada vez.",
+    "knownConcepts": [
+      "crear directorios y archivos",
+      "editar Markdown",
+      "describir una tarea a un coding agent",
+      "copiar la salida de un comando en el terminal"
+    ],
+    "unknownConcepts": [
+      "el límite entre un Agent Skill y un prompt de un solo uso",
+      "el frontmatter de SKILL.md",
+      "la divulgación progresiva",
+      "las responsabilidades de references, assets y scripts",
+      "las pruebas de disparo y la auditoría de seguridad"
+    ],
+    "assumedEnvironment": "Se asume que la persona lectora tiene un directorio local donde practicar con seguridad y al menos un coding agent capaz de leer un Skill. El curso no presupone un lenguaje de programación concreto, ni API keys, ni plataforma en la nube, ni datos privados de negocio.",
+    "firstIndependentAction": "Escribir, a partir de una tarea de Agent repetida hace poco, un registro de cuatro líneas con la condición de disparo, la entrada, la salida y el límite de lo que no debe procesarse.",
+    "noviceRamp": [
+      "La lección 1 arranca desde una tarea repetida que la persona lectora ya ha vivido, y solo después presenta el Skill como el nombre formal de un directorio y de un flujo de trabajo.",
+      "Cada comando indica el directorio de ejecución, la señal de éxito y qué conviene copiarle al Agent cuando falla. Los ejemplos de script empiezan por el límite de un pseudoscript, y el lenguaje real se discute más adelante."
+    ]
+  },
+  "scope": "Cubre el directorio de la especificación abierta de Agent Skills, los metadatos de SKILL.md, la divulgación progresiva, la estratificación de recursos, los scripts deterministas, las pruebas de disparo y la auditoría de seguridad. No cubre servidores MCP, entrenamiento de modelos, tiendas de plugins, inferencia gestionada ni un marco completo de Skills para un dominio de negocio concreto.",
+  "topicCurrency": {
+    "checkedAt": "2026-08-21",
+    "evidence": [
+      "El artículo de ingeniería de Anthropic sobre Agent Skills indica que la especificación abierta se actualizó el 2025-12-18 y explica que los Skills ya se usan en los productos y la plataforma de Claude.",
+      "La Agent Skills specification define hoy en público el frontmatter de SKILL.md, los directorios y las restricciones de divulgación progresiva.",
+      "La documentación oficial Build skills de OpenAI/Codex explica actualmente que ChatGPT y Codex usan la especificación abierta de Agent Skills."
+    ],
+    "staleRisk": "Las rutas de escaneo de repositorio, los campos admitidos en el frontmatter, los permisos de scripts y la forma de subida cambian de un Agent a otro y seguirán cambiando. El curso solo toma como límite la especificación abierta y la documentación oficial vigente, y conviene revisarla de nuevo antes de cada publicación."
+  },
+  "status": {
+    "stage": "ready",
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-skills-reuse/es",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "La lección 3 usa un diagrama de flujo Mermaid por capas para explicar la relación de carga entre los metadatos, el cuerpo de SKILL.md y los recursos bajo demanda. La lección 5 usa una matriz de pruebas que pone en paralelo el disparo, los recursos, la salida y las acciones prohibidas. El resto del material se apoya en árboles de archivos cortos y tablas, sin diagramas decorativos.",
+    "weakestPoints": [
+      "Las implementaciones de la especificación abierta siguen difiriendo entre productos, así que el curso evita a propósito presentar la ruta de escaneo de un cliente concreto como un hecho universal; antes de publicar conviene revisar de nuevo la documentación del cliente objetivo.",
+      "El ejercicio final pide volver a probar en el Agent propio de cada persona, de modo que un reader público no puede demostrar automáticamente el resultado real de disparo en un Agent externo.",
+      "El curso avanza con notas de entrevista y notas de versión ficticias, así que quien aprende debe trasladar los límites a sus propias entradas de trabajo y comprobar si aparecen datos sensibles nuevos o acciones de escritura nuevas."
+    ],
+    "followUpChecks": [
+      "Comprobar con tres o más tareas reales distintas si al description le falta algún disparo o si dispara donde no debe.",
+      "Volver a abrir la especificación oficial y contrastar si han cambiado los límites del frontmatter y las recomendaciones de seguridad."
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 4,
+      "pedagogy": 4,
+      "exercises": 4,
+      "load": 4,
+      "readable": 4
+    },
+    "terminalTask": "Crear, sobre el flujo de trabajo propio, un SKILL.md, un archivo de references y una plantilla o una nota de límite de scripts, y completar la auditoría de disparo, límites y salida con tres tareas representativas.",
+    "interactionCheck": "El bloque agentmentor-check de la lección 1 revisa si quien aprende mete las notas, el seguimiento y la agenda dentro de un mismo Skill. El agentmentor-check de la lección 2 separa un description genérico de uno que lleva capacidad y condiciones de disparo. El bloque agentmentor-order de la lección 3 comprueba la dependencia de orden entre metadatos, cuerpo, juicio de necesidad y lectura de recursos. El agentmentor-check de la lección 4 distingue la comprobación de encabezados fijos del juicio semántico. El agentmentor-check de la lección 5 exige añadir una tarea vecina que el Skill no debe asumir. La lección 6 ya no suma un cuestionario estático: usa una tarjeta agentmentor-action para devolver la carpeta final al Agent y pedirle una auditoría por zonas. Cada interacción corresponde a un punto de juicio ya explicado en el cuerpo, y el Markdown sigue pudiendo repasarse por su cuenta.",
+    "learnerFitCheck": "La persona lectora objetivo sabe usar un Agent y editar archivos, pero desconoce la especificación de Skills. La lección 1 empieza por el registro de una tarea repetida y solo después aparecen el frontmatter, los directorios de recursos y las pruebas, así que la primera acción independiente no depende de ninguna herramienta desconocida.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "Para promover el curso a ejemplo de largo plazo hay que repetir en la versión más reciente del cliente objetivo las pruebas de instalación, de visibilidad explícita y de disparo implícito, y actualizar los tres registros de prueba."
+    ]
+  },
+  "nextSteps": [
+    "Completar el Skill brief de cuatro líneas con un flujo de trabajo repetido propio.",
+    "Instalar el Skill en el cliente objetivo, confirmar primero que es visible con la lista de skills o una invocación explícita, y luego ejecutar dos casos positivos y un caso límite en una sesión nueva.",
+    "Escribir el observed y el revision de vuelta en tests/trigger-tests.md y revisar de nuevo la auditoría de seguridad."
+  ],
+  "memoryBoundary": "course-local only; do not write host long-term memory from this file."
+}

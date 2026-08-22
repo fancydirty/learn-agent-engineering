@@ -1,0 +1,422 @@
+[
+  {
+    "term": "Agent Skill",
+    "def": "An open format that packages a task-specific capability for an agent as a directory containing a SKILL.md plus optional resources.",
+    "source": "[^S1]",
+    "pitfall": "Renaming a long prompt to SKILL.md and calling it a full Agent Skill; the single-file assumption breaks as soon as a task needs reference files or scripts.",
+    "distractor_rationale": "Learners used to sharing prompts read a Skill as a new wrapper for a prompt, because the minimal example really does look like a single text file."
+  },
+  {
+    "term": "one-off prompt",
+    "def": "Working definition for this course: a task note that serves only the current conversation or task and does not become a discoverable capability later.",
+    "source": "[^S3]",
+    "pitfall": "Believing that a long enough prompt will be discovered and reused by the agent later; in a new conversation, that note usually does not exist.",
+    "distractor_rationale": "Learners who often copy old conversations mistake manual reuse for client-side automatic discovery, because both produce a result in the moment."
+  },
+  {
+    "term": "recurring task",
+    "def": "Working definition for this course: a kind of task that appears many times with broadly stable inputs, outputs, and constraints.",
+    "source": "[^S3]",
+    "pitfall": "Packaging anything done twice into a Skill without checking whether the inputs, outputs, and boundaries are stable; the result serves only two samples.",
+    "distractor_rationale": "People eager to cut repetitive work judge by occurrence count and overlook the task shape that actually decides reusability."
+  },
+  {
+    "term": "reusable workflow",
+    "def": "A set of steps, constraints, and output standards that can be invoked again; a Skill is one format for carrying such a workflow.",
+    "source": "[^S4]",
+    "pitfall": "Writing a reusable workflow as the entire business chain from collecting material to going live, so one Skill carries several triggers and decisions at once.",
+    "distractor_rationale": "People who automate tend to read end-to-end as complete, and read a narrowed scope as a weaker capability, so they pick the widest option."
+  },
+  {
+    "term": "Skill brief",
+    "def": "Working definition for this course: a four-line boundary sketch of trigger, input, output, and out of scope for a candidate Skill; it is not an open-spec field.",
+    "source": "[^S5]",
+    "pitfall": "Treating the four Skill brief lines as open-spec fields and stuffing them into frontmatter; beyond name and description, the lines gain no standard meaning.",
+    "distractor_rationale": "Learners new to the format mix the course's planning tool with the formal schema, because both appear before writing SKILL.md."
+  },
+  {
+    "term": "out of scope",
+    "def": "Actions or decisions adjacent to the core task that the Skill explicitly does not take over.",
+    "source": "[^S4]",
+    "pitfall": "Writing out-of-scope items only in the body and assuming that prevents implicit selection; before the body loads, the client judges mainly from the description.",
+    "distractor_rationale": "People used to plain prompts assume all rules take effect at once, and do not realize a Skill's discovery and execution happen in two stages."
+  },
+  {
+    "term": "responsibility boundary",
+    "def": "The statement of what a Skill handles and where it stops, avoiding a scope so narrow it fits one sample or so wide it swallows neighboring processes.",
+    "source": "[^S4]",
+    "pitfall": "Believing a wider responsibility makes a Skill more valuable; in practice it blurs trigger conditions and drags publishing, sending, or business decisions in.",
+    "distractor_rationale": "People who equate feature count with product value read a broad description as comprehensive rather than as a hard-to-test boundary."
+  },
+  {
+    "term": "SKILL.md",
+    "def": "The required entry file in a Skill directory, made of YAML frontmatter and a Markdown instruction body.",
+    "source": "[^S2]",
+    "pitfall": "Assuming any file named SKILL.md is valid even if the first line is not frontmatter or required fields are missing; clients may fail to recognize it.",
+    "distractor_rationale": "Learners used to README files treat the file name as the only convention, because ordinary Markdown documents require no machine-readable opening."
+  },
+  {
+    "term": "YAML frontmatter",
+    "def": "The YAML metadata block at the start of SKILL.md, wrapped by triple-hyphen lines.",
+    "source": "[^S2]",
+    "pitfall": "Squeezing ---, name, description, and the closing --- onto one line because it looks like YAML; the standard requires a parseable multi-line metadata block.",
+    "distractor_rationale": "Beginners copying from inline code examples mistake compressed layout for legal syntax, because the human eye can still read the fields."
+  },
+  {
+    "term": "frontmatter",
+    "def": "The structured metadata area at the top of a Markdown file; a Skill declares at least name and description here.",
+    "source": "[^S7]",
+    "pitfall": "Putting full steps, examples, and safety rules into frontmatter on the theory that more complete metadata is better; that bloats the discovery layer and makes it hard to parse.",
+    "distractor_rationale": "People who treat frontmatter as the whole configuration file prefer structured fields and overlook that the body is where execution instructions live."
+  },
+  {
+    "term": "metadata",
+    "def": "The short information that helps a client discover and select a Skill, centered on name and description.",
+    "source": "[^S1]",
+    "pitfall": "Treating metadata as the full execution rules and skipping the body; even if the Skill gets selected, the agent never receives the steps and boundaries the task needs.",
+    "distractor_rationale": "Learners who only see the skill-list UI overestimate the name and description, because those are the first and most visible parts after installation."
+  },
+  {
+    "term": "body",
+    "def": "The Markdown instructions after the frontmatter; read in full only after the Skill is selected.",
+    "source": "[^S4]",
+    "pitfall": "Relying on ban sentences in the body to prevent wrong triggering; if the description is too wide, the Skill is already selected and the body can only limit actions, not undo discovery.",
+    "distractor_rationale": "People thinking in plain prompts assume the model reads the whole file top to bottom in one pass, so they never distinguish pre-selection from post-selection rules."
+  },
+  {
+    "term": "name",
+    "def": "The Skill's required stable identifier, subject to the open specification's length, character, and directory-matching limits.",
+    "source": "[^S2]",
+    "pitfall": "Writing name as a reader-facing title such as Interview Notes, ignoring the lowercase, hyphen, and parent-directory matching requirements.",
+    "distractor_rationale": "People used to giving products display names keep title conventions, because in everyday language the word name usually means a readable label."
+  },
+  {
+    "term": "description",
+    "def": "The required short text stating what a Skill does and when to use it; also the main entry for implicit matching.",
+    "source": "[^S4]",
+    "pitfall": "Writing a vague slogan like Helps with releases, with neither inputs nor outputs and no exclusion of pure publishing operations, causing missed and false triggers.",
+    "distractor_rationale": "People who treat the description like an app-store blurb optimize for short and catchy instead of giving the client the task words and boundaries matching needs."
+  },
+  {
+    "term": "parent directory",
+    "def": "The folder that directly contains SKILL.md; the open specification requires its name to match the name field.",
+    "source": "[^S2]",
+    "pitfall": "Naming the directory ReleaseNotes while name says release-notes, assuming case differences do not matter; a validator treats this as a name mismatch.",
+    "distractor_rationale": "Learners on case-insensitive file systems often never see path-difference errors, so they underestimate the directory-name constraint."
+  },
+  {
+    "term": "implicit triggering",
+    "def": "The user never names the Skill, yet the client selects it because the task matches the description.",
+    "source": "[^S4]",
+    "pitfall": "Assuming implicit triggering reads the full body before deciding; the discovery stage mainly uses name and description.",
+    "distractor_rationale": "People who picture the agent as a full-text searcher assume it can see every rule, because when they open the file themselves they really do see the whole text."
+  },
+  {
+    "term": "explicit invocation",
+    "def": "An invocation where the user directly selects or names a Skill in the prompt.",
+    "source": "[^S4]",
+    "pitfall": "Thinking that once a Skill is explicitly named, the body's file, safety, and banned-action boundaries can be ignored; the invocation style does not cancel execution rules.",
+    "distractor_rationale": "People who read explicit invocation as a force command mistake the user's naming of a Skill for authorization of every later action."
+  },
+  {
+    "term": "keyword",
+    "def": "A concrete task word, input word, or output word in the description that helps the client recognize real user phrasing.",
+    "source": "[^S7]",
+    "pitfall": "Piling every synonym into a keyword list on the theory that longer triggers more easily; the scope widens, and the client may truncate the description.",
+    "distractor_rationale": "People with search-engine-optimization experience carry over keyword-coverage thinking, because both involve text matching, and overlook that this text must also state responsibility."
+  },
+  {
+    "term": "metadata layer",
+    "def": "The first layer of progressive disclosure, providing only discovery information such as name and description.",
+    "source": "[^S1]",
+    "pitfall": "Putting tag definitions, full examples, and operating steps into the metadata layer, so every Skill consumes unnecessary context at the discovery stage.",
+    "distractor_rationale": "Learners who want to write everything once treat the outermost layer as table of contents plus body, because that looks like it needs no further file jumps."
+  },
+  {
+    "term": "instruction layer",
+    "def": "The SKILL.md body loaded after the Skill is activated, holding the core steps, output, and execution boundaries.",
+    "source": "[^S1]",
+    "pitfall": "Stuffing every occasionally used case and reference table into the instruction layer, so each activation loads content irrelevant to the current task.",
+    "distractor_rationale": "People worried the agent will not find material treat repetition in the body as insurance, because they never set up clear resource pointers."
+  },
+  {
+    "term": "resource layer",
+    "def": "The references, assets, and scripts content that is read or run only when a task needs it.",
+    "source": "[^S2]",
+    "pitfall": "Assuming files in the resource layer all load automatically when the Skill activates, and writing no read conditions or file pointers in the body.",
+    "distractor_rationale": "People used to application packaging read bundled files as loaded at startup, because traditional programs often read resources during initialization."
+  },
+  {
+    "term": "progressive disclosure",
+    "def": "The organizing principle of loading a little metadata first, reading the body after a match, and entering resource files last, on demand.",
+    "source": "[^S3]",
+    "pitfall": "Reading progressive disclosure as hiding important rules as deep as possible; boundaries every run must obey still belong in the body.",
+    "distractor_rationale": "People who only remember 'reduce context' split files mechanically, because they never separated must-read instructions from occasionally used detail."
+  },
+  {
+    "term": "on-demand loading",
+    "def": "Reading the matching reference file or resource only when the current task needs that kind of detail.",
+    "source": "[^S3]",
+    "pitfall": "Assuming the agent will guess when an arbitrary deep file is useful, even when SKILL.md gives no clear relative path or read condition.",
+    "distractor_rationale": "People who equate file-system search ability with information architecture believe the agent can browse every directory on its own without entry hints."
+  },
+  {
+    "term": "references/",
+    "def": "The reference-material directory named by the open specification, holding long explanations and domain material to read when needed.",
+    "source": "[^S2]",
+    "pitfall": "Putting fixed output templates or executable scripts into references, so the agent cannot tell whether a file is for judging, copying, or running.",
+    "distractor_rationale": "People who treat references as the generic name for all attachments sort directories by file type instead of by how the agent should use the content."
+  },
+  {
+    "term": "assets/",
+    "def": "The static-resource directory named by the open specification, which can hold document templates, images, and data files.",
+    "source": "[^S2]",
+    "pitfall": "Inventing a separate templates directory and treating it as an open-spec convention, or putting code that needs to execute into assets.",
+    "distractor_rationale": "People used to web project structures treat templates as a conventional directory, because it does carry special meaning in other frameworks."
+  },
+  {
+    "term": "scripts/",
+    "def": "The executable-code directory named by the open specification, suited to fixed, repeatable, checkable operations.",
+    "source": "[^S2]",
+    "pitfall": "Writing 'judge whether a customer quote shows buying intent' as a keyword script, mistaking a recurring semantic task for a deterministic operation.",
+    "distractor_rationale": "Learners chasing automation assume a script must beat the model, because they see the repeatability but never check whether the rule is truly fixed."
+  },
+  {
+    "term": "reference material",
+    "def": "Long explanations, rule interpretations, or example analyses that the agent reads and combines with context to judge.",
+    "source": "[^S2]",
+    "pitfall": "Asking the agent to copy reference material word for word into the final output instead of using it as a basis for judgment.",
+    "distractor_rationale": "People who treat reference files as templates focus on their visible text, because an example document and an output skeleton both look like Markdown on the surface."
+  },
+  {
+    "term": "output skeleton",
+    "def": "A fixed result structure that is copied and then filled in, suited to the assets directory.",
+    "source": "[^S2]",
+    "pitfall": "Treating the output skeleton as an unchangeable final answer and forcing it on even when the user explicitly gave a different structure.",
+    "distractor_rationale": "People who value consistent format treat a template as a hard constraint, because stable sections do help checking, and overlook the user's explicit request."
+  },
+  {
+    "term": "static asset",
+    "def": "A template, image, or data file that needs no execution, usually stored in the assets directory.",
+    "source": "[^S2]",
+    "pitfall": "Assuming a file in assets is automatically safe, without checking whether it smuggles in private data, malicious instructions, or untrusted links.",
+    "distractor_rationale": "People with frontend experience equate an asset with a passive file, because images and styles usually do not execute — but a Skill lets the agent read their content."
+  },
+  {
+    "term": "deterministic operation",
+    "def": "An operation with fixed rules where the same input yields a checkable result, usually suited to scripting.",
+    "source": "[^S1]",
+    "pitfall": "Deciding a task is a deterministic operation just because it recurs; if the result depends on context, evidence strength, or writing judgment, a script still goes rigid.",
+    "distractor_rationale": "People who conflate repetitiveness with determinism feel that doing the same kind of thing every week must mean it can be written as a fixed algorithm."
+  },
+  {
+    "term": "determinism boundary",
+    "def": "The dividing line between fixed-rule execution and agent judgment that needs context.",
+    "source": "[^S1]",
+    "pitfall": "Using a script to check whether content has insight or evidence is sufficient, and believing the judgment became objective because it returns a stable boolean.",
+    "distractor_rationale": "Learners who prefer testable results treat returning true or false as determinism, without auditing whether the rule itself is reliable."
+  },
+  {
+    "term": "semantic judgment",
+    "def": "A judgment that requires understanding context, evidence strength, or meaning, and should not be reduced to a rigid keyword script.",
+    "source": "[^S5]",
+    "pitfall": "Deciding semantic judgment is not reliable enough and rewriting all of it as keyword rules; irony, negation, or context shifts then cause misjudgments.",
+    "distractor_rationale": "People with traditional automation backgrounds trust explicit conditions more, because script results are stable, and easily miss that being stably wrong is still wrong."
+  },
+  {
+    "term": "self-contained",
+    "def": "A script should avoid depending on undocumented external state; any dependency it has must be clearly recorded in the Skill.",
+    "source": "[^S2]",
+    "pitfall": "Reading self-contained as 'must copy every dependency into the Skill', or the opposite extreme of saying nothing about system packages and runtime environment.",
+    "distractor_rationale": "People who have seen single-file scripts treat file count as the self-contained standard, because the example runs on the author's machine with no extra steps."
+  },
+  {
+    "term": "dependency",
+    "def": "A system package, language library, tool, or environment condition a script needs in order to run.",
+    "source": "[^S2]",
+    "pitfall": "Assuming the target agent will auto-install a missing dependency, and never documenting versions, install conditions, or failure messages in the Skill.",
+    "distractor_rationale": "Authors whose own machine is fully equipped cannot see implicit dependencies, because the command always just succeeds on their computer."
+  },
+  {
+    "term": "representative test",
+    "def": "A small set of real tasks that can expose the core capability, synonymous phrasings, or adjacent boundaries.",
+    "source": "[^S1]",
+    "pitfall": "Testing three nearly identical success requests and calling the Skill covered; such tests reveal neither synonymous missed triggers nor adjacent false triggers.",
+    "distractor_rationale": "Authors eager to prove it works favor success paths, because feedback is fast and nothing forces them to rewrite the description."
+  },
+  {
+    "term": "core trigger",
+    "def": "A positive test case where the request lands directly on the Skill's main capability.",
+    "source": "[^S7]",
+    "pitfall": "Lightly rephrasing the description sentence and calling it a core trigger test; the test only verified keyword parroting, not real user expression.",
+    "distractor_rationale": "People who derive tests backwards from spec fields reuse author language, because it is easier than recalling how users actually phrase things."
+  },
+  {
+    "term": "synonym trigger",
+    "def": "A test case where the user does not repeat the description's words but still expresses the core task in equivalent phrasing.",
+    "source": "[^S7]",
+    "pitfall": "Swapping only one or two nouns while keeping the description's sentence shape, which cannot test whether the client recognizes genuinely different user phrasing.",
+    "distractor_rationale": "People who treat synonym replacement as semantic coverage feel different words make a new case, because they are still writing sentences from the author's viewpoint."
+  },
+  {
+    "term": "boundary case",
+    "def": "A negative or mixed test request close to the Skill's subject whose action steps outside the responsibility boundary.",
+    "source": "[^S7]",
+    "pitfall": "Picking a completely unrelated request as the negative case, such as testing a release-notes Skill with a weather question; even a wide description passes that easily.",
+    "distractor_rationale": "People who just want to fill positive and negative slots pick the obviously wrong item, because it is easy to judge — but it never touches a real adjacent task."
+  },
+  {
+    "term": "test matrix",
+    "def": "A test record that puts user requests, expected triggering, resources, output standards, and banned actions in one table.",
+    "source": "[^S1]",
+    "pitfall": "Filling only prompt and expected, skipping the resources to read, output standards, or banned actions; pass or fail still rests on gut feeling.",
+    "distractor_rationale": "People used to unit-test name tables read the matrix as a case list, because they assume assertions already exist somewhere in code."
+  },
+  {
+    "term": "observable criterion",
+    "def": "A completion condition that can be checked directly from the conversation, file reads, output, or actual actions.",
+    "source": "[^S7]",
+    "pitfall": "Writing 'high quality', 'understands the business', or 'professional tone' as an observable criterion, with nothing about what was read, which sections the output has, or which actions are banned.",
+    "distractor_rationale": "People used to reviewing finished products use overall impressions, because those words sound like quality requirements — but two people cannot reach the same conclusion from them."
+  },
+  {
+    "term": "false trigger",
+    "def": "The Skill gets selected on a task it should not take over.",
+    "source": "[^S4]",
+    "pitfall": "Adding one 'do not publish' line to the body and calling a pure-publish false trigger fixed; while the description stays too wide, the selection stage does not improve.",
+    "distractor_rationale": "People who see the agent ultimately not perform the dangerous action equate a safe stop with not triggering, because they watch the result, not the selection process."
+  },
+  {
+    "term": "missed trigger",
+    "def": "The task fits the Skill's capability, but the client does not select it.",
+    "source": "[^S4]",
+    "pitfall": "Meeting one missed trigger and expanding the description into a very long synonym list, which squeezes out the core scope and adds false triggers.",
+    "distractor_rationale": "People who treat recall as the only goal keep adding words, because each new word looks like fixing a case, and never re-check the boundary."
+  },
+  {
+    "term": "safety audit",
+    "def": "The process of checking a Skill's full set of files, dependencies, permissions, network, and data risks before installation or delivery.",
+    "source": "[^S1]",
+    "pitfall": "Reading only SKILL.md and declaring it safe, ignoring dependencies, external links, or sensitive content inside scripts, assets, and references.",
+    "distractor_rationale": "People who treat the entry file as the program's main file review the visible instructions first, because the bundled resources look like mere explanatory material."
+  },
+  {
+    "term": "file boundary",
+    "def": "The limit on which files and directories a Skill may read.",
+    "source": "[^S3]",
+    "pitfall": "Writing 'read the user's home directory or the whole repository for context' without limiting the paths the task needs, so unrelated private files may also get scanned.",
+    "distractor_rationale": "People worried about insufficient context choose the widest read scope, because more files look like fewer omissions."
+  },
+  {
+    "term": "write boundary",
+    "def": "The limit on which files a Skill may create, modify, or overwrite, and when explicit user consent is required.",
+    "source": "[^S3]",
+    "pitfall": "The body says it does not modify originals, but a bundled script overwrites input files by default; the written promise and the actual write behavior contradict each other.",
+    "distractor_rationale": "People who review the prose without running the script believe the statement, because writes often hide in a command's default parameters."
+  },
+  {
+    "term": "secrets boundary",
+    "def": "The restriction that keeps a Skill from requesting, writing, committing, or exposing API keys, tokens, and similar secrets.",
+    "source": "[^S3]",
+    "pitfall": "Thinking a real token in an example template or README is fine as long as the script itself never uploads it; the file can still be committed or copied.",
+    "distractor_rationale": "People who understand secrets risk only as network leakage overlook that local files, logs, and version control enlarge the exposure surface just as much."
+  },
+  {
+    "term": "network boundary",
+    "def": "The statement of whether a Skill needs external connections, where it connects, and whether it could send user data out.",
+    "source": "[^S1]",
+    "pitfall": "Writing no network note and assuming offline, ignoring that installing script dependencies, remote URLs, or the agent's own retrieval also create external connections.",
+    "distractor_rationale": "People who see the core task as local processing default to offline, because network actions often hide inside install or helper steps."
+  },
+  {
+    "term": "script boundary",
+    "def": "The record of an executable script's dependencies, inputs, outputs, error handling, and banned actions.",
+    "source": "[^S2]",
+    "pitfall": "Assuming a script inside a trusted Skill is safe to run, without checking what it reads and writes, what it does on failure, or whether it touches the network.",
+    "distractor_rationale": "People who trust the Skill's author treat the directory's origin as a code audit, because script and prose arrive together and look like the same trust level."
+  },
+  {
+    "term": "sensitive material",
+    "def": "Keys, customer information, private records, or unreleased data that must not be inadvertently copied, published, or sent.",
+    "source": "[^S1]",
+    "pitfall": "Treating only API keys as sensitive material, while letting customer lists, private transcripts, or unreleased financial data into public examples.",
+    "distractor_rationale": "Technically trained learners often shrink security to credential management, because keys have a fixed format while business privacy depends on context."
+  },
+  {
+    "term": "spec check",
+    "def": "The check of whether SKILL.md structure, frontmatter, and naming conform to the open specification.",
+    "source": "[^S6]",
+    "pitfall": "Declaring a Skill useful, safe, and correctly triggering after the spec check passes; a validator only covers structural issues like format and naming.",
+    "distractor_rationale": "People used to compilers or type checkers read zero errors as behavioral correctness, because the tool output gives a clear pass signal."
+  },
+  {
+    "term": "manual equivalent check",
+    "def": "When no validation tool exists, manually verifying the directory name, frontmatter, description, and resource paths item by item.",
+    "source": "[^S2]",
+    "pitfall": "Just eyeballing whether the text reads well, without actually verifying the YAML parses, the directory name matches, and the referenced paths exist.",
+    "distractor_rationale": "People who read a manual check as 'read through the content' focus on semantics, because structural errors are rarely obvious to the human eye."
+  },
+  {
+    "term": "trigger test",
+    "def": "Using real user requests to check whether a Skill should trigger, whether it misses triggers, and whether it crosses boundaries.",
+    "source": "[^S7]",
+    "pitfall": "Running three trigger tests in a row inside one conversation that already has context; the Skill mentioned in the previous turn contaminates later selection results.",
+    "distractor_rationale": "Authors reusing a session to save time find input more convenient, and overlook that the conversation history has already explicitly exposed the Skill."
+  },
+  {
+    "term": "failure log",
+    "def": "Keeping the actual deviations from testing, so later maintainers know why the Skill needed revision.",
+    "source": "[^S1]",
+    "pitfall": "Deleting the original failure after fixing the description and keeping an all-pass table; later maintainers cannot see why a boundary exists.",
+    "distractor_rationale": "People who treat test records as a final report card clean up the red rows, because they want to show current state rather than preserve decision history."
+  },
+  {
+    "term": "revision log",
+    "def": "Writing down the reason for every change to the description, body, resources, or test cases after testing.",
+    "source": "[^S7]",
+    "pitfall": "Writing only 'optimized' or 'adjusted description', without recording the prompt that triggered the change, the observed result, and the specific field.",
+    "distractor_rationale": "People used to terse changelogs omit the causal chain, because the current author still remembers the background and leaves no evidence for the next maintainer."
+  },
+  {
+    "term": "shippable Skill",
+    "def": "A Skill folder whose structure is checkable, whose resource paths exist, with complete test and safety records, and which can be re-tested in the target agent.",
+    "source": "[^S1]",
+    "pitfall": "Declaring shippable because the file tree is complete, without running representative requests in a fresh session of the target agent or recording actual behavior.",
+    "distractor_rationale": "People who manage projects by file completeness treat all-files-exist as done, because real trigger testing requires leaving the editor to verify."
+  },
+  {
+    "term": "QA record",
+    "def": "The trigger-test and safety-audit files this course creates for itself; they help maintenance, but they are not directories the specification auto-executes.",
+    "source": "[^S2]",
+    "pitfall": "Seeing a tests directory and safety-audit.md and assuming the client runs them automatically; the open specification gives these files no execution semantics.",
+    "distractor_rationale": "People used to software test frameworks treat a tests directory as a conventional entry point, because many language toolchains do auto-discover it."
+  },
+  {
+    "term": "virtual environment",
+    "def": "A local environment that isolates dependencies for Python tools; before using skills-ref you must install and activate one following its repository instructions.",
+    "source": "[^S6]",
+    "pitfall": "Running skills-ref without installing and activating a virtual environment, then misreading command not found as a Skill format error.",
+    "distractor_rationale": "People who see a one-line validation command in docs skip the installation section, because many system tools really are preinstalled on PATH."
+  },
+  {
+    "term": "skills-ref",
+    "def": "The reference validation library provided by the Agent Skills project; its repository clearly states it is for demonstration only.",
+    "source": "[^S6]",
+    "pitfall": "Treating a skills-ref pass as production certification or proof of compatibility across all clients; the repository explicitly does not position it as a production tool.",
+    "distractor_rationale": "People who see the words reference library and validate think of authoritative certification, because the command output has formal pass and fail forms."
+  },
+  {
+    "term": "spec validation tool",
+    "def": "A tool for finding frontmatter or naming structure errors; it cannot replace real trigger and output testing.",
+    "source": "[^S6]",
+    "pitfall": "Running only the spec validation tool, never testing the description, resource reads, or boundary behavior, and treating structural correctness as task success.",
+    "distractor_rationale": "People who prefer automated gates treat the machine-checkable part as the whole of quality, because behavioral testing needs human observation."
+  },
+  {
+    "term": "relative path",
+    "def": "The way of pointing from the Skill root to a references, assets, or scripts file.",
+    "source": "[^S2]",
+    "pitfall": "Interpreting references/guide.md against the current terminal directory instead of the Skill root, so the reference breaks in a different working directory.",
+    "distractor_rationale": "People who usually run commands from a repository root treat the shell's current path as the reference origin, because the two locations often coincide in simple examples."
+  }
+]

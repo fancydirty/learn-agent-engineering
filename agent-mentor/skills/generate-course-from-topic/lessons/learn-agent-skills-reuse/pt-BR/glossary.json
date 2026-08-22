@@ -1,0 +1,422 @@
+[
+  {
+    "term": "Agent Skill",
+    "def": "Formato aberto que encapsula uma capacidade específica de tarefa para um Agent, usando um diretório com SKILL.md e recursos opcionais.",
+    "source": "[^S1]",
+    "pitfall": "Renomear um prompt longo para SKILL.md e tratá-lo como um Agent Skill completo; quando a tarefa precisa de arquivos de referência ou scripts, a suposição de arquivo único quebra.",
+    "distractor_rationale": "Quem tem hábito de compartilhar prompts entende o Skill como uma nova embalagem para prompts, porque o exemplo mínimo realmente parece um único arquivo de texto."
+  },
+  {
+    "term": "prompt descartável",
+    "def": "Definição de trabalho deste curso: uma instrução de tarefa que serve apenas à conversa ou à tarefa atual e que, por padrão, não vira uma capacidade descobrível no futuro.",
+    "source": "[^S3]",
+    "pitfall": "Achar que, se o prompt for longo o suficiente, o Agent vai descobri-lo e reutilizá-lo sozinho depois; em outra conversa, essa instrução normalmente não existe.",
+    "distractor_rationale": "Quem costuma copiar conversas antigas confunde reuso manual com descoberta automática pelo cliente, porque as duas formas produzem resultado no momento."
+  },
+  {
+    "term": "tarefa recorrente",
+    "def": "Definição de trabalho deste curso: um tipo de tarefa que aparece várias vezes, com entradas, saídas e restrições basicamente estáveis.",
+    "source": "[^S3]",
+    "pitfall": "Encapsular em Skill qualquer coisa feita duas vezes, sem verificar se entrada, saída e limites são estáveis; o resultado serve apenas a dois exemplos.",
+    "distractor_rationale": "Quem tem pressa de reduzir operações repetidas julga pela contagem de ocorrências e ignora a forma da tarefa, que é o que realmente decide a reutilização."
+  },
+  {
+    "term": "workflow reutilizável",
+    "def": "Um conjunto de passos, restrições e critérios de saída que pode ser invocado novamente; o Skill é um formato que carrega esse tipo de workflow.",
+    "source": "[^S4]",
+    "pitfall": "Escrever o workflow reutilizável como a cadeia de negócio inteira, da coleta de material à publicação, fazendo um único Skill assumir vários gatilhos e decisões.",
+    "distractor_rationale": "Quem faz automação tende a tratar ponta a ponta como completo e interpreta o estreitamento de responsabilidade como falta de capacidade, escolhendo o escopo mais amplo."
+  },
+  {
+    "term": "Skill brief",
+    "def": "Definição de trabalho deste curso: rascunho de limites de um Skill candidato em quatro linhas — gatilho, entrada, saída e não tratar; não é um campo da especificação aberta.",
+    "source": "[^S5]",
+    "pitfall": "Tratar as quatro linhas do Skill brief como campos da especificação aberta e enfiá-las no frontmatter; fora name e description, as demais linhas não ganham significado padrão.",
+    "distractor_rationale": "Quem acabou de conhecer o formato mistura a ferramenta de planejamento do curso com o schema formal, porque ambos aparecem antes de escrever o SKILL.md."
+  },
+  {
+    "term": "não tratar",
+    "def": "Ações ou decisões vizinhas à tarefa central, mas explicitamente fora da responsabilidade do Skill.",
+    "source": "[^S4]",
+    "pitfall": "Escrever o não tratar só no corpo, achando que isso impede a seleção implícita do Skill; antes de o corpo ser carregado, o cliente julga principalmente pela description.",
+    "distractor_rationale": "Quem vem de prompts comuns acha que todas as regras valem ao mesmo tempo e não percebe que descoberta e execução do Skill acontecem em duas fases."
+  },
+  {
+    "term": "limite de responsabilidade",
+    "def": "A declaração do que um Skill responde e onde ele para, evitando escopo estreito demais ou a absorção de processos vizinhos.",
+    "source": "[^S4]",
+    "pitfall": "Achar que quanto mais ampla a responsabilidade, mais valioso o Skill; na prática isso torna o gatilho difuso e arrasta publicação, envio ou decisões de negócio para dentro.",
+    "distractor_rationale": "Quem equipara quantidade de funcionalidades a valor de produto enxerga a descrição ampla como completude, e não como um limite difícil de testar."
+  },
+  {
+    "term": "SKILL.md",
+    "def": "Arquivo de entrada obrigatório no diretório do Skill, composto de YAML frontmatter e um corpo de instruções em Markdown.",
+    "source": "[^S2]",
+    "pitfall": "Achar que basta o arquivo se chamar SKILL.md para ser válido, mesmo sem frontmatter na primeira linha ou sem campos obrigatórios; o cliente pode não reconhecê-lo.",
+    "distractor_rationale": "Quem conhece README trata o nome do arquivo como única convenção, porque documentos Markdown comuns não exigem um começo legível por máquina."
+  },
+  {
+    "term": "YAML frontmatter",
+    "def": "Bloco de metadados YAML no início do SKILL.md, envolvido por linhas de três hífens.",
+    "source": "[^S2]",
+    "pitfall": "Comprimir ---, name, description e o --- de fechamento em uma única linha, achando que parecer YAML basta; o padrão exige um bloco de metadados de várias linhas, analisável.",
+    "distractor_rationale": "Iniciantes que copiam exemplos de código inline confundem compactação tipográfica com sintaxe válida, porque o olho humano ainda lê os campos."
+  },
+  {
+    "term": "frontmatter",
+    "def": "Região de metadados estruturados no topo de um arquivo Markdown; o Skill declara aqui pelo menos name e description.",
+    "source": "[^S7]",
+    "pitfall": "Colocar passos completos, exemplos e regras de segurança dentro do frontmatter, achando que metadado completo é sempre melhor; isso deixa a camada de descoberta inchada e difícil de analisar.",
+    "distractor_rationale": "Quem trata o frontmatter como arquivo de configuração completo prefere campos estruturados e esquece que as instruções de execução moram no corpo."
+  },
+  {
+    "term": "metadados",
+    "def": "Informações curtas que ajudam o cliente a descobrir e escolher o Skill; o núcleo é name e description.",
+    "source": "[^S1]",
+    "pitfall": "Tratar os metadados como todas as regras de execução e omitir o corpo; mesmo selecionado, o Agent não recebe os passos e limites necessários à tarefa.",
+    "distractor_rationale": "Quem só vê a interface da lista de skills superestima nome e descrição, porque é a parte mais visível depois da instalação."
+  },
+  {
+    "term": "corpo",
+    "def": "As instruções Markdown depois do frontmatter; só são lidas por completo depois que o Skill é selecionado.",
+    "source": "[^S4]",
+    "pitfall": "Depender das frases de proibição do corpo para evitar gatilho errado; se a description for ampla demais, o Skill já foi selecionado e o corpo só limita ações, sem desfazer a descoberta.",
+    "distractor_rationale": "Quem pensa em prompts comuns imagina que o modelo lê o arquivo inteiro de uma vez e por isso não distingue regras de antes e de depois da seleção."
+  },
+  {
+    "term": "name",
+    "def": "Identificador estável e obrigatório do Skill, sujeito às restrições de comprimento, caracteres e casamento com o diretório definidas pela especificação aberta.",
+    "source": "[^S2]",
+    "pitfall": "Escrever o name como título para leitores, por exemplo Interview Notes, ignorando minúsculas, hífens e o casamento com o diretório pai.",
+    "distractor_rationale": "Quem está acostumado a dar nomes de exibição a produtos mantém a grafia de título, porque name no dia a dia costuma significar nome legível."
+  },
+  {
+    "term": "description",
+    "def": "Texto curto e obrigatório que diz o que o Skill faz e quando usar; também é a principal entrada do casamento implícito.",
+    "source": "[^S4]",
+    "pitfall": "Escrever algo genérico como Helps with releases, sem entrada nem saída e sem excluir operações puras de publicação, gerando gatilho perdido e falso gatilho.",
+    "distractor_rationale": "Quem trata a description como descrição de loja de apps busca frases curtas e bonitas, em vez das palavras de tarefa e dos limites que o cliente precisa para casar."
+  },
+  {
+    "term": "diretório pai",
+    "def": "A pasta que contém diretamente o SKILL.md; a especificação aberta exige que seu nome coincida com o campo name.",
+    "source": "[^S2]",
+    "pitfall": "Chamar o diretório de ReleaseNotes e escrever name como release-notes, achando que diferença de maiúsculas não importa; o validador trata como nome divergente.",
+    "distractor_rationale": "Quem trabalha em sistemas de arquivos que não distinguem maiúsculas raramente vê erros causados por diferenças de caminho e subestima a restrição do nome do diretório."
+  },
+  {
+    "term": "gatilho implícito",
+    "def": "O usuário não nomeia o Skill, mas o cliente ainda o seleciona porque a tarefa casa com a description.",
+    "source": "[^S4]",
+    "pitfall": "Achar que o gatilho implícito lê o corpo inteiro antes de decidir; na prática, a fase de descoberta usa principalmente name e description.",
+    "distractor_rationale": "Quem imagina o Agent como um buscador de texto completo acha natural que ele veja todas as regras, porque ao abrir o arquivo manualmente a pessoa realmente vê tudo."
+  },
+  {
+    "term": "invocação explícita",
+    "def": "Forma de invocação em que o usuário escolhe ou nomeia diretamente um Skill no prompt.",
+    "source": "[^S4]",
+    "pitfall": "Achar que, depois de nomear o Skill explicitamente, os limites de arquivos, segurança e ações proibidas do corpo podem ser ignorados; o modo de invocação não cancela regras de execução.",
+    "distractor_rationale": "Quem entende a invocação explícita como comando de força confunde o usuário nomear o Skill com uma autorização para todas as ações seguintes."
+  },
+  {
+    "term": "palavras-chave",
+    "def": "Palavras concretas de tarefa, de entrada ou de saída na description, que ajudam o cliente a reconhecer formulações reais de tarefas.",
+    "source": "[^S7]",
+    "pitfall": "Empilhar cada sinônimo possível numa lista de palavras-chave, achando que quanto mais longa, mais fácil o gatilho; o escopo fica amplo e o cliente pode truncar a descrição.",
+    "distractor_rationale": "Quem tem experiência com SEO reutiliza a lógica de cobertura de palavras-chave, porque ambas envolvem casamento de texto, e esquece que aqui também é preciso expressar responsabilidade."
+  },
+  {
+    "term": "camada de metadados",
+    "def": "A primeira camada do progressive disclosure, que oferece apenas informações de descoberta como name e description.",
+    "source": "[^S1]",
+    "pitfall": "Colocar definições de tags, exemplos completos e passos operacionais na camada de metadados, fazendo cada Skill ocupar contexto desnecessário na fase de descoberta.",
+    "distractor_rationale": "Quem quer escrever tudo de uma vez trata a camada mais externa como sumário mais corpo, porque assim parece não ser preciso pular entre arquivos."
+  },
+  {
+    "term": "camada de instruções",
+    "def": "O corpo do SKILL.md carregado após a ativação do Skill, com passos centrais, saída e limites de execução.",
+    "source": "[^S1]",
+    "pitfall": "Enfiar na camada de instruções cada caso e cada tabela de referência usados só de vez em quando, carregando a cada ativação conteúdo irrelevante para a tarefa atual.",
+    "distractor_rationale": "Quem teme que o Agent não encontre os materiais trata a repetição no corpo como seguro, porque não estabeleceu apontamentos claros de recursos."
+  },
+  {
+    "term": "camada de recursos",
+    "def": "O conteúdo de references, assets e scripts, lido ou executado apenas quando a tarefa precisa.",
+    "source": "[^S2]",
+    "pitfall": "Achar que os arquivos da camada de recursos já entram carregados automaticamente na ativação do Skill e, por isso, não escrever no corpo nenhuma condição de leitura nem apontamento de arquivo.",
+    "distractor_rationale": "Quem conhece empacotamento de aplicações entende arquivos incluídos como carregados na inicialização, porque programas tradicionais costumam ler recursos no arranque."
+  },
+  {
+    "term": "progressive disclosure",
+    "def": "Princípio de organização em que se carrega primeiro poucos metadados, depois o corpo quando há casamento, e por fim os arquivos de recurso sob demanda.",
+    "source": "[^S3]",
+    "pitfall": "Entender progressive disclosure como esconder regras importantes o mais fundo possível; limites que toda execução deve seguir continuam no corpo.",
+    "distractor_rationale": "Quem só lembra da redução de contexto divide arquivos mecanicamente, por não distinguir instruções de leitura obrigatória de detalhes de uso ocasional."
+  },
+  {
+    "term": "carregamento sob demanda",
+    "def": "Ler o arquivo de referência ou recurso correspondente apenas quando a tarefa atual precisa daquele tipo de detalhe.",
+    "source": "[^S3]",
+    "pitfall": "Achar que o Agent adivinha sozinho quando um arquivo profundo qualquer é útil, mesmo sem o SKILL.md dar caminho relativo claro e condição de leitura.",
+    "distractor_rationale": "Quem equipara capacidade de busca no sistema de arquivos a arquitetura da informação acredita que o Agent consegue navegar pela árvore inteira de diretórios sem pistas na entrada."
+  },
+  {
+    "term": "references/",
+    "def": "Diretório de referências convencionado pela especificação aberta, para explicações longas e materiais de domínio lidos quando necessário.",
+    "source": "[^S2]",
+    "pitfall": "Colocar templates fixos de saída ou scripts executáveis em references, deixando o Agent sem saber se o arquivo é para ler e julgar, copiar ou executar.",
+    "distractor_rationale": "Quem trata references como nome genérico de anexos divide diretórios por tipo de arquivo, e não por como o Agent deve usar o conteúdo."
+  },
+  {
+    "term": "assets/",
+    "def": "Diretório de recursos estáticos convencionado pela especificação aberta, que pode guardar templates de documento, imagens e arquivos de dados.",
+    "source": "[^S2]",
+    "pitfall": "Criar um diretório templates à parte tratando-o como convenção da especificação aberta, ou colocar em assets código que precisa ser executado.",
+    "distractor_rationale": "Quem conhece estrutura de projetos web trata templates como diretório consagrado, porque em outros frameworks ele realmente tem significado especial."
+  },
+  {
+    "term": "scripts/",
+    "def": "Diretório de código executável convencionado pela especificação aberta, adequado a operações fixas, repetíveis e verificáveis.",
+    "source": "[^S2]",
+    "pitfall": "Escrever como script de palavras-chave o julgamento de se uma fala de cliente indica intenção de compra, confundindo uma tarefa semântica recorrente com operação determinística.",
+    "distractor_rationale": "Quem busca automação acha que script é sempre mais confiável que modelo, porque vê a repetibilidade sem verificar se a regra é realmente fixa."
+  },
+  {
+    "term": "material de referência",
+    "def": "Explicações longas, explicações de regras ou análises de exemplos que o Agent precisa ler e combinar com o contexto para julgar.",
+    "source": "[^S2]",
+    "pitfall": "Exigir que o Agent copie o material de referência palavra por palavra na saída final, em vez de tratá-lo como base de julgamento.",
+    "distractor_rationale": "Quem trata arquivo de referência como template foca no texto visível, porque documentos de exemplo e esqueletos de saída parecem iguais na superfície — ambos Markdown."
+  },
+  {
+    "term": "esqueleto de saída",
+    "def": "Estrutura fixa de resultado que pode ser copiada e preenchida, adequada para o diretório assets.",
+    "source": "[^S2]",
+    "pitfall": "Tratar o esqueleto de saída como resposta final imutável, aplicando-o à força mesmo quando o usuário deu explicitamente outra estrutura.",
+    "distractor_rationale": "Quem valoriza formato consistente trata o template como restrição rígida, porque colunas estáveis ajudam a checar, e ignora o pedido explícito do usuário."
+  },
+  {
+    "term": "insumos estáticos",
+    "def": "Templates, imagens ou arquivos de dados que não precisam de execução, normalmente guardados no diretório assets.",
+    "source": "[^S2]",
+    "pitfall": "Assumir que um arquivo em assets é seguro por padrão, sem verificar se ele carrega dados privados, instruções maliciosas ou links não confiáveis.",
+    "distractor_rationale": "Quem tem experiência de front-end equipara asset a arquivo passivo, porque imagens e estilos normalmente não executam — mas o Skill faz o Agent ler o conteúdo."
+  },
+  {
+    "term": "operações determinísticas",
+    "def": "Operações com regras fixas, em que a mesma entrada produz um resultado verificável; normalmente adequadas a scripts.",
+    "source": "[^S1]",
+    "pitfall": "Decidir que uma tarefa é determinística só porque se repete; se o resultado depende de contexto, força de evidência ou julgamento de escrita, o script ainda fica rígido.",
+    "distractor_rationale": "Quem confunde repetitividade com determinismo acha que fazer a mesma coisa toda semana garante que dá para virar algoritmo fixo."
+  },
+  {
+    "term": "limite determinístico",
+    "def": "A fronteira entre execução por regra fixa e julgamento do Agent, que exige compreensão de contexto.",
+    "source": "[^S1]",
+    "pitfall": "Usar script para checar se o conteúdo tem insight ou se a evidência é suficiente, e achar que um booleano estável tornou o julgamento objetivo.",
+    "distractor_rationale": "Quem prefere resultados testáveis trata poder retornar true ou false como determinismo, sem examinar se a regra em si é confiável."
+  },
+  {
+    "term": "julgamento semântico",
+    "def": "Julgamento que exige entender contexto, força de evidência ou significado; não deve ser reduzido a um script rígido de palavras-chave.",
+    "source": "[^S5]",
+    "pitfall": "Achar que julgamento semântico não é confiável o bastante e reescrever tudo como regras de palavras-chave; diante de ironia, negação ou mudança de contexto, erra.",
+    "distractor_rationale": "Quem vem de automação tradicional confia mais em condições explícitas, porque o resultado do script é estável, e esquece que errar com estabilidade ainda é errar."
+  },
+  {
+    "term": "autocontido",
+    "def": "O script deve depender o mínimo possível de estado externo não declarado; havendo dependências, elas precisam estar claramente registradas no Skill.",
+    "source": "[^S2]",
+    "pitfall": "Entender autocontido como obrigação de copiar todas as dependências para dentro do Skill ou, ao contrário, achar que não é preciso declarar pacotes de sistema e ambiente de execução.",
+    "distractor_rationale": "Quem já viu scripts de arquivo único trata a contagem de arquivos como critério de autocontenção, porque o exemplo roda na máquina do autor sem passos extras."
+  },
+  {
+    "term": "dependências",
+    "def": "Pacotes de sistema, bibliotecas de linguagem, ferramentas ou condições de ambiente de que o script precisa para rodar.",
+    "source": "[^S2]",
+    "pitfall": "Assumir que o Agent de destino instala sozinho as dependências que faltam, sem declarar no Skill versões, condições de instalação ou mensagens de falha.",
+    "distractor_rationale": "Autores com ambiente local completo não enxergam dependências implícitas, porque o comando sempre funciona direto no próprio computador."
+  },
+  {
+    "term": "testes representativos",
+    "def": "Um pequeno conjunto de tarefas reais capaz de expor a capacidade central, formulações sinônimas e limites vizinhos.",
+    "source": "[^S1]",
+    "pitfall": "Testar só três pedidos de sucesso quase idênticos e declarar o Skill coberto; esse teste não revela gatilho perdido por sinônimo nem falso gatilho em tarefa vizinha.",
+    "distractor_rationale": "Autores que querem primeiro provar que funciona preferem o caminho de sucesso, porque o retorno é rápido e não obriga a reescrever a description."
+  },
+  {
+    "term": "gatilho central",
+    "def": "Caso de teste positivo em que o pedido cai diretamente na capacidade principal do Skill.",
+    "source": "[^S7]",
+    "pitfall": "Pegar a frase original da description, reescrevê-la levemente e tratá-la como teste de gatilho central; o teste só verifica a repetição de palavras-chave, não a fala real do usuário.",
+    "distractor_rationale": "Quem deriva o teste a partir do campo da especificação reutiliza a linguagem do autor, porque é mais fácil do que lembrar como usuários realmente falam."
+  },
+  {
+    "term": "gatilho sinônimo",
+    "def": "Caso de teste em que o usuário não repete as palavras originais da description, mas ainda expressa a tarefa central com formulação equivalente.",
+    "source": "[^S7]",
+    "pitfall": "Trocar apenas um ou dois substantivos mantendo a mesma estrutura de frase da description; isso não testa se o cliente reconhece falas de usuário realmente diferentes.",
+    "distractor_rationale": "Quem trata substituição de sinônimos como cobertura semântica acha que palavras diferentes já são caso novo, porque ainda constrói a frase do ponto de vista do autor."
+  },
+  {
+    "term": "caso de limite",
+    "def": "Pedido de teste negativo ou misto, próximo do tema do Skill, mas cuja ação ultrapassa o escopo de responsabilidade.",
+    "source": "[^S7]",
+    "pitfall": "Escolher como caso negativo um pedido totalmente alheio, como perguntar o clima para um Skill de notas de release; até uma description ampla passa fácil.",
+    "distractor_rationale": "Quem só quer montar pares de positivos e negativos escolhe o item obviamente errado, porque é fácil de julgar, mas não toca a tarefa vizinha real."
+  },
+  {
+    "term": "matriz de testes",
+    "def": "Registro de testes que coloca na mesma tabela pedido do usuário, gatilho esperado, recursos, critérios de saída e ações proibidas.",
+    "source": "[^S1]",
+    "pitfall": "Preencher só prompt e expected, sem recursos a ler, critérios de saída ou ações proibidas; a aprovação do teste continua dependendo de sensação subjetiva.",
+    "distractor_rationale": "Quem conhece tabelas de nomes de testes unitários trata a matriz como lista de casos, porque presume que as asserções já existem no código."
+  },
+  {
+    "term": "critérios observáveis",
+    "def": "Condições de conclusão que podem ser conferidas diretamente na conversa, nas leituras de arquivos, na saída ou nas ações reais.",
+    "source": "[^S7]",
+    "pitfall": "Escrever alta qualidade, entende o negócio ou tom profissional como critério observável, sem dizer o que foi lido, quais seções a saída tem ou que ação foi proibida.",
+    "distractor_rationale": "Quem está acostumado a revisar produtos prontos usa impressões gerais, porque essas palavras soam como exigência de qualidade, mas não levam duas pessoas à mesma conclusão."
+  },
+  {
+    "term": "falso gatilho",
+    "def": "O Skill é selecionado numa tarefa que ele não deveria assumir.",
+    "source": "[^S4]",
+    "pitfall": "Achar que adicionar no corpo um não publique conserta o falso gatilho em pedidos de publicação pura; com a description ainda ampla, a fase de seleção não melhora.",
+    "distractor_rationale": "Quem vê o Agent não executar a ação perigosa no fim equipara parada segura a não ter disparado, porque observa só o resultado, não o processo de seleção."
+  },
+  {
+    "term": "gatilho perdido",
+    "def": "A tarefa corresponde à capacidade do Skill, mas o cliente não o seleciona.",
+    "source": "[^S4]",
+    "pitfall": "Diante de um único gatilho perdido, expandir a description numa lista longa de sinônimos, expulsando o escopo central e aumentando o falso gatilho.",
+    "distractor_rationale": "Quem tem recall como única meta não para de adicionar palavras, porque cada palavra nova parece consertar um caso, sem rechecar o limite."
+  },
+  {
+    "term": "auditoria de segurança",
+    "def": "Processo de verificar, antes da instalação ou entrega, o conjunto inteiro de arquivos do Skill, suas dependências, permissões, rede e riscos de dados.",
+    "source": "[^S1]",
+    "pitfall": "Declarar segurança depois de ler apenas o SKILL.md, ignorando dependências, links externos ou conteúdo sensível em scripts, assets e references.",
+    "distractor_rationale": "Quem trata o arquivo de entrada como arquivo principal do programa prioriza a revisão das instruções visíveis, porque os recursos anexos parecem apenas material explicativo."
+  },
+  {
+    "term": "limite de arquivos",
+    "def": "Restrição do alcance de arquivos e diretórios que o Skill tem permissão de ler.",
+    "source": "[^S3]",
+    "pitfall": "Escrever que lê o diretório home do usuário ou o repositório inteiro para obter contexto, sem restringir os caminhos necessários à tarefa, expondo arquivos privados sem relação à varredura.",
+    "distractor_rationale": "Quem teme contexto insuficiente escolhe o alcance de leitura mais amplo, porque mais arquivos parecem reduzir omissões."
+  },
+  {
+    "term": "limite de escrita",
+    "def": "Restrição de quais arquivos o Skill pode criar, modificar ou sobrescrever, e de quando é preciso consentimento explícito do usuário.",
+    "source": "[^S3]",
+    "pitfall": "O corpo dizer que não modifica o original, mas o script anexo sobrescrever o arquivo de entrada por padrão; a promessa do texto e o comportamento real de escrita se contradizem.",
+    "distractor_rationale": "Quem revisa instruções sem rodar os scripts acredita nas declarações, porque a escrita costuma se esconder nos parâmetros padrão dos comandos."
+  },
+  {
+    "term": "limite de segredos",
+    "def": "Restrições que impedem o Skill de pedir, gravar, comitar ou expor API keys, tokens e outras informações secretas.",
+    "source": "[^S3]",
+    "pitfall": "Achar que não há problema colocar um token real em template de exemplo ou README, desde que o script não faça upload; o arquivo ainda pode ser comitado ou copiado.",
+    "distractor_rationale": "Quem entende risco de segredos apenas como vazamento pela rede ignora que arquivos locais, logs e controle de versão também ampliam a superfície de exposição."
+  },
+  {
+    "term": "limite de rede",
+    "def": "Declaração de se o Skill precisa de conexões externas, aonde acessa e se pode enviar dados do usuário.",
+    "source": "[^S1]",
+    "pitfall": "Tratar ausência de declaração de rede como ausência de rede, ignorando que instalação de dependências de script, URLs remotas ou buscas feitas pelo próprio Agent também criam conexões externas.",
+    "distractor_rationale": "Quem vê que a tarefa central é processamento local assume offline por padrão, porque as ações de rede costumam se esconder em passos de instalação ou auxiliares."
+  },
+  {
+    "term": "limite de scripts",
+    "def": "Registro das dependências, entradas, saídas, tratamento de erros e ações proibidas dos scripts executáveis.",
+    "source": "[^S2]",
+    "pitfall": "Assumir que um script pode rodar porque está num Skill confiável, sem verificar o que ele lê e escreve, o que faz quando falha ou se acessa a rede.",
+    "distractor_rationale": "Quem confia no autor do Skill trata a procedência do diretório como auditoria de código, porque o script entregue junto com as instruções parece ter o mesmo nível de confiança."
+  },
+  {
+    "term": "material sensível",
+    "def": "Segredos, informações de clientes, registros privados ou dados não publicados que não devem ser copiados, tornados públicos ou enviados por descuido.",
+    "source": "[^S1]",
+    "pitfall": "Tratar só API key como material sensível, permitindo que listas de clientes, transcripts privados ou dados financeiros não publicados entrem em exemplos públicos.",
+    "distractor_rationale": "Quem tem formação técnica costuma reduzir segurança a gestão de credenciais, porque segredos têm formato fixo, enquanto privacidade de negócio depende mais de contexto."
+  },
+  {
+    "term": "checagem de especificação",
+    "def": "Verificação de se a estrutura do SKILL.md, o frontmatter e a nomenclatura estão conforme a especificação aberta.",
+    "source": "[^S6]",
+    "pitfall": "Depois que a checagem de especificação passa, afirmar que o Skill é útil, seguro e dispara corretamente; o validador só cobre problemas estruturais como formato e nomenclatura.",
+    "distractor_rationale": "Quem conhece compilação ou checagem de tipos trata zero erros como comportamento correto, porque a saída da ferramenta dá um sinal claro de aprovação."
+  },
+  {
+    "term": "checagem manual equivalente",
+    "def": "Na ausência da ferramenta de validação, conferir manualmente, item a item, nome do diretório, frontmatter, description e caminhos de recursos.",
+    "source": "[^S2]",
+    "pitfall": "Apenas olhar o texto para ver se parece razoável, sem conferir de verdade se o YAML é analisável, se o nome do diretório casa e se os caminhos citados existem.",
+    "distractor_rationale": "Quem entende checagem manual como ler o conteúdo foca na semântica, porque erros estruturais raramente são óbvios para o olho humano."
+  },
+  {
+    "term": "testes de gatilho",
+    "def": "Usar pedidos reais de usuário para verificar se o Skill deve disparar, se há gatilho perdido e se há excesso de alcance.",
+    "source": "[^S7]",
+    "pitfall": "Rodar três testes de gatilho em sequência na mesma conversa já contextualizada; o Skill mencionado no teste anterior contamina a seleção dos seguintes.",
+    "distractor_rationale": "Autores que querem economizar tempo reutilizam a sessão, porque a entrada é mais conveniente, e ignoram que o histórico da conversa já expôs o Skill explicitamente."
+  },
+  {
+    "term": "registro de falhas",
+    "def": "Preservar os desvios reais observados nos testes, para que mantenedores futuros saibam por que o Skill precisou de revisão.",
+    "source": "[^S1]",
+    "pitfall": "Depois de consertar a description, apagar a falha original e manter só a tabela toda verde; o mantenedor seguinte não vê por que certo limite existe.",
+    "distractor_rationale": "Quem trata o registro de testes como boletim final limpa os resultados vermelhos, porque quer mostrar o estado atual, não preservar o histórico de decisões."
+  },
+  {
+    "term": "registro de revisões",
+    "def": "Anotar, a cada teste, o motivo de cada mudança em description, corpo, recursos ou casos de teste.",
+    "source": "[^S7]",
+    "pitfall": "Escrever apenas otimizado ou description ajustada, sem registrar o prompt que motivou a mudança, o resultado observado e o campo concreto alterado.",
+    "distractor_rationale": "Quem tem hábito de changelogs curtos omite a cadeia causal, porque o autor atual ainda lembra o contexto e não deixa evidência para o próximo mantenedor."
+  },
+  {
+    "term": "Skill entregável",
+    "def": "Pasta de Skill com estrutura verificável, caminhos de recursos existentes, registros de testes e segurança completos, e que pode ser retestada no Agent de destino.",
+    "source": "[^S1]",
+    "pitfall": "Declarar entregue porque a árvore de arquivos está completa, sem rodar pedidos representativos em novas sessões do Agent de destino nem registrar o comportamento real.",
+    "distractor_rationale": "Quem gerencia projeto por completude de arquivos trata a existência da lista inteira de arquivos como done, porque o teste de gatilho real exige sair do editor para verificar."
+  },
+  {
+    "term": "registros de QA",
+    "def": "Arquivos de testes de gatilho e auditoria de segurança criados por este curso; ajudam a manutenção, mas não são diretórios executados automaticamente pela especificação.",
+    "source": "[^S2]",
+    "pitfall": "Ver o diretório tests e o safety-audit.md e achar que o cliente vai rodá-los sozinho; a especificação aberta não dá semântica de execução a esses arquivos.",
+    "distractor_rationale": "Quem conhece frameworks de teste de software trata o diretório tests como entrada convencionada, porque muitas ferramentas de linguagem realmente o descobrem automaticamente."
+  },
+  {
+    "term": "ambiente virtual",
+    "def": "Ambiente local que isola dependências de ferramentas Python; antes de usar o skills-ref, é preciso instalá-lo e ativá-lo conforme as instruções do repositório.",
+    "source": "[^S6]",
+    "pitfall": "Rodar o skills-ref sem instalar e ativar o ambiente virtual e depois interpretar o command not found como erro de formato do Skill.",
+    "distractor_rationale": "Quem vê o comando de validação de uma linha na documentação pula a seção de instalação, porque muitas ferramentas de sistema realmente já vêm no PATH."
+  },
+  {
+    "term": "skills-ref",
+    "def": "Biblioteca de validação de referência oferecida pelo projeto Agent Skills; o repositório deixa claro que ela serve apenas para demonstração.",
+    "source": "[^S6]",
+    "pitfall": "Tratar o pass do skills-ref como certificação de produção ou prova de compatibilidade com qualquer cliente; o repositório explicitamente não o posiciona como ferramenta de produção.",
+    "distractor_rationale": "Quem vê as palavras reference library e validate associa a uma certificação autoritativa, porque a saída do comando tem formas formais de aprovação e reprovação."
+  },
+  {
+    "term": "ferramenta de validação da especificação",
+    "def": "Ferramenta para descobrir erros estruturais de frontmatter ou nomenclatura; não substitui testes reais de gatilho e de saída.",
+    "source": "[^S6]",
+    "pitfall": "Rodar apenas a ferramenta de validação da especificação, sem testar description, leitura de recursos e comportamento fora do limite, tratando estrutura correta como sucesso da tarefa.",
+    "distractor_rationale": "Quem prefere portões automatizados trata a parte verificável por máquina como a qualidade inteira, porque o teste de comportamento exige observação humana."
+  },
+  {
+    "term": "caminhos relativos",
+    "def": "Forma de escrever a localização de arquivos de references, assets ou scripts a partir da raiz do Skill.",
+    "source": "[^S2]",
+    "pitfall": "Interpretar references/guide.md a partir do diretório atual do terminal, em vez de conferir a partir da raiz do Skill; ao mudar o diretório de trabalho, a referência quebra.",
+    "distractor_rationale": "Quem costuma rodar comandos na raiz do repositório trata o caminho atual do shell como origem das referências de arquivo, porque nos exemplos simples as duas posições coincidem."
+  }
+]

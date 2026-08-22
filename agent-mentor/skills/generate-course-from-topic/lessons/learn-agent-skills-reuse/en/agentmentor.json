@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "删除现有课程，从零重写一门与 Agent 直接相关、面向公开流量的时兴课程。",
+  "learnerBrief": "The course targets creators and indie developers who already use Claude Code, Codex, or a similar coding agent, but have not yet packaged repeated work into a reusable Skill. The terminal deliverable is a Skill folder that an agent can discover, read on demand, and re-test, with tests and safety boundaries included.",
+  "briefCompleteness": {
+    "status": "clarified",
+    "evidence": "The user explicitly required a fully agent-related, currently relevant course built from zero after deleting the old one; early topic research converged on Agent Skills workflow reuse, with the endpoint converging on a re-testable Skill folder."
+  },
+  "learnerModel": {
+    "targetReader": "A creator or indie developer who can already complete a task with a local coding agent, but re-explains the same workflow every time.",
+    "knownConcepts": ["creating directories and files", "editing Markdown", "describing a task to a coding agent", "copying command output in a terminal"],
+    "unknownConcepts": ["the boundary between an Agent Skill and a one-off prompt", "SKILL.md frontmatter", "progressive disclosure", "the jobs of references/assets/scripts", "trigger testing and safety audits"],
+    "assumedEnvironment": "The reader has a local directory that is safe to practice in and at least one coding agent that can read Skills; the course assumes no programming language, API key, cloud platform, or private business data.",
+    "firstIndependentAction": "From a recently repeated agent task, write a four-line record of the trigger condition, input, output, and the out-of-scope boundary.",
+    "noviceRamp": ["Lesson 1 starts from a repeated task the reader has already lived through, then introduces Skill as the formal name for a directory and a workflow.", "Every command states its working directory, its success signal, and what to copy to the agent on failure; script examples stay pseudo-script boundaries first, with real languages discussed later."]
+  },
+  "scope": "Covers the directory, SKILL.md metadata, progressive disclosure, resource layering, deterministic scripts, trigger testing, and safety audits from the open Agent Skills specification; does not cover MCP servers, model training, plugin stores, hosted inference, or a complete skills methodology for any specific business domain.",
+  "topicCurrency": {
+    "checkedAt": "2026-08-21",
+    "evidence": ["Anthropic's Agent Skills engineering article marks the open standard as updated 2025-12-18 and states that Skills are used across Claude products and platform.", "The Agent Skills specification currently defines SKILL.md frontmatter, directories, and progressive disclosure constraints publicly.", "OpenAI/Codex official Build skills documentation currently states that ChatGPT and Codex use the open Agent Skills standard."],
+    "staleRisk": "Repository scan paths, supported frontmatter fields, script permissions, and upload methods vary across agents and will change; the course treats only the open specification and current official docs as its boundary, and they must be re-checked before each release."
+  },
+  "status": {"stage": "ready", "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/agent-mentor/skills/generate-course-from-topic/lessons/learn-agent-skills-reuse/en", "guardStatus": "pass"},
+  "qualitySelfReview": {
+    "diagramUse": "Lesson 3 uses a Mermaid layered flow diagram to explain the loading relationship among metadata, the SKILL.md body, and on-demand resources; lesson 5 uses a test matrix to place trigger, resources, output, and banned actions side by side. Everything else uses short file trees and tables, with no decorative diagrams.",
+    "weakestPoints": ["Implementations of the open standard still differ across products, and the course deliberately avoids stating any one client's scan path as a universal fact; the target client's docs still need re-checking before release.", "The final exercise asks readers to re-test on their own agent, so a public reader cannot automatically prove the real trigger results of an external agent.", "The course runs on fictional interview-notes and release-notes examples, so readers still must migrate the boundaries to their own business inputs and check whether new sensitive data or write actions appear."],
+    "followUpChecks": ["Check the description for missed or false triggers with at least three different real tasks.", "Reopen the official specification and verify whether the frontmatter limits and safety advice have changed."]
+  },
+  "acceptanceReview": {
+    "rubricScores": {"structure": 5, "grounded": 4, "pedagogy": 4, "exercises": 4, "load": 4, "readable": 4},
+    "terminalTask": "On one of your own workflows, create SKILL.md, one references file, one template or script-boundary note, and complete a trigger, boundary, and output audit with three representative tasks.",
+    "interactionCheck": "Lesson 1's boundary choice checks whether the learner stuffs notes, follow-ups, and scheduling into one Skill; lesson 2's check distinguishes a vague description from one carrying capability and trigger conditions; lesson 3's order block checks the dependency sequence of metadata, body, need judgment, and resource reads; lesson 4's choice check separates a fixed heading check from semantic judgment; lesson 5's boundary check requires adding an adjacent task the Skill should not take over; lesson 6 adds no static quiz and instead uses an action card to hand the final folder back to the agent for a zoned audit. Every interaction maps to a judgment point already explained in the prose, and the Markdown still works for standalone review.",
+    "learnerFitCheck": "The target reader can use an agent and edit files but does not know the Skill specification; lesson 1 starts from recording a repeated task, and only later introduces frontmatter, resource directories, and tests, so the first action depends on no unknown tool.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": ["To promote this course into a long-term example, rerun the installation, explicit-visibility, and implicit-trigger tests on the latest version of the target client, and update the three test records."]
+  },
+  "nextSteps": ["Complete a four-line Skill brief for one of your own recurring workflows.", "Install the Skill in the target client, confirm visibility through the skill list or an explicit invocation, then run two positive cases and one boundary case in fresh sessions.", "Write observed and revision back into tests/trigger-tests.md, and re-check the safety audit."],
+  "memoryBoundary": "course-local only; do not write host long-term memory from this file."
+}
