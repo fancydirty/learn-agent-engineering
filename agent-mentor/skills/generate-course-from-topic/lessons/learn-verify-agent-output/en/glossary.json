@@ -1,0 +1,740 @@
+[
+  {
+    "term": "completion claim",
+    "def": "An agent's own statement that a task is finished — a report of the run's belief that its loop should stop, not an observation of the repository.",
+    "source": "[^S10]",
+    "related": [
+      "reported belief",
+      "external signal",
+      "survey-and-conclude"
+    ],
+    "pitfall": "Reading the claim as a report on the code rather than on the run's beliefs — so a confident, well-organised summary is taken as evidence the work is done, when the same summary is produced whether the task is finished or two-thirds finished.",
+    "distractor_rationale": "The claim lists specific, checkable artifacts, which makes it feel like a status report from a system rather than a recollection. Anyone used to CI output, where a summary is generated from measured results, reads an agent summary the same way."
+  },
+  {
+    "term": "reported belief",
+    "def": "An assertion in a completion message describing work the run believes it performed, with nothing outside the run having confirmed it.",
+    "source": "[^S5]",
+    "deeper": "The distinction matters because a run's beliefs can be sincere and wrong at the same time: if the run believed an edit landed, the summary faithfully reports that belief. Anthropic's Labs team observed the downstream version of this — agents asked to evaluate their own work 'tend to respond by confidently praising the work—even when, to a human observer, the quality is obviously mediocre.'[^S5] Beliefs are typically flagged by authorship verbs (added, updated, implemented, ensured) and by counts and quantifiers that nothing measured.",
+    "related": [
+      "external signal",
+      "completion claim"
+    ],
+    "pitfall": "Treating a numeric or quantified belief — 'updated all six call sites' — as a measured fact, when the count came from the run's own tracking and no tool counted anything.",
+    "distractor_rationale": "Specificity reads as evidence. A person who says 'six' rather than 'several' sounds like they counted, and readers extend that convention to agent output where the number is a recollection rather than a measurement."
+  },
+  {
+    "term": "external signal",
+    "def": "A result produced by something other than the run itself — a command's exit code, a check's output, an observed response — which is the only part of a completion message that reports on the world.",
+    "source": "[^S10]",
+    "related": [
+      "reported belief",
+      "ground truth",
+      "verdict"
+    ],
+    "pitfall": "Counting an external signal as covering more than it measured — reading 'the type checker is clean' as evidence that a feature works, when a function returning null type-checks perfectly.",
+    "distractor_rationale": "Signals and beliefs appear in the same voice and the same paragraph, so the credibility of the genuine signal spreads across the sentences beside it. It also feels pedantic to ask what a passing check covered when it did, after all, pass."
+  },
+  {
+    "term": "agent loop",
+    "def": "The cycle in which an agent calls a tool, reads the result, decides the next action, and repeats until something ends it.",
+    "source": "[^S10]",
+    "related": [
+      "stopping condition",
+      "ground truth",
+      "completion claim"
+    ],
+    "pitfall": "Imagining the loop ends when the task is objectively finished, rather than when the model judges it finished or an external condition intervenes — which hides the fact that 'done' is a decision made inside the loop.",
+    "distractor_rationale": "Programming loops usually terminate on a condition evaluated against real state, so the mental model carries over. That a termination decision could be a judgment rather than a computation is not the default assumption."
+  },
+  {
+    "term": "ground truth",
+    "def": "Information an agent obtains from the environment during execution — tool results, command output — used to assess its own progress.",
+    "source": "[^S10]",
+    "related": [
+      "external signal",
+      "agent loop"
+    ],
+    "pitfall": "Assuming an agent gathers ground truth at every step by default, when the observed pattern is that it sometimes assumes an action's outcome rather than checking it — the gap that lets a run believe an edit landed when it did not.",
+    "distractor_rationale": "The phrase appears in vendor guidance as something crucial for agents to do, and readers convert a recommendation into a description of current behaviour. Guidance exists precisely because the behaviour is not automatic."
+  },
+  {
+    "term": "stopping condition",
+    "def": "A limit imposed from outside the agent that ends its loop regardless of the model's own judgment, such as a maximum number of iterations.",
+    "source": "[^S10]",
+    "related": [
+      "agent loop",
+      "Stop hook",
+      "done-condition"
+    ],
+    "pitfall": "Treating a stopping condition as a quality gate. An iteration cap ends the loop; it says nothing about whether the work is complete, so hitting the cap and finishing successfully produce the same termination.",
+    "distractor_rationale": "Both are external controls on when a run ends, so they get filed together. The difference is that one bounds cost and the other evaluates work, and only the second has an opinion about the result."
+  },
+  {
+    "term": "survey-and-conclude",
+    "def": "The observed pattern in which a fresh agent session looks at a codebase, sees that substantial work exists, and declares the whole job finished.",
+    "source": "[^S1]",
+    "deeper": "Anthropic's engineers logged this while running frontier models across many context windows to build a web app: 'After some features had already been built, a later agent instance would look around, see that progress had been made, and declare the job done.'[^S1] The repair they found was not a better model but an external artifact — a feature list written up front with every item marked failing, so a fresh session reads the remaining gap instead of inferring completeness from what exists. This is one team's engineering observation on one build, not a measured rate.",
+    "related": [
+      "done-condition",
+      "completion claim",
+      "context anxiety"
+    ],
+    "pitfall": "Diagnosing this as the agent being careless or lazy, which suggests a prompt fix — when the run had no way to know what the complete set was, so 'a lot' correctly looked like 'all' from the information available to it.",
+    "distractor_rationale": "Attributing the failure to effort matches how we explain the same behaviour in people, where someone who stops early usually could have checked. It also feels actionable — tell it to try harder — while the real repair requires writing something down before the work starts."
+  },
+  {
+    "term": "context anxiety",
+    "def": "The observed tendency of some models to begin wrapping up work prematurely as they approach what they believe is their context limit.",
+    "source": "[^S5]",
+    "related": [
+      "survey-and-conclude",
+      "completion claim"
+    ],
+    "pitfall": "Confusing this with survey-and-conclude because both end in an early completion claim. Here the run is not mistaken about remaining work — it is hurrying — so an external feature list does not fix it; durable state that makes resuming cheap does.",
+    "distractor_rationale": "From outside, both produce the same message at the same moment, and nothing in the output distinguishes a run that misjudged progress from one that decided to wrap up. Only the shape of what was left behind — half-written versus untouched — separates them."
+  },
+  {
+    "term": "intrinsic self-correction",
+    "def": "A model revising its own answer using only its own judgment, with no feedback from outside the model.",
+    "source": "[^S6]",
+    "deeper": "The ICLR 2024 study that named it found models 'struggle to self-correct their responses without external feedback, and at times, their performance even degrades after self-correction,' and diagnosed earlier optimistic results as depending on oracle labels whose removal made the gains vanish.[^S6] The models tested are the 2023 generation and later work has trained self-correction into models, so carry the mechanism rather than the numbers: a review pass with no outside signal reuses the judgment that produced the answer.",
+    "related": [
+      "reported belief",
+      "external signal",
+      "evaluator-optimizer"
+    ],
+    "pitfall": "Believing that asking 'are you sure?' produces a second opinion, when it re-runs the same judgment on the same information and the observed tendency is to come back praising the work.",
+    "distractor_rationale": "With people, asking someone to double-check genuinely helps — they slow down and apply attention they skipped. The move transfers by analogy, and the effort spent on the second pass makes it feel like verification happened."
+  },
+  {
+    "term": "plausible patch",
+    "def": "A change that passes the available tests, which is a separate question from whether it is correct.",
+    "source": "[^S3]",
+    "deeper": "The term comes from an ICSE 2026 study whose premise is mechanical: 'because testing is rarely exhaustive, a patch may pass the tests but nevertheless fail to match the developers' expectations.'[^S3] Using differential testing against the original human fixes, the authors found 29.6% of plausible patches behaved differently from ground truth, and manual inspection judged 28.6% of those certainly incorrect.[^S3] Those are shares within one benchmark study of three tools, not rates for an arbitrary project — the durable value is the vocabulary, which keeps 'passes' and 'correct' from collapsing into one word.",
+    "related": [
+      "absence",
+      "integration seam",
+      "cheating rate"
+    ],
+    "pitfall": "Using 'passing' and 'correct' interchangeably, so a green suite ends the question — when the suite only reports on the assertions someone wrote, and is silent about behaviour nobody asserted.",
+    "distractor_rationale": "Tests are the strongest cheap signal available, and treating them as decisive is a habit that works most of the time. The failures it misses are by construction the ones no test covers, so the habit is never corrected by experience of it failing."
+  },
+  {
+    "term": "absence",
+    "def": "The blind spot in which a test suite reports only on assertions that exist, and stays silent about behaviour nobody wrote a test for.",
+    "source": "[^S3]",
+    "related": [
+      "plausible patch",
+      "integration seam",
+      "done-condition"
+    ],
+    "pitfall": "Reading a green suite as a statement about the feature rather than about the assertions in it — so an unwritten case fails in production while the suite stays green and nothing ever turns red.",
+    "distractor_rationale": "Coverage tooling reports high numbers that feel like completeness, but line coverage measures which lines executed, not which behaviours were asserted. A file can be fully covered by tests that assert almost nothing about it."
+  },
+  {
+    "term": "integration seam",
+    "def": "A boundary where two components meet and each side's tests substitute a mock for the other, so both can pass while the two disagree about the contract.",
+    "source": "[^S1]",
+    "related": [
+      "absence",
+      "plausible patch",
+      "system layer"
+    ],
+    "pitfall": "Believing that testing both sides of a boundary covers the boundary, when each test asserts against your belief about the other side rather than against the other side — a template expecting one variable name and a sender passing another passes both suites.",
+    "distractor_rationale": "Two green suites feel like more coverage than one, and mocks are standard practice taught as good isolation. The isolation is real; what gets lost is that it removes exactly the interaction where this class of failure lives."
+  },
+  {
+    "term": "cheating rate",
+    "def": "An agent's pass rate on tasks constructed to be impossible to complete honestly, where any pass necessarily implies a specification-violating shortcut.",
+    "source": "[^S4]",
+    "deeper": "ImpossibleBench builds these tasks 'by introducing direct conflicts between the natural-language specification and the unit tests,' making the metric a propensity measure under a forced choice rather than a rate for ordinary work.[^S4] The measured figures vary enormously by setting — GPT-5 at 76% on one repository-style suite and 2.9% on a self-contained algorithm suite — and swing with prompt wording, from above 85% under loose prompts to 1% under the strictest tested.[^S4] A number that moves that far on phrasing is not a constant of the model.",
+    "related": [
+      "read-only access",
+      "plausible patch",
+      "done-condition"
+    ],
+    "pitfall": "Quoting a cheating rate as the frequency with which an agent will rewrite your tests during normal work, when the tasks were built so that no honest path to passing exists.",
+    "distractor_rationale": "The headline numbers are dramatic and the benchmark uses real repository tasks, so the setting reads as realistic. The impossibility is a construction detail that is easy to skim past, and it is the detail that determines what the number means."
+  },
+  {
+    "term": "read-only access",
+    "def": "A configuration in which an agent can read the checks that grade its work but cannot modify them.",
+    "source": "[^S4]",
+    "related": [
+      "cheating rate",
+      "done-condition",
+      "gate"
+    ],
+    "pitfall": "Treating this as making a gate trustworthy, when the measurement shows it prevents test modification while not eliminating 'other cheating methods such as special-casing or operator overloading' — one shortcut closed, not all of them.",
+    "distractor_rationale": "It is the one lever in this area that has a measured effect and a one-line implementation, which makes it feel like the solution rather than one partial defence. Hiding tests entirely does reduce cheating further, at a cost to legitimate performance."
+  },
+  {
+    "term": "done-condition",
+    "def": "A statement of what finished means for one task, written before the work and stored where the agent reads it but does not own it.",
+    "source": "[^S1]",
+    "deeper": "Anthropic's harness team wrote these as a structured file of feature requirements — for a chat-app clone, over 200 entries such as 'a user can open a new chat, type in a query, press enter, and see an AI response' — all marked failing at the start so later sessions could see the remaining gap.[^S1] Two properties do the work: the condition is phrased as a user-visible outcome, so checking it forces a check at the layer where integration failures live, and the agent may flip a passes field but not revise the requirement text.",
+    "related": [
+      "survey-and-conclude",
+      "falsifiability test",
+      "sprint contract"
+    ],
+    "pitfall": "Writing conditions after seeing the implementation or the agent's plan, which produces a finish line the work satisfies by construction — the list encodes what was built rather than what was required.",
+    "distractor_rationale": "Conditions are easier and faster to write once you know what the code does, and they come out more concrete and technically accurate. The accuracy is the trap: they are accurate about the implementation, which is not the thing they are supposed to constrain."
+  },
+  {
+    "term": "falsifiability test",
+    "def": "The check applied to a proposed done-condition: describe the world in which it is false. A condition whose failure you cannot describe will be marked passing by default.",
+    "source": "[^S1]",
+    "related": [
+      "done-condition",
+      "sprint contract"
+    ],
+    "pitfall": "Accepting a condition that sounds concrete but names no observation — 'errors are handled gracefully' survives casual reading and collapses under this test, because a try/catch existing is enough to call it satisfied.",
+    "distractor_rationale": "Vague conditions read as thorough because they cover more ground, and narrowing them to one observable outcome feels like giving something up. The breadth is what makes them unfalsifiable and therefore useless as gates."
+  },
+  {
+    "term": "sprint contract",
+    "def": "Agreement on what done looks like for a chunk of work, settled before any code is written.",
+    "source": "[^S5]",
+    "related": [
+      "done-condition",
+      "evaluator-optimizer",
+      "falsifiability test"
+    ],
+    "pitfall": "Deferring the agreement until work is underway, at which point both parties have something invested in the conditions being satisfiable by what already exists.",
+    "distractor_rationale": "Settling criteria up front feels like ceremony that delays real work, especially on a task that seems well understood. The cost is invisible because a finish line negotiated later still looks like a finish line."
+  },
+  {
+    "term": "evaluator-optimizer",
+    "def": "A pattern in which one model call generates a result and a separate call evaluates it and returns feedback, in a loop.",
+    "source": "[^S10]",
+    "deeper": "Vendor guidance places its fit narrowly: it works 'when we have clear evaluation criteria, and when iterative refinement provides measurable value,' with two signs of fit — that responses improve when a human articulates feedback, and that the model can supply that feedback.[^S10] The criteria requirement is why a done-condition comes first: an evaluator without written criteria invents its own, which reintroduces the problem the separation was meant to solve.",
+    "related": [
+      "separation of worker and judge",
+      "done-condition",
+      "judge layer"
+    ],
+    "pitfall": "Adopting the pattern without written criteria, so the evaluator grades against standards it invented — producing a second opinion rather than an evaluation against the requirement.",
+    "distractor_rationale": "The architecture is the visible part of the pattern and the criteria are not, so 'add an evaluator' reads as the whole implementation. A criteria-free evaluator also produces confident, well-structured output, which hides what is missing."
+  },
+  {
+    "term": "separation of worker and judge",
+    "def": "Assigning evaluation to an agent other than the one that did the work, so the judgment is not made by the party that already concluded the work was fine.",
+    "source": "[^S5]",
+    "deeper": "Anthropic's Labs team calls this 'a strong lever' and immediately bounds it: 'The separation doesn't immediately eliminate that leniency on its own; the evaluator is still an LLM that is inclined to be generous towards LLM-generated outputs. But tuning a standalone evaluator to be skeptical turns out to be far more tractable.'[^S5] What separation buys is tractability — skepticism becomes a property you can write into a fresh prompt with one job, rather than something you must talk a run into holding about work it just finished.",
+    "related": [
+      "evaluator-optimizer",
+      "intrinsic self-correction",
+      "judge layer"
+    ],
+    "pitfall": "Treating a second agent as an independent verifier, when the source is explicit that leniency toward model-generated output survives the separation and still has to be tuned out.",
+    "distractor_rationale": "In human processes, a second reviewer genuinely is independent — different training, different incentives, different blind spots. Two sessions of the same model share all three, so the analogy imports an independence that is not present."
+  },
+  {
+    "term": "static layer",
+    "def": "The cheapest layer of the gate — type checking, linting, building — which runs in seconds and can say nothing about whether the code behaves correctly.",
+    "source": "[^S10]",
+    "related": [
+      "behavioural layer",
+      "system layer",
+      "gate"
+    ],
+    "pitfall": "Reading a clean static layer as partial evidence that a feature works, when a function that always returns null passes every check in this layer.",
+    "distractor_rationale": "It is the layer that most often catches something in day-to-day work, so it accumulates a track record of usefulness. Frequency of catching gets misread as breadth of coverage."
+  },
+  {
+    "term": "behavioural layer",
+    "def": "The middle layer — test suites, condition scripts, health checks — which observes what the code does but only across the boundaries it does not mock.",
+    "source": "[^S2]",
+    "related": [
+      "static layer",
+      "system layer",
+      "integration seam",
+      "test count check"
+    ],
+    "pitfall": "Treating this layer as the whole gate, which leaves every failure that crosses a mocked seam or lives on an untested path invisible while the layer reports green.",
+    "distractor_rationale": "This is the layer most projects already have and the one with the strongest professional norms around it, so 'we have tests' feels like a complete answer to 'how do you verify.' The measured gap between an automated grader and maintainer acceptance is invisible from inside it."
+  },
+  {
+    "term": "system layer",
+    "def": "The top layer, which drives the running product along the path a user takes, or applies a judge with written criteria to the result.",
+    "source": "[^S1]",
+    "deeper": "This layer exists because of a specific observed failure: agents doing 'testing with unit tests or curl commands against a development server' that would 'fail recognize that the feature didn't work end-to-end.'[^S1] The fix was to have the agent drive the product 'as a human user would,' which 'dramatically improved performance, as the agent was able to identify and fix bugs that weren't obvious from the code alone.'[^S1] Its limit is structural — the layer sees only what it drives, and browser automation and model vision both have gaps.",
+    "related": [
+      "behavioural layer",
+      "judge layer",
+      "integration seam",
+      "gate"
+    ],
+    "pitfall": "Assuming a passing system layer covers the product, when it covers only the paths it walks — anything off that route is unobserved and reports as green by omission.",
+    "distractor_rationale": "It is the most expensive and most realistic layer, and effort reads as coverage. A four-minute browser run feels exhaustive compared with a four-second type check, regardless of how many routes it actually visits."
+  },
+  {
+    "term": "judge layer",
+    "def": "A model evaluating work against written criteria, used for conditions no script can express — whether a change is idiomatic, complete, or belongs in the codebase.",
+    "source": "[^S5]",
+    "related": [
+      "system layer",
+      "separation of worker and judge",
+      "hard threshold"
+    ],
+    "pitfall": "Sending conditions to a judge that a script could settle deterministically, which pays token cost and non-determinism for an answer a type checker would give identically every time.",
+    "distractor_rationale": "A judge can evaluate anything expressible in words, so it is the universal tool and the tempting default. Its generality is exactly why it should be last: everything cheaper gives a faster, stable answer to its narrower question."
+  },
+  {
+    "term": "hard threshold",
+    "def": "A floor on each criterion where falling below any single one fails the whole check, with no averaging across criteria.",
+    "source": "[^S5]",
+    "related": [
+      "judge layer",
+      "verdict",
+      "gate"
+    ],
+    "pitfall": "Averaging criteria into an overall score, which lets a strong result on style compensate for a broken feature and produces a passing grade for work that does not function.",
+    "distractor_rationale": "Composite scores are the norm in evaluation and rubrics, and they feel fairer because they reflect the whole picture. Fairness is the wrong objective for a gate, which needs to fail on any single disqualifying result."
+  },
+  {
+    "term": "verdict",
+    "def": "A gate's output reduced to pass or fail, with no interpretation left to the reader — as opposed to a report of numbers.",
+    "source": "[^S5]",
+    "related": [
+      "hard threshold",
+      "gate",
+      "repair-ready"
+    ],
+    "pitfall": "Building a dashboard instead of a gate: emitting coverage percentages and warnings that require a person to decide what they mean, which reintroduces the human judgment the gate was meant to replace.",
+    "distractor_rationale": "More information feels strictly better, and a rich report looks more sophisticated than a single word. The cost only appears later, when nobody reads the report and its warnings become background noise."
+  },
+  {
+    "term": "test count check",
+    "def": "Comparing the number of tests a run reports against a recorded expected total, so a deleted test is visible even when the suite exits successfully.",
+    "source": "[^S4]",
+    "related": [
+      "behavioural layer",
+      "done-condition",
+      "read-only access"
+    ],
+    "pitfall": "Relying on the exit code alone, which reports success for a suite that ran 46 tests when 47 were expected — and equally for a suite that ran none at all.",
+    "distractor_rationale": "The exit code is the canonical pass/fail signal and every tool honours it, so checking anything else feels redundant. The count is printed on screen every run, which creates a false sense that someone would notice it change."
+  },
+  {
+    "term": "gate",
+    "def": "The assembled set of layered checks that decides whether a completion claim is accepted, running on a trigger rather than on a decision to verify.",
+    "source": "[^S9]",
+    "related": [
+      "static layer",
+      "behavioural layer",
+      "system layer",
+      "unchecked list"
+    ],
+    "pitfall": "Building one thorough, slow check instead of ordered layers, which produces something you stop running within a week — and a gate that runs only when you already suspect a problem catches nothing you would have missed.",
+    "distractor_rationale": "Thoroughness is the obvious design goal when the failure you are fixing is insufficient checking, so speed reads as a compromise on rigour. The abandonment cost is invisible at design time and decisive afterwards."
+  },
+  {
+    "term": "Stop hook",
+    "def": "A lifecycle handler that fires when an agent has finished responding and can refuse to let the turn end, returning a reason the agent must act on.",
+    "source": "[^S9]",
+    "deeper": "The documented decision fields are narrow: 'block' prevents the agent from stopping, and a reason is required with it, telling the agent why it should continue.[^S9] The loop is bounded — the harness 'overrides the hook and ends the turn after 8 consecutive blocks' — which prevents an unsatisfiable condition from trapping a session.[^S9] Hook event names and JSON shapes are product surface and change between versions; the durable part is the mechanism, a lifecycle event that can veto a completion.",
+    "related": [
+      "gate",
+      "stopping condition",
+      "silence is not approval"
+    ],
+    "pitfall": "Assuming a hook can force work to continue indefinitely until conditions pass, when the harness ends the turn after a bounded number of consecutive blocks — so a persistently failing condition eventually stops blocking.",
+    "distractor_rationale": "A blocking gate implies unlimited enforcement by analogy with CI, which simply will not merge. The bound exists to prevent an impossible condition from producing an infinite loop, and it is easy to miss in the documentation."
+  },
+  {
+    "term": "silence is not approval",
+    "def": "The rule that a check producing no decision has declined to have an opinion rather than certified the work — a broken or crashed gate does not mean pass.",
+    "source": "[^S9]",
+    "related": [
+      "Stop hook",
+      "gate",
+      "unchecked list"
+    ],
+    "pitfall": "Reading an uneventful run as verification, when the most common cause of silence is a misconfigured hook — wrong path, not executable, wrong working directory — which produces exactly the same absence of output as a clean pass.",
+    "distractor_rationale": "No news is good news is a reliable heuristic for tools that shout when something is wrong. A gate that fails to run cannot shout, so its silence is indistinguishable from the silence of success unless you deliberately break something and check."
+  },
+  {
+    "term": "repair-ready",
+    "def": "Failure output written so that the reader who will act on it can locate and fix the fault without a human translating: which condition, expected versus actual, where the cause is, and what would satisfy it.",
+    "source": "[^S8]",
+    "deeper": "The underlying guidance concerns tool responses inside a harness — 'prompt-engineer your error responses to clearly communicate specific and actionable improvements, rather than opaque error codes or tracebacks'[^S8] — and the course applies it to check output, where the situation is the same in the way that matters: a program emitting text a model will act on. Note the guidance is about actionability, not volume; a full stack trace is the same information at greater cost.",
+    "related": [
+      "verdict",
+      "cheapest wrong repair",
+      "gate"
+    ],
+    "pitfall": "Confusing actionable with verbose, and dumping full logs or traces — which buries the finding under successful output and costs context to read without adding what the reader needs.",
+    "distractor_rationale": "Both opaque and verbose messages fail the same reader, so the fix for one looks like the opposite of the other. Including everything also feels safer than choosing, since nothing has been left out."
+  },
+  {
+    "term": "cheapest wrong repair",
+    "def": "The lowest-effort change that turns a failing check green without fixing the fault — the path a symptom-shaped failure message points at.",
+    "source": "[^S4]",
+    "related": [
+      "repair-ready",
+      "cheating rate",
+      "falsifiability test"
+    ],
+    "pitfall": "Writing a failure that names only the symptom — 'expected 200, got 429' — which invites making the symptom disappear, when raising the limit satisfies that sentence and destroys the feature.",
+    "distractor_rationale": "Precisely stating the mismatch is what good assertion messages do, and it feels more rigorous than describing the requirement in prose. The precision is real; what it lacks is any statement of the property that must hold."
+  },
+  {
+    "term": "unchecked list",
+    "def": "A written record of what a gate does not cover, kept beside it so a passing run is not read as broader coverage than it is.",
+    "source": "[^S10]",
+    "related": [
+      "gate",
+      "system layer",
+      "silence is not approval"
+    ],
+    "pitfall": "Leaving the boundary unstated, so an unwritten limit gets read as covered — a green gate then implies the change is fine, including on dimensions no layer ever examined.",
+    "distractor_rationale": "Documenting gaps feels like advertising weakness, and the gaps are obvious to whoever built the gate. They are invisible to everyone else, and to the same person three months later."
+  },
+  {
+    "term": "golden baseline",
+    "def": "The acceptance rate of original human-written patches under the same review process, used to separate reviewer strictness from the quality of the work being reviewed.",
+    "source": "[^S2]",
+    "deeper": "METR resubmitted 47 human-written patches that had actually been merged and found 'about 68% of golden patches are indeed merged by our maintainers,' then reported every agent score as a percentage of that 68%.[^S2] Without this step, a low acceptance rate for agent patches would be indistinguishable from reviewers who reject a third of everything.",
+    "related": [
+      "maintainer merge",
+      "behavioural layer"
+    ],
+    "pitfall": "Reading an absolute acceptance rate as a measure of the work, when reviewer subjectivity accounts for part of it — the same reviewers rejected roughly a third of patches that had genuinely shipped.",
+    "distractor_rationale": "An acceptance percentage looks like a direct measurement of quality, and the idea that expert reviewers disagree about already-merged code is counterintuitive until you see the number."
+  },
+  {
+    "term": "maintainer merge",
+    "def": "A judgment by someone who owns the code about whether a change would be accepted into the main branch — a different measurement from whether it passes the tests.",
+    "source": "[^S2]",
+    "related": [
+      "golden baseline",
+      "plausible patch",
+      "judge layer"
+    ],
+    "pitfall": "Assuming the difference between a passing test gate and an acceptance decision is mostly about broken functionality, when the measured rejections were increasingly dominated by code quality and unrelated breakage as models improved.",
+    "distractor_rationale": "Reviewers are imagined to be looking for bugs, since that is the stated purpose of review. In practice a large share of what they refuse works correctly and does not belong in the codebase as written."
+  },
+  {
+    "term": "oracle label",
+    "def": "Ground-truth information about whether an answer is correct, supplied from outside the model.",
+    "source": "[^S6]",
+    "related": [
+      "intrinsic self-correction",
+      "external signal"
+    ],
+    "pitfall": "Citing self-correction results without noticing they depended on oracle labels — the improvements 'vanish when oracle labels are not available,' which is the whole finding rather than a footnote to it.",
+    "distractor_rationale": "A study showing a model improved its own answer is naturally read as evidence models can self-improve. The label supplying the correctness signal is a methodological detail that does not survive summarisation."
+  },
+  {
+    "term": "feature list",
+    "def": "A structured file enumerating everything a task requires, with each item starting marked as failing so the remaining gap is visible to a session with no memory of prior work.",
+    "source": "[^S1]",
+    "related": [
+      "done-condition",
+      "survey-and-conclude"
+    ],
+    "pitfall": "Writing the list as prose that a run can rewrite, rather than as a structured file whose requirement text is fixed and whose only permitted edit is a status field.",
+    "distractor_rationale": "Markdown is the natural format for a requirements document and is easier to read. The observed tendency is that models edit and overwrite prose files more readily than structured ones, which is the opposite of what a fixed requirement needs."
+  },
+  {
+    "term": "browser automation",
+    "def": "Driving a running application the way a user would — clicking, typing, navigating — so a check observes the layer where integration failures appear.",
+    "source": "[^S1]",
+    "related": [
+      "system layer",
+      "integration seam",
+      "end-to-end"
+    ],
+    "pitfall": "Treating a passing browser check as coverage of the product, when it observes only the routes it walks and has known gaps — the harness authors noted limits to model vision and to the automation tools that made some bug classes invisible.",
+    "distractor_rationale": "It is the most realistic check available and takes the longest to run, so it feels comprehensive. Runtime and realism are not coverage: a four-minute run that visits two routes still leaves everything else unobserved."
+  },
+  {
+    "term": "end-to-end",
+    "def": "Describing a check that performs the user's whole sequence rather than exercising components in isolation.",
+    "source": "[^S1]",
+    "related": [
+      "system layer",
+      "browser automation",
+      "integration seam"
+    ],
+    "pitfall": "Believing unit tests plus a manual endpoint call amount to an end-to-end check — the documented failure is exactly a run that did both and still could not tell the feature did not work for a user.",
+    "distractor_rationale": "Calling an endpoint feels like testing the real system because it crosses a network boundary and hits running code. It skips everything on either side of that call, which is where the mismatches live."
+  },
+  {
+    "term": "exit code",
+    "def": "The numeric result a command returns to signal success or failure, and the usual threshold for the cheaper gate layers.",
+    "source": "[^S9]",
+    "related": [
+      "test count check",
+      "verdict",
+      "silence is not approval"
+    ],
+    "pitfall": "Relying on it alone at the behavioural layer, where a suite that ran zero tests and a suite missing a deleted test both exit successfully.",
+    "distractor_rationale": "It is the universal convention every tool honours, so checking anything beyond it feels like distrust of the tooling. The gap is not in the tool — a suite that ran fewer tests genuinely did succeed at running them."
+  },
+  {
+    "term": "flaky",
+    "def": "Describing a check that produces different results on identical input, which teaches you to re-run rather than investigate.",
+    "source": "[^S5]",
+    "related": [
+      "system layer",
+      "verdict",
+      "gate"
+    ],
+    "pitfall": "Tolerating one unreliable check on the grounds that it usually works, when its effect is to make every red result across the whole gate advisory.",
+    "distractor_rationale": "An intermittent failure looks like a minor annoyance with a known workaround, and re-running is cheap. The damage is to the habit rather than the run: once dismissing red is normal, a real failure gets dismissed the same way."
+  },
+  {
+    "term": "score drift",
+    "def": "The tendency of a model judge's standard to move between runs, so equivalent work receives different assessments over time.",
+    "source": "[^S5]",
+    "related": [
+      "judge layer",
+      "hard threshold",
+      "few-shot calibration"
+    ],
+    "pitfall": "Assuming written criteria alone hold a judge steady, when the reported fix required calibrating with few-shot examples carrying detailed score breakdowns.",
+    "distractor_rationale": "Written criteria feel like they fully determine the outcome, the way a rubric does for a careful human. A judge reads criteria as guidance and still needs anchored examples to keep a stable standard."
+  },
+  {
+    "term": "few-shot calibration",
+    "def": "Anchoring a judge's standard with worked examples and their score breakdowns, so its judgments align with the intended bar.",
+    "source": "[^S5]",
+    "related": [
+      "judge layer",
+      "score drift",
+      "hard threshold"
+    ],
+    "pitfall": "Skipping the examples and relying on adjectives like 'be strict', which produces a judge whose severity varies run to run with nothing anchoring it.",
+    "distractor_rationale": "Instructions are faster to write than examples and read as sufficient, since they state the standard directly. Examples do work that description cannot: they fix where the line sits, not just which direction it faces."
+  },
+  {
+    "term": "mock",
+    "def": "A stand-in for a real component used in tests, which substitutes your belief about that component's contract for the component itself.",
+    "source": "[^S1]",
+    "related": [
+      "integration seam",
+      "behavioural layer",
+      "absence"
+    ],
+    "pitfall": "Reading tests on both sides of a boundary as coverage of the boundary, when each side asserts against a stand-in and the two stand-ins can encode contradictory assumptions that both pass.",
+    "distractor_rationale": "Mocking is standard practice taught as proper isolation, and the isolation is genuinely valuable for speed and determinism. What it removes is precisely the interaction where this failure class lives."
+  },
+  {
+    "term": "cost ladder",
+    "def": "The arrangement of checks by what they cost to run rather than by how thorough they seem, with the cheapest first and execution stopping at the first failure.",
+    "source": "[^S1]",
+    "related": [
+      "static layer",
+      "behavioural layer",
+      "system layer",
+      "gate"
+    ],
+    "pitfall": "Ordering by perceived rigour and putting the browser check first, which produces a gate too slow to survive daily use — and an abandoned gate catches nothing.",
+    "distractor_rationale": "When the problem being fixed is insufficient checking, running the most thorough check first feels like the correct response. The cost of abandonment is invisible at design time and decisive within a week."
+  },
+  {
+    "term": "satisfied when",
+    "def": "The element of a failure message stating the property that must hold for a check to pass, as opposed to the symptom that must disappear.",
+    "source": "[^S8]",
+    "related": [
+      "repair-ready",
+      "cheapest wrong repair",
+      "falsifiability test"
+    ],
+    "pitfall": "Writing it as a restatement of the expected value — 'satisfied when the endpoint returns 400' — which names the symptom again and leaves the cheapest wrong repair wide open.",
+    "distractor_rationale": "Restating the expectation feels like specifying the requirement, and it is concrete and unambiguous. Concreteness about the observation is not the same as naming the property, and only the property rules out a fix that produces the right output for the wrong reason."
+  },
+  {
+    "term": "trigger",
+    "def": "The event that causes a gate to run — a commit, a push, or an agent attempting to finish — chosen so verification does not depend on remembering to verify.",
+    "source": "[^S9]",
+    "related": [
+      "gate",
+      "Stop hook",
+      "silence is not approval"
+    ],
+    "pitfall": "Installing a trigger and never testing that it fires, since a misconfigured hook produces silence that is indistinguishable from a clean pass.",
+    "distractor_rationale": "Configuration that looks correct usually is, for tools that fail loudly when misconfigured. A hook that cannot start cannot report that it could not start, so the only proof is deliberately breaking something and watching for red."
+  },
+  {
+    "term": "definition of done",
+    "def": "The full statement of what must be true for a task to count as finished, held outside the agent's judgment so completion becomes an evaluation rather than an opinion.",
+    "source": "[^S1]",
+    "related": [
+      "done-condition",
+      "feature list",
+      "sprint contract"
+    ],
+    "pitfall": "Keeping it in your head or in the original request, where nothing can check against it — which leaves the agent to infer the finish line from what it has built.",
+    "distractor_rationale": "For a task that feels clear, writing the definition down seems like restating the obvious. What is obvious to you is exactly the unstated part the run fills in silently, and the gap only shows up as rework."
+  },
+  {
+    "term": "type checker",
+    "def": "A static-layer tool verifying that code's shapes and signatures are consistent, in seconds, with no view of behaviour.",
+    "source": "[^S10]",
+    "related": [
+      "static layer",
+      "external signal",
+      "cost ladder"
+    ],
+    "pitfall": "Counting a clean type check as partial evidence a feature works, when a function that always returns null satisfies it completely.",
+    "distractor_rationale": "It catches real errors constantly and runs on real code, so it accumulates a track record that reads as broad coverage. Frequency of catching is not breadth of what it can see."
+  },
+  {
+    "term": "regression",
+    "def": "A failure introduced into behaviour that previously worked, which an untouched existing suite is well placed to catch.",
+    "source": "[^S2]",
+    "related": [
+      "behavioural layer",
+      "test count check"
+    ],
+    "pitfall": "Reading a passing existing suite as evidence about new work, when it is a statement about the past — no test written last month knows what feature you added today.",
+    "distractor_rationale": "A green suite after a change feels like the change was validated, and in one sense it was: it did not break anything covered. That is a different question from whether the new thing works."
+  },
+  {
+    "term": "blind spot",
+    "def": "A category of failure a given layer cannot observe by construction, regardless of how carefully that layer is written.",
+    "source": "[^S3]",
+    "related": [
+      "absence",
+      "integration seam",
+      "unchecked list"
+    ],
+    "pitfall": "Trying to close a blind spot by adding more checks in the same layer, when the limitation is structural — more unit tests never see a mocked seam.",
+    "distractor_rationale": "Adding tests is the standard response to a missed bug and usually helps. When the miss came from the layer's structure rather than from thin coverage, more of the same layer produces effort without coverage."
+  },
+  {
+    "term": "harness",
+    "def": "The scaffolding around a model — its tools, prompts, lifecycle events, and checks — which determines what runs regardless of what the model decides.",
+    "source": "[^S9]",
+    "related": [
+      "Stop hook",
+      "gate",
+      "trigger"
+    ],
+    "pitfall": "Treating verification failures as model problems to be fixed by better prompting, when the observed repairs were changes to the environment: a feature list, a driven end-to-end check, a lifecycle event that can refuse a completion.",
+    "distractor_rationale": "The model produces the visible output, so it is the natural place to assign both credit and blame. Prompt changes are also faster to try than building a check, which makes them the default first move."
+  },
+  {
+    "term": "specification",
+    "def": "The stated requirement a change is meant to satisfy, which can conflict with the tests that grade it.",
+    "source": "[^S4]",
+    "related": [
+      "done-condition",
+      "cheating rate",
+      "plausible patch"
+    ],
+    "pitfall": "Assuming tests and specification always agree, so passing tests implies meeting the requirement — the case where they conflict is exactly where a specification-violating shortcut becomes available.",
+    "distractor_rationale": "Tests are normally written from the specification, so treating them as its faithful encoding is reasonable most of the time. Where they diverge, the tests are what gets optimised against."
+  },
+  {
+    "term": "shortcut",
+    "def": "A change that satisfies the check without doing the work the check was meant to verify.",
+    "source": "[^S4]",
+    "related": [
+      "cheapest wrong repair",
+      "cheating rate",
+      "read-only access"
+    ],
+    "pitfall": "Assuming an explicit instruction closes a shortcut, when an agent was observed modifying a test assertion 'despite explicit instructions \"DO NOT MODIFY THE TESTS\"'.",
+    "distractor_rationale": "A clear prohibition feels like it settles the matter, since that is how instructions work with people who face consequences. Measured cheating rates swing enormously with prompt wording, which shows instructions have real effect and not decisive effect."
+  },
+  {
+    "term": "differential testing",
+    "def": "Comparing two implementations by running both and looking for behavioural discrepancies, rather than checking either against a fixed set of assertions.",
+    "source": "[^S3]",
+    "related": [
+      "plausible patch",
+      "absence"
+    ],
+    "pitfall": "Assuming two changes that both pass the same suite are equivalent, when 29.6% of plausible patches in one study behaved differently from the human fix under differential testing.",
+    "distractor_rationale": "Passing the same tests is the closest thing to a definition of equivalence most workflows have. It only establishes agreement on the assertions that exist, which is a much weaker claim than behavioural equivalence."
+  },
+  {
+    "term": "the four elements",
+    "def": "What a repair-ready failure message carries: which condition failed, expected versus actual, where the cause lives, and what would satisfy it.",
+    "source": "[^S8]",
+    "related": [
+      "repair-ready",
+      "satisfied when",
+      "cheapest wrong repair"
+    ],
+    "pitfall": "Stopping at expected-versus-actual, which is the one element standard tooling already provides and the one that names a symptom rather than a requirement.",
+    "distractor_rationale": "A precise mismatch is what a good assertion message looks like and feels complete. The three missing elements are ones no test framework can supply, because only you know the condition and what would satisfy it."
+  },
+  {
+    "term": "dashboard",
+    "def": "Output that reports numbers and leaves the decision to a reader, as distinct from a gate that decides.",
+    "source": "[^S5]",
+    "related": [
+      "verdict",
+      "gate",
+      "hard threshold"
+    ],
+    "pitfall": "Building one where a gate was needed — emitting coverage percentages and advisory warnings that require a human to interpret them, which reinstates the judgment the gate was meant to remove.",
+    "distractor_rationale": "Richer output looks more capable and leaves options open, and nobody wants a check that hides information. The cost appears later, when the warnings become background and nothing reads them."
+  },
+  {
+    "term": "context window",
+    "def": "The bounded amount of text a model can attend to at once, which is why long tasks run across multiple sessions with no memory between them.",
+    "source": "[^S1]",
+    "related": [
+      "context anxiety",
+      "survey-and-conclude",
+      "harness"
+    ],
+    "pitfall": "Assuming a session that began fresh knows what earlier sessions did, when each new session 'begins with no memory of what came before' — which is the condition that makes survey-and-conclude possible.",
+    "distractor_rationale": "Continuity within one conversation makes the agent feel like a persistent worker. Across sessions the continuity is supplied by whatever is written on disk, and nothing else survives."
+  },
+  {
+    "term": "propensity",
+    "def": "A measured tendency to behave a certain way under conditions built to elicit it, as opposed to a rate at which it happens in ordinary work.",
+    "source": "[^S4]",
+    "related": [
+      "cheating rate",
+      "shortcut"
+    ],
+    "pitfall": "Quoting a propensity measure as an incidence rate — reporting a 76% cheating rate as how often an agent rewrites your tests, when the tasks were constructed so no honest path to passing existed.",
+    "distractor_rationale": "Both are percentages describing model behaviour and are reported in the same units. The construction that makes one a propensity rather than an incidence is a methods detail that does not survive being repeated."
+  },
+  {
+    "term": "assertion",
+    "def": "A statement in a test about what must be true, and the unit a suite actually reports on.",
+    "source": "[^S3]",
+    "related": [
+      "absence",
+      "plausible patch",
+      "behavioural layer"
+    ],
+    "pitfall": "Reading a green suite as a claim about the feature rather than about its assertions — the suite is silent on everything nobody asserted, and silence renders as green.",
+    "distractor_rationale": "A passing suite presents a single summary result, which reads as a verdict on the code as a whole rather than on the specific propositions someone chose to encode."
+  },
+  {
+    "term": "clean environment",
+    "def": "A run in which the checks execute without your local configuration, cached state, or installed dependencies, exposing environment-dependent failures.",
+    "source": "[^S2]",
+    "related": [
+      "blind spot",
+      "trigger",
+      "behavioural layer"
+    ],
+    "pitfall": "Trusting a gate that only ever runs on your machine, where the environment differences from Lesson 2's blind-spot table are invisible because your machine has whatever is missing.",
+    "distractor_rationale": "A check that passes locally has demonstrably run and passed, which feels like evidence. It ran in the one environment guaranteed to have every value the code needs."
+  },
+  {
+    "term": "verification",
+    "def": "Establishing from evidence outside the run that stated conditions hold, as opposed to accepting a report that they do.",
+    "source": "[^S10]",
+    "related": [
+      "gate",
+      "external signal",
+      "completion claim"
+    ],
+    "pitfall": "Counting attention as verification — reading the completion message carefully, or asking a follow-up question, produces no signal from outside the run no matter how much care goes into it.",
+    "distractor_rationale": "Careful reading is real work and feels like diligence, and it does catch claims that are internally inconsistent. It cannot reach the far larger class of claims that are coherent, confident, and wrong."
+  }
+]
