@@ -1,0 +1,366 @@
+[
+  {
+    "term": "tool call",
+    "def": "A single action an agent takes on something outside the conversation, such as reading a file, writing a file, running a command, or fetching a page.",
+    "source": "[^S1]",
+    "pitfall": "Counting a long stretch of agent narration as work; only tool calls change anything, so a run that explains a great deal and calls few tools has mostly been talking to itself.",
+    "distractor_rationale": "People arriving from chat assistants read fluent text as the product, because in chat the text genuinely was the product."
+  },
+  {
+    "term": "environmental feedback",
+    "def": "What comes back to the agent from an action it took: file contents, an error, a list of results. It is information the agent did not have when the task was handed over.",
+    "source": "[^S1]",
+    "pitfall": "Treating an error in the feedback as a failed run, when adapting to errors is precisely how an agent learns what is actually true about your files.",
+    "distractor_rationale": "Errors read as malfunctions to anyone whose experience of software is that a red message means something broke."
+  },
+  {
+    "term": "loop",
+    "def": "The cycle of calling a tool, reading what came back, and choosing the next call — the property that makes a system an agent rather than a script.",
+    "source": "[^S1]",
+    "pitfall": "Assuming the loop follows a plan fixed at the start, when each iteration's choice depends on feedback that did not exist when you wrote the task.",
+    "distractor_rationale": "Anyone who has used an automation or macro expects a recorded sequence, so they picture a list of steps being replayed rather than decided."
+  },
+  {
+    "term": "agent run",
+    "def": "One span of the tool-calling loop, from the task you hand over to the moment it stops.",
+    "source": "[^S1]",
+    "pitfall": "Thinking of a run as one long chat message; a run leaves changed files behind whether or not you ever read its report.",
+    "distractor_rationale": "The interface often looks like a chat window, so the mental model carries over from a surface that could not touch anything."
+  },
+  {
+    "term": "chat turn",
+    "def": "One message-and-reply exchange with no tool-calling loop in it, where anything that happens in the real world happens because you did it.",
+    "source": "[^S1]",
+    "pitfall": "Assuming the same request is equally safe in both modes, when a chat turn's worst outcome is a bad paragraph and a run's is a changed file.",
+    "distractor_rationale": "The request text is often word-for-word identical in both, so the difference lives entirely in what the system is permitted to do with it."
+  },
+  {
+    "term": "workflow",
+    "def": "A system where the steps are fixed in advance by code and the model fills in the blanks, as distinct from an agent that chooses its own steps.",
+    "source": "[^S1]",
+    "pitfall": "Calling every multi-step AI system an agent, which hides that a fixed-step system is predictable in exactly the way an agent is not.",
+    "distractor_rationale": "Marketing applies the word agent to both, so learners never encounter the distinction until an unpredictable run makes it concrete."
+  },
+  {
+    "term": "delegation",
+    "def": "Handing over a task along with the authority to take the intermediate steps unsupervised.",
+    "source": "[^S1]",
+    "pitfall": "Delegating a task you could not grade afterwards, which buys you a result you have no way to judge rather than time saved.",
+    "distractor_rationale": "Tedium feels like the natural signal for what to hand off, and the most tedious tasks are often the ones whose output is hardest to check."
+  },
+  {
+    "term": "stateful",
+    "def": "The property that each action changes the situation the next action starts from, so a run accumulates consequences as it goes.",
+    "source": "[^S8]",
+    "pitfall": "Expecting a failed run to leave things as they were; a run that stops halfway leaves half its changes in place.",
+    "distractor_rationale": "Familiar software either completes or rolls back, so partial permanent change is not a state most people have had to reason about."
+  },
+  {
+    "term": "compounding error",
+    "def": "A mistake whose cost grows because later work is built on top of it.",
+    "source": "[^S8]",
+    "pitfall": "Estimating the damage from the wrong step alone, rather than from everything the run did afterwards on that basis.",
+    "distractor_rationale": "In a chat, a wrong answer is self-contained and costs nothing to discard, so the habit of bounding a mistake to where it occurred transfers badly."
+  },
+  {
+    "term": "reversible action",
+    "def": "An action you could undo in about a minute if it turned out wrong — creating a file, writing a draft, reading something.",
+    "source": "[^S4]",
+    "pitfall": "Classifying an action as reversible because undoing it is theoretically possible, without checking whether you would actually notice in time to do it.",
+    "distractor_rationale": "Reversibility feels like a property of the action, when in practice it depends on whether a copy of the original still exists."
+  },
+  {
+    "term": "irreversible action",
+    "def": "An action whose undoing is expensive or impossible: deleting, sending to another person, overwriting an original with no copy, or changing something others depend on.",
+    "source": "[^S4]",
+    "pitfall": "Listing only deletion, and missing that sending a message or overwriting the sole copy of a file is equally unrecoverable.",
+    "distractor_rationale": "Deletion is the vivid case, so it crowds out the quieter ones that produce the same permanent result."
+  },
+  {
+    "term": "action trail",
+    "def": "The sequence of tool calls a run actually made, in order, with what came back from each — a record of events rather than a description of them.",
+    "source": "[^S5]",
+    "pitfall": "Reading the trail only after something has visibly gone wrong, when its main value is catching runs whose summary looks entirely fine.",
+    "distractor_rationale": "The summary is presented as the run's conclusion, so the trail reads as debugging output for problems rather than the primary evidence."
+  },
+  {
+    "term": "delegation test",
+    "def": "Four questions asked before handing over a task: is it multi-step, can you check the result, what is the worst irreversible action in reach, and could you tell a good result from a plausible one.",
+    "source": "[^S1]",
+    "pitfall": "Answering the fourth question optimistically; if you could not spot a convincing wrong answer, the run cannot teach you anything when it fails.",
+    "distractor_rationale": "The first three questions have crisp answers, which makes the fourth feel like a formality rather than the one that decides the outcome."
+  },
+  {
+    "term": "task boundary",
+    "def": "The set of decisions you state explicitly — done, work area, gates, stopping condition — so the agent does not silently supply its own values for them.",
+    "source": "[^S9]",
+    "pitfall": "Writing the boundary as tone rather than as values, so instructions like 'be careful' leave every actual threshold still unspecified.",
+    "distractor_rationale": "Cautionary language feels protective, and it reads to a person as a real constraint even though it contains nothing checkable."
+  },
+  {
+    "term": "definition of done",
+    "def": "A finish line stated so the agent can test its own work against it, rather than deciding for itself when the task feels complete.",
+    "source": "[^S2]",
+    "pitfall": "Omitting what should happen to items the agent cannot handle, which turns every skipped item into silence indistinguishable from success.",
+    "distractor_rationale": "Describing the successful outcome feels like a complete specification, because the failure cases have not happened yet when you write it."
+  },
+  {
+    "term": "work area",
+    "def": "What the agent is technically able to reach at all, as distinct from what it is permitted to do without asking.",
+    "source": "[^S9]",
+    "pitfall": "Leaving the work area at whatever the tool defaults to, so an agent searching for something it needs can wander into folders you never considered.",
+    "distractor_rationale": "A default that has never caused a problem reads as a safe default, since the reach you did not want is invisible until it is exercised."
+  },
+  {
+    "term": "blast radius",
+    "def": "How far the consequences of a wrong action can spread, which is bounded by the work area rather than by the agent's intentions.",
+    "source": "[^S4]",
+    "pitfall": "Judging blast radius from what the task requires rather than from what the agent can reach, when the second is what an overeager step will actually find.",
+    "distractor_rationale": "People reason from the task's scope because that is what they were thinking about when they wrote the request."
+  },
+  {
+    "term": "approval gate",
+    "def": "A point where the agent must stop and ask you before proceeding with something it is otherwise able to do.",
+    "source": "[^S9]",
+    "pitfall": "Gating every action, which produces so many prompts that you approve them without reading and end up with less oversight than a few well-chosen gates.",
+    "distractor_rationale": "More checkpoints feels monotonically safer, because the model of attention as unlimited is never explicitly examined."
+  },
+  {
+    "term": "sandbox mode",
+    "def": "In OpenAI's Codex documentation, the control governing what the agent can do technically, including where it can write and whether it can reach the network.",
+    "source": "[^S9]",
+    "pitfall": "Conflating it with the approval policy, when one limits capability and the other only decides when the agent must pause and ask.",
+    "distractor_rationale": "Both feel like the single dial labelled how much freedom to give it, so the two-axis structure collapses into one in most people's heads."
+  },
+  {
+    "term": "approval policy",
+    "def": "In OpenAI's Codex documentation, the control governing when the agent must ask you before it executes an action.",
+    "source": "[^S9]",
+    "pitfall": "Relying on approval prompts as the only protection, when an action outside the work area should be impossible rather than merely announced.",
+    "distractor_rationale": "Being asked feels like control, and it is — but only for as long as you are still reading the questions carefully."
+  },
+  {
+    "term": "scope escalation",
+    "def": "A run taking an action that is plausibly connected to its task but reaches past what the person intended to authorize.",
+    "source": "[^S4]",
+    "pitfall": "Looking for obviously wrong actions, when the documented cases look like reasonable problem-solving applied too broadly.",
+    "distractor_rationale": "The word escalation suggests something dramatic, so a sensible-looking action at the wrong scale does not match the mental image."
+  },
+  {
+    "term": "stopping condition",
+    "def": "A limit that ends a run regardless of whether the task is finished — a step ceiling, a time budget, or a rule such as stopping after the same error twice.",
+    "source": "[^S1]",
+    "pitfall": "Assuming a stuck run will give up on its own, when an agent that cannot finish will keep attempting and each attempt costs you something.",
+    "distractor_rationale": "Programs that hang are familiar, but agents narrate while they struggle, so the activity reads as progress rather than as a loop."
+  },
+  {
+    "term": "time horizon",
+    "def": "The length of task an agent completes at a given success rate; METR's 50% time horizon is the duration at which an agent is predicted to succeed half the time.",
+    "source": "[^S7]",
+    "pitfall": "Treating any published horizon figure as a current capability, when the measurement is tied to a model generation and a task suite and moves quickly.",
+    "distractor_rationale": "A single number invites use as a specification, which is exactly how it stops being true a few months after it is published."
+  },
+  {
+    "term": "one-shot attempt",
+    "def": "An agent trying to complete a whole task in a single sweep rather than in checkpointed pieces, leaving nothing to resume from if it fails partway.",
+    "source": "[^S2]",
+    "pitfall": "Judging it by whether the final output looks complete, when the real cost appears only when the run dies at eighty percent with no intermediate state saved.",
+    "distractor_rationale": "A run that produces everything at the end looks efficient, since incremental output is invisible while the run is succeeding."
+  },
+  {
+    "term": "premature completion claim",
+    "def": "A report of success from a run that never verified the work — indistinguishable from a genuine completion report by inspection alone.",
+    "source": "[^S2]",
+    "pitfall": "Asking the agent to double-check, which returns a second statement from the same source rather than independent evidence.",
+    "distractor_rationale": "Asking again is what works with a person who might have been careless, and the interface makes the agent feel like such a person."
+  },
+  {
+    "term": "context",
+    "def": "The accumulated working memory of a run — everything it has read and done so far — which fills as the run proceeds.",
+    "source": "[^S3]",
+    "pitfall": "Expecting step forty of a run to be executed as reliably as step four, when coherence degrades as the context fills.",
+    "distractor_rationale": "Software is normally as accurate on its thousandth operation as its first, so gradual within-run degradation has no familiar analogue."
+  },
+  {
+    "term": "context anxiety",
+    "def": "Anthropic's term for models beginning to wrap up work prematurely as they approach what they believe is their context limit.",
+    "source": "[^S3]",
+    "pitfall": "Trusting the end of a long run most, when the closing stretch — where completion claims are made — is the least reliable part of it.",
+    "distractor_rationale": "A conclusion normally reflects everything that came before, so the final summary intuitively feels like the most informed statement in the run."
+  },
+  {
+    "term": "coherence",
+    "def": "A run's continued grip on its original goal and accumulated state, which vendors report degrades over lengthy tasks.",
+    "source": "[^S3]",
+    "pitfall": "Reading a loss of coherence as the agent misunderstanding the task, when it understood correctly at the start and lost the thread over distance.",
+    "distractor_rationale": "Misunderstanding is the familiar explanation for wrong output, so people rewrite the instruction when the real fix is a shorter run."
+  },
+  {
+    "term": "Coverage",
+    "def": "The check asking whether a run touched everything it was supposed to touch, answered by counting actions in the trail against the items requested.",
+    "source": "[^S11]",
+    "pitfall": "Skipping it because it feels too crude, when counting catches more incomplete runs than any amount of reading the output does.",
+    "distractor_rationale": "Counting feels beneath the sophistication of the problem, so people go straight to inspecting content quality instead."
+  },
+  {
+    "term": "Verification",
+    "def": "The check asking whether the run looked at the result of its own changes, visible as read-back actions following write actions in the trail.",
+    "source": "[^S5]",
+    "pitfall": "Mistaking a tool reporting success for the agent verifying an outcome; the first says the command ran, not that it did what was wanted.",
+    "distractor_rationale": "An ok in the trail after every action reads as confirmation, because it is the same word a person would use to confirm."
+  },
+  {
+    "term": "Silences",
+    "def": "The check for things that failed without leaving a note — the hardest gap to see, because you are looking for something that is not there.",
+    "source": "[^S2]",
+    "pitfall": "Assuming problems announce themselves, when an agent with nowhere to record a failure will guess or move on quietly.",
+    "distractor_rationale": "Absence carries no visual weight in a log, so a missing entry never draws the eye the way an error message does."
+  },
+  {
+    "term": "Reach",
+    "def": "The check for whether a run touched anything outside its declared work area.",
+    "source": "[^S9]",
+    "pitfall": "Checking only the files the task named, and missing the directory listings and searches that show where the agent looked.",
+    "distractor_rationale": "Reading and listing feel harmless next to writing, so exploratory actions get skipped when scanning a trail."
+  },
+  {
+    "term": "handoff record",
+    "def": "A short artifact stating what a run was asked to do, what it actually did, what you personally verified, and what remains open.",
+    "source": "[^S2]",
+    "pitfall": "Filling the verified section with the agent's claims instead of your own checks, which collapses the distinction the record exists to preserve.",
+    "distractor_rationale": "Both kinds of statement describe the same work in the same past tense, so the difference in their evidential weight is easy to lose while writing."
+  },
+  {
+    "term": "session log",
+    "def": "GitHub's term for the record showing an agent's reasoning and the tools it used, linked from each commit so a change can be traced during review or audit.",
+    "source": "[^S11]",
+    "pitfall": "Treating it as a debugging tool for failed runs, when its documented purpose is routine review of runs that appear to have succeeded.",
+    "distractor_rationale": "The word log signals troubleshooting, so it gets opened only when something has already gone visibly wrong."
+  },
+  {
+    "term": "append-only log",
+    "def": "A record written as events occur and never rewritten, which is why it can be checked against a summary composed afterwards.",
+    "source": "[^S12]",
+    "pitfall": "Substituting the agent's own recap of what it did, which is reconstructed from the same beliefs that produced the summary you are trying to check.",
+    "distractor_rationale": "A recap is easier to read than a raw trail, and it appears to contain the same information in a friendlier form."
+  },
+  {
+    "term": "attention budget",
+    "def": "The limited supply of careful looking a person has during a run, which is smaller than the number of moments competing for it.",
+    "source": "[^S4]",
+    "pitfall": "Spending it evenly across a run, which leaves nothing for the one decision that actually mattered.",
+    "distractor_rationale": "Vigilance is experienced as a matter of will, so treating it as a finite quantity to allocate feels like making an excuse."
+  },
+  {
+    "term": "approval fatigue",
+    "def": "Anthropic's term for people ceasing to pay close attention to what they are approving after repeated prompts.",
+    "source": "[^S4]",
+    "pitfall": "Responding to a near-miss by adding more prompts, which accelerates the fatigue that let the near-miss through.",
+    "distractor_rationale": "Adding a checkpoint is the standard fix after any process failure, and it works for processes that do not depend on a human reading each one."
+  },
+  {
+    "term": "Repetition",
+    "def": "The signal of the same action against the same target with the same result, indicating a run that is circling rather than gathering information.",
+    "source": "[^S8]",
+    "pitfall": "Confusing it with retrying, when a second attempt that differs from the first is recovery and only an identical repeat is circling.",
+    "distractor_rationale": "Both look like doing the same thing twice at a glance, and the difference sits in the detail of the action rather than in its shape."
+  },
+  {
+    "term": "Widening",
+    "def": "The signal of a run beginning to touch things adjacent to its task rather than in it — scope escalation observed live, before it completes.",
+    "source": "[^S4]",
+    "pitfall": "Waiting to see what it does with the wider material, when this is the last cheap moment to stop before an irreversible step.",
+    "distractor_rationale": "The agent usually narrates a plausible reason for looking further afield, which makes waiting feel like fairness rather than delay."
+  },
+  {
+    "term": "Silence with activity",
+    "def": "The signal of actions continuing while nothing is produced or written, readable directly when a task was set up to write output as it goes.",
+    "source": "[^S8]",
+    "pitfall": "Reading visible activity as progress, when the useful measure is whether the output is still growing rather than whether the run is still moving.",
+    "distractor_rationale": "A scrolling display is the universal sign that something is working, so stillness in the output goes unnoticed beneath the motion."
+  },
+  {
+    "term": "Confidence outrunning evidence",
+    "def": "The signal of narration reporting progress the actions do not show — a premature completion claim caught while the run is still going.",
+    "source": "[^S3]",
+    "pitfall": "Taking a confident progress statement as a checkpoint, when the trail may show no action since the last failure.",
+    "distractor_rationale": "Confident phrasing is how people signal they have verified something, so the register carries an assurance the run never earned."
+  },
+  {
+    "term": "Continue",
+    "def": "The response of letting a run proceed, correct when it is converging: index advancing, output growing, failures landing in the record.",
+    "source": "[^S8]",
+    "pitfall": "Continuing on the strength of the agent sounding confident rather than on the observable markers of convergence.",
+    "distractor_rationale": "Interrupting feels disruptive and rude, so any reassuring narration is welcomed as grounds to leave it alone."
+  },
+  {
+    "term": "Redirect",
+    "def": "Correcting a run without ending it — supplying a missing fact or narrowing the target — so the work already done survives.",
+    "source": "[^S11]",
+    "pitfall": "Forgetting it exists and treating every concern as a stop-or-continue choice, which throws away good work over a fixable misdirection.",
+    "distractor_rationale": "The visible controls are usually stop and approve, so the middle option is not represented in the interface even where it is supported."
+  },
+  {
+    "term": "Take it back",
+    "def": "Ending a run and completing the work yourself, correct when repetition persists after a redirect, when something irreversible is near, or when the task itself was mis-specified.",
+    "source": "[^S5]",
+    "pitfall": "Redirecting once more when the run is already exploring outside its work area, where the cost of being wrong is an action you cannot undo.",
+    "distractor_rationale": "Sunk effort makes stopping feel wasteful, and one more correction always looks cheaper than starting over."
+  },
+  {
+    "term": "spot-check",
+    "def": "Verifying a sample of a run's output by hand against its source, and recording how many items you actually checked.",
+    "source": "[^S5]",
+    "pitfall": "Reporting a spot-check as though it covered everything, rather than naming the sample size so the unverified remainder stays visible.",
+    "distractor_rationale": "Finding no problems in a sample feels like evidence about the whole, which is exactly the inference the recorded count is there to prevent."
+  },
+  {
+    "term": "read-back",
+    "def": "An action that reads a destination after writing to it, confirming the change landed rather than assuming the write succeeded.",
+    "source": "[^S5]",
+    "pitfall": "Assuming a run verified its work because the trail is long, when a trail of writes with no reads confirmed nothing at all.",
+    "distractor_rationale": "Volume of activity reads as thoroughness, and the distinction between writing and checking is invisible unless you look at action types."
+  },
+  {
+    "term": "intermediate output",
+    "def": "Results written as the run proceeds rather than summarized at the end, so a run that dies partway still leaves usable work behind.",
+    "source": "[^S2]",
+    "pitfall": "Accepting an end-of-run summary as equivalent, when it is composed after the fact from the same memory that may already be wrong.",
+    "distractor_rationale": "A single tidy report looks more organized than a running log, so the format that is easier to read displaces the one that is evidence."
+  },
+  {
+    "term": "loud failure",
+    "def": "A boundary requirement that anything skipped, ambiguous, or unreadable be reported explicitly, converting a silence into a line you can find.",
+    "source": "[^S2]",
+    "pitfall": "Requiring reports only for things the agent could not do, and leaving no channel for things it did badly on a low-confidence guess.",
+    "distractor_rationale": "Outright failures are the obvious case to plan for, while uncertain successes look identical to confident ones in the output."
+  },
+  {
+    "term": "natural seam",
+    "def": "The point in a task where the work changes character — gathering to deciding, reading to writing — which is where a long task should be split.",
+    "source": "[^S6]",
+    "pitfall": "Splitting by volume instead, which halves the item count while leaving each half just as dependent on unverified work from the other.",
+    "distractor_rationale": "Cutting a task in half is the obvious way to make it smaller, and it does reduce length without creating anything checkable in between."
+  },
+  {
+    "term": "anti-signal",
+    "def": "An observation that looks alarming but does not justify interrupting — most importantly, a run encountering errors and adapting to them.",
+    "source": "[^S1]",
+    "pitfall": "Stopping runs at the first error, which discards a working delegation and teaches you nothing about what real failure looks like.",
+    "distractor_rationale": "Error text is visually alarming and formatted like a problem, whether the run is failing or successfully learning what is there."
+  },
+  {
+    "term": "progress file",
+    "def": "A file a run updates as it works, so a later session or reader can tell what was genuinely completed instead of inferring it from the state of the work.",
+    "source": "[^S2]",
+    "pitfall": "Relying on the visible state of the work instead, which is the exact inference that led a documented agent to see progress and declare the job done.",
+    "distractor_rationale": "Finished-looking work is tangible evidence, and it is genuinely evidence of something — just not of the task being complete."
+  },
+  {
+    "term": "front-loaded",
+    "def": "A gating pattern that requires approval for the first few instances of an action and then proceeds unattended once the pattern is confirmed.",
+    "source": "[^S4]",
+    "pitfall": "Preferring uniform gates because they feel more thorough, when approval quality collapses long before a uniform gate stops firing.",
+    "distractor_rationale": "Consistency reads as rigour, so a rule applied to every case looks stronger than one deliberately concentrated where judgment still works."
+  }
+]
