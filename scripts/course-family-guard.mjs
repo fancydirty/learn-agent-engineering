@@ -66,6 +66,39 @@ function interactionBlockIds(text) {
     });
 }
 
+// Script profile per locale. A parallel-translation run once shipped a Spanish
+// glossary whose first 18 entries carried Korean prose: term keys were Spanish,
+// every field was non-empty, and course-guard passed clean, because no gate ever
+// checked what LANGUAGE the text was in. Cheap structural test: Latin-script
+// locales must contain no CJK at all, and a CJK locale must not carry another
+// CJK locale's script (kana in zh, Hangul in ja, ...).
+const SCRIPT_RE = { han: /[\u4e00-\u9fff]/, kana: /[\u3040-\u30ff]/, hangul: /[\uac00-\ud7af]/ };
+const ALLOWED_SCRIPTS = {
+  en: [], es: [], "pt-BR": [],
+  zh: ["han"], ja: ["han", "kana"], ko: ["hangul", "han"],
+};
+
+function glossaryScriptViolations(dir, locale) {
+  const p = join(dir, "glossary.json");
+  if (!existsSync(p)) return [];
+  let entries;
+  try { entries = JSON.parse(readFileSync(p, "utf8")); } catch { return []; }
+  if (!Array.isArray(entries)) return [];
+  const allowed = ALLOWED_SCRIPTS[locale] ?? [];
+  const seen = new Set();
+  for (const [i, e] of entries.entries()) {
+    for (const field of ["term", "def", "pitfall", "distractor_rationale", "deeper"]) {
+      const raw = e?.[field];
+      const text = Array.isArray(raw) ? raw.join(" ") : (typeof raw === "string" ? raw : "");
+      if (!text) continue;
+      for (const [name, re] of Object.entries(SCRIPT_RE)) {
+        if (!allowed.includes(name) && re.test(text)) seen.add(`glossary[${i}].${field}: ${name}`);
+      }
+    }
+  }
+  return [...seen].slice(0, 5).map((hit) => `${locale}: 词表混入非本语言文字 — ${hit}(翻译串档，guard 只查非空查不出语言)`);
+}
+
 export function guardCourseFamily(familyDir) {
   const violations = [];
   const warnings = [];
@@ -106,6 +139,7 @@ export function guardCourseFamily(familyDir) {
       if (!existsSync(join(dir, file))) violations.push(`${locale}: 缺 ${file}(每个 locale 变体都须是完整课程)`);
     }
     if (lessonFiles(dir).length === 0) violations.push(`${locale}: 没有任何课节文件(NN-*.md)`);
+    violations.push(...glossaryScriptViolations(dir, locale));
     const lang = readmeLang(join(dir, "README.md"));
     if (lang !== locale) {
       violations.push(`${locale}: README frontmatter lang=${lang ?? "缺失"} 与目录 locale 不一致`);

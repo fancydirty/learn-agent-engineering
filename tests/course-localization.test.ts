@@ -266,7 +266,12 @@ function buildFamily(name: string, options: { lessonRename?: string; translateAr
     writeGuardFixture(`${base}/${locale}/01-alpha.md`, guardLesson(`Alpha ${locale}`, zhArtifact, "shared-check-1"));
     writeGuardFixture(`${base}/${locale}/${options.lessonRename && locale === "en" ? options.lessonRename : "02-beta.md"}`, guardLesson(`Beta ${locale}`, SKILL_ARTIFACT, secondId));
     if (options.missingFile !== "glossary.json" || locale !== "en") {
-      writeGuardFixture(`${base}/${locale}/glossary.json`, JSON.stringify([{ term: "术语", def: "定义", source: "https://example.com" }]));
+      // Glossary prose must be in the variant's own language — the family guard
+      // now enforces that, so the fixture has to model it correctly too.
+      const gloss = locale === "zh"
+        ? [{ term: "术语", def: "定义", source: "https://example.com" }]
+        : [{ term: "term", def: "definition", source: "https://example.com" }];
+      writeGuardFixture(`${base}/${locale}/glossary.json`, JSON.stringify(gloss));
     }
     writeGuardFixture(`${base}/${locale}/sources.md`, "# 来源\n\n## S1 — Spec\n\n- URL: https://example.com\n");
     writeGuardFixture(`${base}/${locale}/agentmentor.json`, JSON.stringify({ schemaVersion: 2 }));
@@ -319,6 +324,25 @@ describe("course family guard", () => {
     const result = guardCourseFamily(buildFamily("unknown-locale", { unknownLocale: true }));
     expect(result.ok).toBe(false);
     expect(result.violations.some((v) => v.includes("fr"))).toBe(true);
+  });
+
+  it("fails when a locale's glossary carries another language's script", () => {
+    // Real incident: parallel translation forks collided on a shared scratchpad
+    // filename and an es glossary shipped with Korean prose bodies. Term keys were
+    // Spanish and every field was non-empty, so course-guard passed clean.
+    const dir = buildFamily("script-contam", {});
+    const g = join(dir, "es", "glossary.json");
+    mkdirSync(join(dir, "es"), { recursive: true });
+    writeFileSync(join(dir, "es", "README.md"), guardReadme("es", "Demo es"));
+    writeFileSync(join(dir, "es", "01-alpha.md"), guardLesson("Alpha es", SKILL_ARTIFACT, "shared-check-1"));
+    writeFileSync(join(dir, "es", "02-beta.md"), guardLesson("Beta es", SKILL_ARTIFACT, "shared-check-2"));
+    writeFileSync(join(dir, "es", "sources.md"), "# Fuentes\n\n## S1 — Spec\n\n- URL: https://example.com\n");
+    writeFileSync(join(dir, "es", "agentmentor.json"), JSON.stringify({ schemaVersion: 2 }));
+    writeFileSync(g, JSON.stringify([{ term: "gatillo", def: "한국어 정의가 잘못 들어갔습니다", source: "https://example.com" }]));
+
+    const result = guardCourseFamily(dir);
+    expect(result.ok).toBe(false);
+    expect(result.violations.some((v: string) => v.includes("es") && v.includes("hangul"))).toBe(true);
   });
 
   it("fails when interaction block ids diverge across variants", () => {
