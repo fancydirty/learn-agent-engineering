@@ -34,3 +34,6 @@ yarn-error.log*
 # OS and editors
 .DS_Store
 .vercel/
+
+# Brainstorm session artifacts
+/.superpowers/
