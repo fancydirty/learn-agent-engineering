@@ -77,7 +77,7 @@ Next.js 使用 `app/[locale]/layout.tsx` 作为动态根布局，由路由参数
 课程按“课程 family → locale variant”组织：
 
 ```text
-lessons/
+courses/
   learn-agent-skills-reuse/
     logo.svg
     zh/
@@ -197,10 +197,10 @@ Sitemap 收录六种语言下所有可发布课程、课节、术语表和来源
 
 ## 课程生成与质量闸门
 
-`generate-course-from-topic` 的路径契约改为：
+课程目录契约：
 
 ```text
-lessons/learn-<course-slug>/<locale>/
+courses/learn-<course-slug>/<locale>/
 ```
 
 生成一门新课时先完成一个 source locale。翻译属于同一 course family 的新 variant，不创建新的 course slug。
