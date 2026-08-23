@@ -15,6 +15,11 @@ const zh = {
     kicker: (n: number, total: number) => `第 ${n} / ${total} 节`,
     onThisPage: "本页目录",
     actions: { group: "本课动作", share: "分享", shared: "已分享" },
+    tiers: {
+      1: { label: "开始使用 Agent", blurb: "你能让 Agent 独立完成一件真事" },
+      2: { label: "让工作流稳下来", blurb: "复用、管住上下文、验证产出" },
+      3: { label: "做成工程", blurb: "仓库、外部系统、多 Agent" },
+    },
     library: {
       title: "把正在发生的 Agent 变化，讲成能立刻上手的课。",
       intro: "这里只收录与 Agent 直接相关、仍在快速变化的选题。课程免费阅读，练习、代码和选中文本都能一键复制给 Claude Code、Codex 或其他 Agent 继续做。",
@@ -150,6 +155,11 @@ const en: SiteCopy = {
     kicker: (n: number, total: number) => `Lesson ${n} of ${total}`,
     onThisPage: "On this page",
     actions: { group: "Lesson actions", share: "Share", shared: "Shared" },
+    tiers: {
+      1: { label: "Start using agents", blurb: "Get an agent to finish something real on its own" },
+      2: { label: "Make the workflow hold", blurb: "Reuse it, budget its context, verify what comes back" },
+      3: { label: "Build it into the system", blurb: "Repositories, real tools, multiple agents" },
+    },
     library: {
       title: "Agent changes, turned into courses you can use right away.",
       intro: "Only topics that are directly about Agents and still moving fast. Courses are free; exercises, code, and selected text copy straight into Claude Code, Codex, or your Agent of choice.",
@@ -283,6 +293,11 @@ const ja: SiteCopy = {
     kicker: (n: number, total: number) => `第 ${n} 回 / 全 ${total} 回`,
     onThisPage: "このページの目次",
     actions: { group: "レッスン操作", share: "共有", shared: "共有しました" },
+    tiers: {
+      1: { label: "Agent を使い始める", blurb: "Agent に実際の仕事を最後までやってもらう" },
+      2: { label: "ワークフローを安定させる", blurb: "再利用し、コンテキストを管理し、出力を検証する" },
+      3: { label: "エンジニアリングに落とす", blurb: "リポジトリ、外部システム、複数 Agent" },
+    },
     library: {
       title: "いま起きている Agent の変化を、すぐ使えるレッスンに。",
       intro: "Agent に直接関係し、いまも急速に変化しているテーマだけを収録しています。コースはすべて無料。練習・コード・選択したテキストはワンクリックで Claude Code、Codex などの Agent にコピーして続けられます。",
@@ -416,6 +431,11 @@ const ko: SiteCopy = {
     kicker: (n: number, total: number) => `${n} / ${total}강`,
     onThisPage: "이 페이지 목차",
     actions: { group: "레슨 작업", share: "공유", shared: "공유됨" },
+    tiers: {
+      1: { label: "Agent 사용 시작하기", blurb: "Agent가 실제 작업을 스스로 끝내게 하기" },
+      2: { label: "워크플로를 안정시키기", blurb: "재사용하고, 컨텍스트를 관리하고, 결과를 검증하기" },
+      3: { label: "엔지니어링으로 만들기", blurb: "저장소, 외부 시스템, 다중 Agent" },
+    },
     library: {
       title: "지금 일어나는 Agent 변화를, 바로 써먹는 강의로.",
       intro: "Agent와 직접 관련되고 아직도 빠르게 변화하는 주제만 다룹니다. 강의는 무료이며, 연습·코드·선택한 텍스트를 Claude Code, Codex 등의 Agent에 한 번에 복사해 이어갈 수 있습니다.",
@@ -549,6 +569,11 @@ const es: SiteCopy = {
     kicker: (n: number, total: number) => `Lección ${n} de ${total}`,
     onThisPage: "En esta página",
     actions: { group: "Acciones de la lección", share: "Compartir", shared: "Compartido" },
+    tiers: {
+      1: { label: "Empieza a usar agentes", blurb: "Que un agente termine algo real por su cuenta" },
+      2: { label: "Haz que el flujo aguante", blurb: "Reutilízalo, presupuesta su contexto, verifica lo que devuelve" },
+      3: { label: "Llévalo a ingeniería", blurb: "Repositorios, sistemas reales, varios agentes" },
+    },
     library: {
       title: "Los cambios del mundo Agent, convertidos en cursos prácticos.",
       intro: "Solo temas directamente relacionados con Agent y que aún cambian rápido. Los cursos son gratuitos: ejercicios, código y texto seleccionado se copian con un clic a Claude Code, Codex u otro Agent para continuar.",
@@ -682,6 +707,11 @@ const ptBR: SiteCopy = {
     kicker: (n: number, total: number) => `Lição ${n} de ${total}`,
     onThisPage: "Nesta página",
     actions: { group: "Ações da lição", share: "Compartilhar", shared: "Compartilhado" },
+    tiers: {
+      1: { label: "Comece a usar agentes", blurb: "Faça um agente concluir algo real sozinho" },
+      2: { label: "Faça o fluxo se sustentar", blurb: "Reutilize, controle o contexto, verifique o retorno" },
+      3: { label: "Leve para a engenharia", blurb: "Repositórios, sistemas reais, vários agentes" },
+    },
     library: {
       title: "As mudanças do ecossistema Agent, em cursos prontos para usar.",
       intro: "Só temas diretamente ligados a Agent e ainda em rápida mudança. Os cursos são gratuitos: exercícios, código e texto selecionado podem ser copiados com um clique para o Claude Code, Codex ou outro Agent continuar.",

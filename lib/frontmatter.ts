@@ -6,6 +6,12 @@ export interface Frontmatter {
   domain?: string;
   tags?: string[];
   lang?: string;
+  /** Ladder tier: 1 on-ramp, 2 workflow, 3 engineering. Drives library grouping. */
+  tier?: number;
+  /** One sentence naming what the reader can do after finishing. Shown on the course card. */
+  outcome?: string;
+  /** Reading order within a tier. Lower first. */
+  order?: number;
 }
 
 function clean(s: string): string {
@@ -46,6 +52,14 @@ export function parseFrontmatter(md: string): { data: Frontmatter; body: string 
       data.domain = clean(val);
     } else if (key === "lang") {
       data.lang = clean(val);
+    } else if (key === "tier") {
+      const n = Number.parseInt(clean(val), 10);
+      if (Number.isInteger(n) && n >= 1 && n <= 3) data.tier = n;
+    } else if (key === "outcome") {
+      data.outcome = clean(val);
+    } else if (key === "order") {
+      const n = Number.parseInt(clean(val), 10);
+      if (Number.isInteger(n)) data.order = n;
     }
   }
   return { data, body };

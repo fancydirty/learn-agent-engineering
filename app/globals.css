@@ -12,6 +12,9 @@
   --nav-glass:color-mix(in srgb, var(--background) 72%, transparent); --nav-blur:14px;
   --accent:#9a3b1b; --accent-soft:#f0e3d8;
   --on-accent:#fff;
+  /* Ladder tiers. Hues sit inside the warm editorial family so a rung reads as a
+     rung, not as a status badge: sage → the existing rust accent → plum. */
+  --tier-1:#5b7d5a; --tier-2:#9a3b1b; --tier-3:#7a4f78;
   /* State semantic colors (spec 2026-07-29 §5.2): renew-soon/grace = amber, offline = gray, danger = terracotta.
      Red only for destructive actions and form errors — expiry is not an error, so amber not red. */
   --state-warn:#8a5a12; --state-warn-soft:#f6ecd8;
@@ -45,6 +48,8 @@
   --background:#131417; --surface:#0e0f13; --card:#1e2129; --card-hover:#262a33;
   --foreground:#e4e7ec; --ink-strong:#f3f5f9; --muted-foreground:#99a0ac; --ink-subtle:#6a7280;
   --border:#2a2e36; --border-strong:#3a3f4a; --accent:#7aa2f7; --accent-soft:#1e2740;
+  /* Same three rungs lifted for the cold night palette. */
+  --tier-1:#7fb069; --tier-2:#7aa2f7; --tier-3:#b088c9;
   --panel:#191c22;
   /* Semi-transparent near-black glass: slightly lower dark opacity, keeps scrolling content underneath from graying out. */
   --nav-glass:color-mix(in srgb, var(--background) 68%, transparent);
@@ -662,4 +667,116 @@
 @media (prefers-reduced-motion:reduce){
   .lesson-actions .lesson-actions-btn{ transition:none; }
   .lesson-actions .lesson-actions-btn:active{ transform:none; }
+}
+
+
+/* ---------- Course library: the capability ladder ---------- */
+
+.course-library{ width:100%; max-width:76rem; margin:0 auto; padding:3.5rem 1.5rem 5rem; }
+.course-library-intro{ max-width:46rem; margin-bottom:3.25rem; }
+.course-library-kicker{
+  font-family:var(--font-kicker),monospace; font-size:.72rem; letter-spacing:.18em;
+  color:var(--accent); margin-bottom:1rem;
+}
+.course-library-title{
+  font-size:clamp(1.9rem,4.2vw,3rem); font-weight:600; letter-spacing:-.02em;
+  line-height:1.12; color:var(--ink-strong);
+}
+.course-library-lede{
+  margin-top:1.15rem; font-size:1rem; line-height:1.75; color:var(--muted-foreground); max-width:40rem;
+}
+
+/* The rail. A single gradient spine behind all rungs turns "further down" into
+   "further in" without a word of explanation. */
+.course-ladder{ position:relative; padding-left:2rem; }
+.course-ladder::before{
+  content:""; position:absolute; left:0; top:.5rem; bottom:.5rem; width:2.5px; border-radius:2px;
+  background:linear-gradient(var(--tier-1),var(--tier-2) 52%,var(--tier-3));
+  opacity:.8;
+}
+.course-rung + .course-rung{ margin-top:2.75rem; }
+.course-rung-head{ position:relative; margin-bottom:1.1rem; }
+.course-rung-dot{
+  position:absolute; left:-2.09rem; top:.5rem; width:10px; height:10px; border-radius:50%;
+  background:var(--rung); box-shadow:0 0 0 2.5px var(--background);
+}
+.course-rung[data-tier="1"]{ --rung:var(--tier-1); }
+.course-rung[data-tier="2"]{ --rung:var(--tier-2); }
+.course-rung[data-tier="3"]{ --rung:var(--tier-3); }
+.course-rung-label{ font-size:1.02rem; font-weight:650; color:var(--ink-strong); letter-spacing:-.01em; }
+.course-rung-blurb{ margin-top:.25rem; font-size:.82rem; color:var(--ink-subtle); }
+
+/* Tier 1 breathes (two wide cards); deeper rungs pack tighter. The density itself
+   signals difficulty before any label is read. */
+.course-rung-grid{ display:grid; gap:.85rem; grid-template-columns:repeat(3,1fr); }
+.course-rung[data-tier="1"] .course-rung-grid{ grid-template-columns:repeat(2,1fr); gap:1rem; }
+
+.course-tile{
+  position:relative; display:flex; flex-direction:column; min-height:9.5rem;
+  padding:1.15rem 1.2rem; border:1px solid var(--border); border-radius:12px;
+  background:var(--card); box-shadow:var(--shadow-card); text-decoration:none;
+  transition:border-color .18s cubic-bezier(.2,.7,.2,1), background-color .18s, transform .18s;
+}
+.course-tile:hover{
+  background:var(--card-hover); transform:translateY(-1px);
+  border-color:color-mix(in srgb, var(--cat) 45%, var(--border));
+}
+@media (prefers-reduced-motion:reduce){ .course-tile{ transition:none } .course-tile:hover{ transform:none } }
+.course-tile-arrow{
+  position:absolute; right:1rem; top:.9rem; font-size:.78rem; color:var(--ink-subtle);
+  transition:color .18s;
+}
+.course-tile:hover .course-tile-arrow{ color:var(--cat); }
+.course-tile-mark{ display:block; width:22px; height:22px; }
+.course-tile-mark svg{ width:100%; height:100%; display:block; }
+.course-tile-mark-fallback{
+  display:block; width:7px; height:7px; margin:7px; border-radius:50%; background:currentColor;
+}
+.course-tile-title{
+  margin-top:.8rem; font-size:.95rem; font-weight:640; line-height:1.35;
+  color:var(--ink-strong); max-width:26ch;
+}
+.course-tile-outcome{
+  margin-top:.45rem; font-size:.79rem; line-height:1.55; color:var(--muted-foreground);
+}
+.course-tile-meta{
+  margin-top:auto; padding-top:1rem; display:flex; gap:.4rem; align-items:baseline;
+  font-family:var(--font-kicker),monospace; font-size:.68rem; color:var(--ink-subtle);
+}
+
+.course-library-empty{
+  border:1px solid var(--border); border-radius:12px; padding:1.5rem; background:var(--card);
+}
+.course-library-empty h2{ font-weight:600; color:var(--ink-strong); }
+.course-library-empty p{ margin-top:.5rem; font-size:.875rem; color:var(--muted-foreground); }
+
+.course-library-cta{
+  margin-top:4rem; display:flex; flex-direction:row; align-items:center; justify-content:space-between;
+  gap:1rem; border:1px solid var(--border); border-radius:12px; padding:1.5rem; background:var(--card);
+}
+.course-library-cta h2{ font-weight:600; color:var(--ink-strong); }
+.course-library-cta p{ margin-top:.25rem; font-size:.875rem; color:var(--muted-foreground); }
+.course-library-cta a{
+  flex:none; display:inline-flex; align-items:center; justify-content:center;
+  padding:.55rem 1rem; border-radius:8px; font-size:.875rem; font-weight:500;
+  background:var(--accent); color:var(--on-accent); text-decoration:none;
+}
+
+/* Tablet: three-across becomes two, tier 1 stays two. */
+@media (max-width:1023px){
+  .course-rung-grid,
+  .course-rung[data-tier="1"] .course-rung-grid{ grid-template-columns:repeat(2,1fr); }
+}
+
+/* Phone: single column, and the rail tucks in so it never eats content width. */
+@media (max-width:639px){
+  .course-library{ padding:2.5rem 1.15rem 3.5rem; }
+  .course-library-intro{ margin-bottom:2.25rem; }
+  .course-ladder{ padding-left:1.1rem; }
+  .course-rung-dot{ left:-1.16rem; width:8px; height:8px; }
+  .course-rung-grid,
+  .course-rung[data-tier="1"] .course-rung-grid{ grid-template-columns:1fr; gap:.75rem; }
+  .course-tile{ min-height:0; }
+  .course-library-cta{ flex-direction:column; align-items:flex-start; }
+  .course-library-cta a{ width:100%; }
 }

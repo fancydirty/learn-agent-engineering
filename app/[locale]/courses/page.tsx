@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CourseTile } from "@/components/course-tile";
 import { SiteHeader } from "@/components/site-header";
-import { scanCourseFamilies, toCardData } from "@/lib/courses";
-import { groupCoursesByDomain } from "@/lib/domains";
+import { scanCourseFamilies, toCardData, TIERS, type CourseVariant } from "@/lib/courses";
 import { coursesLocaleLinks } from "@/lib/i18n";
 import { isLocale, LOCALES, siteCopyFor } from "@/lib/locales";
 import { coursesDir } from "@/lib/paths";
@@ -26,61 +25,63 @@ export default async function CoursesPage({ params }: { params: Promise<{ locale
   const copy = siteCopyFor(locale);
   const families = scanCourseFamilies(coursesDir());
   const variants = families.flatMap((family) => family.variants.filter((variant) => variant.locale === locale));
-  const groups = groupCoursesByDomain(variants);
+
+  // Group by ladder tier, ordered on-ramp → engineering. Within a rung, order by
+  // reading order: each course declares `order` in its frontmatter, so the author
+  // decides the path rather than an accident of length or slug.
+  const rungs = TIERS.map((tier) => ({
+    tier,
+    courses: variants
+      .filter((variant: CourseVariant) => variant.tier === tier)
+      .sort((a, b) => a.order - b.order || a.slug.localeCompare(b.slug)),
+  })).filter((rung) => rung.courses.length > 0);
 
   return (
     <>
       <SiteHeader locale={locale} languageLinks={coursesLocaleLinks()} />
-      <main className="mx-auto w-full max-w-5xl px-6 py-14 sm:py-20">
-      <section className="mb-14 max-w-3xl">
-        <p className="mb-4 text-xs font-medium tracking-[0.18em]" style={{ color: "var(--accent)", fontFamily: "var(--font-kicker), monospace" }}>
-          AGENT MENTOR · OPEN COURSES
-        </p>
-        <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl" style={{ color: "var(--ink-strong)" }}>
-          {copy.reader.library.title}
-        </h1>
-        <p className="mt-5 max-w-2xl text-base leading-8" style={{ color: "var(--muted-foreground)" }}>
-          {copy.reader.library.intro}
-        </p>
-      </section>
-
-      {variants.length === 0 ? (
-        <section className="rounded-xl border p-6" style={{ borderColor: "var(--border)", background: "var(--card)" }}>
-          <h2 className="font-semibold" style={{ color: "var(--ink-strong)" }}>{copy.reader.library.emptyTitle}</h2>
-          <p className="mt-2 text-sm" style={{ color: "var(--muted-foreground)" }}>{copy.reader.library.emptyBody}</p>
+      <main className="course-library">
+        <section className="course-library-intro">
+          <p className="course-library-kicker">AGENT MENTOR · OPEN COURSES</p>
+          <h1 className="course-library-title">{copy.reader.library.title}</h1>
+          <p className="course-library-lede">{copy.reader.library.intro}</p>
         </section>
-      ) : (
-        <div className="space-y-12">
-          {groups.map((group) => (
-            <section key={group.domain}>
-              <div className="mb-4 flex items-baseline gap-3">
-                <h2 className="text-sm font-semibold" style={{ color: "var(--ink-strong)" }}>{group.domain}</h2>
-                <span className="text-xs" style={{ color: "var(--ink-subtle)" }}>{copy.reader.library.courseCount(group.courses.length)}</span>
-                <span className="h-px flex-1" style={{ background: "var(--border)" }} />
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {group.courses.map((variant) => (
-                  <CourseTile key={variant.slug} course={toCardData(variant)} lang={variant.locale} />
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      )}
 
-      <aside className="mt-16 flex flex-col gap-4 rounded-xl border p-6 sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: "var(--border)", background: "var(--card)" }}>
-        <div>
-          <h2 className="font-semibold" style={{ color: "var(--ink-strong)" }}>{copy.reader.library.ctaTitle}</h2>
-          <p className="mt-1 text-sm" style={{ color: "var(--muted-foreground)" }}>{copy.reader.library.ctaBody}</p>
-        </div>
-        <a
-          href="https://agentmentor.dev/?utm_source=learn&utm_medium=library_cta&utm_campaign=open_courses"
-          className="inline-flex shrink-0 items-center justify-center rounded-lg px-4 py-2 text-sm font-medium"
-          style={{ background: "var(--accent)", color: "var(--on-accent)" }}
-        >
-          {copy.reader.library.ctaButton}
-        </a>
-      </aside>
+        {rungs.length === 0 ? (
+          <section className="course-library-empty">
+            <h2>{copy.reader.library.emptyTitle}</h2>
+            <p>{copy.reader.library.emptyBody}</p>
+          </section>
+        ) : (
+          <div className="course-ladder">
+            {rungs.map((rung) => {
+              const tierCopy = copy.reader.tiers[rung.tier];
+              return (
+                <section key={rung.tier} className="course-rung" data-tier={rung.tier}>
+                  <div className="course-rung-head">
+                    <span className="course-rung-dot" aria-hidden="true" />
+                    <h2 className="course-rung-label">{tierCopy.label}</h2>
+                    <p className="course-rung-blurb">{tierCopy.blurb}</p>
+                  </div>
+                  <div className="course-rung-grid" data-count={rung.courses.length}>
+                    {rung.courses.map((variant) => (
+                      <CourseTile key={variant.slug} course={toCardData(variant)} lang={variant.locale} />
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
+          </div>
+        )}
+
+        <aside className="course-library-cta">
+          <div>
+            <h2>{copy.reader.library.ctaTitle}</h2>
+            <p>{copy.reader.library.ctaBody}</p>
+          </div>
+          <a href="https://agentmentor.dev/?utm_source=learn&utm_medium=library_cta&utm_campaign=open_courses">
+            {copy.reader.library.ctaButton}
+          </a>
+        </aside>
       </main>
     </>
   );

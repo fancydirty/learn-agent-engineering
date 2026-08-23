@@ -344,3 +344,37 @@ describe("placeholder detection", () => {
     expect(hasPlaceholderText("leen todos los recursos")).toBe(false);
   });
 });
+
+describe("ladder metadata", () => {
+  const families = scanCourseFamilies(join(process.cwd(), "courses"));
+
+  it("gives every published variant a tier, an order, and an outcome line", () => {
+    const bad: string[] = [];
+    for (const family of families) {
+      for (const variant of family.variants) {
+        if (![1, 2, 3].includes(variant.tier)) bad.push(`${family.slug}/${variant.locale}: tier=${variant.tier}`);
+        if (!Number.isInteger(variant.order)) bad.push(`${family.slug}/${variant.locale}: order`);
+        if (!variant.outcome.trim()) bad.push(`${family.slug}/${variant.locale}: outcome empty`);
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it("inlines a logo for every family so the card can render its mark", () => {
+    const missing = families
+      .flatMap((f) => f.variants.map((v) => ({ f, v })))
+      .filter(({ v }) => !v.logoSvg || !v.logoSvg.includes("<svg"))
+      .map(({ f, v }) => `${f.slug}/${v.locale}`);
+    expect(missing).toEqual([]);
+  });
+
+  it("keeps tier copy for all six locales", () => {
+    for (const { code } of LOCALES) {
+      const tiers = siteCopyFor(code).reader.tiers;
+      for (const t of [1, 2, 3] as const) {
+        expect(tiers[t].label.length).toBeGreaterThan(0);
+        expect(tiers[t].blurb.length).toBeGreaterThan(0);
+      }
+    }
+  });
+});

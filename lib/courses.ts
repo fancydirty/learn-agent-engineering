@@ -7,7 +7,12 @@ import { isLocale, LOCALES, type Locale } from "./locales";
 
 export interface LessonMeta { num: number; slug: string; title: string; file: string; }
 // dir is the on-disk course directory absolute path used during static generation.
-export interface CourseCardData { slug: string; title: string; intro: string; domain: string; tags: string[]; lessonCount: number; minutes: number; hasLogo: boolean; }
+export interface CourseCardData { slug: string; title: string; intro: string; domain: string; tags: string[]; lessonCount: number; minutes: number; hasLogo: boolean; tier: Tier; outcome: string; logoSvg: string | null; }
+
+/** Ladder tier. 1 on-ramp, 2 workflow, 3 engineering. Courses without a tier fall to 2. */
+export type Tier = 1 | 2 | 3;
+export const TIERS: Tier[] = [1, 2, 3];
+const DEFAULT_TIER: Tier = 2;
 
 export function stripInlineMarkdown(s: string): string {
   // Inline code is lifted into placeholders FIRST so its literal content — e.g. a
@@ -46,7 +51,7 @@ export function courseIntro(md: string): string {
 }
 
 export function toCardData(variant: CourseVariant): CourseCardData {
-  return { slug: variant.slug, title: variant.title, intro: variant.intro, domain: variant.domain, tags: variant.tags, lessonCount: variant.lessons.length, minutes: variant.minutes, hasLogo: variant.hasLogo };
+  return { slug: variant.slug, title: variant.title, intro: variant.intro, domain: variant.domain, tags: variant.tags, lessonCount: variant.lessons.length, minutes: variant.minutes, hasLogo: variant.hasLogo, tier: variant.tier, outcome: variant.outcome, logoSvg: variant.logoSvg };
 }
 
 // --- Course families and locale variants (2026-08-21 localization design) ---
@@ -70,6 +75,12 @@ export interface CourseVariant {
   hasLogo: boolean;
   hasGlossary: boolean;
   hasSources: boolean;
+  tier: Tier;
+  order: number;
+  outcome: string;
+  /** Inlined so the mark inherits currentColor and needs no extra request.
+   *  course-guard bans scripts, handlers, and external refs inside logo.svg. */
+  logoSvg: string | null;
 }
 
 export interface CourseFamily {
@@ -85,7 +96,7 @@ export interface PageSpec {
   lesson?: string;
 }
 
-function parseVariant(familyDir: string, slug: string, locale: Locale, hasLogo: boolean): CourseVariant | null {
+function parseVariant(familyDir: string, slug: string, locale: Locale, hasLogo: boolean, logoSvg: string | null): CourseVariant | null {
   const dir = join(familyDir, locale);
   const readmePath = join(dir, "README.md");
   if (!existsSync(readmePath)) return null;
@@ -113,6 +124,10 @@ function parseVariant(familyDir: string, slug: string, locale: Locale, hasLogo: 
     hasLogo,
     hasGlossary: loadGlossaryTerms(dir).length > 0,
     hasSources: existsSync(join(dir, "sources.md")),
+    tier: (fm.tier === 1 || fm.tier === 2 || fm.tier === 3 ? fm.tier : DEFAULT_TIER) as Tier,
+    order: typeof fm.order === "number" ? fm.order : 99,
+    outcome: fm.outcome || courseIntro(readme),
+    logoSvg,
   };
 }
 
@@ -123,12 +138,14 @@ export function scanCourseFamilies(coursesRoot: string): CourseFamily[] {
     .map((entry) => {
       const dir = join(coursesRoot, entry.name);
       const slug = entry.name.replace(/^learn-/, "");
-      const hasLogo = existsSync(join(dir, "logo.svg"));
+      const logoPath = join(dir, "logo.svg");
+      const hasLogo = existsSync(logoPath);
+      const logoSvg = hasLogo ? readFileSync(logoPath, "utf8") : null;
       // Iterating LOCALES (not the directory listing) keeps variants in registry
       // order and ignores non-locale subdirectories automatically.
       const variants = LOCALES
         .filter((info) => isLocale(info.code) && existsSync(join(dir, info.code)))
-        .map((info) => parseVariant(dir, slug, info.code, hasLogo))
+        .map((info) => parseVariant(dir, slug, info.code, hasLogo, logoSvg))
         .filter((variant): variant is CourseVariant => variant !== null);
       return variants.length ? { slug, dir, hasLogo, variants } : null;
     })

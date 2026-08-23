@@ -1,43 +1,58 @@
 import Link from "next/link";
 import type { CourseCardData } from "@/lib/courses";
-import { domainColor } from "@/lib/domains";
 import { localePath } from "@/lib/i18n";
 import { siteCopyFor, type Locale } from "@/lib/locales";
 
-export function CourseTile({ course, lang, href, lead = false }: { course: CourseCardData; lang: Locale; href?: string; lead?: boolean }) {
+// Per-tier accent. The mark inherits it via currentColor, so a course reads as
+// belonging to its rung before the title is read.
+const TIER_ACCENT: Record<number, string> = {
+  1: "var(--tier-1)",
+  2: "var(--tier-2)",
+  3: "var(--tier-3)",
+};
+
+export function CourseTile({
+  course,
+  lang,
+  href,
+  lead = false,
+}: {
+  course: CourseCardData;
+  lang: Locale;
+  href?: string;
+  lead?: boolean;
+}) {
   const copy = siteCopyFor(lang).reader.card;
-  const cat = domainColor(course.domain);
+  const accent = TIER_ACCENT[course.tier] ?? TIER_ACCENT[2];
 
   return (
     <Link
       href={href ?? localePath(lang, `/${course.slug}`)}
       data-lead={lead || undefined}
-      className="group relative flex min-h-[128px] flex-col rounded-xl border bg-[var(--card)] p-5 shadow-sm transition-colors hover:bg-[var(--card-hover)]"
-      style={{ borderColor: "var(--border)", boxShadow: "var(--shadow-card)", ["--cat" as string]: cat }}
+      className="course-tile group"
+      style={{ ["--cat" as string]: accent }}
     >
-      <span
-        className="absolute right-4 top-3.5 text-xs text-[var(--ink-subtle)] transition-colors group-hover:text-[var(--ink)]"
-        aria-hidden="true"
-      >
-        ↗
-      </span>
-      {/* Course emblem above a compact public-course summary. */}
-      <span
-        className="flex h-7 w-7 items-center justify-center rounded-md"
-        style={{ background: "color-mix(in srgb, var(--cat) 15%, transparent)" }}
-      >
-        <span className="block h-1.5 w-1.5 rounded-full" style={{ background: "var(--cat)" }} />
-      </span>
-      <h2 className="mt-3.5 max-w-[24ch] text-[15.5px] font-semibold leading-snug text-[var(--ink-strong)]">
-        {course.title}
-      </h2>
+      <span className="course-tile-arrow" aria-hidden="true">↗</span>
 
-      <div
-        className="mt-auto flex items-baseline justify-between gap-2 pt-5 text-[11px] text-[var(--ink-subtle)]"
-        style={{ fontFamily: "var(--font-kicker), monospace" }}
-      >
-        <span className="truncate">{course.slug}</span>
-        <span className="flex-none">{copy.lessons(course.lessonCount)} · {copy.minutes(course.minutes)}</span>
+      {/* Hand-drawn per-course mark, inlined so it follows currentColor and the
+          active theme. course-guard bans scripts, handlers, and external refs
+          inside logo.svg, so this content is ours and inert. */}
+      <span className="course-tile-mark" style={{ color: accent }} aria-hidden="true">
+        {course.logoSvg ? (
+          <span dangerouslySetInnerHTML={{ __html: course.logoSvg }} />
+        ) : (
+          <span className="course-tile-mark-fallback" />
+        )}
+      </span>
+
+      <h3 className="course-tile-title">{course.title}</h3>
+
+      {course.outcome ? <p className="course-tile-outcome">{course.outcome}</p> : null}
+
+      <div className="course-tile-meta">
+        <span>{copy.lessons(course.lessonCount)}</span>
+        <span aria-hidden="true">·</span>
+        <span>{copy.minutes(course.minutes)}</span>
       </div>
     </Link>
   );

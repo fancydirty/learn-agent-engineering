@@ -27,7 +27,7 @@ export function SiteHeader({ locale, languageLinks }: { locale: Locale; language
         <div className="flex-1" />
         <a
           href="https://agentmentor.dev/?utm_source=learn&utm_medium=header&utm_campaign=open_courses"
-          className="text-sm hover:underline"
+          className="hidden text-sm hover:underline sm:inline"
           style={{ color: "var(--accent)" }}
         >
           {copy.header.siteLink}
