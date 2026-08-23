@@ -343,6 +343,20 @@ describe("placeholder detection", () => {
     expect(hasPlaceholderText("una metodologia completa")).toBe(false);
     expect(hasPlaceholderText("leen todos los recursos")).toBe(false);
   });
+
+  it("does not flag bare or accented Romance words a word boundary cannot protect", () => {
+    // "todo" alone is ordinary Spanish/Portuguese; \b also sits INSIDE "método"
+    // because é is not an ASCII word character. Only capitalised markers count.
+    expect(hasPlaceholderText("todo el curso")).toBe(false);
+    expect(hasPlaceholderText("método de conversão")).toBe(false);
+    expect(hasPlaceholderText("a todo momento")).toBe(false);
+    expect(hasPlaceholderText("Todo marcador")).toBe(false);
+  });
+
+  it("still flags placeholders written the way authors leave them", () => {
+    expect(hasPlaceholderText("XXX")).toBe(true);
+    expect(hasPlaceholderText("section TODO")).toBe(true);
+  });
 });
 
 describe("ladder metadata", () => {

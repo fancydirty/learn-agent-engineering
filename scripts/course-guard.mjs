@@ -492,7 +492,13 @@ export function checkGlossaryLive(courseDir) {
 // ASCII markers need word boundaries: substring matching flagged Romance-language prose
 // ("todos", "toda", "metodologia" contain "todo") as unfilled placeholders. CJK markers keep
 // substring semantics — CJK writes without word breaks, so \b never fires between characters.
-const PLACEHOLDER_RE = /<[^>]+>|\bTODO\b|\bTBD\b|\bxxx\b|待补|待定/i;
+// Placeholder markers. The ASCII markers are matched case-SENSITIVELY and in
+// upper case only: lowercase "todo" is an ordinary Spanish/Portuguese word ("all"),
+// and \b sits inside accented words like "método" because é is not an ASCII word
+// character, so a case-insensitive \bTODO\b flagged real Romance prose as unfilled.
+// A genuine placeholder is written TODO/TBD/XXX in caps; the CJK markers keep
+// substring semantics because CJK has no word boundaries.
+const PLACEHOLDER_RE = /<[^>]+>|\bTODO\b|\bTBD\b|\bXXX\b|待补|待定/;
 
 export function hasPlaceholderText(s) {
   return PLACEHOLDER_RE.test(s);
