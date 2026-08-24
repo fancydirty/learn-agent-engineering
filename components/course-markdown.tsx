@@ -32,6 +32,7 @@ import { DiffPatchBlock } from "@/components/diff-patch-block";
 import { HotspotDiagramBlock } from "@/components/hotspot-diagram-block";
 import { parseLiveBlock, validateLiveBlock } from "@/lib/live-sandbox";
 import { LiveSandboxBlock } from "@/components/live-sandbox-block";
+import { stripHtmlComments } from "@/lib/strip-html-comments";
 
 const beautifulMermaidPlugin = createBeautifulMermaidPlugin();
 
@@ -160,6 +161,8 @@ export function CourseMarkdown({
     return { mermaid: beautifulMermaidPlugin, renderers };
   }, [mentorActionContext, lang]);
 
+  const cleanedMd = useMemo(() => stripHtmlComments(md), [md]);
+
   // client fallback: strip footnote target=_blank after render for in-page anchors
   useEffect(() => {
     const root = rootRef.current;
@@ -168,7 +171,7 @@ export function CourseMarkdown({
       a.removeAttribute("target");
       a.removeAttribute("rel");
     });
-  }, [md, courseSlug]);
+  }, [cleanedMd, courseSlug]);
 
   return (
     <div className="reading-prose" ref={rootRef}>
@@ -181,7 +184,7 @@ export function CourseMarkdown({
         controls={streamdownControls}
         linkSafety={{ enabled: false }}
       >
-        {md}
+        {cleanedMd}
       </Streamdown>
     </div>
   );
