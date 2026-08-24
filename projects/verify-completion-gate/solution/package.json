@@ -1,0 +1,10 @@
+{
+  "name": "verify-completion-gate-orders",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "export": "node src/export-orders.js",
+    "test": "node --test test/smoke.test.js"
+  }
+}
