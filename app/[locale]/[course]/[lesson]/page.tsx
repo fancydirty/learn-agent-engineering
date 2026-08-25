@@ -26,7 +26,6 @@ import { isLocale, siteCopyFor } from "@/lib/locales";
 import { coursesDir } from "@/lib/paths";
 import { localizedAlternates } from "@/lib/seo";
 import { tocFromMarkdown } from "@/lib/toc";
-import { loadVisualHtmlBySrc } from "@/lib/visual-explainer-load";
 
 const SITE_URL = "https://learn.agentmentor.dev";
 
@@ -79,7 +78,6 @@ export default async function LessonPage({ params }: { params: Promise<{ locale:
   const lessonMarkdown = resolveFootnotes(before, sources);
   const exercises = exercisesMd ? parseExercises(exercisesMd) : [];
   const terms = loadGlossaryTerms(variant.dir);
-  const visualHtmlBySrc = loadVisualHtmlBySrc(variant.dir);
   const lessonUrl = `${SITE_URL}${localePath(lang, `/${variant.slug}/${current.slug}`)}`;
   const context = {
     courseUrl: lessonUrl,
@@ -104,11 +102,11 @@ export default async function LessonPage({ params }: { params: Promise<{ locale:
           <LessonActions clip={lessonClipboardText(variant.title, current.title, lessonUrl, raw)} url={lessonUrl} title={current.title} lang={lang} />
         </div>
         <div className="lesson-kicker">{lessonKicker(variant.title, index, variant.lessons.length, lang)}</div>
-        <CourseMarkdown md={lessonMarkdown} courseSlug={variant.slug} mentorActionContext={context} lang={lang} visualHtmlBySrc={visualHtmlBySrc} />
+        <CourseMarkdown md={lessonMarkdown} courseSlug={variant.slug} mentorActionContext={context} lang={lang} />
         {exercises.length ? (
           <ExerciseSection exercises={exercises} mentorActionContext={context} lang={lang} />
         ) : exercisesMd ? (
-          <CourseMarkdown md={resolveFootnotes(exercisesMd, sources)} courseSlug={variant.slug} mentorActionContext={context} lang={lang} visualHtmlBySrc={visualHtmlBySrc} />
+          <CourseMarkdown md={resolveFootnotes(exercisesMd, sources)} courseSlug={variant.slug} mentorActionContext={context} lang={lang} />
         ) : null}
         <LessonNavFooter courseSlug={variant.slug} prev={variant.lessons[index - 1]} next={variant.lessons[index + 1]} lang={lang} />
         <GlossaryEnhancer terms={terms} lang={lang} drill={{ ctx: context, lang }} />

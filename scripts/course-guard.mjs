@@ -959,7 +959,7 @@ export function checkMentorActions(courseDir) {
 
 function extractInteractiveBlocks(text) {
   const blocks = [];
-  const fenceRe = /```(agentmentor-check|agentmentor-order|agentmentor-code|agentmentor-fix|agentmentor-predict|agentmentor-trace|agentmentor-diff|agentmentor-hotspot|agentmentor-live|agentmentor-visual)[^\n]*\n([\s\S]*?)\n```/g;
+  const fenceRe = /```(agentmentor-check|agentmentor-order|agentmentor-code|agentmentor-fix|agentmentor-predict|agentmentor-trace|agentmentor-diff|agentmentor-hotspot|agentmentor-live)[^\n]*\n([\s\S]*?)\n```/g;
   for (const m of text.matchAll(fenceRe)) {
     blocks.push({
       language: m[1],
@@ -1634,94 +1634,17 @@ function validateHotspotBlock(data, file, line, violations) {
   if (correct !== 1) violations.push(`${file}:${line}: agentmentor-hotspot 必须且只能有一个正确热点`);
 }
 
-const VISUAL_HAS_SVG = /<svg[\s>]/i;
-const VISUAL_HAS_SCRIPT = /<script[\s>]/i;
-const VISUAL_HAS_BUTTON = /<button[\s>]/i;
-const VISUAL_ENGAGEMENT = /🎮|✨|🚀|交互演示|试一试|点击开始|Click to start|Click to reveal/i;
-const VISUAL_CHEAP_BLUE = /#2196[Ff]3|#1976[Dd]2|#42[Aa]5[Ff]5|#03[Aa]9[Ff]4|#6366[Ff]1|#4[Ff]46[Ee]5|#3[Bb]82[Ff]6|#2563[Ee][Bb]/;
-const VISUAL_PAPER = /#faf8f4|#f7f3ec|#f7f4ef|#f4f0e9/i;
-const VISUAL_INK = /#1a1714|#1f2328|#2b2622/i;
-
-export function checkVisualHtmlQuality(html, { interactive = false, src = "visuals/*.html", file = "lesson.md", line = 1 } = {}) {
-  const violations = [];
-  const prefix = `${file}:${line}: agentmentor-visual ${src}`;
-  if (!VISUAL_HAS_SVG.test(html)) {
-    violations.push(`${prefix} 必须含 inline SVG(图画先于机制)`);
-  }
-  if (interactive !== true) {
-    if (VISUAL_HAS_BUTTON.test(html)) {
-      violations.push(`${prefix} 静态 visual 不许含 <button>(interactive 非 true)`);
-    }
-    if (VISUAL_HAS_SCRIPT.test(html)) {
-      violations.push(`${prefix} 静态 visual 不许含 <script>(interactive 非 true)`);
-    }
-  }
-  if (VISUAL_ENGAGEMENT.test(html)) {
-    violations.push(`${prefix} 含 engagement 文案或 emoji(🎮/交互演示/试一试/点击开始/Click to reveal)`);
-  }
-  if (VISUAL_CHEAP_BLUE.test(html)) {
-    violations.push(`${prefix} 含廉价主色(Material/Tailwind 蓝)`);
-  }
-  if (!VISUAL_PAPER.test(html)) {
-    violations.push(`${prefix} 未使用阅读器纸色(#faf8f4/#f7f3ec/#f7f4ef/#f4f0e9)`);
-  }
-  if (!VISUAL_INK.test(html)) {
-    violations.push(`${prefix} 未使用阅读器墨色(#1a1714/#1f2328/#2b2622)`);
-  }
-  return violations;
-}
-
-function validateVisualBlock(data, file, line, courseDir, violations) {
-  const MAX_VISUAL_BYTES = 120 * 1024;
-  const EXTERNAL_URL = /https?:\/\//i;
-  const VISUAL_SRC_RE = /^visuals\/[A-Za-z0-9][A-Za-z0-9._-]*\.html$/;
-  for (const key of ["id", "src", "title"]) {
-    if (!nonEmptyString(data[key])) {
-      violations.push(`${file}:${line}: agentmentor-visual 缺/空 ${key}`);
-    }
-  }
-  const src = nonEmptyString(data.src) ? data.src.trim() : "";
-  if (src && (!VISUAL_SRC_RE.test(src) || src.includes(".."))) {
-    violations.push(`${file}:${line}: agentmentor-visual src 必须是 visuals/ 下的 html 文件,禁止 .. 与其他目录`);
-  }
-  if (data.caption !== undefined && typeof data.caption !== "string") {
-    violations.push(`${file}:${line}: agentmentor-visual caption 必须是字符串`);
-  }
-  if (data.interactive !== undefined && typeof data.interactive !== "boolean") {
-    violations.push(`${file}:${line}: agentmentor-visual interactive 必须是 boolean`);
-  }
-  if (!src || !VISUAL_SRC_RE.test(src) || src.includes("..")) return;
-  const abs = join(courseDir, src);
-  if (!existsSync(abs)) {
-    violations.push(`${file}:${line}: agentmentor-visual 文件不存在: ${src}`);
-    return;
-  }
-  const html = readFileSync(abs, "utf8");
-  if (Buffer.byteLength(html, "utf8") > MAX_VISUAL_BYTES) {
-    violations.push(`${file}:${line}: agentmentor-visual ${src} 超过 ${MAX_VISUAL_BYTES} 字节`);
-  }
-  if (EXTERNAL_URL.test(html)) {
-    violations.push(`${file}:${line}: agentmentor-visual ${src} 含外部 URL(必须自包含,不许外链)`);
-  }
-  violations.push(...checkVisualHtmlQuality(html, { interactive: data.interactive === true, src, file, line }));
-}
-
 export function checkInteractiveBlocks(courseDir) {
   const violations = [];
   const ids = new Set();
   for (const f of lessonFiles(courseDir)) {
     const text = readFileSync(join(courseDir, f), "utf8");
     const blocks = extractInteractiveBlocks(text);
-    const quizBlocks = blocks.filter((b) => b.language !== "agentmentor-visual");
-    if (quizBlocks.length > 2) violations.push(`${f}: 互动块过多(${quizBlocks.length}>2),可能喧宾夺主`);
+    if (blocks.length > 2) violations.push(`${f}: 互动块过多(${blocks.length}>2),可能喧宾夺主`);
     let liveBlockCount = 0;
-    let visualBlockCount = 0;
     for (const block of blocks) {
       if (block.language === "agentmentor-live") {
         liveBlockCount++;
-      }
-      if (block.language === "agentmentor-visual") {
-        visualBlockCount++;
       }
       if (isInsideExerciseRegion(text, block.start)) {
         violations.push(`${f}:${block.line}: ${block.language} 位于 ## 练习 区内,请移到正文讲解区`);
@@ -1739,15 +1662,6 @@ export function checkInteractiveBlocks(courseDir) {
       }
       if (block.language === "agentmentor-live") {
         validateLiveBlock(data, f, block.line, violations);
-        continue;
-      }
-      if (block.language === "agentmentor-visual") {
-        validateVisualBlock(data, f, block.line, courseDir, violations);
-        const visualId = nonEmptyString(data.id) ? data.id.trim() : "";
-        if (visualId) {
-          if (ids.has(visualId)) violations.push(`${f}:${block.line}: 互动块 id 重复: ${visualId}`);
-          else ids.add(visualId);
-        }
         continue;
       }
       for (const key of ["id", "label", "prompt", "whyHere"]) {
@@ -1778,9 +1692,6 @@ export function checkInteractiveBlocks(courseDir) {
     }
     if (liveBlockCount > 1) {
       violations.push(`${f}: agentmentor-live 块超过 1 个(${liveBlockCount}>1),它重,每节最多 1 个`);
-    }
-    if (visualBlockCount > 2) {
-      violations.push(`${f}: agentmentor-visual 块超过 2 个(${visualBlockCount}>2),每节最多 2 个`);
     }
   }
   return violations;
