@@ -105,6 +105,7 @@ const zh = {
       partialPassed: (passed: number, total: number) => `本地检查 ${passed}/${total} 通过。`,
     },
     diff: { choicesAria: "改动解释选项" },
+    visual: { eyebrow: "图解", missingFile: "缺少图解文件" },
     sandbox: {
       preview: "预览",
       restoreMine: "恢复我的代码",
@@ -245,6 +246,7 @@ const en: SiteCopy = {
       partialPassed: (passed: number, total: number) => `Local check: ${passed}/${total} passed.`,
     },
     diff: { choicesAria: "Explanations for this change" },
+    visual: { eyebrow: "Picture", missingFile: "Missing picture file" },
     sandbox: {
       preview: "Preview",
       restoreMine: "Restore my code",
@@ -383,6 +385,7 @@ const ja: SiteCopy = {
       partialPassed: (passed: number, total: number) => `ローカルチェック ${passed}/${total} が合格です。`,
     },
     diff: { choicesAria: "この変更の説明の選択肢" },
+    visual: { eyebrow: "図解", missingFile: "図解ファイルがありません" },
     sandbox: {
       preview: "プレビュー",
       restoreMine: "自分のコードを復元",
@@ -521,6 +524,7 @@ const ko: SiteCopy = {
       partialPassed: (passed: number, total: number) => `로컬 확인 ${passed}/${total}개를 통과했습니다.`,
     },
     diff: { choicesAria: "이 변경에 대한 설명 선택지" },
+    visual: { eyebrow: "도해", missingFile: "도해 파일이 없습니다" },
     sandbox: {
       preview: "미리 보기",
       restoreMine: "내 코드 복원",
@@ -659,6 +663,7 @@ const es: SiteCopy = {
       partialPassed: (passed: number, total: number) => `Comprobación local: ${passed}/${total} superadas.`,
     },
     diff: { choicesAria: "Explicaciones de este cambio" },
+    visual: { eyebrow: "Ilustración", missingFile: "Falta el archivo de la ilustración" },
     sandbox: {
       preview: "Vista previa",
       restoreMine: "Restaurar mi código",
@@ -797,6 +802,7 @@ const ptBR: SiteCopy = {
       partialPassed: (passed: number, total: number) => `Verificação local: ${passed}/${total} aprovadas.`,
     },
     diff: { choicesAria: "Explicações para esta alteração" },
+    visual: { eyebrow: "Ilustração", missingFile: "Arquivo da ilustração ausente" },
     sandbox: {
       preview: "Pré-visualização",
       restoreMine: "Restaurar meu código",

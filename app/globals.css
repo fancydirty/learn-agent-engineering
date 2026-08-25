@@ -780,3 +780,11 @@
   .course-library-cta{ flex-direction:column; align-items:flex-start; }
   .course-library-cta a{ width:100%; }
 }
+
+/* Picture-first visual explainers: iframe well stays paper so night theme does not flash a dark gutter. */
+.reading-prose .visual-explainer{ display:flex; flex-direction:column; gap:10px; }
+.reading-prose .visual-explainer-frame{
+  width:100%; overflow:hidden; border:0; background:#faf8f4;
+}
+.reading-prose .visual-explainer-iframe{ width:100%; height:100%; border:0; display:block; background:#faf8f4; }
+.reading-prose .visual-explainer-caption{ margin:0; font-size:13px; line-height:1.5; color:var(--muted-foreground); }

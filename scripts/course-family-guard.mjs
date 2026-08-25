@@ -55,7 +55,7 @@ function isSkillArtifactBlock(source) {
 
 function interactionBlockIds(text) {
   return fenceBlocks(text)
-    .filter((b) => /^agentmentor-(check|order|code|fix|predict|trace|diff|hotspot|live)$/.test(b.info))
+    .filter((b) => /^agentmentor-(check|order|code|fix|predict|trace|diff|hotspot|live|visual)$/.test(b.info))
     .map((b) => {
       try {
         const data = JSON.parse(b.source);

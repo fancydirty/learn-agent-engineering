@@ -32,6 +32,8 @@ import { DiffPatchBlock } from "@/components/diff-patch-block";
 import { HotspotDiagramBlock } from "@/components/hotspot-diagram-block";
 import { parseLiveBlock, validateLiveBlock } from "@/lib/live-sandbox";
 import { LiveSandboxBlock } from "@/components/live-sandbox-block";
+import { parseVisualBlock, validateVisualBlock } from "@/lib/visual-explainer";
+import { VisualExplainerBlock } from "@/components/visual-explainer-block";
 import { stripHtmlComments } from "@/lib/strip-html-comments";
 
 const beautifulMermaidPlugin = createBeautifulMermaidPlugin();
@@ -94,17 +96,28 @@ function renderLiveSandbox(code: string, lang: Lang) {
   return <LiveSandboxBlock block={result.block} lang={lang} />;
 }
 
+function renderVisualExplainer(code: string, lang: Lang, visualHtmlBySrc?: Record<string, string>) {
+  const result = parseVisualBlock(code);
+  if (!result.ok) return <div className="interactive-card is-error">{result.error}</div>;
+  const html = visualHtmlBySrc?.[result.block.src];
+  const errors = validateVisualBlock(result.block, { html });
+  if (errors.length) return <div className="interactive-card is-error">{errors.join("；")}</div>;
+  return <VisualExplainerBlock block={result.block} html={html!} lang={lang} />;
+}
+
 // Streamdown footnotes; linkSafety off (invalid p>div). rehypeDetailsWhitelist + rehypeRaw for <details>.
 export function CourseMarkdown({
   md,
   courseSlug,
   mentorActionContext,
   lang,
+  visualHtmlBySrc,
 }: {
   md: string;
   courseSlug?: string;
   mentorActionContext?: MentorActionContext;
   lang: Lang;
+  visualHtmlBySrc?: Record<string, string>;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const plugins = useMemo<PluginConfig>(() => {
@@ -149,6 +162,10 @@ export function CourseMarkdown({
         language: "agentmentor-live",
         component: ({ code }) => renderLiveSandbox(code, lang),
       },
+      {
+        language: "agentmentor-visual",
+        component: ({ code }) => renderVisualExplainer(code, lang, visualHtmlBySrc),
+      },
     ];
     if (mentorActionContext) {
       renderers.push({
@@ -159,7 +176,7 @@ export function CourseMarkdown({
       });
     }
     return { mermaid: beautifulMermaidPlugin, renderers };
-  }, [mentorActionContext, lang]);
+  }, [mentorActionContext, lang, visualHtmlBySrc]);
 
   const cleanedMd = useMemo(() => stripHtmlComments(md), [md]);
 
