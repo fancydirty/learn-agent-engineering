@@ -104,6 +104,81 @@ export function checkCoursePathTarget(courseDir) {
 
 // Only real footnote form [^Sn]/[^digits], excluding code fences/inline code —
 // regex char classes (e.g. `[^aeiou]`, /[^S9]/ in code blocks) are not citations, not flagged dangling.
+// CommonMark: a closing fence must use the same character, be at least as long,
+// and cannot carry an info string. ```python therefore cannot close an unlabeled
+// ``` fence; the inner closer closes the outer one, and leftover fences swallow
+// the rest of the lesson — including footnote definitions appended by the reader.
+const FENCE_LINE_RE = /^(\s*)(`{3,}|~{3,})(.*)$/;
+
+export function findFenceProblems(text) {
+  const unclosed = [];
+  const nested = [];
+  let open = null;
+  const lines = text.split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    const m = FENCE_LINE_RE.exec(lines[i]);
+    if (!m) continue;
+    const ticks = m[2];
+    const info = m[3].trim();
+    const ch = ticks[0];
+    const len = ticks.length;
+    const line = i + 1;
+    if (!open) {
+      open = { line, ch, len, info };
+      continue;
+    }
+    if (ch === open.ch && len >= open.len && info === "") {
+      open = null;
+      continue;
+    }
+    // Same character, long enough to close, but an info string forbids closing.
+    // Authors treat this as a nested fence; CommonMark treats the next bare
+    // closer as the outer closer and the leftover fence swallows the lesson.
+    if (ch === open.ch && len >= open.len) {
+      nested.push({ line, openLine: open.line, raw: lines[i].trim() });
+    }
+  }
+  if (open) unclosed.push({ line: open.line, info: open.info });
+  return { unclosed, nested };
+}
+
+function splitLessonRegions(md) {
+  const openRe = /^<!--\s*exercises\s*-->\s*$/m;
+  const closeRe = /^<!--\s*\/exercises\s*-->\s*$/gm;
+  const open = openRe.exec(md);
+  if (!open || open.index === undefined) return { before: md, exercisesMd: null };
+  const bodyStart = open.index + open[0].length;
+  const rest = md.slice(bodyStart);
+  let last = null;
+  for (const match of rest.matchAll(closeRe)) last = match;
+  if (!last || last.index === undefined) {
+    return { before: md.slice(0, open.index), exercisesMd: rest };
+  }
+  const exercisesMd = rest.slice(0, last.index);
+  const afterEnd = bodyStart + last.index + last[0].length;
+  return { before: md.slice(0, open.index) + md.slice(afterEnd), exercisesMd };
+}
+
+export function checkCodeFenceBalance(courseDir) {
+  const violations = [];
+  const hint = "围栏里再写 ``` 时，外层请用 4 个反引号或 ~~~";
+  for (const f of lessonFiles(courseDir)) {
+    const text = readFileSync(join(courseDir, f), "utf8");
+    const { before, exercisesMd } = splitLessonRegions(text);
+    for (const [label, part] of [["正文", before], ["练习区", exercisesMd]]) {
+      if (!part) continue;
+      const { unclosed, nested } = findFenceProblems(part);
+      for (const item of unclosed) {
+        violations.push(`${f}: ${label}第 ${item.line} 行代码围栏未闭合。${hint}`);
+      }
+      for (const item of nested) {
+        violations.push(`${f}: ${label}第 ${item.line} 行是未闭合围栏内的内层围栏（外层始于第 ${item.openLine} 行）。${hint}`);
+      }
+    }
+  }
+  return violations;
+}
+
 export function checkCitations(courseDir) {
   const violations = [];
   const sourcesPath = join(courseDir, "sources.md");
@@ -1874,6 +1949,7 @@ export async function checkSourceUrls(courseDir, options = {}) {
 export function guardCourse(courseDir, maxLines) {
   const violations = [
     ...checkCoursePathTarget(courseDir),
+    ...checkCodeFenceBalance(courseDir),
     ...checkCitations(courseDir),
     ...checkPrevNext(courseDir),
     ...checkMarkdownLinks(courseDir),

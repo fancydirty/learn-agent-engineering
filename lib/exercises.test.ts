@@ -84,17 +84,41 @@ describe("parseExercises", () => {
     }
   });
 
-  it("parses the shipped zh paste-tax lesson into three exercises", () => {
+  it("does not treat ### headings inside fenced code as extra exercises", () => {
+    const md = [
+      "<!-- exercises -->",
+      "### Level 1：写一个审查 Skill",
+      "任务描述",
+      "<!-- answer -->",
+      "示例：",
+      "```markdown",
+      "### ✅ 符合规范",
+      "- 用名词 URL",
+      "### ⚠️ 建议改进",
+      "- 补错误码",
+      "```",
+      "<!-- hint -->",
+      "先写三个检查项",
+      "<!-- /exercises -->",
+    ].join("\n");
+    const exercises = parseExercises(splitLesson(md).exercisesMd!);
+    expect(exercises).toHaveLength(1);
+    expect(exercises[0].level).toBe("Level 1：写一个审查 Skill");
+    expect(exercises[0].answer).toContain("### ✅ 符合规范");
+    expect(exercises.map((ex) => ex.level)).not.toContain("✅ 符合规范");
+  });
+
+  it("parses the shipped zh skills lesson into two exercises", () => {
     const raw = readFileSync(
-      join(process.cwd(), "courses/learn-agent-skills-reuse/zh/01-the-paste-tax.md"),
+      join(process.cwd(), "courses/learn-claude-code-skills/zh/05-code-review-skill.md"),
       "utf8",
     );
     const { before, exercisesMd } = splitLesson(raw);
     const exercises = parseExercises(exercisesMd!);
-    expect(exercises).toHaveLength(3);
+    expect(exercises).toHaveLength(2);
     expect(before).not.toContain("<!-- rubric -->");
     expect(before).not.toContain("<!-- /exercises -->");
-    expect(exercises[1].hints.join("\n")).not.toMatch(/<!--/);
-    expect(exercises[1].hints.some((h) => h.includes("感觉"))).toBe(true);
+    expect(exercises.map((ex) => ex.level).join("\n")).not.toMatch(/符合规范|建议改进|违反规范/);
+    expect(exercises[0].answer).toContain("api-design-review");
   });
 });

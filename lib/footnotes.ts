@@ -16,6 +16,8 @@ export function parseSources(sourcesMd: string): Record<string, Source> {
 }
 
 export function resolveFootnotes(lessonMd: string, sourcesMd: string): string {
+  // GFM treats `[^S1][^S2]` as one malformed reference. A space keeps both.
+  lessonMd = lessonMd.replace(/(\[\^S\d+\])(?=\[\^S\d+\])/g, "$1 ");
   const sources = parseSources(sourcesMd);
   const used = new Set([...lessonMd.matchAll(/\[\^(S\d+)\]/g)].map((m) => m[1]));
   const defs: string[] = [];

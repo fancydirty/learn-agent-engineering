@@ -92,7 +92,7 @@ describe("sitemap", () => {
       expect(url).not.toContain("?lang=");
     }
     // The real course family is present in its published locales.
-    expect(urls).toContain(`${SITE_URL}/zh/agent-skills-reuse`);
+    expect(urls).toContain(`${SITE_URL}/zh/claude-code-skills`);
   });
 });
 
