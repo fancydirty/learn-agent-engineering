@@ -1,0 +1,8 @@
+<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Database cylinder: persistent memory & state -->
+  <g stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="24" cy="12" rx="13" ry="5"/>
+    <path d="M11 12 V36 a13 5 0 0 0 26 0 V12"/>
+    <path d="M11 24 a13 5 0 0 0 26 0"/>
+  </g>
+</svg>

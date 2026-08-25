@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "生成一门关于 Agent 记忆与状态的正式课程（Agent 学习路径第 5 门）。目标学习者是已经学完前 4 门课程——会写 prompt、懂工具调用协议、能读基础 JavaScript——但还没系统理解过「模型本身没有跨请求记忆、一切状态都得由宿主自己携带和持久化」这条底层事实的开发者。课程覆盖：上下文窗口本身就是模型的全部「记忆」、对话历史管理（追加/截断/摘要压缩/工具结果清理）、写到窗口之外的外部记忆（CLAUDE.md 与 Auto memory）、结构化任务状态与检查点、记忆的边界与安全（记忆污染 / MemoryTrap / 过期记忆），以及用文件系统给一个 Agent 搭一个带路径边界检查的持久记忆层。质量要求：严格遵循 agent-mentor skill 的全部指导原则、语言使用中文、以已验收的 learn-agent-tool-calling/zh 为结构与质量样板逐文件对照、每课含 agentmentor-check 交互块与分级练习、glossary 密度 10-14 词/课、所有关键论断有 sources.md 出处支撑且逐字核实、通过 course-guard 验证。",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "仓库所有者委托生成 12 门 Agent 学习路径课程，并明确给出了统一质量标准（遵循 agent-mentor skill 指导、中文、交互块、词表密度、guard 通过、以 learn-agent-tool-calling 为样板）与六课大纲（主题划分不可改，标题可微调）。目标读者、前置课程、覆盖主题、硬性红线均已明确给出，无需额外澄清。注意：本课大纲与六课排序未经过仓库所有者对这门课本身的逐项人工确认（见 qualitySelfReview.weakestPoints 与 nextSteps）；生成完成后经过了 7 个独立评审代理 + 编排者兜底的验收流程，发现的问题均已修复（见 acceptanceReview.promotionNotes）。"
+  },
+  "learnerModel": {
+    "targetReader": "已经学完 Agent 学习路径前 4 门课程——会写基本 prompt、懂 tool_use/tool_result 工具调用协议、能读懂基础 JavaScript/Node.js——但还没系统理解过「模型本身不保存任何跨请求状态、记忆必须由宿主显式携带和持久化」这条底层事实的开发者",
+    "knownConcepts": [
+      "怎么写基本的 prompt，以及和大模型多轮对话的基本形式",
+      "tool_use / tool_result 一次工具调用往返的完整字段和执行循环骨架",
+      "基础 JavaScript / Node.js（能读懂 async/await、对象、数组方法、ESM 模块、fs 文件读写）",
+      "JSON 的基本读写",
+      "命令行基本操作"
+    ],
+    "unknownConcepts": [
+      "上下文窗口就是模型这一次请求能看到的全部内容，模型不会在请求之间自己保留任何东西——Messages API 是无状态的，历史每次都要由宿主重新完整发过去",
+      "对话历史默认只增不减，以及截断、摘要压缩（compaction）、工具结果清理（tool-result clearing）三种机制各自解决什么问题、代价是什么",
+      "截断如果切在 tool_use / tool_result 中间会破坏协议结构，导致下一轮请求报错",
+      "外部记忆：为什么跨会话的信息必须写到窗口之外的文件里，CLAUDE.md（人写、整份载入）与 Auto memory（模型自己写、按需取回）的分工",
+      "结构化任务状态与检查点：为什么用固定字段的任务清单（pending/in_progress/completed/deleted）比自然语言总结更可靠，以及进程重启后靠检查点恢复",
+      "记忆是一块新增的攻击面（ASI06），MemoryTrap 这类一次常规操作演变成跨会话提示注入的路径，以及过期记忆的危害",
+      "哪些内容不该写进持久记忆（凭证、来源不可信的原始文本），哪些适合写（经确认的稳定规则）",
+      "用文件系统给 Agent 搭一个持久记忆层，包括安全的路径边界检查（避免同前缀绕过）和「读到的内容不能未经审视就自动提升为记忆」这条写入关口"
+    ],
+    "assumedEnvironment": "能够运行 Node.js（ESM 模块、node:fs / node:path）、有 Anthropic API key（第 6 课实战需要）、能访问命令行和文本编辑器、能阅读 JSON 与 JavaScript 代码示例",
+    "firstIndependentAction": "拿到一条信息后，先判断它属于「这一次对话内窗口装不下」（用截断/压缩/清理）还是「跨会话留不住」（用外部记忆），再决定该用哪种机制处理（第 2、3 课练习即此）",
+    "noviceRamp": [
+      "第 1 课从一个「看起来记得住」的对话切入，先讲清楚模型什么都不存、Messages API 无状态、上下文窗口就是它的全部记忆，砸掉「模型会自己记住」这个最常见的错觉",
+      "第 2 课在无状态的前提上讲对话历史怎么管——追加是默认动作、历史只增不减，再对比截断/摘要压缩/工具结果清理三种机制的代价与适用场景",
+      "第 3 课把视线移到窗口之外：会话一结束窗口就清空，跨会话留存只能靠外部记忆文件，讲清 CLAUDE.md 与 Auto memory 的分工和按需取回",
+      "第 4 课讲为什么任务进度要用结构化清单而不是自然语言总结，以及检查点如何让任务在进程重启后恢复",
+      "第 5 课从一次「克隆仓库、批准装依赖」的常规操作切入，讲记忆本身就是攻击面（MemoryTrap / ASI06）、该存什么不该存什么、过期记忆的危害",
+      "第 6 课综合前五课，从零用文件系统搭一个带路径边界检查和写入关口的持久记忆层，代码可直接抄走跑通"
+    ]
+  },
+  "learnerBrief": "目标学习者已经能和 Agent 多轮对话、也懂单次工具调用协议，但普遍带着一个错觉：以为模型自己会「记住」说过的话。课程目标是先砸掉这个错觉（模型无状态、上下文窗口就是它的全部记忆），再依次讲清楚同一次对话内怎么管历史（追加/截断/压缩/清理）、怎么让信息跨会话留存（外部记忆文件）、怎么让任务在中断后恢复（结构化状态与检查点）、以及记忆作为新增攻击面该怎么守（记忆污染、过期记忆、写入关口），最终让他们能从零搭出一个带安全边界的持久记忆层。",
+  "scope": "课程涵盖：上下文窗口即模型的工作记忆、Messages API 无状态与历史的显式重发、usage 字段与上下文腐化、对话历史的追加默认行为、截断策略及其对 tool_use/tool_result 配对结构的破坏、摘要压缩（compaction，150K 触发阈值、50K 下限、可多次触发、需一次额外模型调用、有损）、工具结果清理（tool-result clearing，100K 触发、默认保留最近若干次调用）、三种机制的分工心智模型、外部记忆（CLAUDE.md 整份载入/200 行建议/4 MiB 硬上限/块级 HTML 注释剥离/compact 后重新注入、Auto memory 索引加主题文件的两层结构与按需取回）、结构化任务状态（pending/in_progress/completed/deleted 生命周期）与检查点持久化、记忆作为攻击面（ASI06、MemoryTrap、过期记忆、该存/不该存的界限）、用文件系统实现持久记忆层（路径边界检查防同前缀绕过、写入关口）。不涵盖：具体记忆/向量框架（如 LangMem、mem0、向量数据库）的使用教程、模型训练或微调、RAG 检索管线的向量化细节、多 Agent 之间的状态共享（路径第 6 门课的主题）、生产级记忆系统的规模化与可观测性。深度：从理解模型为何无状态，到能独立搭出一个带路径边界检查和写入关口的可运行持久记忆层。",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs courses/learn-agent-memory-state/zh",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "本课没有使用 mermaid 图表。六课的核心内容是机制对比（追加/截断/压缩/清理、CLAUDE.md/Auto memory、结构化状态的四个生命周期）和安全边界，正文用具体场景加官方原文引用来讲清楚这些关系，第 6 课直接用可运行的 JS 代码展示持久记忆层的读写与边界检查。是否应该补一张「三种历史管理机制怎么选」的决策示意图，留给仓库所有者评审时判断。",
+    "weakestPoints": [
+      "大纲与六课排序在任务下达时就是确定好的，没有经过仓库所有者对这门课本身的逐项人工评审——编排者代行了确认步骤",
+      "验收评审（7 个独立评审代理 + 编排者兜底）在初稿里发现多处引用缺口：第 1 课的核心命题「Messages API 无状态」整节零引用（初稿 sources.md 里甚至没有能支撑它的来源）、第 2 课的截断破坏 tool_use/tool_result 配对与 50K 下限/压缩可多次触发等 API 行为断言超出出处覆盖、glossary 有 3 处代码符号词条的 source 指向了错误主题的来源。全部已修复：sources.md 补齐到 9 条（新增 Messages API 无状态、compaction 参数、tool-use 配对协议、执行循环等官方来源并逐字核实关键引用），相关论断补挂脚注，glossary 三处 source 改指真正支撑其论断的来源。初稿在「先抓来源再写论断」这一步执行不足，最需要出处的地基性命题恰恰漏了引用",
+      "第 6 课的代码示例没有在真实 Anthropic API key 下实际跑通验证过，示例里的运行效果是根据代码逻辑推演写出的预期，不是真实运行日志",
+      "9 个 agentmentor-check 交互块的正确答案位置分布为 b/b/a/b/a/b/b/b/b，明显偏向 b——虽然每块的干扰项都有独立的教学价值、正确项也不靠长度取巧，但位置分布本身不够均匀，细心的学习者可能摸到「猜 b」的规律，后续维护值得打散",
+      "glossary 密度 11.7 词/课（70 词 / 6 课），落在 10-14 目标区间内，但修正 source 归属时只改指向、未增删词条，后续若合并重复词条需留意不要跌破下沿"
+    ],
+    "followUpChecks": [
+      "在配置了真实 Anthropic API key 的环境里实际跑一次第 6 课的记忆层代码，确认真实读写行为与课文预期一致",
+      "验证所有 glossary 词条的 term 在课程正文中逐字出现（修正 source 时未动 term，全量核对交给 guard）",
+      "确认所有 [^Sn] 引用在 sources.md 有对应条目，且验收阶段新增来源的关键引用与官方页面原文一致（已在线抓取核对）",
+      "Claude Code 记忆/CLAUDE.md 官方文档（S3）与 compaction Cookbook（S2）更新较频繁，改版时需重新核对 200 行/4 MiB/150K/100K/50K 等具体数字"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 4,
+      "pedagogy": 4,
+      "exercises": 4,
+      "load": 4,
+      "readable": 5
+    },
+    "terminalTask": "学习者拿到一条要 Agent「记住」的信息或一个跑很久的任务后，能先判断问题属于「这一次对话窗口装不下」还是「跨会话留不住」，据此在截断、摘要压缩、工具结果清理、外部记忆几种手段里挑对一种；能说清楚 CLAUDE.md 与 Auto memory 的分工并把一条笔记放对位置；能用结构化任务清单加检查点让任务在进程重启后恢复；能判断哪些内容不该写进持久记忆；最终能照着第 6 课的代码骨架，给自己的 Agent 搭一个带路径边界检查和写入关口的持久记忆层。",
+    "interactionCheck": "六课共 9 个 agentmentor-check 交互块（第 1 课 1 个、第 2/3/4 课各 2 个、第 5/6 课各 1 个），JSON 均可解析（修复标点与引号后逐块重新解析验证）：第 1 课 mem-zh-01-stateless-check 针对「模型自己把信息存进了记忆 / 服务器会按用户 ID 自动关联历史」的误解，紧跟无状态一节之后（正确项 b）；第 2 课 mem-zh-02-truncation-tradeoff 针对「重要的话模型总会记得」（正确项 b），mem-zh-02-compaction-vs-clearing 检验能否根据膨胀来源在压缩与清理之间选对（正确项 a）；第 3 课 mem-zh-03-claudemd-size 针对「记忆文件越全越好」（正确项 b），mem-zh-03-on-demand-retrieval 检验按需取回的动机（正确项 a）；第 4 课 mem-zh-04-structured-vs-prose 针对「自然语言总结也算状态」（正确项 b），mem-zh-04-checkpoint-durability 针对检查点持久化（正确项 b）；第 5 课 mem-zh-05-attack-surface-scope 针对「当轮没异常就说明记忆污染没影响」（正确项 b）；第 6 课 mem-zh-06-write-tool-not-enough 针对「有了读写工具就等于有了安全的记忆层」（正确项 b）。每块的 whyHere 都对应到它所紧跟的小节，三个选项的 feedback 均针对具体误解给出机制解释而非空话。已知不足：9 块正确项位置为 b/b/a/b/a/b/b/b/b，偏向 b（见 qualitySelfReview.weakestPoints），是后续维护应打散的一项。每课练习为 Level 1/2 两级，均有 rubric、answer、双 hint，第 4 课 Level 1 的 rubric 与参考答案自相矛盾处（生命周期时间点标注）已修复对齐。",
+    "learnerFitCheck": "课程明确假设学习者已完成前 4 门课（README 前置要求已声明），不重复讲解 prompt 写法或工具调用协议本身，而是直接在这些已知概念上叠加记忆与状态的新内容。unknownConcepts 里的每个新概念在正文里都先给具体场景或反面例子（记得住的对话、切坏的截断、装依赖被注入），再引出官方定义。第 6 课是唯一要求配置 Anthropic API key 才能实际运行的课，前置要求里已注明；路径边界检查这一核心技能在第 3 课先教、第 6 课复用，形成梯度。第 1 课练习只依赖本课判断标准，不依赖任何未教内容。",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "验收流程：7 个独立评审代理（6 逐课 + 1 元数据，附 groundingGaps 专项输出）+ 编排者兜底复核；发现的引用缺口与自相矛盾处已全部修复，官方文档相关论断（Messages API 无状态、上下文腐化、compaction 参数、tool_use/tool_result 配对、CLAUDE.md 载入规则）逐条在线抓取原文核实",
+      "sources.md 共 9 个来源（S1-S9）；第 1 课核心命题「Messages API 无状态」、第 2 课截断破坏工具调用配对与 compaction 多次触发/50K 下限等断言在验收阶段补齐了脚注与关键引用；glossary 中 TOOLS、记忆增强循环（原误指向 S4 待办生命周期，改指 S9 执行循环）、记忆读写工具（原误指向 S5 攻击面文章，改指 S3 记忆机制）三处代码符号词条的 source 已改指真正支撑其论断的来源",
+      "glossary 共 70 词条（11.7 词/课），落在 10-14 目标区间；第 5 课正文包裹中文短语的引号由 ASCII 直引号统一为与 01-04 课一致的直排双引号（交互块 JSON 内的「」保留不动以避免转义），MemoryTrap 的来源归属更正为「Cisco 研究团队披露、发表在 OWASP Gen AI Security Project 博客上」",
+      "浏览器渲染验收：待编排者在 reader 上完成六课 + 术语表 + 来源页的最终渲染核对（交互卡片水合、脚注、无裸围栏、练习与导航、第 6 课收尾）",
+      "第 6 课记忆层代码的安全处理路径（路径边界检查用 abs === ROOT || abs.startsWith(ROOT + path.sep) 防同前缀绕过、写入前的内容审视关口）在正文和练习里都有显式说明和纠错练习"
+    ]
+  },
+  "nextSteps": [
+    "请仓库所有者评审本课大纲与六课排序：大纲关口当时是自动确认的，没有人工审过——尤其请确认「对话历史管理」与「外部记忆」分成两课（第 2、3 课）、「结构化状态」单独成课（第 4 课）、「记忆安全」独立于实战课（第 5、6 课）的安排是否符合预期",
+    "建议在配置了真实 API key 的环境里实际跑一次第 6 课的记忆层代码，确认真实读写与边界检查行为和课文描述一致",
+    "建议学习者完成课程后：(1) 挑一个跑很久的真实任务，用第 2 课的判断标准决定该用截断、压缩还是清理 (2) 给一个 Agent 配一份 CLAUDE.md 和一套 Auto memory，用第 3 课的分工原则决定每条信息放哪 (3) 用第 6 课的骨架搭一个带路径边界检查的持久记忆层",
+    "维护提醒：Claude Code 记忆/CLAUDE.md 文档（S3）与 compaction Cookbook（S2）更新较频繁，课程改版时需对照 sources.md 重新核实 200 行/4 MiB/150K/100K/50K 等具体数字与机制描述"
+  ],
+  "memoryBoundary": "本 agentmentor.json 是此课程的本地状态记录，仅存储在课程目录中，用于质量检查和学习路径追踪。不会写回 Claude Code 或任何宿主 AI 系统的长期记忆，也不影响其他课程或对话。"
+}
+
+
