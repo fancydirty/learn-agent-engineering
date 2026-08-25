@@ -1,0 +1,436 @@
+[
+  {
+    "term": "Prompt",
+    "def": "你输入给大语言模型的文本指令，用来告诉它你想要什么，可以是问题、描述或任务要求。",
+    "source": "https://en.wikipedia.org/wiki/Prompt_engineering",
+    "pitfall": "认为 prompt 越短越好，实际上清晰完整比简短更重要。",
+    "distractor_rationale": "新手容易把 prompt 当成搜索关键词，用几个词甩过去，而不是完整的指令。"
+  },
+  {
+    "term": "大语言模型 (LLM)",
+    "def": "通过学习海量文本训练出来的 AI 系统，能够理解自然语言并生成回答，如 ChatGPT、Claude。",
+    "source": "https://en.wikipedia.org/wiki/Large_language_model",
+    "pitfall": "认为 LLM 是搜索引擎，实际上它是根据训练模式生成新文本，不是检索现成答案。",
+    "distractor_rationale": "容易误解为数据库查询工具，期望它'知道'所有最新信息。"
+  },
+  {
+    "term": "Prompt 工程",
+    "def": "设计和优化 prompt 的系统化方法，让 AI 更准确地理解需求并输出高质量结果。",
+    "source": "https://en.wikipedia.org/wiki/Prompt_engineering",
+    "pitfall": "认为是找'魔法咒语'，实际上是理解 AI 工作方式并清晰表达需求的技能。",
+    "distractor_rationale": "误以为有固定模板可以套用所有场景，忽略了针对性调整的必要性。"
+  },
+  {
+    "term": "上下文",
+    "def": "Prompt 中提供的背景信息，帮助 AI 理解任务的具体场景和边界。",
+    "source": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview",
+    "pitfall": "提供过多无关上下文，让 AI 分不清重点，反而降低输出质量。",
+    "distractor_rationale": "认为上下文越多越好，实际上相关性和精准性比数量重要。"
+  },
+  {
+    "term": "角色设定",
+    "def": "在 prompt 中指定 AI 应该以什么身份或视角回答，如'你是一位技术专家'或'你是小学老师'。",
+    "source": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview",
+    "pitfall": "设定的角色跟任务不匹配，如让'小学老师'审查复杂代码。",
+    "distractor_rationale": "以为角色设定是装饰性的，忽略了它对回答专业度和语气的实际影响。"
+  },
+  {
+    "term": "任务描述",
+    "def": "Prompt 中明确说明要 AI 做什么，包括动词（如总结、分析、生成）、对象和目标。",
+    "source": "https://help.openai.com/en/articles/6654000-best-practices-for-prompt-engineering-with-the-openai-api",
+    "pitfall": "任务描述太笼统（'帮我处理这个'），AI 不知道具体要做什么。",
+    "distractor_rationale": "假设 AI 能从模糊描述中猜出意图，实际上需要明确的动词和目标。"
+  },
+  {
+    "term": "输出格式",
+    "def": "指定 AI 回答的结构和样式，如 JSON、列表、表格、分段文字等。",
+    "source": "https://help.openai.com/en/articles/6654000-best-practices-for-prompt-engineering-with-the-openai-api",
+    "pitfall": "没有指定格式，AI 每次用不同格式输出，导致结果不一致。",
+    "distractor_rationale": "认为 AI 会自动选择'最好'的格式，忽略了明确指定的必要性。"
+  },
+  {
+    "term": "约束条件",
+    "def": "限定 AI 输出的范围和边界，如长度限制、排除某些内容、优先级要求等。",
+    "source": "https://help.openai.com/en/articles/6654000-best-practices-for-prompt-engineering-with-the-openai-api",
+    "pitfall": "约束条件太多太细，限制了 AI 的发挥空间，反而输出质量下降。",
+    "distractor_rationale": "要么完全不加约束导致输出跑偏，要么过度约束导致输出僵硬。"
+  },
+  {
+    "term": "Few-shot Learning",
+    "def": "在 prompt 中提供 2-5 个示例，让 AI 从中学习输入输出的模式和格式。",
+    "source": "https://www.promptingguide.ai/techniques/fewshot",
+    "pitfall": "示例之间格式不一致，或示例都是简单情况没有边界案例。",
+    "distractor_rationale": "以为随便给几个例子就行，忽略了示例质量和多样性的重要性。"
+  },
+  {
+    "term": "Zero-shot",
+    "def": "不提供任何示例，只给指令让 AI 完成任务的方式。",
+    "source": "https://en.wikipedia.org/wiki/Zero-shot_learning",
+    "pitfall": "在复杂任务上用 zero-shot，导致 AI 理解偏差或格式不稳定。",
+    "distractor_rationale": "高估了 AI 从纯文字指令理解复杂模式的能力。"
+  },
+  {
+    "term": "One-shot",
+    "def": "只提供 1 个示例来引导 AI 的方式，介于 zero-shot 和 few-shot 之间。",
+    "source": "https://www.promptingguide.ai/techniques/fewshot",
+    "pitfall": "1 个示例不够让 AI 理解通用模式，可能当成特例处理。",
+    "distractor_rationale": "认为 1 个示例足够，实际上至少需要 2-3 个才能建立模式。"
+  },
+  {
+    "term": "上下文学习 (In-context Learning)",
+    "def": "LLM 从当前对话中的示例学习模式的能力，不需要重新训练模型。",
+    "source": "https://www.promptingguide.ai/techniques/fewshot",
+    "pitfall": "提供的示例质量差或不相关，导致 AI 学到错误的模式。",
+    "distractor_rationale": "误以为 AI 会智能筛选示例，实际上它会从所有示例中学习包括错误模式。"
+  },
+  {
+    "term": "示例多样性",
+    "def": "Few-shot 示例应该覆盖任务中不同类型的输入，而不是都是相似情况。",
+    "source": "https://www.promptingguide.ai/techniques/fewshot",
+    "pitfall": "所有示例都是同一类型，AI 在其他类型输入上表现差。",
+    "distractor_rationale": "认为示例越相似越好，忽略了覆盖不同场景的必要性。"
+  },
+  {
+    "term": "格式一致性",
+    "def": "Few-shot 中所有示例必须使用完全相同的格式，让 AI 学到统一的输出模式。",
+    "source": "https://www.promptingguide.ai/techniques/fewshot",
+    "pitfall": "示例格式混乱（一会儿用箭头，一会儿用冒号），AI 不知道该输出什么格式。",
+    "distractor_rationale": "认为 AI 能理解'意思差不多'的格式变化，实际上它会严格模仿示例格式。"
+  },
+  {
+    "term": "边界情况",
+    "def": "任务中模糊、特殊或容易出错的输入情况，如缺失数据、极端值、歧义表述等。",
+    "source": "https://www.prompthub.us/blog/the-few-shot-prompting-guide",
+    "pitfall": "示例只包含理想情况，AI 遇到边界情况不知所措。",
+    "distractor_rationale": "假设真实数据都是干净完整的，忽略了噪音和异常的普遍性。"
+  },
+  {
+    "term": "Chain-of-Thought (CoT)",
+    "def": "让 AI 在给出最终答案前先展示中间推理步骤的技术，提升复杂任务准确率。",
+    "source": "https://www.promptingguide.ai/techniques/cot",
+    "pitfall": "在简单任务上强行用 CoT，浪费 token 且没有收益。",
+    "distractor_rationale": "认为所有任务都应该展示推理步骤，忽略了任务类型的差异。"
+  },
+  {
+    "term": "思维链",
+    "def": "AI 展示的从问题到答案的逐步推理过程，包含中间步骤和计算。",
+    "source": "https://www.promptingguide.ai/techniques/cot",
+    "pitfall": "展示的思维链本身有逻辑错误，但最终答案碰巧对了。",
+    "distractor_rationale": "只看最终答案是否正确，不检查推理过程是否合理。"
+  },
+  {
+    "term": "让我们一步步思考",
+    "def": "触发 zero-shot CoT 的常用短语，加在 prompt 末尾让 AI 自动展示推理步骤。",
+    "source": "https://www.promptingguide.ai/techniques/cot",
+    "pitfall": "用这句话不代表一定有效，复杂任务还是需要 few-shot CoT 示例。",
+    "distractor_rationale": "当成万能咒语，期望一句话解决所有推理问题。"
+  },
+  {
+    "term": "Zero-shot CoT",
+    "def": "不给示例，只加'让我们一步步思考'就触发推理的 CoT 方式。",
+    "source": "https://www.promptingguide.ai/techniques/cot",
+    "pitfall": "在高度专业或复杂的任务上效果不如 few-shot CoT。",
+    "distractor_rationale": "高估了一句提示的威力，低估了具体示例的价值。"
+  },
+  {
+    "term": "Few-shot CoT",
+    "def": "提供 1-2 个包含完整推理过程的示例，让 AI 模仿这种推理方式。",
+    "source": "https://www.promptingguide.ai/techniques/cot",
+    "pitfall": "示例的推理步骤不够详细，AI 学不到正确的拆解方法。",
+    "distractor_rationale": "示例推理过于简略，期望 AI 自己补全细节。"
+  },
+  {
+    "term": "中间步骤",
+    "def": "从问题到最终答案之间的推理或计算过程，CoT 的核心是让这些步骤可见。",
+    "source": "https://www.promptingguide.ai/techniques/cot",
+    "pitfall": "中间步骤太粗略（直接从问题跳到答案），失去了 CoT 的检查价值。",
+    "distractor_rationale": "认为只要有分步就算 CoT，忽略了步骤粒度和完整性。"
+  },
+  {
+    "term": "推理准确率",
+    "def": "AI 在需要多步推理的任务上得到正确答案的比例，CoT 可以显著提升这个指标。",
+    "source": "https://www.promptingguide.ai/techniques/cot",
+    "pitfall": "只看准确率提升，不检查推理过程是否合理，可能是碰巧对了。",
+    "distractor_rationale": "把准确率当成唯一指标，忽略了推理透明度和可检查性的价值。"
+  },
+  {
+    "term": "Prompt 调试",
+    "def": "系统化地识别 prompt 问题、诊断原因、小步修改并验证效果的过程。",
+    "source": "https://whitebeardstrategies.com/blog/ai-prompt-debugging-fixing-issues-through-iteration/",
+    "pitfall": "同时改多个地方，不知道哪个改动起了作用。",
+    "distractor_rationale": "像随机试错而不是系统调试，浪费时间且难以复现成功。"
+  },
+  {
+    "term": "问题识别",
+    "def": "调试第一步，明确输出哪里不对（格式、内容、遗漏、过度等）。",
+    "source": "https://whitebeardstrategies.com/blog/ai-prompt-debugging-fixing-issues-through-iteration/",
+    "pitfall": "问题描述太笼统（'不好'、'不对'），无法针对性修复。",
+    "distractor_rationale": "停留在'感觉不对'的层面，没有具体化到可操作的维度。"
+  },
+  {
+    "term": "诊断原因",
+    "def": "找出 prompt 的哪个部分（或缺失部分）导致了识别出的问题。",
+    "source": "https://whitebeardstrategies.com/blog/ai-prompt-debugging-fixing-issues-through-iteration/",
+    "pitfall": "跳过诊断直接改，可能改错地方或引入新问题。",
+    "distractor_rationale": "凭直觉修改而不是基于分析，降低了调试效率。"
+  },
+  {
+    "term": "迭代优化",
+    "def": "通过多轮'修改-测试-评估'循环逐步改进 prompt 的过程。",
+    "source": "https://whitebeardstrategies.com/blog/ai-prompt-debugging-fixing-issues-through-iteration/",
+    "pitfall": "追求完美无止境地优化，投入产出比越来越低。",
+    "distractor_rationale": "不知道何时停止，在边际收益很小时仍在打磨细节。"
+  },
+  {
+    "term": "测试用例",
+    "def": "准备的代表性输入样本，用于验证每次 prompt 修改的效果。",
+    "source": "https://whitebeardstrategies.com/blog/ai-prompt-debugging-fixing-issues-through-iteration/",
+    "pitfall": "测试用例都是简单情况，没有覆盖边界和异常。",
+    "distractor_rationale": "用理想数据测试，上线后遇到真实数据才发现问题。"
+  },
+  {
+    "term": "版本管理",
+    "def": "记录 prompt 的每个版本、改动内容和效果，方便回退和对比。",
+    "source": "https://whitebeardstrategies.com/blog/ai-prompt-debugging-fixing-issues-through-iteration/",
+    "pitfall": "不记录版本直接覆盖，改坏了找不回好版本。",
+    "distractor_rationale": "把 prompt 当成一次性文本而不是代码资产来管理。"
+  },
+  {
+    "term": "A/B 测试",
+    "def": "保留两个 prompt 版本，各测试多次，用数据对比哪个更好。",
+    "source": "https://whitebeardstrategies.com/blog/ai-prompt-debugging-fixing-issues-through-iteration/",
+    "pitfall": "测试次数太少（各 1-2 次），结果受随机性影响大。",
+    "distractor_rationale": "凭一两次测试下结论，忽略了 AI 输出的非确定性。"
+  },
+  {
+    "term": "成功率",
+    "def": "在测试用例上得到符合预期输出的比例，用于量化 prompt 质量。",
+    "source": "https://whitebeardstrategies.com/blog/ai-prompt-debugging-fixing-issues-through-iteration/",
+    "pitfall": "只看成功率不看失败案例类型，无法针对性改进。",
+    "distractor_rationale": "把成功率当成唯一指标，忽略了失败模式的诊断价值。"
+  },
+  {
+    "term": "代码生成 prompt",
+    "def": "让 AI 生成可运行代码的 prompt，需要明确语言、输入输出、边界条件和代码风格。",
+    "source": "https://graphite.com/guides/better-prompts-ai-code",
+    "pitfall": "只说'写个函数'，不说输入输出类型和边界条件，代码不可用。",
+    "distractor_rationale": "假设 AI 能猜出所有实现细节，实际上需要明确规约。"
+  },
+  {
+    "term": "函数签名",
+    "def": "函数的输入参数类型、返回值类型和函数名，代码生成 prompt 的关键要素。",
+    "source": "https://graphite.com/guides/better-prompts-ai-code",
+    "pitfall": "不指定类型，AI 生成的代码类型不明确或不一致。",
+    "distractor_rationale": "认为类型标注是可选的，忽略了它对代码质量的影响。"
+  },
+  {
+    "term": "边界条件",
+    "def": "输入的特殊情况（如空值、极端值、异常情况），代码需要正确处理它们。",
+    "source": "https://graphite.com/guides/better-prompts-ai-code",
+    "pitfall": "只测试正常输入，代码遇到异常输入就崩溃。",
+    "distractor_rationale": "假设输入总是合法的，忽略了防御性编程的必要性。"
+  },
+  {
+    "term": "代码风格",
+    "def": "代码的格式、命名、注释等规范，应该在 prompt 中明确要求。",
+    "source": "https://graphite.com/guides/better-prompts-ai-code",
+    "pitfall": "不指定风格，AI 每次生成不同风格的代码，难以维护。",
+    "distractor_rationale": "认为风格是次要的，忽略了一致性对团队协作的重要性。"
+  },
+  {
+    "term": "依赖限制",
+    "def": "指定代码可以使用哪些库或必须只用标准库，控制代码的依赖复杂度。",
+    "source": "https://graphite.com/guides/better-prompts-ai-code",
+    "pitfall": "不限制依赖，AI 引入大量外部库增加维护成本。",
+    "distractor_rationale": "认为越多库越好，忽略了依赖管理和部署的复杂性。"
+  },
+  {
+    "term": "文档写作",
+    "def": "让 AI 生成或改写文档的 prompt，需要明确受众、目的、结构和语气。",
+    "source": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview",
+    "pitfall": "不说明受众背景，AI 用了读者看不懂的术语或讲得太浅。",
+    "distractor_rationale": "认为'写清楚'就够了，忽略了不同受众需要不同的表达方式。"
+  },
+  {
+    "term": "目标受众",
+    "def": "文档的预期读者，包括其背景知识、技术水平和阅读目的。",
+    "source": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview",
+    "pitfall": "受众描述模糊（'技术人员'），不知道该用多专业的术语。",
+    "distractor_rationale": "用宽泛的标签代替具体的背景描述，导致语言深度不合适。"
+  },
+  {
+    "term": "结构模板",
+    "def": "预定义的文档组织方式，如'背景-问题-方案-结论'，让 AI 按固定结构输出。",
+    "source": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview",
+    "pitfall": "不给模板，AI 每次用不同结构，难以复用和对比。",
+    "distractor_rationale": "期望 AI 选择'最佳'结构，忽略了一致性的价值。"
+  },
+  {
+    "term": "语气风格",
+    "def": "文档的表达方式和情感倾向，如正式、随意、技术性、友好等。",
+    "source": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview",
+    "pitfall": "不指定语气，同一文档内语气不统一显得不专业。",
+    "distractor_rationale": "认为内容对了语气无所谓，忽略了语气对可读性的影响。"
+  },
+  {
+    "term": "数据提取 prompt",
+    "def": "从非结构化文本中提取结构化信息的 prompt，需要明确字段定义和格式。",
+    "source": "https://www.promptingguide.ai/techniques/fewshot",
+    "pitfall": "字段定义不明确，AI 提取的内容不统一或包含错误解读。",
+    "distractor_rationale": "假设 AI 知道每个字段该提取什么，实际上需要明确定义。"
+  },
+  {
+    "term": "字段定义",
+    "def": "数据提取任务中每个字段的含义、取值范围和格式要求。",
+    "source": "https://www.promptingguide.ai/techniques/fewshot",
+    "pitfall": "定义模糊（'提取重要信息'），不同次提取标准不一致。",
+    "distractor_rationale": "用主观词（重要、关键）代替客观标准，导致结果不稳定。"
+  },
+  {
+    "term": "缺失值处理",
+    "def": "说明当某个字段在原文中找不到时应该输出什么（null、空字符串、默认值）。",
+    "source": "https://www.promptingguide.ai/techniques/fewshot",
+    "pitfall": "不说明缺失值处理，AI 可能编造数据或随意跳过。",
+    "distractor_rationale": "认为 AI 会'合理'处理缺失，实际上需要明确规则。"
+  },
+  {
+    "term": "数据验证",
+    "def": "检查提取的数据是否符合预期格式和取值范围的规则。",
+    "source": "https://www.promptingguide.ai/techniques/fewshot",
+    "pitfall": "不加验证规则，接受了格式错误或不合理的提取结果。",
+    "distractor_rationale": "假设 AI 提取的数据总是合法的，忽略了后处理验证的必要性。"
+  },
+  {
+    "term": "token",
+    "def": "LLM 处理文本的基本单位，大约 1 个 token = 0.75 个英文单词或 0.5 个中文字。",
+    "source": "https://help.openai.com/en/articles/6654000-best-practices-for-prompt-engineering-with-the-openai-api",
+    "pitfall": "不注意 token 消耗，长 prompt 和输出导致成本高或响应慢。",
+    "distractor_rationale": "把 token 当成免费资源，忽略了在 API 计费场景下的成本。"
+  },
+  {
+    "term": "Prompt 模板",
+    "def": "可复用的 prompt 结构，包含占位符用于替换具体内容，提高效率和一致性。",
+    "source": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview",
+    "pitfall": "模板太死板，不同情况强行套用同一模板降低效果。",
+    "distractor_rationale": "把模板当成万能公式，忽略了针对性调整的必要性。"
+  },
+  {
+    "term": "幻觉 (Hallucination)",
+    "def": "AI 编造不存在的信息或给出错误的'事实'，看起来可信但实际错误。",
+    "source": "https://www.ibm.com/think/prompt-engineering",
+    "pitfall": "完全相信 AI 的输出，不验证关键事实和数据。",
+    "distractor_rationale": "把 AI 当成可靠的知识库，忽略了它是生成模型不是检索系统。"
+  },
+  {
+    "term": "指令遵循",
+    "def": "AI 准确理解并执行 prompt 中指令的能力，更强的模型指令遵循能力更好。",
+    "source": "https://help.openai.com/en/articles/6654000-best-practices-for-prompt-engineering-with-the-openai-api",
+    "pitfall": "指令遵循差的模型上写复杂 prompt，AI 只执行了一部分。",
+    "distractor_rationale": "不考虑模型能力差异，所有模型用同样复杂的 prompt。"
+  },
+  {
+    "term": "模糊指令",
+    "def": "表达不清晰、缺少关键信息的 prompt，导致 AI 只能猜测意图。",
+    "source": "https://help.openai.com/en/articles/6654000-best-practices-for-prompt-engineering-with-the-openai-api",
+    "pitfall": "认为简短就是清晰，实际上缺少必要细节的指令就是模糊指令。",
+    "distractor_rationale": "混淆了简洁和模糊，一句话的指令可能包含关键信息也可能什么都没说。"
+  },
+  {
+    "term": "清晰指令",
+    "def": "明确表达任务目标、输出格式、约束条件的 prompt，减少 AI 的猜测空间。",
+    "source": "https://help.openai.com/en/articles/6654000-best-practices-for-prompt-engineering-with-the-openai-api",
+    "pitfall": "过度详细导致 prompt 冗长，应该是'足够清晰'而不是'面面俱到'。",
+    "distractor_rationale": "走向另一个极端，把所有可能的细节都写进去，反而让重点不突出。"
+  },
+  {
+    "term": "来回修改",
+    "def": "因为 prompt 不清晰，需要多轮对话逐步补充信息才能得到想要的结果。",
+    "source": "https://graphite.com/guides/better-prompts-ai-code",
+    "pitfall": "认为来回修改是正常的，实际上好的 prompt 应该第一次就接近目标。",
+    "distractor_rationale": "把低效的迭代当成必经流程，而不是 prompt 质量问题的症状。"
+  },
+  {
+    "term": "输出质量",
+    "def": "AI 生成内容的准确性、相关性、完整性和格式正确性的综合评价。",
+    "source": "https://help.openai.com/en/articles/6654000-best-practices-for-prompt-engineering-with-the-openai-api",
+    "pitfall": "只看内容对不对，忽略了格式、语气、详细程度等其他质量维度。",
+    "distractor_rationale": "用单一标准（对错）评价输出，实际上质量是多维度的。"
+  },
+  {
+    "term": "受众视角",
+    "def": "文档写作中考虑目标读者的背景、需求和理解能力，调整内容深度和表达方式。",
+    "source": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview",
+    "pitfall": "写给专家看的内容用了初学者语气，或反之，导致不适配。",
+    "distractor_rationale": "认为'写清楚'是客观标准，忽略了不同受众需要不同的表达。"
+  },
+  {
+    "term": "专业术语",
+    "def": "特定领域的专门词汇，使用时需要考虑受众是否理解。",
+    "source": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview",
+    "pitfall": "向非专业受众使用大量术语，或向专业受众过度解释基础概念。",
+    "distractor_rationale": "不根据受众调整术语使用，要么让人看不懂，要么显得啰嗦。"
+  },
+  {
+    "term": "类型标注",
+    "def": "在代码中明确声明变量和函数的数据类型，提高代码可读性和可维护性。",
+    "source": "https://graphite.com/guides/better-prompts-ai-code",
+    "pitfall": "认为类型标注是可选的装饰，实际上它是明确接口契约的关键。",
+    "distractor_rationale": "把类型系统当成负担，忽略了它对协作和调试的价值。"
+  },
+  {
+    "term": "错误处理",
+    "def": "代码中对异常情况、无效输入、边界条件的处理逻辑。",
+    "source": "https://graphite.com/guides/better-prompts-ai-code",
+    "pitfall": "只考虑正常流程，忽略了错误处理，导致代码在异常情况下崩溃。",
+    "distractor_rationale": "认为'先让它工作再说'，把错误处理当成后续优化，实际应该一开始就考虑。"
+  },
+  {
+    "term": "标准库",
+    "def": "编程语言自带的、无需额外安装的基础库，代码生成时优先使用可减少依赖。",
+    "source": "https://graphite.com/guides/better-prompts-ai-code",
+    "pitfall": "不限制依赖，AI 引入了大量第三方库增加维护成本。",
+    "distractor_rationale": "认为库越多功能越强，忽略了依赖管理的复杂性和部署成本。"
+  },
+  {
+    "term": "防御性编程",
+    "def": "编写代码时假设输入可能不合法，主动检查和处理异常情况的编程风格。",
+    "source": "https://graphite.com/guides/better-prompts-ai-code",
+    "pitfall": "假设输入总是合法的，代码在真实数据上容易出错。",
+    "distractor_rationale": "过度信任上游数据，把验证当成不信任的表现而不是工程规范。"
+  },
+  {
+    "term": "迭代循环",
+    "def": "通过多次'修改-测试-评估'的重复过程逐步改进 prompt 或代码的方法。",
+    "source": "https://whitebeardstrategies.com/blog/ai-prompt-debugging-fixing-issues-through-iteration/",
+    "pitfall": "期望一次就完美，或者无限循环优化不知道何时停止。",
+    "distractor_rationale": "要么不接受迭代是必要的，要么把迭代当成永无止境的追求完美。"
+  },
+  {
+    "term": "够用标准",
+    "def": "判断何时停止优化的实用原则，当成功率达到 90% 且收益递减时即可停止。",
+    "source": "https://whitebeardstrategies.com/blog/ai-prompt-debugging-fixing-issues-through-iteration/",
+    "pitfall": "追求 100% 完美，在边际收益很小时仍在打磨细节。",
+    "distractor_rationale": "把完美主义当成专业态度，忽略了时间成本和实际需求。"
+  },
+  {
+    "term": "JSON 格式",
+    "def": "一种结构化数据格式，常用于数据提取任务的输出，易于程序解析。",
+    "source": "https://www.promptingguide.ai/techniques/fewshot",
+    "pitfall": "指定 JSON 格式但没给示例，AI 输出的字段名和结构可能不符合预期。",
+    "distractor_rationale": "认为'JSON 格式'已经够明确，忽略了字段定义和嵌套结构的细节。"
+  },
+  {
+    "term": "格式统一",
+    "def": "多次运行或多个示例中保持相同的输出格式，提高结果的可预测性和可处理性。",
+    "source": "https://www.promptingguide.ai/techniques/fewshot",
+    "pitfall": "示例格式不一致，导致 AI 每次用不同格式输出。",
+    "distractor_rationale": "认为'意思差不多就行'，忽略了格式一致性对自动化处理的重要性。"
+  },
+  {
+    "term": "引导语",
+    "def": "AI 在输出主要内容前添加的介绍性文字，如'以下是总结'、'让我来分析'等。",
+    "source": "https://help.openai.com/en/articles/6654000-best-practices-for-prompt-engineering-with-the-openai-api",
+    "pitfall": "需要纯净输出时没有排除引导语，导致需要后处理去除。",
+    "distractor_rationale": "认为引导语让输出更'自然'，忽略了直接输出结果更高效的场景。"
+  }
+]

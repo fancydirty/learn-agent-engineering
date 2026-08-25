@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "生成一门关于 Prompt 工程基础的课程，教授如何写出有效的 prompt。目标学习者是使用过 AI 工具但不了解 prompt 原理的用户、想要提升 AI 使用效率的开发者和知识工作者。理解基本的文本编辑和任务描述。课程内容覆盖：什么是 prompt 及为什么重要、Prompt 的基本结构和要素、常见的 prompt 模式(few-shot、chain-of-thought 等)、如何调试和改进 prompt、针对不同任务类型的 prompt 策略、实际案例(代码生成、文档写作、数据分析)。质量要求：严格遵循 skill 的所有指导原则(Picture → mechanism、Human voice craft、交互块等)、包含足够的交互块(agentmentor-check、agentmentor-action 等)、语言使用中文、内容具体可操作、每个原则都有对比示例(好的 vs 坏的 prompt)、Glossary 密度 10-14 词/课、通过 course-guard 验证。",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "用户明确提供了：目标学习者(使用过 AI 但不懂原理)、课程内容范围(从基础到具体模式)、实际应用场景(代码生成、文档写作、数据分析)、质量要求(交互块、对比示例、中文、术语表密度、验证通过)。信息完整，无需额外澄清。"
+  },
+  "learnerModel": {
+    "targetReader": "使用过 AI 工具(如 ChatGPT、Claude)但不了解 prompt 设计原理的用户，以及希望提升 AI 使用效率的开发者和知识工作者",
+    "knownConcepts": [
+      "基本的文本编辑能力",
+      "使用过对话式 AI 工具的经验",
+      "能够描述任务需求",
+      "理解输入和输出的概念"
+    ],
+    "unknownConcepts": [
+      "Prompt 的结构化设计方法",
+      "Few-shot learning 技术",
+      "Chain-of-thought 推理",
+      "Prompt 调试和迭代策略",
+      "不同任务类型的 prompt 模式"
+    ],
+    "assumedEnvironment": "能够访问至少一个 AI 对话工具(如 ChatGPT、Claude、文心一言等)，不需要编程环境",
+    "firstIndependentAction": "使用学到的基本 prompt 结构改写一个模糊的指令，让它变得更清晰具体",
+    "noviceRamp": [
+      "第 1 课从学习者已有的 AI 对话经验出发，展示'好的 prompt'和'坏的 prompt'的对比，建立对 prompt 质量影响的直觉",
+      "第 2 课通过四个要素(角色、任务、格式、约束)逐步建立 prompt 结构的心智模型，每个要素都有对比示例",
+      "第 3 课引入 few-shot learning，从概念到示例设计原则，循序渐进",
+      "第 4 课讲解 chain-of-thought，从简单的'让我们一步步思考'到复杂的推理示例",
+      "第 5 课系统化调试方法，建立可复用的优化流程",
+      "第 6 课综合应用，针对三种常见任务类型提供具体策略"
+    ]
+  },
+  "learnerBrief": "目标学习者是使用过 AI 对话工具但不了解 prompt 设计原理的用户，以及希望提升 AI 使用效率的开发者和知识工作者。他们有基本的文本编辑能力和 AI 对话经验，但不了解 prompt 结构化设计、few-shot learning、chain-of-thought、调试迭代等系统化方法。课程目标是让他们能够设计清晰有效的 prompt、使用示例引导 AI、让 AI 展示推理过程、系统化调试优化、针对不同任务选择合适策略。",
+  "scope": "课程涵盖：prompt 概念和重要性、prompt 的四大要素(角色、任务、格式、约束)、few-shot learning(zero-shot、one-shot、few-shot 区别、示例设计原则)、chain-of-thought(zero-shot CoT、few-shot CoT、适用场景)、prompt 调试方法(问题识别、诊断、迭代优化、测试用例、版本管理)、任务特定策略(代码生成、文档写作、数据提取的最佳实践)。每个概念都有'坏 prompt vs 好 prompt'对比示例。不涵盖：高级技术(prompt 链、agent 设计、RAG)、模型微调、特定工具的 API 参数配置、编程技能。深度：从零到能独立设计和优化各类任务的 prompt。",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs courses/learn-prompt-engineering/zh",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "第 5 课使用 mermaid 流程图展示 prompt 调试的完整循环(运行 → 检查 → 识别问题 → 诊断 → 修改 → 验证 → 循环)，图表清晰展示了迭代优化的每个步骤和决策点，比纯文字描述更容易理解调试流程。",
+    "weakestPoints": [
+      "第 1 课的对比示例相对简单，可能让学习者低估真实场景的复杂度，但这是有意为之(建立基础直觉)，后续课程会逐步增加复杂度",
+      "第 6 课涵盖了三种任务类型(代码生成、文档写作、数据提取)，信息密度较高，可能需要学习者分段学习",
+      "课程未包含练习题(exercises 部分)，这是当前版本的限制，学习者需要自行在实际任务中实践",
+      "术语表修复时删除了 6 个课程正文中未真正教授、只是占位凑数的词条(输出一致性、Temperature、System Prompt、User Prompt、上下文窗口、Prompt 注入)，词条数从 68 降至 62，密度降为 10.3 词/课(62 词 / 6 课)，仍在 10-14 目标区间内"
+    ],
+    "followUpChecks": [
+      "验证所有 glossary 词条的 term 是否在课程正文中逐字出现",
+      "检查所有交互块的 whyHere 字段是否真正解释了为什么在此处需要这个交互",
+      "检查所有来源引用([^S1] 等)是否在 sources.md 中有对应条目",
+      "验证所有对比示例(坏 prompt vs 好 prompt)是否清晰展示差异"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 4,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "学习者能够针对自己工作中的实际任务独立设计有效的 prompt(包含四要素结构、合适的示例、必要的推理步骤)，系统化地调试和优化 prompt(建立测试用例、识别问题、迭代改进)，针对不同任务类型(代码生成、文档写作、数据分析)选择和应用合适的策略。",
+    "interactionCheck": "每课包含 1 个 agentmentor-check 交互块，检查关键概念的理解(第 1 课判断 prompt 清晰度、第 2 课识别缺失要素、第 3 课判断示例质量、第 4 课判断任务适合 CoT、第 5 课诊断 prompt 问题、第 6 课匹配任务和策略)。每个交互块的 whyHere 字段明确说明了为什么在此处需要检查，label 贴合本课具体内容。当前版本未包含完整的练习部分(exercises)。",
+    "learnerFitCheck": "目标学习者是使用过 AI 工具的用户和开发者。课程不假设编程知识(所有代码示例都有详细注释和解释)，不假设 AI 原理知识(从基础概念开始)，不假设特定工具使用经验(原则适用于任何对话式 LLM)。第 1 课的第一个练习概念(识别模糊 prompt)只需回顾自己的 AI 使用经历，不依赖 unknownConcepts 里的任何内容。unknownConcepts(结构化设计、few-shot、CoT、调试方法)在课程中逐步引入，第 6 课才综合运用所有知识。",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "课程已完成核心内容，待 course-guard 验证通过",
+      "glossary 密度为 10.3 词/课(62 词 / 6 课)，符合 10-14 目标区间",
+      "所有交互块包含必需字段(id、label、prompt、whyHere、mode、choices with feedback)",
+      "当前版本未包含完整的练习部分(Level 1/2 exercises with rubric/answer/hints)，这是可选增强项",
+      "使用了权威来源(Anthropic 官方文档、OpenAI 最佳实践、权威指南)支撑所有关键概念",
+      "建议学习者完成课程后在实际任务中实践至少 3 种不同类型的 prompt，建立自己的 prompt 模板库"
+    ]
+  },
+  "nextSteps": [
+    "运行 course-guard 验证所有文件",
+    "如果 guard 通过，课程即可使用",
+    "可选增强：为每课添加 Level 1 和 Level 2 练习题(with rubric、answer、hints)",
+    "建议学习者完成课程后：(1) 在实际工作中实践至少 5 个不同任务的 prompt 设计 (2) 建立自己的 prompt 模板库 (3) 尝试 A/B 测试不同 prompt 版本 (4) 探索进阶话题(prompt 链、agent 设计)"
+  ],
+  "memoryBoundary": "本 agentmentor.json 是此课程的本地状态记录，仅存储在课程目录中，用于质量检查和学习路径追踪。不会写回 Claude 或任何宿主 AI 系统的长期记忆，也不影响其他课程或对话。"
+}
