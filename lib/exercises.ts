@@ -36,6 +36,12 @@ export function splitLesson(md: string): { before: string; exercisesMd: string |
 type Role = "rubric" | "answer" | "hint" | null;
 interface ExerciseChunk { level: string; lines: string[]; }
 
+const REGION_FENCE = /^<!--\s*\/?exercises\s*-->\s*$/;
+
+function isRegionFence(line: string): boolean {
+  return REGION_FENCE.test(line);
+}
+
 // Whether a line is an in-exercise anchor row. Language-agnostic: HTML comment anchors only.
 function lineRole(line: string): Role {
   const m = line.match(/^<!--\s*(rubric|hint|answer)\s*-->\s*$/);
@@ -94,7 +100,9 @@ function splitExerciseChunks(exercisesMd: string): ExerciseChunk[] {
       current = { level: heading.level, lines: heading.promptLead ? [heading.promptLead] : [] };
       continue;
     }
-    if (current) current.lines.push(line);
+    if (current) {
+      if (!isRegionFence(line)) current.lines.push(line);
+    }
   }
   if (current) chunks.push(current);
 
@@ -110,7 +118,7 @@ export function parseExercises(exercisesMd: string): Exercise[] {
 
     const promptLines: string[] = [];
     while (i < lines.length && !lineRole(lines[i])) {
-      promptLines.push(lines[i]);
+      if (!isRegionFence(lines[i])) promptLines.push(lines[i]);
       i++;
     }
 
@@ -122,7 +130,10 @@ export function parseExercises(exercisesMd: string): Exercise[] {
       if (!r) { i++; continue; }
       const sec = [lines[i]];
       let j = i + 1;
-      while (j < lines.length && !lineRole(lines[j])) { sec.push(lines[j]); j++; }
+      while (j < lines.length && !lineRole(lines[j])) {
+        if (!isRegionFence(lines[j])) sec.push(lines[j]);
+        j++;
+      }
       const body = [afterColon(sec[0]), ...sec.slice(1)].filter(Boolean).join("\n").trim();
       if (r === "rubric") checks.push(...splitItems(body));
       else if (r === "answer") { if (body) answer = body.replace(/^[\s\-*]+/, "").trim(); }

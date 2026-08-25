@@ -78,6 +78,10 @@ describe("parseExercises", () => {
     expect(exercises[1].prompt).toContain("prompt two");
     expect(exercises[1].prompt).not.toMatch(/<!--/);
     expect(exercises[1].checks).toEqual(["check two"]);
+    expect(exercises[1].hints).toEqual(["hint two"]);
+    for (const ex of exercises) {
+      expect([ex.prompt, ex.answer ?? "", ...ex.hints, ...ex.checks].join("\n")).not.toMatch(/<!--/);
+    }
   });
 
   it("parses the shipped zh paste-tax lesson into three exercises", () => {
@@ -90,5 +94,7 @@ describe("parseExercises", () => {
     expect(exercises).toHaveLength(3);
     expect(before).not.toContain("<!-- rubric -->");
     expect(before).not.toContain("<!-- /exercises -->");
+    expect(exercises[1].hints.join("\n")).not.toMatch(/<!--/);
+    expect(exercises[1].hints.some((h) => h.includes("感觉"))).toBe(true);
   });
 });
