@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "生成一门关于 Agent 工具调用基础的正式课程（Agent 学习路径第 4 门，Phase 1）。目标学习者是会写基本 prompt、用过 Claude Code 之类 AI 编程工具、但没系统了解过工具调用底层协议的开发者。课程覆盖：Agent 为什么需要工具（模型只提议、宿主执行的分界线）、一次 tool_use / tool_result 往返的完整字段、并行调用的批量回传与数据依赖、五类常用工具（读、写、执行、搜索、调用外部 API）及其爆炸半径、工具接口设计（name/description/input_schema/enum/required/additionalProperties/strict 模式/返回值）、权限与安全（allow/ask/deny 分级、提示注入、致命三要素、沙箱）、实战搭建一个三工具 Agent。质量要求：严格遵循 agent-mentor skill 的全部指导原则、语言使用中文、每课含 agentmentor-check 交互块与分级练习、Glossary 密度 10-14 词/课、所有关键论断有 sources.md 出处支撑、通过 course-guard 验证。",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "仓库所有者委托生成 12 门 Agent 学习路径课程，并明确给出了统一质量标准（遵循 agent-mentor skill 指导、中文、交互块、词表密度、guard 通过）与学习路径的整体结构；本课的具体范围由编排者按路径规划实例化为上述详细简报。目标读者、前置技能、覆盖主题、质量标准均已明确，无需额外澄清。注意：本课大纲与课次排序未经过仓库所有者逐项人工确认（见 qualitySelfReview.weakestPoints 与 nextSteps）。"
+  },
+  "learnerModel": {
+    "targetReader": "会写基本 prompt、用过 Claude Code 或类似 AI 编程工具（知道它能读写文件、跑命令）、能读懂基础 JavaScript / Node.js、但还没系统了解过工具调用协议本身的开发者",
+    "knownConcepts": [
+      "基本的 prompt 写法，和大模型对话的基本形式",
+      "Claude Code 或类似 AI 编程工具的日常使用体验",
+      "基础 JavaScript / Node.js（能读懂 async/await、对象、数组方法）",
+      "JSON 的基本读写",
+      "命令行基本操作",
+      "Git 和版本控制基础"
+    ],
+    "unknownConcepts": [
+      "模型只提议、宿主才执行这条分界线",
+      "tool_use / tool_result 往返的确切字段（id、name、input、tool_use_id、is_error）",
+      "stop_reason 是信号而非执行记录",
+      "并行工具调用的批量回传规则与同批调用间的数据依赖",
+      "五类工具的爆炸半径分级",
+      "description 与 schema 约束（enum/required）的区别，additionalProperties: false 与 strict 模式",
+      "提示注入与致命三要素（lethal trifecta）",
+      "allow / ask / deny 权限分级与操作系统级沙箱的分工",
+      "工具执行循环、注册表与安全阀的实现"
+    ],
+    "assumedEnvironment": "能够运行 Node.js（建议 ≥ 22.7 或手动设置 type=module）、有 Anthropic API key（第 6 课实战需要）、能访问命令行和文本编辑器、能阅读 JSON 与 JavaScript 代码示例",
+    "firstIndependentAction": "拿到一个具体任务，先问「这个任务需要的信息或动作，模型自己手上有吗」，独立判断它需不需要给 Agent 配工具（第 1 课练习即此）",
+    "noviceRamp": [
+      "第 1 课从「同一句话问两次」的对比实验切入，不写一行代码就建立「模型只提议、宿主执行」的核心心智模型",
+      "第 2 课用三段真实 JSON 走完一次完整往返，再扩展到并行调用与数据依赖，所有字段先看到实例再谈规则",
+      "第 3 课用一张按爆炸半径排序的表组织五类工具，每类只讲签名、返回值和这一类独有的坑",
+      "第 4 课把「约束」和「说明」拆开讲，从 description 到 enum/required 再到 additionalProperties/strict 模式逐层收紧",
+      "第 5 课以一条被注入的 issue 为主线场景贯穿提示注入、权限分级、过度授权、沙箱四个话题",
+      "第 6 课综合前五课，从零搭出带注册表、执行循环、三道安全阀的可运行 Agent，代码可直接抄走跑通"
+    ]
+  },
+  "learnerBrief": "目标学习者是已经会用 AI 编程工具但不了解其底层协议的开发者。他们每天都在受益于工具调用，却说不清一次调用往返里传了什么、风险边界在哪。课程目标是让他们能读懂并手写 tool_use / tool_result 往返、按爆炸半径给工具分类、写出模型能选对且填对参数的工具接口、用权限分级和沙箱思路给 Agent 画出动手边界，最终从零搭出一个带安全阀的三工具 Agent。",
+  "scope": "课程涵盖：工具的定义与「要不要配工具」的判断标准、工具定义三字段（name/description/input_schema）、一次调用往返的完整字段与消息追加规则、stop_reason 语义、并行调用的批量回传与 disable_parallel_tool_use、同批调用的数据依赖风险、五类工具（读/写/执行/搜索/调用外部 API）的签名与爆炸半径、工具接口设计（描述边界、命名空间、enum/required、additionalProperties: false、strict 模式、可自我纠正的返回值）、工具数量与粒度取舍、提示注入与数据/指令分界、allow/ask/deny 权限分级与求值顺序、过度授权三根因、致命三要素、人在环确认点、操作系统级沙箱、完整执行循环实现（注册表、MAX_TURNS、重复调用检测、路径边界校验）。不涵盖：具体 Agent 框架（LangChain、AutoGPT 等）的使用教程、模型训练或微调、MCP 服务器的开发教程、多 Agent 协作（路径第 6 门课的主题）、Agent 记忆与状态管理（路径第 5 门课的主题）。深度：从零到能独立写出一个带权限边界和安全阀的可运行工具调用 Agent。",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs courses/learn-agent-tool-calling/zh",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "第 2 课使用 mermaid sequenceDiagram 展示用户-宿主-模型三方在一次工具调用往返中的消息流向，并在图注里专门点出最容易写错的「追加」那一步（漏把模型的 tool_use 回复塞回 messages）。其余课程以 JSON 实例和表格（第 3 课的五类工具对比表）为主要可视化手段，因为协议细节用真实字段展示比抽象框图更直接。",
+    "weakestPoints": [
+      "大纲与课次排序在大纲关口是自动确认的，没有人工评审——课程简报来自学习路径规划，编排者代行了确认步骤，仓库所有者尚未逐项审过六课的划分与顺序",
+      "验收评审（8 个独立评审代理）曾发现 8 处 blocker 级问题：4 处引用过度引申或张冠李戴（第 1/3/4/6 课）、2 处与 Claude Code 官方权限文档相悖的示例（第 5 课）、1 处示例代码的路径边界检查存在同前缀旁路（第 6 课 startsWith 漏洞）、1 处字段必填性表述错误（第 6 课）；全部已修复并经在线核对官方文档原文验证，但这说明初稿的事实密度接近出错阈值，后续维护改动仍需逐条对照 sources.md",
+      "引号体例未做到全课程统一：第 3、5 课正文已统一为「」，第 1、2、4 课正文保留直引号风格（各课内部一致）；不影响阅读但整套课程的排版洁癖度打了折扣",
+      "第 6 课开场示例的「最后一次 push 是几周前」是相对时间表述，随时间推移会与真实 GitHub 数据脱节，属于示例文本的固有时效性问题"
+    ],
+    "followUpChecks": [
+      "验证所有 glossary 词条的 term 在课程正文中逐字出现（合并重复词条与新增 4 词条时已抽查，全量核对交给 guard）",
+      "检查所有交互块 JSON 可解析且 whyHere 针对本课具体误解（评审代理逐块核过，标点修复后已重新解析验证）",
+      "确认所有 [^Sn] 引用在 sources.md 有对应条目，且新增的 S20/S21 关键引用与官方页面原文一致（已在线抓取核对）",
+      "第 6 课代码在干净目录里实际跑通一次（需要 API key，留给学习者路径同时也是 owner 的抽查项）",
+      "确认删除 courses/learn-agent-tool-use/ 旧目录前，其独有知识点（并行数据依赖、additionalProperties/strict）已并入第 2、4 课并补齐词表"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 4,
+      "pedagogy": 5,
+      "exercises": 4,
+      "load": 4,
+      "readable": 5
+    },
+    "terminalTask": "学习者能在本地从零搭出一个可运行的工具调用 Agent：为搜索、读文件、调用外部 API 三类工具写出带约束的接口定义，用单一注册表同时派生 schema 列表和 handler 查找表，实现带 MAX_TURNS、重复调用检测和带分隔符路径边界校验的执行循环，接上第四个受目录限制的写文件工具，并能从「模型反复重试」这类日志症状反推出 tool_result 信号不明确的根因。",
+    "interactionCheck": "六课共 7 个 agentmentor-check 交互块，逐块核验（评审代理逐块判定 + 修复后重新解析 JSON）：第 1 课 tool-zh-01-who-runs-it 针对「模型自己执行了搜索」的第一人称误导，紧跟分界线小节，三个选项的 feedback 各自拆解一种误解变体；第 2 课 tool-zh-02-stop-reason-meaning 针对「stop_reason: tool_use 等于工具已执行」，tool-zh-02-batched-tool-result 针对「多个结果可以分批送回」，均在对应小节讲完后立刻检验；第 3 课 tool-zh-03-blast-radius 针对「风险等级由数据敏感度而非参数约束结构决定」；第 4 课 tool-zh-04-description-audience 针对「description 是给维护者看的注释」；第 5 课 tool-zh-05-injection-mechanism 针对「模型天生能分辨数据和指令」；第 6 课 tool-zh-06-diagnose-loop 针对「反复重试该怪模型能力或轮数上限」（题干已加「假设一位同学改坏了返回值」限定，消除与正文代码的表面矛盾）。所有块 JSON 有效、whyHere 说明位置理由、feedback 针对具体误解而非空话。每课练习为 Level 1（应用）+ Level 2（诊断/深化）两级，均有 rubric、answer 和至少两个渐进 hint，指向真实动手环境。",
+    "learnerFitCheck": "课程不假设机器学习背景（README 前置要求明确排除）、不假设任何 Agent 框架经验（不讲 LangChain 等）、不假设后端或运维经验。unknownConcepts 里的协议细节全部先给 JSON 实例再抽象成规则；第 1 课的第一个练习（给六个任务判断要不要配工具）只依赖已知概念，不依赖任何未教内容。第 6 课是唯一要求动手写完整代码的课，前置的 JavaScript 要求在 README 和课首都有声明，并为 ESM 语法这个新手卡点补了 npm pkg set type=module 的操作说明。",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "验收流程：8 个独立评审代理（6 个逐课评审 + 1 个元数据评审 + 1 个旧目录比对）+ 编排者兜底复核；发现的 8 处 blocker 与 28 处 minor 已全部修复，其中官方文档相关论断（权限规则拆分子命令、Write 路径规则失效、strict 模式语义、并行回传规则）逐条在线抓取原文核实",
+      "glossary 密度 12.2 词/课（73 词 / 6 课），在 10-14 目标区间内；合并了两组同概念重复词条（tool_use 块、致命三要素），并为抢救并入的知识点补了 4 个新词条",
+      "sources.md 共 21 个来源（S1-S21），S20（Strict tool use）与 S21（Parallel tool use）为验收阶段新增，关键引用均为官方页面逐字摘录",
+      "旧的废弃目录 courses/learn-agent-tool-use/ 经比对后按 salvage-then-delete 处理：并行调用数据依赖一节并入第 2 课、additionalProperties: false 与 strict 模式一节并入第 4 课，随后目录已删除",
+      "浏览器渲染验收全绿：六课交互卡片全部水合、脚注 20-28 个/课、练习与导航正常、术语表 73 词渲染、来源页 19 个被引用来源渲染、正文术语悬停挂载正常",
+      "grounded/exercises/load 给 4 分而非 5 分的原因：初稿引用出错率偏高（虽已修复）、第 6 课练习依赖外部 API key 无法离线完成、第 5 课信息密度较高可能需要二刷"
+    ]
+  },
+  "nextSteps": [
+    "请仓库所有者评审本课大纲与六课排序：大纲关口当时是自动确认的，没有人工审过——尤其请确认「并行调用与数据依赖」放在第 2 课（而非独立成课）、「接口硬约束」放在第 4 课的安排是否符合学习路径预期",
+    "建议学习者完成课程后：(1) 用第 6 课骨架给自己项目里的一个真实小任务接 2-3 个工具 (2) 刻意制造一次并行数据依赖场景验证第 2 课的判断 (3) 给自己的工具补 strict: true 并观察参数错误率变化",
+    "可探索的进阶方向：MCP 服务器开发、工具搜索（Tool Search Tool）与程序化工具调用、Agent 记忆与状态（学习路径第 5 课）、多 Agent 协作（学习路径第 6 课）",
+    "维护提醒：第 5 课多处论断锚定 Claude Code 权限文档的当前行为（子命令拆分匹配、Write 路径规则失效），该文档更新较频繁，改版时需对照 sources.md 的 S15/S16 重新核实"
+  ],
+  "memoryBoundary": "本 agentmentor.json 是此课程的本地状态记录，仅存储在课程目录中，用于质量检查和学习路径追踪。不会写回 Claude Code 或任何宿主 AI 系统的长期记忆，也不影响其他课程或对话。"
+}
