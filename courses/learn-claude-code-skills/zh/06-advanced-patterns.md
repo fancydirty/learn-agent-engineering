@@ -161,7 +161,7 @@ git diff main..feature-branch -- .claude/skills/
 
 ### Code Review Skills 本身
 
-**是的，Skills 也需要审查。**[^S10]
+**是的，Skill 审查和代码审查一样重要。**[^S10]
 
 当团队成员提交一个新 Skill 或修改现有 Skill：
 
@@ -184,7 +184,7 @@ git diff main..feature-branch -- .claude/skills/
 
 ### 分支管理
 
-**实验性 Skill 在 feature 分支：**
+**分支实验：把实验性 Skill 放在 feature 分支里：**
 
 ```bash
 # 创建实验分支
@@ -207,7 +207,7 @@ git merge experiment/ai-refactor-skill
 
 ### 1. README 文档化
 
-在项目根目录的 README 或 `.claude/README.md` 里列出所有 Skills：[^S10]
+Skills 文档化的做法很简单：在项目根目录的 README 或 `.claude/README.md` 里列出所有 Skills：[^S10]
 
 ```markdown
 ## 可用的 Claude Skills
@@ -232,7 +232,7 @@ git merge experiment/ai-refactor-skill
 
 ### 2. 统一命名约定
 
-团队内部统一 Skill 的命名风格：[^S8]
+团队内部统一 Skill 的命名约定：[^S8]
 
 **推荐：**
 - 用连字符：`commit-format`, `api-doc-gen`
@@ -280,7 +280,7 @@ ls .claude/skills/
 
 ## Skills 的组合使用
 
-**多个 Skills 可以串联：**[^S1]
+**Skills 组合，就是把多个 Skills 串起来解决复杂任务：**[^S1]
 
 ```
 /commit-format 修了登录 bug
@@ -315,6 +315,8 @@ ls .claude/skills/
 - **`model`**：指定这个 Skill 用哪个模型（如果需要更强的推理能力）
 - **`allowed-tools`**：限制这个 Skill 只能用特定工具
 - **`disable-model-invocation`**：禁止 Claude 自动加载，只能手动调用
+
+这三个字段里，model 决定用哪个模型，allowed-tools 圈定权限边界，disable-model-invocation 则关掉自动触发，只留手动调用。
 
 **什么时候用这些字段：**
 - 代价高的操作（调用外部 API）→ 用 `disable-model-invocation`，避免误触发
