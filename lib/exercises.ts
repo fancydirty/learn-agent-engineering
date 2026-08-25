@@ -1,14 +1,20 @@
 export interface Exercise { level: string; prompt: string; hints: string[]; answer: string | null; checks: string[]; }
 
 const EX_OPEN = /^<!--\s*exercises\s*-->\s*$/m;
-const EX_CLOSE = /^<!--\s*\/exercises\s*-->\s*$/m;
+const EX_CLOSE = /^<!--\s*\/exercises\s*-->\s*$/gm;
+
+function lastLineMatch(re: RegExp, text: string): RegExpMatchArray | null {
+  let last: RegExpMatchArray | null = null;
+  for (const m of text.matchAll(re)) last = m;
+  return last;
+}
 
 export function splitLesson(md: string): { before: string; exercisesMd: string | null } {
   const open = md.match(EX_OPEN);
   if (!open || open.index === undefined) return { before: md, exercisesMd: null };
   const bodyStart = open.index + open[0].length;
   const rest = md.slice(bodyStart);
-  const close = rest.match(EX_CLOSE);
+  const close = lastLineMatch(EX_CLOSE, rest);
   let exercisesMd: string;
   let afterEnd: number; // absolute offset after exercise region in md (exclusive), for stitching before tail
   if (close && close.index !== undefined) {

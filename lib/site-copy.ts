@@ -105,7 +105,7 @@ const zh = {
       partialPassed: (passed: number, total: number) => `本地检查 ${passed}/${total} 通过。`,
     },
     diff: { choicesAria: "改动解释选项" },
-    visual: { eyebrow: "图解", missingFile: "缺少图解文件" },
+    visual: { eyebrow: "图解", missingFile: "缺少图解文件", viewFullscreen: "全屏查看", exitFullscreen: "退出全屏" },
     sandbox: {
       preview: "预览",
       restoreMine: "恢复我的代码",
@@ -246,7 +246,7 @@ const en: SiteCopy = {
       partialPassed: (passed: number, total: number) => `Local check: ${passed}/${total} passed.`,
     },
     diff: { choicesAria: "Explanations for this change" },
-    visual: { eyebrow: "Picture", missingFile: "Missing picture file" },
+    visual: { eyebrow: "Picture", missingFile: "Missing picture file", viewFullscreen: "View fullscreen", exitFullscreen: "Exit fullscreen" },
     sandbox: {
       preview: "Preview",
       restoreMine: "Restore my code",
@@ -385,7 +385,7 @@ const ja: SiteCopy = {
       partialPassed: (passed: number, total: number) => `ローカルチェック ${passed}/${total} が合格です。`,
     },
     diff: { choicesAria: "この変更の説明の選択肢" },
-    visual: { eyebrow: "図解", missingFile: "図解ファイルがありません" },
+    visual: { eyebrow: "図解", missingFile: "図解ファイルがありません", viewFullscreen: "全画面で見る", exitFullscreen: "全画面を閉じる" },
     sandbox: {
       preview: "プレビュー",
       restoreMine: "自分のコードを復元",
@@ -524,7 +524,7 @@ const ko: SiteCopy = {
       partialPassed: (passed: number, total: number) => `로컬 확인 ${passed}/${total}개를 통과했습니다.`,
     },
     diff: { choicesAria: "이 변경에 대한 설명 선택지" },
-    visual: { eyebrow: "도해", missingFile: "도해 파일이 없습니다" },
+    visual: { eyebrow: "도해", missingFile: "도해 파일이 없습니다", viewFullscreen: "전체 화면", exitFullscreen: "전체 화면 닫기" },
     sandbox: {
       preview: "미리 보기",
       restoreMine: "내 코드 복원",
@@ -663,7 +663,7 @@ const es: SiteCopy = {
       partialPassed: (passed: number, total: number) => `Comprobación local: ${passed}/${total} superadas.`,
     },
     diff: { choicesAria: "Explicaciones de este cambio" },
-    visual: { eyebrow: "Ilustración", missingFile: "Falta el archivo de la ilustración" },
+    visual: { eyebrow: "Ilustración", missingFile: "Falta el archivo de la ilustración", viewFullscreen: "Ver a pantalla completa", exitFullscreen: "Salir de pantalla completa" },
     sandbox: {
       preview: "Vista previa",
       restoreMine: "Restaurar mi código",
@@ -802,7 +802,7 @@ const ptBR: SiteCopy = {
       partialPassed: (passed: number, total: number) => `Verificação local: ${passed}/${total} aprovadas.`,
     },
     diff: { choicesAria: "Explicações para esta alteração" },
-    visual: { eyebrow: "Ilustração", missingFile: "Arquivo da ilustração ausente" },
+    visual: { eyebrow: "Ilustração", missingFile: "Arquivo da ilustração ausente", viewFullscreen: "Ver em tela cheia", exitFullscreen: "Sair da tela cheia" },
     sandbox: {
       preview: "Pré-visualização",
       restoreMine: "Restaurar meu código",

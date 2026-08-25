@@ -127,7 +127,7 @@
 }.reading-prose .interactive-card.is-error{ border-top-color:#b42318; color:#b42318; }.reading-prose .interactive-card-eyebrow{
   margin:0 0 6px; font-family:var(--font-kicker),monospace; font-size:11px; line-height:1.2; font-weight:500; letter-spacing:.14em;
   text-transform:uppercase; color:var(--ink-subtle);
-}.reading-prose .interactive-card h3{ margin:0 0 12px; font-family:var(--font-display); font-size:17px; font-weight:600; line-height:1.35; color:var(--ink-strong); letter-spacing:0; }.reading-prose .interactive-options{ counter-reset:opt; display:grid; gap:0; border-bottom:0.5px solid var(--border); }.reading-prose .interactive-option{
+}.reading-prose .interactive-card h3{ margin:0 0 12px; font-family:var(--font-display); font-size:17px; font-weight:600; line-height:1.35; color:var(--ink-strong); letter-spacing:0; }.reading-prose .interactive-card-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin:0 0 12px; }.reading-prose .interactive-card-head h3{ margin:0; }.reading-prose .interactive-card-fs{ display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; margin:0; padding:0; border:0; border-radius:0; background:transparent; color:var(--ink-subtle); cursor:pointer; }.reading-prose .interactive-card-fs:hover{ color:var(--ink-strong); background:transparent; }.reading-prose .interactive-options{ counter-reset:opt; display:grid; gap:0; border-bottom:0.5px solid var(--border); }.reading-prose .interactive-option{
   display:grid; grid-template-columns:22px 1fr; column-gap:8px; row-gap:5px; align-items:baseline;
   width:100%; text-align:left; border:0; border-top:0.5px solid var(--border);
   border-radius:0; background:transparent; color:var(--foreground); padding:12px 4px 12px 8px;
@@ -788,3 +788,34 @@
 }
 .reading-prose .visual-explainer-iframe{ width:100%; height:100%; border:0; display:block; background:#faf8f4; }
 .reading-prose .visual-explainer-caption{ margin:0; font-size:13px; line-height:1.5; color:var(--muted-foreground); }
+
+.visual-explainer-overlay{
+  position:fixed; inset:0; z-index:50;
+  display:flex; align-items:center; justify-content:center;
+  background:color-mix(in srgb, var(--background) 92%, transparent);
+  backdrop-filter:blur(6px);
+}
+.visual-explainer-overlay-close{
+  position:absolute; top:16px; right:16px; z-index:10;
+  display:inline-flex; align-items:center; justify-content:center;
+  width:40px; height:40px; margin:0; padding:0; border:0; border-radius:0;
+  background:transparent; color:var(--ink-subtle); cursor:pointer;
+}
+.visual-explainer-overlay-close:hover{ color:var(--ink-strong); }
+.visual-explainer-overlay-stage{
+  width:min(1100px, 96vw); height:min(90vh, 920px);
+  display:flex; flex-direction:column; min-height:0;
+  background:#faf8f4; border:0.5px solid var(--border);
+}
+.visual-explainer-overlay .visual-explainer{
+  display:flex; flex-direction:column; gap:10px; flex:1; min-height:0; padding:18px;
+}
+.visual-explainer-overlay .visual-explainer-frame{
+  flex:1; min-height:0; width:100%; overflow:hidden; background:#faf8f4;
+}
+.visual-explainer-overlay .visual-explainer-iframe{
+  width:100%; height:100%; border:0; display:block; background:#faf8f4;
+}
+.visual-explainer-overlay .visual-explainer-caption{
+  margin:0; font-size:13px; line-height:1.5; color:#6b6157;
+}

@@ -861,12 +861,18 @@ function extractMentorActionBlocks(text) {
   return blocks;
 }
 
+function lastExerciseClose(rest) {
+  let last = null;
+  for (const m of rest.matchAll(/^<!--\s*\/exercises\s*-->\s*$/gm)) last = m;
+  return last;
+}
+
 function isInsideExerciseRegion(text, index) {
   const open = /^<!--\s*exercises\s*-->\s*$/m.exec(text);
   if (!open || open.index === undefined) return false;
   const bodyStart = open.index + open[0].length;
   const rest = text.slice(bodyStart);
-  const close = /^<!--\s*\/exercises\s*-->\s*$/m.exec(rest);
+  const close = lastExerciseClose(rest);
   let end;
   if (close && close.index !== undefined) {
     end = bodyStart + close.index;
