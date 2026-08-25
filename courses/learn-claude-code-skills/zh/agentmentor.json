@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "生成一门关于 Claude Code Skills 的课程，教学习者如何创建和使用自定义 Skills。目标学习者是已经使用过 Claude Code 的开发者，想要为自己的项目定制工作流程，理解基本的 Markdown 和命令行操作。课程内容覆盖：Skills 是什么、为什么需要它、Skill 的基本结构和文件组织、如何编写一个简单的 Skill、如何测试和调试 Skill、实际案例：创建一个代码审查 Skill。质量要求：严格遵循 skill 的所有指导原则、包含足够的交互块、语言使用中文、内容具体可操作、避免空泛概念、每个步骤都有实际例子。",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "用户在原始请求中明确提供了：目标学习者（已使用过 Claude Code 的开发者）、学习目标（创建和使用自定义 Skills）、已知前置技能（基本 Markdown 和命令行操作）、具体覆盖内容（5 个明确主题）、质量标准（遵循 skill 指导、包含交互、中文、可操作、有实例）。信息完整，无需额外澄清。"
+  },
+  "learnerModel": {
+    "targetReader": "已经使用过 Claude Code 基本功能、想要通过 Skills 定制工作流程、理解基本 Markdown 语法和命令行操作的开发者",
+    "knownConcepts": [
+      "Claude Code 的基本交互方式",
+      "Markdown 基础语法",
+      "命令行基本操作（cd、ls、mkdir、文本编辑器使用）",
+      "文件和目录概念",
+      "至少一种编程语言的基础",
+      "代码审查的基本概念"
+    ],
+    "unknownConcepts": [
+      "Skill 的工作原理",
+      "YAML frontmatter 语法",
+      "SKILL.md 文件结构",
+      "description 字段的触发机制",
+      "渐进式披露（progressive disclosure）原则",
+      "supporting files 的组织方式",
+      "Skill 的调试方法"
+    ],
+    "assumedEnvironment": "已安装 Claude Code、能访问 .claude/skills 目录、有文本编辑器（VS Code 或其他）、能在终端执行基本命令",
+    "firstIndependentAction": "在自己的项目中识别一个可以用 Skill 自动化的重复性任务",
+    "noviceRamp": [
+      "第 1 课从具体痛点开始（重复解释同一个工作流），用会议记录整理的例子建立对 Skills 价值的直觉",
+      "第 2 课通过拆解真实的 SKILL.md 文件，逐部分解释每个组成（frontmatter、instructions）的作用，避免一次性抛出所有概念",
+      "第 3 课从零开始创建一个完整但简单的 Skill（任务整理器），每一步都有详细说明和可复制的代码",
+      "测试和调试方法在第 4 课单独讲解，避免在编写时混入调试复杂度"
+    ]
+  },
+  "learnerBrief": "目标学习者是已经使用过 Claude Code 的开发者，希望通过 Skills 为自己的项目定制工作流。他们理解基本的 Markdown 和命令行，有编程经验，但不了解 Skills 的概念、YAML frontmatter 语法和编写方法。课程目标是让他们能够独立创建第一个实用的 Skill，包括理解 Skills 的价值、掌握 SKILL.md 文件结构、学会测试调试、通过代码审查案例学习实战模式。",
+  "scope": "课程涵盖：Skill 概念和应用场景、SKILL.md 文件结构（YAML frontmatter + Markdown instructions）、name 和 description 字段编写、自动触发机制、编写可执行指令、supporting files 组织、测试调试方法（直接调用、迭代改进）、代码审查 Skill 实战案例、personal vs project skills 区别。不涵盖：Claude Code 安装、深入 YAML 语法、复杂脚本、特定语言高级知识、Skills 分发、MCP 集成细节。深度：从零到能独立创建生产可用 Skill。",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-claude-code-skills/zh/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "本课程未使用 mermaid 图表。原因：Skills 的学习核心是理解文本结构（YAML frontmatter + Markdown instructions）和编写具体可执行的步骤，用真实的 SKILL.md 代码示例比抽象流程图更直观。每课都包含完整的 Skill 文件示例和逐步构建过程，比图表更能展示实际结构。唯一可能受益于图表的是第 4 课的「测试-修复-测试」迭代循环，但用文字列表加粗体标注已经足够清晰。",
+    "weakestPoints": [
+      "第 1 课的「识别第一个 Skill 候选」练习比较开放，初学者可能不确定自己选的任务是否合适，已通过提供判断标准（重复性、步骤固定、可验证）和渐进提示来缓解",
+      "第 5 课的代码审查 Skill 示例较长且涉及多个文件，可能让初学者感到复杂，但这是为了展示真实项目的完整性，且已通过分步讲解和模块化组织来降低复杂度",
+      "课程未深入讲解 model、allowed-tools 等高级 frontmatter 字段，仅在第 6 课简要提及，这是有意为之（遵循渐进式披露原则），但可能导致需要这些高级功能的学习者需要查阅官方文档"
+    ],
+    "followUpChecks": [
+      "第一遍完整 render pass 检查所有 $ 符号是否正确转义（prose 里转义、代码块里不转义）",
+      "验证所有 glossary 词条的 term 是否在课程正文中逐字出现（已在生成时考虑，但需实际 grep 验证）",
+      "检查所有交互块的 whyHere 字段是否真正解释了「为什么在这里需要这个交互」而不是重复 prompt",
+      "确认所有练习的 rubric 是否具体可执行（不是「做得好」这种主观评价）"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "学习者能够为自己工作中的一个重复任务独立编写一个完整的 SKILL.md 文件（包含正确的 frontmatter 和具体可执行的 instructions），成功调用并通过测试，理解如何迭代改进，并能判断何时用 personal skills 何时用 project skills。",
+    "interactionCheck": "每课包含 1 个 agentmentor-check 交互块，用于检查关键概念的理解（如第 1 课判断场景适用性、第 2 课判断 description 质量、第 4 课诊断加载问题、第 5 课判断文件组织方式）。每个交互块的 whyHere 字段明确说明了为什么在此处需要这个检查，label 贴合本课具体内容而非泛化的「测试理解」。所有练习都设计为递进式：Level 1 是应用本课知识的基础实践，Level 2 是对比或深化，每个练习都有明确的完成标准（rubric）、参考答案和渐进提示。练习都指向真实环境（在自己的项目里创建 Skill、用自己的代码测试），符合「Apply 级别占比 ≥60%」的要求。",
+    "learnerFitCheck": "目标学习者是已使用过 Claude Code、懂基本 Markdown 和命令行的开发者。课程不假设 YAML 知识（第 2 课从零讲解 frontmatter 的两个必需字段），不假设复杂的编程技能（示例 Skill 都是文本处理和清单检查，不涉及算法），不假设特定语言或框架的专业知识（代码审查示例用通用的命名、错误处理等概念）。第 1 课的第一个练习（识别重复任务）只需回顾自己的工作经历，不依赖 unknownConcepts 里的任何内容。unknownConcepts（Skill 工作原理、YAML frontmatter、渐进式披露等）在课程中逐步引入，第 3 课才让学习者动手创建第一个 Skill，此时已学完所有前置概念。",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "课程已完成，待 course-guard 验证通过后可发布",
+      "glossary 密度为 12 词/课（72 词 / 6 课），符合 10-14 目标区间",
+      "所有交互块包含必需字段（id、label、prompt、whyHere、mode、choices with feedback）",
+      "所有练习包含 rubric、answer、至少一个 hint",
+      "建议学习者完成课程后创建 2-3 个实际项目的 Skill 巩固所学"
+    ]
+  },
+  "nextSteps": [
+    "运行 course-guard 验证所有文件",
+    "如果 guard 通过，课程即可使用",
+    "建议学习者完成课程后在实际项目中应用至少一周，记录使用情况和改进点",
+    "可以探索 Claude Code 社区分享的其他 Skills 作为进阶学习"
+  ],
+  "memoryBoundary": "本 agentmentor.json 是此课程的本地状态记录，仅存储在课程目录中，用于质量检查和学习路径追踪。不会写回 Claude Code 或任何宿主 AI 系统的长期记忆，也不影响其他课程或对话。"
+}

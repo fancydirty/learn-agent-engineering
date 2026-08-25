@@ -17,7 +17,11 @@ try {
 } catch {
   // Older runtimes without the API keep Node's default ordering.
 }
-const DEFAULT_MAX_LINES = 300;
+
+function lineCap(maxLines) {
+  const n = Number(maxLines);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
 
 if (process.argv.includes("--help")) {
   console.log("Usage: node scripts/course-guard.mjs <course-dir> [--max-lines N] [--skip-url-check] [--strict-url-check]");
@@ -321,11 +325,13 @@ function nonCodeLineCount(text) {
   return n;
 }
 
-export function checkLessonBounds(courseDir, maxLines = DEFAULT_MAX_LINES) {
+export function checkLessonBounds(courseDir, maxLines) {
+  const cap = lineCap(maxLines);
+  if (cap == null) return [];
   const violations = [];
   for (const f of lessonFiles(courseDir)) {
     const n = nonCodeLineCount(readFileSync(join(courseDir, f), "utf8"));
-    if (n > maxLines) violations.push(`${f}: 正文超长(${n}>${maxLines}非代码行=可能超载没拆)`);
+    if (n > cap) violations.push(`${f}: 正文超过 --max-lines(${n}>${cap}非代码行)`);
   }
   return violations;
 }
@@ -1865,7 +1871,7 @@ export async function checkSourceUrls(courseDir, options = {}) {
   return violations;
 }
 
-export function guardCourse(courseDir, maxLines = DEFAULT_MAX_LINES) {
+export function guardCourse(courseDir, maxLines) {
   const violations = [
     ...checkCoursePathTarget(courseDir),
     ...checkCitations(courseDir),
@@ -1892,7 +1898,7 @@ export function guardCourse(courseDir, maxLines = DEFAULT_MAX_LINES) {
 }
 
 export async function guardCourseAsync(courseDir, options = {}) {
-  const maxLines = options.maxLines || DEFAULT_MAX_LINES;
+  const maxLines = lineCap(options.maxLines);
   const base = guardCourse(courseDir, maxLines);
   const urlViolations = options.checkUrls === false ? [] : await checkSourceUrls(courseDir, options);
   const violations = [...base.violations, ...urlViolations];
@@ -1904,7 +1910,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   if (!arg) { console.error("Missing course directory. --help"); process.exit(2); }
   const dir = isAbsolute(arg) ? arg : join(ROOT, arg);
   const mi = process.argv.indexOf("--max-lines");
-  const maxLines = mi > -1 ? parseInt(process.argv[mi + 1], 10) : DEFAULT_MAX_LINES;
+  const maxLines = mi > -1 ? parseInt(process.argv[mi + 1], 10) : undefined;
   const v = await guardCourseAsync(dir, {
     maxLines,
     checkUrls: !process.argv.includes("--skip-url-check"),

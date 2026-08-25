@@ -1,0 +1,457 @@
+[
+  {
+    "term": "Skill",
+    "def": "一个目录加一个 SKILL.md 文件，告诉 Claude 如何完成特定任务的可复用工作流指令包。",
+    "source": "[^S3]",
+    "pitfall": "误以为 Skill 是一段代码或脚本——实际上它是给 Claude 看的 Markdown 指令，不是可执行程序。",
+    "distractor_rationale": "初学者容易把 Skill 和传统编程中的函数或脚本混淆，因为两者都是「打包可复用逻辑」，但 Skill 是自然语言指令，不是代码。"
+  },
+  {
+    "term": "SKILL.md",
+    "def": "Skill 的核心文件，包含 YAML frontmatter（元数据）和 Markdown instructions（执行指令）两部分。",
+    "source": "[^S1]",
+    "pitfall": "只写了 frontmatter 或只写了 instructions，导致 Claude 无法正确识别或执行 Skill。",
+    "distractor_rationale": "新手常忘记 SKILL.md 必须同时包含两部分，因为其他 Markdown 文件通常只有正文，没有 frontmatter。"
+  },
+  {
+    "term": "YAML frontmatter",
+    "def": "SKILL.md 文件开头用三个连字符（---）包裹的元数据区域，包含 name、description 等字段。",
+    "source": "[^S1]",
+    "pitfall": "忘记写闭合的 ---，或者在 frontmatter 里使用了错误的缩进，导致 YAML 解析失败。",
+    "distractor_rationale": "YAML 对缩进和格式严格要求，但很多人习惯了 JSON 的灵活性，容易写出格式错误的 frontmatter。"
+  },
+  {
+    "term": "name 字段",
+    "def": "frontmatter 中的必需字段，定义 Skill 的唯一标识，只能包含小写字母、数字和连字符。",
+    "source": "[^S3]",
+    "pitfall": "在 name 里使用了空格、大写字母或中文，导致 Skill 无法被正确调用。",
+    "distractor_rationale": "习惯了文件名或变量名的人容易用下划线或驼峰命名，但 Skill name 只允许小写和连字符。"
+  },
+  {
+    "term": "description 字段",
+    "def": "frontmatter 中的必需字段，告诉 Claude 这个 Skill 做什么、什么时候用，是自动触发的唯一依据。",
+    "source": "[^S6]",
+    "pitfall": "写了「帮助处理任务」这种泛化的 description，Claude 不知道什么场景该用，导致从不自动加载。",
+    "distractor_rationale": "新手以为 description 是给人看的介绍文案，不知道它是 Claude 决定是否加载 Skill 的核心匹配字段。"
+  },
+  {
+    "term": "自动触发",
+    "def": "当用户说的话和 Skill 的 description 匹配时，Claude 自动加载该 Skill 并执行，无需手动调用。",
+    "source": "[^S6]",
+    "pitfall": "期望 Claude 根据「意图」自动触发，但 description 里没写对应的关键词，导致匹配失败。",
+    "distractor_rationale": "用户以为 Claude 能理解同义词或上下文推断，但实际上自动触发主要依赖 description 中的关键词匹配。"
+  },
+  {
+    "term": "手动调用",
+    "def": "用 /skill-name 的格式直接调用 Skill，不依赖 description 的匹配，强制 Claude 加载指定 Skill。",
+    "source": "[^S1]",
+    "pitfall": "忘记了 Skill name 不能有空格或大写，输入 /MySkill 或 /my skill 导致调用失败。",
+    "distractor_rationale": "习惯了命令行的人可能用空格分隔参数，但 Skill name 本身不能包含空格。"
+  },
+  {
+    "term": "Markdown instructions",
+    "def": "SKILL.md 中 frontmatter 之后的所有内容，用 Markdown 格式编写的具体执行指令。",
+    "source": "[^S1]",
+    "pitfall": "写了「分析数据」「处理任务」这种泛化步骤，Claude 不知道具体怎么做，导致执行结果不符合预期。",
+    "distractor_rationale": "习惯写高层抽象的人容易忽略 Claude 需要非常具体的步骤，因为它不是人，不会「理解你的意思」。"
+  },
+  {
+    "term": "渐进式披露",
+    "def": "只给 Claude 当前需要的信息，不一次性塞入所有细节，让 Skill 保持简洁和快速加载。",
+    "source": "[^S2]",
+    "pitfall": "第一个版本就想覆盖所有边界情况，写出 500 行的 SKILL.md，导致加载慢、难维护、容易出错。",
+    "distractor_rationale": "追求完美的人容易在第一版就写太多，不知道渐进式披露是 Skills 设计的核心原则，简洁优于全面。"
+  },
+  {
+    "term": "supporting files",
+    "def": "Skill 目录下除 SKILL.md 外的其他文件，如检查清单、配置文件、脚本，按需加载不消耗初始 context。",
+    "source": "[^S2]",
+    "pitfall": "把所有检查规则都写进 SKILL.md，导致文件超长，每次加载都消耗大量 context。",
+    "distractor_rationale": "不知道 supporting files 的存在，以为所有内容都必须写在 SKILL.md 里，错失了模块化组织的好处。"
+  },
+  {
+    "term": "personal skills",
+    "def": "存放在 ~/.claude/skills/ 的 Skills，只有当前用户能访问，用于个人习惯和跨项目的通用工具。",
+    "source": "[^S9]",
+    "pitfall": "把团队规范的 Skill 放在 personal skills 里，导致其他成员无法使用。",
+    "distractor_rationale": "不知道 personal 和 project skills 的区别，以为所有 Skills 都该放在 ~/.claude/skills/。"
+  },
+  {
+    "term": "project skills",
+    "def": "存放在项目目录 .claude/skills/ 的 Skills，提交到 Git，团队成员克隆代码后自动获得。",
+    "source": "[^S9]",
+    "pitfall": "把 project skills 加到 .gitignore，导致团队成员无法同步，失去了共享的意义。",
+    "distractor_rationale": "习惯性把 .开头的目录当作本地配置忽略掉，不知道 .claude/skills/ 是应该提交到版本控制的。"
+  },
+  {
+    "term": "重复性",
+    "def": "适合用 Skill 的场景特征之一，指任务每天、每周或每月都要做多次。",
+    "source": "[^S1]",
+    "pitfall": "为一次性任务创建 Skill，结果写完就再也没用过，浪费了时间。",
+    "distractor_rationale": "高估了某个任务的重复频率，或者没有区分「任务重复」和「步骤重复」，后者才适合 Skill。"
+  },
+  {
+    "term": "步骤固定",
+    "def": "适合用 Skill 的场景特征之一，指流程可以写成清晰的步骤列表，不是每次都不同。",
+    "source": "[^S1]",
+    "pitfall": "为完全开放式的创意工作创建 Skill，结果每次都要大量人工干预，Skill 形同虚设。",
+    "distractor_rationale": "误以为 Skill 能处理任何任务，不知道它更适合结构化、可量化的工作流。"
+  },
+  {
+    "term": "可验证",
+    "def": "适合用 Skill 的场景特征之一，指能明确判断 Claude 的输出是对是错。",
+    "source": "[^S1]",
+    "pitfall": "为主观评判的任务（如「这个设计好不好看」）创建 Skill，结果无法验证输出质量。",
+    "distractor_rationale": "期望 Skill 能处理需要审美或商业判断的任务，但这类任务没有客观标准，无法写成可执行的检查清单。"
+  },
+  {
+    "term": "description 公式",
+    "def": "编写有效 description 的指导原则：做什么 + 什么时候用 + 关键能力。",
+    "source": "[^S6]",
+    "pitfall": "只写了「做什么」，漏掉了「什么时候用」，导致 Claude 不知道在什么场景加载这个 Skill。",
+    "distractor_rationale": "以为简短的 description 更好，不知道缺少使用场景的描述会导致自动触发失效。"
+  },
+  {
+    "term": "触发关键词",
+    "def": "description 中用户可能说到的词汇，Claude 通过匹配这些词决定是否自动加载 Skill。",
+    "source": "[^S6]",
+    "pitfall": "description 里写「生成文档」，但用户说「创建文档」或「写文档」，因为关键词不匹配导致未触发。",
+    "distractor_rationale": "以为 Claude 能理解同义词，不知道应该把用户可能说的各种表达都写进 description。"
+  },
+  {
+    "term": "输入格式",
+    "def": "instructions 中说明 Skill 接受什么样的输入，包括格式、来源和示例。",
+    "source": "[^S1]",
+    "pitfall": "没有说明输入格式，Claude 遇到非预期格式的输入时无法正确处理。",
+    "distractor_rationale": "假设 Claude 能自动识别任何格式，不知道明确说明输入格式能大幅提高准确率。"
+  },
+  {
+    "term": "处理步骤",
+    "def": "instructions 中列出的具体操作顺序，每个步骤应该清晰可执行。",
+    "source": "[^S1]",
+    "pitfall": "写了「分析输入」「判断优先级」这种泛化步骤，Claude 不知道具体判断标准是什么。",
+    "distractor_rationale": "习惯写高层流程的人容易忽略 Claude 需要非常具体的判断条件，如「包含'紧急'关键词 → 高优先级」。"
+  },
+  {
+    "term": "输出格式",
+    "def": "instructions 中定义的结果应该长什么样，包括结构、符号和示例。",
+    "source": "[^S1]",
+    "pitfall": "只说「输出为列表」，没给示例，Claude 的输出格式每次都不一样。",
+    "distractor_rationale": "以为 Claude 知道「标准格式」是什么，不知道必须给完整示例才能保证格式一致性。"
+  },
+  {
+    "term": "边界情况",
+    "def": "特殊或异常的输入，如空输入、格式错误、超长内容，需要在 instructions 中明确处理方式。",
+    "source": "[^S1]",
+    "pitfall": "只测试了正常输入，遇到空字符串或格式错误时 Skill 行为异常或卡住。",
+    "distractor_rationale": "关注正常流程，忽略了边界情况的处理，不知道这是导致 Skill 不稳定的主要原因。"
+  },
+  {
+    "term": "直接调用测试",
+    "def": "用 /skill-name 手动调用 Skill，观察输出是否符合预期，是最基本的测试方法。",
+    "source": "[^S1]",
+    "pitfall": "只测试了一次就认为 Skill 没问题，没有准备多个测试用例覆盖不同情况。",
+    "distractor_rationale": "低估了 AI 行为的变化性，一次成功不代表每次都成功，需要多个测试用例才能验证稳定性。"
+  },
+  {
+    "term": "测试用例",
+    "def": "准备好的输入-预期输出对，用于系统化测试 Skill 是否按预期工作。",
+    "source": "[^S1]",
+    "pitfall": "只准备了正常情况的测试用例，没有覆盖边界和异常情况。",
+    "distractor_rationale": "测试思维不完整，不知道边界和异常情况才是发现问题的关键。"
+  },
+  {
+    "term": "迭代改进",
+    "def": "测试-发现问题-修复-再测试的循环过程，是 Skill 从能用到好用的必经之路。",
+    "source": "[^S8]",
+    "pitfall": "期望第一个版本就完美，遇到问题就放弃，不知道好的 Skill 都是迭代出来的。",
+    "distractor_rationale": "追求完美主义，不接受第一版有缺陷，错失了从实际使用中学习和改进的机会。"
+  },
+  {
+    "term": "对比测试",
+    "def": "用 Skill 和不用 Skill 分别完成同一任务，对比时间、质量和稳定性，验证 Skill 是否真的有用。",
+    "source": "[^S1]",
+    "pitfall": "创建了 Skill 就认为节省了时间，没有实际测量对比，结果发现 Skill 版本更慢或质量更差。",
+    "distractor_rationale": "主观感觉代替了客观测量，不知道需要数据验证 Skill 的实际价值。"
+  },
+  {
+    "term": "检查清单模式",
+    "def": "将复杂任务拆解为一系列明确的检查项，每项可独立判断通过或不通过的组织方式。",
+    "source": "[^S1]",
+    "pitfall": "检查项写得太泛化（如「检查代码质量」），无法明确判断是否通过。",
+    "distractor_rationale": "不理解检查清单的核心是可量化，每个检查项必须有明确的判断标准。"
+  },
+  {
+    "term": "多步骤工作流",
+    "def": "Skill 执行多个顺序步骤完成复杂任务，每个步骤的输出可能是下一步的输入。",
+    "source": "[^S1]",
+    "pitfall": "步骤之间的依赖关系不清晰，导致 Claude 执行顺序错误或遗漏中间步骤。",
+    "distractor_rationale": "假设 Claude 会自动理解步骤间的依赖关系，不知道必须明确写出「第 2 步使用第 1 步的结果」。"
+  },
+  {
+    "term": "输出分级",
+    "def": "将 Skill 的输出按严重性分为通过、需注意、必须修复等级别，帮助用户快速抓住重点。",
+    "source": "[^S1]",
+    "pitfall": "所有问题平铺直叙，用户不知道哪些是必须立即修复的，哪些可以稍后处理。",
+    "distractor_rationale": "认为列出问题就够了，不知道分级是提高 Skill 实用性的关键，让用户能快速决策。"
+  },
+  {
+    "term": "模块化组织",
+    "def": "把详细的检查规则、配置等内容拆分到 supporting files，主 SKILL.md 保持简洁。",
+    "source": "[^S2]",
+    "pitfall": "把 300 行检查规则全写在 SKILL.md 里，导致文件难以维护和快速理解。",
+    "distractor_rationale": "不知道可以用 supporting files，以为所有内容必须在一个文件里。"
+  },
+  {
+    "term": "版本控制",
+    "def": "用 Git 管理 project skills，可以查看历史、回滚、对比版本，像管理代码一样管理 Skills。",
+    "source": "[^S8]",
+    "pitfall": "修改了 Skill 但没有提交到 Git，团队成员还在用旧版本，导致审查标准不一致。",
+    "distractor_rationale": "把 Skill 当作配置文件随便改，不知道它也需要版本控制和团队同步。"
+  },
+  {
+    "term": "Skill 审查",
+    "def": "像审查代码一样审查新增或修改的 Skill，检查 description、instructions、测试用例是否合格。",
+    "source": "[^S10]",
+    "pitfall": "团队成员提交的 Skill 直接合并，没有审查，结果 description 太泛化或 instructions 有错误。",
+    "distractor_rationale": "觉得 Skill 只是文档不需要审查，不知道劣质 Skill 会影响整个团队的工作效率。"
+  },
+  {
+    "term": "命名约定",
+    "def": "团队统一的 Skill 命名风格，如使用连字符、动词-名词格式、2-3 个词长度。",
+    "source": "[^S8]",
+    "pitfall": "团队每个人用不同的命名风格，有的用下划线、有的用驼峰、有的加数字后缀，难以管理和查找。",
+    "distractor_rationale": "没有意识到命名约定的重要性，每个人按自己习惯命名，导致混乱。"
+  },
+  {
+    "term": "定期清理",
+    "def": "每季度审查一次所有 Skills，删除或改进很少使用的 Skill，避免 Skills 过多干扰 Claude 的选择。",
+    "source": "[^S8]",
+    "pitfall": "创建了很多 Skill 但从不清理，结果 Claude 加载时要在一堆不用的 Skill 里查找，影响效率。",
+    "distractor_rationale": "只关注增加新 Skill，忽视了删除无用 Skill 同样重要。"
+  },
+  {
+    "term": "变更通知",
+    "def": "修改现有 Skill 后在团队频道通知改动内容和影响，避免成员用旧认知操作新 Skill。",
+    "source": "[^S1]",
+    "pitfall": "悄悄改了 code-review 的检查标准，团队成员还按旧标准理解审查结果，造成混淆。",
+    "distractor_rationale": "觉得改个文件不是大事，不知道 Skill 的改动会直接影响团队的工作流程和预期。"
+  },
+  {
+    "term": "Skills 组合",
+    "def": "串联使用多个单一职责的 Skill 完成复杂任务，或在一个 Skill 里引用其他 Skills。",
+    "source": "[^S3]",
+    "pitfall": "创建一个大而全的 Skill 试图做所有事，结果难以维护和复用。",
+    "distractor_rationale": "不理解小而专的 Skill 组合优于大而全的单体 Skill，后者违反了单一职责原则。"
+  },
+  {
+    "term": "allowed-tools",
+    "def": "可选的 frontmatter 字段，限制这个 Skill 只能使用指定的工具，用于安全敏感的场景。",
+    "source": "[^S5]",
+    "pitfall": "没有限制工具，Skill 意外使用了不该用的工具（如修改文件、执行脚本）。",
+    "distractor_rationale": "不知道可以限制工具权限，认为 Skill 自然不会做危险操作。"
+  },
+  {
+    "term": "disable-model-invocation",
+    "def": "可选的 frontmatter 字段，设为 true 时禁止 Claude 自动加载，只能手动调用，避免误触发。",
+    "source": "[^S5]",
+    "pitfall": "创建了代价高的 Skill（如调用付费 API）但没有禁用自动调用，结果被频繁误触发产生费用。",
+    "distractor_rationale": "不知道有这个字段，认为只能通过改 description 来避免误触发。"
+  },
+  {
+    "term": "model 字段",
+    "def": "可选的 frontmatter 字段，指定这个 Skill 使用特定模型，如需要更强推理能力时用 claude-opus-4。",
+    "source": "[^S5]",
+    "pitfall": "所有 Skill 都用默认模型，结果需要复杂推理的 Skill 质量不稳定。",
+    "distractor_rationale": "不知道可以为单个 Skill 指定模型，以为只能全局设置。"
+  },
+  {
+    "term": "MCP 服务器",
+    "def": "Model Context Protocol 服务器，为 Claude 提供工具（如数据库访问、API 调用），Skill 提供使用这些工具的工作流知识。",
+    "source": "[^S7]",
+    "pitfall": "有了 MCP 工具但不知道如何用，或者写了 Skill 但没有对应的 MCP 工具支持。",
+    "distractor_rationale": "混淆了 MCP（提供工具）和 Skills（提供工作流），不理解两者是互补关系。"
+  },
+  {
+    "term": "社区 Skills",
+    "def": "其他开发者创建并分享的 Skills，可以在 GitHub 等平台找到并使用。",
+    "source": "[^S1]",
+    "pitfall": "直接复制社区 Skill 到生产项目，没有先审查其是否安全、是否符合团队需求。",
+    "distractor_rationale": "过度信任社区资源，不知道应该先在测试环境验证，检查是否有安全风险。"
+  },
+  {
+    "term": "Skills 文档化",
+    "def": "在项目 README 或 .claude/README.md 里列出所有 project skills 的用法和示例。",
+    "source": "[^S10]",
+    "pitfall": "创建了很多 project skills 但没有文档，新成员不知道有哪些 Skills、怎么用。",
+    "distractor_rationale": "认为 Skill 文件本身就是文档，不知道需要一个索引让人快速找到和理解可用的 Skills。"
+  },
+  {
+    "term": "单一职责原则",
+    "def": "每个 Skill 应该只做一件事并做好，不要试图在一个 Skill 里解决多个不相关的问题。",
+    "source": "[^S3]",
+    "pitfall": "创建了一个「万能助手」Skill 试图处理所有任务，结果每个都做不好。",
+    "distractor_rationale": "追求「一个 Skill 解决所有问题」的便利性，不理解小而专的 Skill 更容易维护和组合。"
+  },
+  {
+    "term": "context 消耗",
+    "def": "Claude 加载 Skill 时，SKILL.md 的内容会占用 context window，文件越长消耗越多。",
+    "source": "[^S2]",
+    "pitfall": "SKILL.md 写了 500 行，每次加载都消耗大量 context，影响 Claude 处理其他信息的能力。",
+    "distractor_rationale": "不知道 context 是有限资源，以为写得越详细越好。"
+  },
+  {
+    "term": "按需加载",
+    "def": "supporting files 的内容只在 Claude 真正需要时才读取，不会在 Skill 初始加载时占用 context。",
+    "source": "[^S2]",
+    "pitfall": "把所有内容都写在 SKILL.md 里，没有利用 supporting files 的按需加载机制。",
+    "distractor_rationale": "不理解渐进式披露的技术实现，认为拆分文件只是为了组织代码。"
+  },
+  {
+    "term": "实际使用验证",
+    "def": "在真实工作场景中使用 Skill 至少一周，记录调用频率、问题和节省时间，判断 Skill 是否真的有用。",
+    "source": "[^S10]",
+    "pitfall": "写完 Skill 测试通过就认为成功了，没有实际使用，结果发现真实场景下各种问题。",
+    "distractor_rationale": "把测试通过等同于 Skill 有用，不知道真正的验证是在实际工作中持续使用。"
+  },
+  {
+    "term": "调用频率",
+    "def": "记录 Skill 在一段时间内被使用的次数，用于判断这个 Skill 是否值得保留和改进。",
+    "source": "[^S1]",
+    "pitfall": "一周只用了 1 次的 Skill 还保留着不断维护，浪费了维护成本。",
+    "distractor_rationale": "舍不得删除自己写的 Skill，不知道低频 Skill 的维护成本可能超过它带来的价值。"
+  },
+  {
+    "term": "误报",
+    "def": "Skill 把正常的代码或内容标记为问题，需要在 instructions 中加入「需确认」类别或调整判断标准。",
+    "source": "[^S1]",
+    "pitfall": "Skill 误报率高，用户每次都要手动筛选，反而比不用 Skill 更慢。",
+    "distractor_rationale": "检查规则写得太严格或没有考虑特殊情况，导致大量误报。"
+  },
+  {
+    "term": "漏报",
+    "def": "Skill 没有检测出应该发现的问题，需要补充检查规则或调整判断逻辑。",
+    "source": "[^S1]",
+    "pitfall": "代码审查 Skill 漏掉了明显的错误处理缺失，用户失去了对 Skill 的信任。",
+    "distractor_rationale": "检查规则不够全面，没有覆盖常见问题场景。"
+  },
+  {
+    "term": "加载失败诊断",
+    "def": "当 Skill 不能被 Claude 自动加载或手动调用失败时，检查文件路径、frontmatter 格式、name 拼写的排查过程。",
+    "source": "[^S1]",
+    "pitfall": "Skill 文件存在但调不出来，不知道从哪里开始排查，盲目修改反而越改越糟。",
+    "distractor_rationale": "缺乏系统的诊断方法，遇到问题就随机尝试，不知道应该按「文件位置 → frontmatter 格式 → name 拼写」的顺序检查。"
+  },
+  {
+    "term": "格式一致性",
+    "def": "Skill 每次执行输出的格式应该保持一致，不会今天用 emoji 明天用纯文本。",
+    "source": "[^S1]",
+    "pitfall": "Skill 输出格式不稳定，用户每次都要重新适应输出结构，降低了效率。",
+    "distractor_rationale": "instructions 里没有给完整的输出示例，Claude 每次自由发挥导致格式不一致。"
+  },
+  {
+    "term": "具体化原则",
+    "def": "编写 instructions 时应该给出非常具体的判断条件和操作步骤，而不是泛化的描述。",
+    "source": "[^S1]",
+    "pitfall": "写了「判断是否重要」但没说判断标准，Claude 每次用不同的标准导致结果不稳定。",
+    "distractor_rationale": "假设 Claude 有常识或能理解隐含的标准，不知道必须把判断标准明确写出来。"
+  },
+  {
+    "term": "示例驱动",
+    "def": "通过提供输入输出示例让 Claude 理解预期行为，比纯文字描述更有效。",
+    "source": "[^S1]",
+    "pitfall": "只用文字描述格式，Claude 理解偏差导致输出不符合预期。",
+    "distractor_rationale": "认为文字描述已经很清楚，不知道 Claude 通过示例学习的效果远好于文字描述。"
+  },
+  {
+    "term": "回滚机制",
+    "def": "通过 Git 可以将 Skill 恢复到之前的某个版本，在新版本出问题时快速回退。",
+    "source": "[^S1]",
+    "pitfall": "改坏了 Skill 但没有提交历史，只能凭记忆重写或者放弃这个 Skill。",
+    "distractor_rationale": "没有版本控制意识，随意修改文件不提交，失去了回滚的可能性。"
+  },
+  {
+    "term": "分支实验",
+    "def": "在 Git 分支上创建或修改实验性 Skill，验证有效后再合并到主分支，避免影响团队其他成员。",
+    "source": "[^S1]",
+    "pitfall": "直接在 main 分支改 Skill，结果改坏了影响全团队的工作。",
+    "distractor_rationale": "不知道可以用分支隔离实验性改动，担心分支管理太复杂。"
+  },
+  {
+    "term": "描述性命名",
+    "def": "Skill name 应该清楚表达做什么，让人一看就懂，而不是泛化的词汇或缩写。",
+    "source": "[^S1]",
+    "pitfall": "用 helper、tool、util 这种泛化名称，团队有 10 个 Skill 却不知道哪个是干什么的。",
+    "distractor_rationale": "习惯了编程中的通用命名，不知道 Skill name 更应该像文档标题，直接说明用途。"
+  },
+  {
+    "term": "关键能力声明",
+    "def": "在 description 中说明这个 Skill 的独特能力或特殊处理，帮助 Claude 和用户判断是否适用。",
+    "source": "[^S6]",
+    "pitfall": "description 只说「整理任务」，没说能「按优先级和截止日期分组」，用户不知道这个 Skill 有这个能力。",
+    "distractor_rationale": "把关键能力当作实现细节藏在 instructions 里，不知道应该在 description 里声明。"
+  },
+  {
+    "term": "使用场景说明",
+    "def": "在 description 中举例说明什么时候用这个 Skill，如「用于会议行动项整理」。",
+    "source": "[^S6]",
+    "pitfall": "description 没有场景说明，Claude 不知道什么情况下该加载，导致自动触发失效。",
+    "distractor_rationale": "认为「做什么」已经说清楚了场景，不知道需要明确写出「用于 XX 场景」。"
+  },
+  {
+    "term": "检查项具体化",
+    "def": "检查清单中的每一项应该有明确的判断标准，能回答「这一项通过还是不通过」。",
+    "source": "[^S1]",
+    "pitfall": "检查项是「代码质量好」，无法判断是否通过，导致检查清单形同虚设。",
+    "distractor_rationale": "写检查清单时用了主观或泛化的描述，不知道每项必须可量化。"
+  },
+  {
+    "term": "优先级标注",
+    "def": "在 Skill 输出中标注问题的严重程度，如必须修复、建议改进、可以忽略。",
+    "source": "[^S1]",
+    "pitfall": "所有问题平铺，用户不知道先修哪个，导致决策困难。",
+    "distractor_rationale": "认为列出问题就够了，不知道优先级标注是提升 Skill 实用性的关键。"
+  },
+  {
+    "term": "工作流知识",
+    "def": "关于如何组织步骤、何时用什么工具、如何判断结果的知识，是 Skill 的核心价值。",
+    "source": "[^S7]",
+    "pitfall": "只给了工具（MCP 服务器）但没有工作流知识，Claude 不知道怎么用工具完成任务。",
+    "distractor_rationale": "以为有了工具就够了，不知道工作流知识是连接工具和目标的桥梁。"
+  },
+  {
+    "term": "团队规范固化",
+    "def": "将团队的代码规范、审查标准、commit 格式等隐性知识写入 Skill，实现标准化。",
+    "source": "[^S10]",
+    "pitfall": "团队规范只在口头传达或文档里，新成员不知道或记不住，导致执行不一致。",
+    "distractor_rationale": "没有意识到 Skill 可以作为可执行的团队规范，还在依赖文档和人工传达。"
+  },
+  {
+    "term": "最小可用版本",
+    "def": "第一个版本只实现核心功能，能跑起来就发布，然后通过实际使用反馈迭代改进。",
+    "source": "[^S2]",
+    "pitfall": "第一个版本就想做到完美，结果花了一周还没写完，或者写完发现不符合实际需求要重写。",
+    "distractor_rationale": "瀑布式开发思维，不接受「先跑起来再改进」的敏捷方式。"
+  },
+  {
+    "term": "节省时间验证",
+    "def": "通过对比测试实际测量 Skill 是否真的节省了时间，而不是主观感觉。",
+    "source": "[^S1]",
+    "pitfall": "觉得 Skill 很方便就继续用，实际测量发现比不用还慢，但已经养成习惯难以改变。",
+    "distractor_rationale": "用主观感觉代替客观测量，不知道应该用数据验证 Skill 的价值。"
+  },
+  {
+    "term": "质量稳定性",
+    "def": "Skill 多次执行相同输入应该产生一致的高质量输出，不会这次好那次差。",
+    "source": "[^S1]",
+    "pitfall": "Skill 质量不稳定，同样的代码今天审查通过明天标记问题，用户失去信任。",
+    "distractor_rationale": "instructions 不够具体或依赖主观判断，导致 Claude 每次执行结果不一致。"
+  },
+  {
+    "term": "文档同步",
+    "def": "修改 Skill 后同步更新项目 README 里的 Skills 文档，保持文档和实际一致。",
+    "source": "[^S1]",
+    "pitfall": "改了 Skill 但没更新文档，新成员按旧文档使用导致结果不符合预期。",
+    "distractor_rationale": "只关注 Skill 文件本身，忘记了文档也是交付物的一部分。"
+  }
+]

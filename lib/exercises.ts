@@ -81,32 +81,57 @@ function parseInlineLevelHeading(line: string): { level: string; promptLead: str
 }
 
 function splitExerciseChunks(exercisesMd: string): ExerciseChunk[] {
-  const headingBlocks = exercisesMd.split(/^###\s+/m).slice(1);
-  if (headingBlocks.length) {
-    return headingBlocks.map((block) => {
-      const lines = block.split("\n");
-      return { level: (lines[0] || "").trim(), lines: lines.slice(1) };
-    });
-  }
-
-  const lines = exercisesMd.replace(/^##\s+.*$/m, "").split("\n");
+  // Track code fence state to avoid splitting on ### inside code blocks
+  const lines = exercisesMd.split("\n");
   const chunks: ExerciseChunk[] = [];
-  let current: ExerciseChunk | null = null;
+  let currentChunk: ExerciseChunk | null = null;
+  let inCodeBlock = false;
 
   for (const line of lines) {
-    const heading = parseInlineLevelHeading(line);
-    if (heading) {
-      if (current) chunks.push(current);
-      current = { level: heading.level, lines: heading.promptLead ? [heading.promptLead] : [] };
+    // Toggle code block state
+    if (/^```/.test(line)) {
+      inCodeBlock = !inCodeBlock;
+    }
+
+    // Only treat ### as a Level heading if we're NOT in a code block
+    if (!inCodeBlock && /^###\s+/.test(line)) {
+      if (currentChunk) chunks.push(currentChunk);
+      const level = line.replace(/^###\s+/, "").trim();
+      currentChunk = { level, lines: [] };
       continue;
     }
-    if (current) {
-      if (!isRegionFence(line)) current.lines.push(line);
+
+    if (currentChunk) {
+      currentChunk.lines.push(line);
     }
   }
-  if (current) chunks.push(current);
 
-  return chunks.length ? chunks : [{ level: "", lines }];
+  if (currentChunk) chunks.push(currentChunk);
+
+  // Fallback: if no ### headings found, try inline Level patterns
+  if (chunks.length === 0) {
+    const fallbackLines = exercisesMd.replace(/^##\s+.*$/m, "").split("\n");
+    let current: ExerciseChunk | null = null;
+
+    for (const line of fallbackLines) {
+      const heading = parseInlineLevelHeading(line);
+      if (heading) {
+        if (current) chunks.push(current);
+        current = { level: heading.level, lines: heading.promptLead ? [heading.promptLead] : [] };
+        continue;
+      }
+      if (current) {
+        if (!isRegionFence(line)) current.lines.push(line);
+      }
+    }
+    if (current) chunks.push(current);
+
+    if (chunks.length === 0) {
+      return [{ level: "", lines: fallbackLines }];
+    }
+  }
+
+  return chunks;
 }
 
 export function parseExercises(exercisesMd: string): Exercise[] {
