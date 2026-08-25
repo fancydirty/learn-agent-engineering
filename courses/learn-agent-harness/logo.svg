@@ -1,0 +1,8 @@
+<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- A control loop: circular arrows around a core, for a course on the agent harness loop -->
+  <g stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M38 18a16 16 0 1 0 2.5 12"/>
+    <path d="M40 12v9h-9"/>
+    <circle cx="24" cy="24" r="5"/>
+  </g>
+</svg>

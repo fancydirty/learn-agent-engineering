@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "生成 Agent 学习路径第 7 门正式课程《Agent Harness 基础：循环与控制》（Phase 2 进阶阶段第一门）。目标学习者是已经学完前 6 门课的开发者——会写 prompt、懂 tool_use/tool_result 一次工具调用的完整往返、了解 Agent 记忆与上下文窗口、掌握多 Agent 基本分工——但还没系统理解过「模型之外那层驱动循环、决定何时停、失控如何兜底、人如何中途介入」的控制代码。课程围绕单个 Agent 的执行循环展开：harness 与模型的分界、以 stop_reason 驱动的核心循环、显式停止条件、四类循环失控模式（误差累积/上下文膨胀腐化/死循环空转/预算耗尽）与对应兜底、打断与转向与人在环审批、最后手写一个带停止条件与最大轮次与预算上限与空转检测与审批阀的最小 harness。质量要求：严格遵循 agent-mentor skill 全部指导原则、语言使用中文、以已验收的 learn-agent-tool-calling/zh 为结构与质量样板、每课含 agentmentor-check 交互块与分级练习、glossary 密度 10-14 词/课、所有关键论断有 sources.md 出处逐字支撑、通过 course-guard 验证。",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "仓库所有者委托编排生成 12 门 Agent 学习路径课程，统一质量标准（遵循 agent-mentor skill、中文、交互块、词表密度、guard 通过、以 learn-agent-tool-calling 为样板）与每门课的主题划分均已明确给出。本课的六课大纲、目标读者、前置课程、覆盖范围与边界（不涉及具体框架 API、不涉及多 Agent 编排、不涉及评测与回归）在编排阶段已确定。注意：本课大纲与六课排序未经过仓库所有者对这门课本身的逐项人工确认（见 qualitySelfReview.weakestPoints 与 nextSteps）；生产采用「编排者预置来源与骨架 + 6 个逐课写作代理并行产出 + 1 个词表代理 + 编排者逐文件兜底验收」的流程，发现的问题均已修复（见 acceptanceReview.promotionNotes）。"
+  },
+  "learnerModel": {
+    "targetReader": "已经学完 Agent 学习路径前 6 门课——会写基本 prompt、懂 tool_use/tool_result 一次工具调用的完整往返、了解 Agent 记忆与上下文窗口、掌握多 Agent 基本分工——但还没系统理解过驱动 Agent 运转的那层控制代码（harness）的开发者",
+    "knownConcepts": [
+      "怎么写基本的 prompt，以及委派任务给 Agent 时该说清楚哪些内容",
+      "一次工具调用的完整往返：模型返回 stop_reason: tool_use、宿主执行工具、把 tool_result 拼回对话",
+      "上下文窗口是有限资源、历史会随循环不断累积（第 5 门课记忆与状态）",
+      "多个 Agent 之间的基本分工与协作（第 6 门课）",
+      "基础 JavaScript / Node.js（能读懂 async/await、对象、数组方法、ESM 模块）",
+      "命令行基本操作"
+    ],
+    "unknownConcepts": [
+      "harness 与模型的分界线：模型只提议动作，执行、循环、停止、审批都在 harness 这层，为什么同样的模型换个 harness 结果可能天差地别",
+      "以 stop_reason 驱动的核心循环怎么从「一次往返」长成「持续运转」，while 条件为什么是 stop_reason 而不是模型自己说完没完",
+      "为一个 Agent 设计一组显式停止条件（任务达成、最大轮次、需要人工审批），而不是只依赖模型自己收尾",
+      "循环失控的四种典型形态——误差累积、上下文膨胀与腐化、死循环与空转、预算耗尽——各自是循环的哪个性质在作祟",
+      "为每种失控挂对应兜底：检查点加早停、上下文治理、最大轮次加无进展检测、预算上限加如实报告",
+      "硬停与软停（挂起）的区别，软停时怎么保留现场快照以便人处理完从原地续上",
+      "人在环的三种介入——打断、转向、审批，以及为什么高影响不可逆操作的审批必须卡在动作执行之前（approve before it is taken）",
+      "从零手写一个带停止条件、最大轮次、预算上限、空转检测和审批阀的最小 harness，包括无状态 API 下把 tool_result 集中回传、按 stop_reason 续循环、在 impl 调用前插入审批"
+    ],
+    "assumedEnvironment": "能够运行 Node.js（ESM 模块）、有 Anthropic API key（第 6 课实战需要）、能访问命令行和文本编辑器、能阅读 JSON 与 JavaScript 代码示例",
+    "firstIndependentAction": "拿到一个跑飞的 Agent 循环（比如连续多轮重复调用同一个工具、拿回几乎一样的空结果），先判断它属于哪一种失控，再决定该给 harness 补哪一道硬闸（无进展检测 + 最大轮次），而不是反射性地去换模型或改 prompt（第 4 课练习即此）",
+    "noviceRamp": [
+      "第 1 课先把 harness 和模型的分界讲清楚——模型只提议、harness 才执行，用「同一个模型换个 harness 结果天差地别」立住可靠性主要由控制层决定这个心智",
+      "第 2 课从第 4 门课已知的「一次工具调用往返」出发，把它包进 while (stop_reason === tool_use) 的循环里，讲清楚循环继续还是停下由 stop_reason 决定，并给出可运行的骨架循环",
+      "第 3 课讲显式停止条件：区分硬停（到上限就强制停止）和软停（挂起等人、保留现场快照可恢复），强调不能只靠模型自己说「我说完了」",
+      "第 4 课把「循环失控」拆成四种能对号入座的形态，每种配一个具体跑飞场景和一道对应兜底闸门，最后收束到「循环缺少边界」这个共同根子",
+      "第 5 课从过度授权风险切入，讲打断、转向、审批三种人在环介入，重点讲清审批必须先批准后执行、把不可逆操作挡在执行之前",
+      "第 6 课综合前五课，从零手写一个带全部控制阀的最小 harness，代码可直接抄走跑通，并把「审批阀插在 impl 执行之前」写成纠错练习"
+    ]
+  },
+  "learnerBrief": "目标学习者已经能写出委派给 Agent 的任务、懂一次工具调用的完整往返，但还没系统理解过「模型之外那层控制代码怎么驱动循环、决定何时停、失控怎么兜底、人怎么中途介入」。课程目标是让他们能说清 harness 与模型的分界、手写出以 stop_reason 驱动的核心循环、为 Agent 设计一组显式停止条件、识别循环失控的四种形态并挂上对应兜底、判断人工审批点该卡在循环的哪一步（尤其把不可逆操作挡在执行之前），最终从零搭出一个带停止条件、最大轮次、预算上限、空转检测和审批阀的最小 harness。",
+  "scope": "课程涵盖：harness 的定义与它和模型的分界（模型提议、宿主执行）、循环控制/工具分发/上下文管理三类 harness 组件、「同样的模型不同 harness 结果不同」这一框架性论点、以 stop_reason 驱动的核心循环（tool_use/end_turn/tool_result/tool_use_id/is_error 字段、骨架循环、一次往返到持续运转）、显式停止条件（任务达成、最大轮次、需要人工审批、硬停与软停/挂起、现场快照恢复）、循环失控四形态（误差累积、上下文膨胀与腐化含注意力预算与 context rot、死循环与空转、预算耗尽）及对应兜底（检查点+早停、上下文治理、最大轮次+无进展检测、预算上限+如实报告）、过度授权风险、人在环三种介入（打断/转向/审批）、审批必须先批准后执行、把不可逆高影响操作挡在执行之前、用 Claude API 手写带全部控制阀的最小 harness（无状态 API 下 tool_result 集中回传、按 stop_reason 续循环、TOKEN_BUDGET/MAX_TURNS 双闸、impl 执行前的审批阀、玩具工具 get_time/read_file）。不涵盖：任何特定框架的 API 教程（Claude Agent SDK、LangChain 的具体用法）、多 Agent 编排（第 6 门课主题）、评测与回归（后续验证课主题）、模型训练或微调、生产级可观测性与大规模部署、上下文治理的具体实现细节（第 5 门课主题，本课只从循环视角点到）。深度：从说清 harness 与模型的分界，到能独立手写一个带停止条件、最大轮次、预算上限、空转检测和审批阀的可运行最小 harness。",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs courses/learn-agent-harness/zh",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "本课没有使用 mermaid 图表。核心内容是循环的控制流（stop_reason 驱动的 while、审批阀插在 impl 之前、硬停/软停的两条退出路径）和四类失控与其兜底的对应关系，正文用可运行的 JS 骨架代码、一次完整的循环往返演示、以及具体跑飞场景配官方原文引用来讲清楚这些关系，第 6 课直接给出带全部控制阀的最小 harness 完整代码。是否应该补一张核心循环的控制流示意图（模型→执行工具→回传→按 stop_reason 判断续/停）或四道兜底闸门的对照图，留给仓库所有者评审时判断。",
+    "weakestPoints": [
+      "大纲与六课排序在编排阶段就确定了，没有经过仓库所有者对这门课本身的逐项人工评审——编排者代行了大纲确认步骤，特别是「失控与兜底」单独成课（第 4 课）、「干预与操控」与「实战手写」拆成两课（第 5、6 课）的安排尚未人工确认",
+      "生产与验收全程被后台工作流的「进程在会话边界死亡、但其子代理稍后才落盘」这一竞态反复干扰：第一次产课工作流写完 lesson 01 后死亡（从子代理 transcript 回放 Write/Edit 才补全）；第二次产课工作流的 lesson 02-06 与词表代理在我已通读并修订之后才迟迟完成，词表从我重建的 72 条被改写成新的 68 条；验收评审工作流也在 5/7 完成时死亡、meta 阶段未触发。我最终以「磁盘实时状态为唯一真相」逐一核对：确认 6 课正文保留了我的全部修订标记、68 条词表通过 guard 的逐字挂词校验、并另起 3 个补充代理（L02/L03/meta）把死亡工作流缺的评审补齐。教训：后台工作流可能在会话边界静默改写文件，验收必须在所有后台任务确认收敛后、以最终磁盘状态重新校验",
+      "第 6 课的最小 harness 代码没有在真实 Anthropic API key 下实际跑通验证过，示例中的循环往返与终端输出是根据代码逻辑与 API 协议推演写出的预期效果，不是真实运行日志；且开头终端演示读取的 README 首行与本仓库真实 README（YAML frontmatter + 带副标题的标题）并不逐字一致，属示意性简化",
+      "六个 agentmentor-check 的正确答案初稿全部落在 b 位，是明显的答案位置聚集；已通过重排选项分散到 c/b/b/a/b/a，但这是编排者事后机械修正，说明写作代理生成交互块时缺少答案位置分散的约束"
+    ],
+    "followUpChecks": [
+      "在配置了真实 Anthropic API key 的环境里实际跑一次第 6 课的最小 harness 代码，确认真实循环往返、stop_reason 流转、审批阀拦截与预算/轮次双闸和课文推演的预期终端输出在结构上一致（不要求文字完全相同，模型输出本身有随机性）",
+      "验证所有 glossary 词条的 term 在课程正文中逐字出现（第 3 课被后台改写、词表从 72 换成 68 条后已全量复核，全量核对交给 guard 的 glossary-attach 检查，现全绿）",
+      "确认所有 [^Sn] 引用在 sources.md 有对应条目，S1-S6 六条来源的关键引用与官方页面/原文一致（S1/S3/S4/S5 出自 anthropic.com/genai.owasp.org/raw.githubusercontent.com，可直接访问，验收阶段已在线抓取补录 S3 performance-gradient、S5 tool-dispatch/union-of、S6 完整 tool_result 规则的逐字引文；S2/S6 的 platform.claude.com 页面本网络有地域限制，其引用取自已验收姊妹课 learn-agent-tool-calling 逐字核实过的同源条目）",
+      "guard 的完整 URL 检查已通过（非 --skip-url-check），但若课程改版，S2/S6（platform.claude.com）的地域限制可能导致 URL 检查转为软失败，需人工确认链接仍有效"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 4,
+      "pedagogy": 4,
+      "exercises": 4,
+      "load": 4,
+      "readable": 5
+    },
+    "terminalTask": "学习者拿到一个真实的 Agent 循环需求后，能说清楚哪部分归模型、哪部分归 harness；能照第 2 课骨架手写出以 stop_reason 驱动的核心循环；能为这个 Agent 列出一组显式停止条件并区分硬停与软停；遇到一个跑飞的循环（重复调用、原地打转、账单失控、基于早期错误继续推）时能判断它属于四类失控中的哪一种、该补哪道兜底闸门；能判断人工审批点该卡在循环的哪一步，把不可逆高影响操作挡在执行之前；最终能照第 6 课的代码骨架，把停止条件、最大轮次、预算上限、空转检测和审批阀接进自己的 harness 并按需调整阈值与高影响工具清单。",
+    "interactionCheck": "六课共 6 个 agentmentor-check 交互块（每课 1 个），JSON 均可解析（编排者逐块重新解析验证）：第 1 课 harness-zh-01-swap-model-vs-harness 针对「换个更强的模型就能修好不可靠的 Agent」的误解，紧跟「同一个模型换个 harness 结果天差地别」之后；第 2 课 harness-zh-02-tooluse-not-executed 检验是否理解模型只提议 tool_use、真正执行发生在 harness；第 3 课 harness-zh-03-self-stop-insufficient 针对「只靠模型自己说完没完就够了」；第 4 课 harness-zh-04-runaway-search 针对空转循环该装硬闸而非换模型/改 prompt；第 5 课 harness-zh-05-approve-before-not-after 针对「事后记录/通知也算把人放进环里」的误解；第 6 课 harness-zh-06-approval-before-exec 检验审批阀必须卡在 impl 执行之前而非结果采用之后。正确答案位置初稿全部落在 b 位，验收阶段已重排选项分散到 c/b/b/a/b/a，选项 id 均按 a/b/c 顺序排列。每课练习为 Level 1/2 两级，均有 rubric、answer、双 hint。",
+    "learnerFitCheck": "课程明确假设学习者已完成前 6 门课（README 前置要求已声明），不重复讲解 prompt 写法、工具调用协议字段、记忆管理或多 Agent 分工本身，而是直接在这些已知概念上叠加 harness 控制层的新内容。unknownConcepts 里每个新概念在正文里都先给具体场景或反面例子再引出官方定义。第 6 课是唯一要求配置 Anthropic API key 才能实际运行的课，前置要求已注明；第 4 课第一个练习（给三个跑飞循环各配一种失控与兜底）只依赖本课判断标准，不依赖未教内容。",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "生产流程：编排者预置 6 条逐字核实的来源（sources.md S1-S6）与 README/logo 骨架，再由 6 个逐课写作代理（各预置到 S1-S6，用 RESULT_SCHEMA 约束产出）并行产出、1 个词表代理读完成稿后产词表（最终 68 条），最后由编排者逐文件兜底验收",
+      "验收流程：跑了一个 7 代理独立评审面板（6 逐课 + 1 meta）；该面板工作流在 5/7 完成时于会话边界死亡、meta 阶段未触发，编排者遂另起 3 个补充代理（L02/L03/meta）补齐缺口。两批评审对全部 blocker 的判定一致（交叉验证），编排者逐条核对来源后修复",
+      "评审发现并已修复的 blocker（6 处）：第 2 课 Level 2 rubric 与自身正确答案对死循环触发机制自相矛盾（改为「只要进了循环体就必然死循环、看着能用仅因首轮非 tool_use」）；第 4 课练习现象 B 按正文定义应为「空转」却被标成「死循环」且 rubric 锁死错误标签（改标空转、小结补齐死循环靠改代码/空转靠无进展检测的区分）；第 5 课把 OWASP 人在环审批称作缓解清单「头一条」（实为第 6 条，删去排序断言）；第 6 课开头终端演示给 read_file 打印审批提示、但 read_file 不在 HIGH_IMPACT（改演示与代码一致、两个玩具工具都无害不触发审批）；README 用「第 5/6 课」指代系列其它门课、与本课章节编号撞车且与自身大纲矛盾（改为「本系列另一门课 / 第 5 门课『记忆与状态』」）",
+      "评审驱动的 grounding 加固：验收阶段在线抓取 anthropic.com/github 原文，为 sources.md 补录逐字引文——S3 『performance gradient rather than a hard cliff』『some models exhibit more gentle degradation』（支撑第 2/4 课「渐变非断崖」与 context rot）、S5 『the harness is the union of:』『tool dispatch. Registry...』（支撑第 1 课 harness 三零件分解）、S6 完整的 tool_result 集中回传规则；并把第 3 课误作规范性的「官方建议」改回来源实际的「很常见的做法」（S1 原文为 common 而非 recommend）",
+      "glossary 共 68 词条（约 11 词/课），覆盖全部六节；guard 的 glossary-attach 逐字挂词校验全绿（68/68 在正文出现）、无空字段、无占位符、无同概念重复词条",
+      "guard 完整校验（含 URL 检查，非 --skip-url-check）全绿；浏览器渲染验收全绿：课程页、六课（交互卡片全部水合、脚注 30-50 处/课、无裸围栏、练习与导航正常、答案位置分散为 c/b/b/a/b/a）、术语表（68 条）、来源页（S1-S6，6 条外链）"
+    ]
+  },
+  "nextSteps": [
+    "请仓库所有者评审本课大纲与六课排序：大纲关口在编排阶段自动确认，没有人工审过——尤其请确认「失控与兜底」单独成课（第 4 课）、「干预与操控」与「实战手写」拆成两课（第 5、6 课）的安排是否符合预期",
+    "建议在配置了真实 API key 的环境里实际跑一次第 6 课的最小 harness 代码，确认真实循环往返、审批阀拦截与预算/轮次双闸和课文推演的预期终端输出在结构上一致",
+    "建议学习者完成课程后：(1) 给自己手头一个 Agent 循环写出显式停止条件清单，区分硬停与软停 (2) 用第 4 课的四类失控自查这个循环最可能栽在哪一种、补上对应兜底 (3) 照第 6 课骨架把审批阀接在高影响工具的 impl 调用之前，跑一遍确认拦得住",
+    "维护提醒：S2/S6（platform.claude.com 工具调用文档）本网络下有地域限制、且官方文档更新较频繁，课程改版时需对照 sources.md 重新核实 stop_reason 循环与 tool_use/tool_result 字段的相关引用"
+  ],
+  "memoryBoundary": "本 agentmentor.json 是此课程的本地状态记录，仅存储在课程目录中，用于质量检查和学习路径追踪。不会写回 Claude Code 或任何宿主 AI 系统的长期记忆，也不影响其他课程或对话。"
+}
