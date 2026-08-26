@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "编排并产出本系列第 9 门课『状态管理与持久化：让长任务经得起中断』(learn-agent-state-persistence)，讲 Agent 的执行状态而非记忆：检查点、断点恢复、副作用与幂等、回退与分叉，最后动手给第 7 门课的 harness 装上完整的检查点与恢复机制。产出后自验收，编排方兜底验收并清理质量与渲染问题。",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "仓库所有者委托编排生成 12 门 Agent 学习路径课程，统一质量标准（遵循 agent-mentor skill、中文、交互块、词表密度、guard 通过）与每门课的主题划分均已明确给出。本课的主题（状态管理与持久化）、目标读者（完成前 8 门课）、前置课程、覆盖范围与边界（不重教记忆与上下文管理、不讲外部工作流引擎 API、不涉及多进程并发与分布式一致性）在编排阶段已确定。六课大纲与排序由编排方预置骨架，未经仓库所有者对本课的逐项人工确认；生产采用『编排者预置来源与骨架 + 6 个逐课写作代理并行产出 + 1 个词表代理 + 编排者逐文件兜底验收』流程，发现的问题均已修复（见 acceptanceReview.resolvedDuringAcceptance）。"
+  },
+  "learnerModel": {
+    "targetReader": "已完成本系列前 8 门课的开发者：能手写 stop_reason 驱动的 harness 循环、理解 tool_use/tool_result 必须一一配对、了解上下文窗口管理与压缩，能读写基础 JavaScript/Node.js。",
+    "knownConcepts": [
+      "stop_reason 驱动的 harness 循环（第 7 门课）",
+      "tool_use / tool_result 一一配对（第 7 门课）",
+      "HIGH_IMPACT 工具集合与执行前审批阀（第 7 门课）",
+      "上下文窗口管理、压缩与 tokensUsed 计数（第 8 门课）",
+      "跨会话记忆的存取（第 5 门课）",
+      "基础 JavaScript / Node.js 文件读写"
+    ],
+    "unknownConcepts": [
+      "记忆与执行状态的区分",
+      "检查点字段设计与原子写（.tmp + rename）",
+      "断点恢复与悬空调用对账",
+      "至少一次执行语义与幂等性",
+      "效果台账（以 tool_use_id 为幂等键）",
+      "回退与分叉，及其与 Git 的分工"
+    ],
+    "assumedEnvironment": "本地能跑起第 7 门课的 harness 循环；Node.js 环境可执行课内示例；不依赖任何外部工作流引擎。",
+    "firstIndependentAction": "给自己的 harness 循环设计一份检查点：确定哪些字段进快照、在 A/B 两个时机落盘、用 .tmp + rename 原子写避免写坏。",
+    "noviceRamp": [
+      "第 1 课用『第 23 轮进程被杀』的具体场景把抽象的记忆/状态之分落到可感知的损失清单上，避免一上来就抛概念。",
+      "机制逐课叠加：检查点 → 恢复 → 幂等/台账 → 回退分叉 → 实战，每一课只引入一层新复杂度并回收上一课埋的坑。",
+      "每课都有分寸小节回答『我的任务要不要上这套』，防止读者过度工程化几轮就能重跑的小任务。",
+      "第 6 课把前五课的机制焊进一个能真的被杀、能真的续跑的 harness，用固定响应队列 + 受控崩溃点让抽象时序变成可复现的终端输出。"
+    ]
+  },
+  "learnerBrief": "面向已完成前 8 门课的读者，教他们把 harness 的执行状态（messages、轮次与用量计数器、悬空的工具调用）从只活在进程内存里的东西，变成能落盘、能恢复的东西。主线是：区分记忆与执行状态 → 设计检查点并原子落盘 → 断点恢复与悬空调用对账 → 用幂等性与效果台账给恢复兜底 → 把检查点用在回退与分叉 → 亲手焊进第 7 门课的 harness 跑一次中断后续跑到完成。",
+  "scope": "覆盖：记忆 vs 执行状态的概念区分与物理位置差异；检查点六字段 {version, task, turns, tokensUsed, messages, pendingToolUse} 与 .tmp+rename 原子写；断点恢复（重建 messages 与计数器、A/B 点、悬空调用三分流 reconcile）；至少一次语义、幂等性判定、效果台账（tool_use_id 幂等键、先执行后记录）；回退（rewindTo）与分叉（forkFrom）及检查点/Git/效果台账的分工；把上述机制焊进第 7 门课 harness 的实战与可控崩溃验证。不覆盖：记忆与上下文管理本身（第 5、8 门课的领地）、Temporal 等外部工作流引擎 API、多进程并发/多会话共享状态/跨机器分布式一致性、Claude Code 检查点的产品实现细节（仅作对照）。",
+  "status": {
+    "stage": "delivered",
+    "guardCommand": "node scripts/course-guard.mjs courses/learn-agent-state-persistence/zh --skip-url-check",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "本课未使用 mermaid 图，判断是刻意的：核心内容是时序敏感的代码执行（A 点/B 点落盘时机、崩溃窗口、reconcile 三分流），用带 [turn][save A] 标注的真实终端输出和逐块代码比流程图更能钉住『崩溃发生在哪一刻、磁盘上留下什么』；第 5 课用一张三行表格对照检查点/Git/效果台账的分工，是唯一适合表格化的地方。",
+    "weakestPoints": [
+      "第 6 课把完整可跑的 runAgent（resume 分支、stub client、crashPoint、日志）只写在散文里，没有作为一整段可复制粘贴的代码给出——读者要照着实战跑通，得自己从散文和分块代码里拼装，透明度上是个已知缺口。",
+      "第 4 课与第 6 课的 runToolUses 原先把『工具执行』和『台账落盘』包在同一个 try/catch 里，一旦落盘失败会把已发生的副作用谎报成 is_error、诱发模型换新 tool_use_id 重试——这是评审发现的真实 blocker，已拆成两段错误处理修复；但这说明初稿在『执行与记录的失败必须分开处理』这一点上并非天然稳固。",
+      "第 6 课的单一 pendingToolUse（对象而非数组）协议依赖『每轮模型只点一个工具』的刻意简化，真实的并发 tool_use 场景需要扩成数组并逐个 reconcile，课内以分寸小节点明了边界但没有实现。",
+      "多处跨课引用（第 5、7、8 门课）用『本系列第 N 门课』做软引用、不加 [^Sn]，符合『跨系列课程不直接引用来源』的约定，但也意味着这些衔接的准确性依赖编排方的人工核对，而非 guard 可自动验证。"
+    ],
+    "followUpChecks": [
+      "第 6 课若要补上完整 runAgent 代码块，应保证它与散文描述、已修复的 runToolUses 拆分逻辑完全一致，并重新跑一遍崩溃/恢复验证。",
+      "把并发 tool_use 的多悬空调用 reconcile 作为进阶练习或后续课程的候选补充。"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 4,
+      "readable": 5
+    },
+    "terminalTask": "给第 7 门课的 harness 装上『每轮 A/B 两点落盘 + --resume 恢复 + 悬空调用三分流对账 + 效果台账幂等防重』的完整机制，并用固定响应队列 + 受控 crashPoint 亲手演示一次『第 3 轮被杀、--resume 后台账命中不重跑、补齐 save B 跑到完成』的长任务。",
+    "interactionCheck": "两个 agentmentor-check 各测一个高频误区：sp-zh-01-restart-illusion 纠正『产出文件都在=没丢东西』；sp-zh-06-a-point-necessity 纠正『只留 B 点检查点就够、A 点冗余』。每课交互块 ≤2，全课符合 guard 上限。",
+    "learnerFitCheck": "前置要求与第 7、8 门课严格咬合（stop_reason 循环、tool_use/tool_result 配对、tokensUsed 计数），第 6 课的 Node 代码难度与『能读写基础 JavaScript』的假设一致；每课分寸小节回答『我的任务要不要上这套』，避免读者过度工程化。",
+    "decision": "ship",
+    "blockers": [],
+    "resolvedDuringAcceptance": [
+      "L04/L06 blocker：runToolUses 把工具执行与台账落盘包在同一 try/catch，落盘失败会谎报 is_error 诱发重复副作用——已拆成两段错误处理（执行失败回 is_error 并 continue；落盘失败只告警、仍回真实结果）。编排方读原文确认后修复，并同步修了第 6 课同构的写法。",
+      "L04 grounding：审批阀声称引 [^S1]，实际支撑句『pause for human feedback at checkpoints』在 S3——已改为 [^S3]。",
+      "L04 minors：删除未定义的 hashInput / 从不读取的 input_hash 死字段；代码注释『第 7 门课』补成『本系列第 7 门课』。",
+      "L01 blocker：Level 1 rubric 把 NOTES.md 与 report.md 并到一个标签，与答案里两者分属『记忆/已落盘』和『磁盘产出』矛盾（本系列反复出现的 rubric-vs-answer 缺陷）——已拆成两条无歧义判据。",
+      "L01 grounding：『长任务的常态而不是例外』超出 S1 支撑范围——已改为不做频率断言的表述。",
+      "L05 blocker：把 S2『Common use cases』强行拆成『一条对应分叉、一条对应回退』，但 S2 是笼统挂在检查点/rewind 名下、未按 fork/rewind 归类——已如实说明并保留对照。",
+      "L05 minor：跨课引用把第 8 门课说成讲『上下文污染带偏推理』，实际讲的是『上下文腐化削弱召回』——已改贴近原意。"
+    ],
+    "reviewCoverage": "L01/L04/L05 三课经对抗式评审返回 revise，逐条修复；L02/L03 返回 ship；元一致性评审（六课衔接）返回 ship。L06 的对抗式评审因 Sonnet 子代理账户余额不足（402）中断，编排方改以自建脚本对其 capstone 代码执行 9/9 断言（reconcile 三分支、先执行后记录、原子写、截断 JSON 抛错、Level 2 反面教材复现）独立验收，并同步应用了 runToolUses 拆分修复。",
+    "promotionNotes": [
+      "内容质量与 guard 均已就绪，可并入学习路径。",
+      "三课 revise 的问题（L01 rubric-vs-answer、L04/L06 try/catch 误报 is_error、L05 强行拆分 S2 用例、以及配套 grounding 与跨课引用小瑕疵）已全部修复。",
+      "L06 对抗评审因子代理账户 402 中断，改以编排者自建脚本执行 9/9 断言独立验收，capstone 代码的 reconcile 三分支、先执行后记录、原子写、截断 JSON 抛错均已实测。",
+      "唯一透明度缺口：第 6 课完整 runAgent 未作整段可复制代码给出（见 weakestPoints），不影响概念正确性与可验证性。"
+    ]
+  },
+  "nextSteps": [
+    "如需提升第 6 课可复现性，补一整段可复制的 runAgent（含 resume 分支/stub/crashPoint），并重跑崩溃-恢复验证。",
+    "推进 Phase 2 后续：第 10 门课（验证与质量保证）、第 11 门课（错误处理与可靠性）、第 12 门课（Agent 系统架构模式）。"
+  ],
+  "memoryBoundary": "本 agentmentor.json 是 course-local（课程本地）状态记录，仅存储在本课程目录中，用于质量检查与学习路径追踪。它不会被回填到 Claude Code 或任何宿主 AI 系统所维护的长期记忆里，也不影响其他课程或对话；roadmap 记忆由编排者单独更新每门课的交付状态。"
+}
