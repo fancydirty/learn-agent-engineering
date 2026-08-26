@@ -2,6 +2,8 @@
 domain: 软件开发
 tags: [Agent 工作流, 多代理编排, 任务分解, 状态管理, 错误处理, AI 自动化]
 lang: zh
+tier: 1
+order: 2
 ---
 
 # Agent 工作流设计：从单次对话到多步骤自动化

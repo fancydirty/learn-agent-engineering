@@ -2,6 +2,8 @@
 domain: 软件开发
 tags: [Claude Code, Skills, 自定义工作流, AI 辅助开发, 开发效率]
 lang: zh
+tier: 1
+order: 1
 ---
 
 # Claude Code Skills：打造你的专属 AI 工作流

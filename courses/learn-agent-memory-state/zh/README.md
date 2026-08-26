@@ -2,6 +2,8 @@
 domain: 软件开发
 tags: [Agent 记忆, 上下文窗口, 摘要压缩, 持久记忆, 提示注入]
 lang: zh
+tier: 2
+order: 5
 ---
 
 # Agent 的记忆和状态

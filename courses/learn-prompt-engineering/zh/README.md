@@ -2,6 +2,8 @@
 domain: AI 应用
 tags: [prompt-engineering, AI, 大语言模型, 对话优化, 实用技能]
 lang: zh
+tier: 1
+order: 3
 ---
 # Prompt 工程基础：如何写出有效的指令
 

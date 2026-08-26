@@ -2,6 +2,8 @@
 domain: 软件开发
 tags: [Agent 评测, 验证器, LLM 裁判, 评测集, 质量保证]
 lang: zh
+tier: 2
+order: 10
 ---
 
 # 验证与质量保证：别让「看起来对」蒙混过关

@@ -2,6 +2,8 @@
 domain: 软件开发
 tags: [Agent Harness, 循环控制, 停止条件, 人在环, Agent 可靠性]
 lang: zh
+tier: 2
+order: 7
 ---
 
 # Agent Harness 基础：循环与控制

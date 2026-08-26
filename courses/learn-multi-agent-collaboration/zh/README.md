@@ -2,6 +2,8 @@
 domain: 软件开发
 tags: [多 Agent 协作, 编排, 提示词设计, 子代理, Claude API]
 lang: zh
+tier: 2
+order: 6
 ---
 
 # 多 Agent 协作入门

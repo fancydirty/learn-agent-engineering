@@ -2,6 +2,8 @@
 domain: 软件开发
 tags: [编排, 工作流模式, 并行化, 编排者-工人, 多 Agent 系统]
 lang: zh
+tier: 3
+order: 12
 ---
 
 # 从循环到图：Agent 系统的编排工程

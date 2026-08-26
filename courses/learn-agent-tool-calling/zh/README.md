@@ -2,6 +2,8 @@
 domain: 软件开发
 tags: [Agent 工具调用, 提示注入, 权限设计, 工具接口设计, Claude API]
 lang: zh
+tier: 1
+order: 4
 ---
 
 # Agent 工具调用基础：让 Agent 真正动手做事

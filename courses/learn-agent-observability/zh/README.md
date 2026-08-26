@@ -2,6 +2,8 @@
 domain: 软件开发
 tags: [可观测性, 调试, tracing, 结构化日志, 指标监控]
 lang: zh
+tier: 3
+order: 11
 ---
 
 # 可观测性与调试：看清 Agent 的每一步
