@@ -69,15 +69,23 @@ function str(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+// Footnote refs like [^S5] belong to the lesson body, where the footnote pipeline
+// resolves them. Interactive cards render these fields as plain strings (see
+// check-block.tsx / order-block.tsx), so a stray [^Sn] shows up literally. Strip
+// them from every card-facing field at parse time.
+function plain(value: unknown) {
+  return str(value).replace(/\[\^[^\]]+\]/g, "");
+}
+
 function parseChoices(value: unknown): Choice[] {
   if (!Array.isArray(value)) return [];
   return value.map((raw) => {
     const item = isObject(raw) ? raw : {};
     return {
       id: str(item.id),
-      text: str(item.text),
+      text: plain(item.text),
       correct: item.correct === true,
-      feedback: str(item.feedback),
+      feedback: plain(item.feedback),
     };
   });
 }
@@ -86,7 +94,7 @@ function parseItems(value: unknown): OrderItem[] {
   if (!Array.isArray(value)) return [];
   return value.map((raw) => {
     const item = isObject(raw) ? raw : {};
-    return { id: str(item.id), text: str(item.text) };
+    return { id: str(item.id), text: plain(item.text) };
   });
 }
 
@@ -106,8 +114,8 @@ export function parseInteractiveBlock(language: string, code: string): ParseResu
       block: {
         type: "check",
         id: str(raw.id),
-        label: str(raw.label),
-        prompt: str(raw.prompt),
+        label: plain(raw.label),
+        prompt: plain(raw.prompt),
         whyHere: str(raw.whyHere),
         mode: raw.mode === "multi" || raw.mode === "single" ? raw.mode : "",
         choices: parseChoices(raw.choices),
@@ -122,13 +130,13 @@ export function parseInteractiveBlock(language: string, code: string): ParseResu
       block: {
         type: "order",
         id: str(raw.id),
-        label: str(raw.label),
-        prompt: str(raw.prompt),
+        label: plain(raw.label),
+        prompt: plain(raw.prompt),
         whyHere: str(raw.whyHere),
         items: parseItems(raw.items),
         correctOrder: Array.isArray(raw.correctOrder) ? raw.correctOrder.map(str).filter(Boolean) : [],
-        feedback: str(raw.feedback),
-        feedbackWrong: str(raw.feedbackWrong),
+        feedback: plain(raw.feedback),
+        feedbackWrong: plain(raw.feedbackWrong),
         copyPurpose: str(raw.copyPurpose),
       },
     };
