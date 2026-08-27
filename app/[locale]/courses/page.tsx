@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { CourseTile } from "@/components/course-tile";
+import { CourseLedger } from "@/components/course-ledger";
 import { SiteHeader } from "@/components/site-header";
-import { scanCourseFamilies, toCardData, TIERS, type CourseVariant } from "@/lib/courses";
+import { scanCourseFamilies, TIERS, type CourseVariant } from "@/lib/courses";
 import { coursesLocaleLinks } from "@/lib/i18n";
 import { isLocale, LOCALES, siteCopyFor } from "@/lib/locales";
 import { coursesDir } from "@/lib/paths";
@@ -29,6 +29,9 @@ export default async function CoursesPage({ params }: { params: Promise<{ locale
   // Group by ladder tier, ordered on-ramp → engineering. Within a rung, order by
   // reading order: each course declares `order` in its frontmatter, so the author
   // decides the path rather than an accident of length or slug.
+  const totalLessons = variants.reduce((n, v) => n + v.lessons.length, 0);
+  const totalHours = Math.max(1, Math.round(variants.reduce((n, v) => n + v.minutes, 0) / 60));
+
   const rungs = TIERS.map((tier) => ({
     tier,
     courses: variants
@@ -44,6 +47,9 @@ export default async function CoursesPage({ params }: { params: Promise<{ locale
           <p className="course-library-kicker">AGENT MENTOR · OPEN COURSES</p>
           <h1 className="course-library-title">{copy.reader.library.title}</h1>
           <p className="course-library-lede">{copy.reader.library.intro}</p>
+          {variants.length > 0 ? (
+            <p className="course-library-stat">{copy.reader.library.stat(variants.length, totalLessons, totalHours)}</p>
+          ) : null}
         </section>
 
         {rungs.length === 0 ? (
@@ -62,26 +68,19 @@ export default async function CoursesPage({ params }: { params: Promise<{ locale
                     <h2 className="course-rung-label">{tierCopy.label}</h2>
                     <p className="course-rung-blurb">{tierCopy.blurb}</p>
                   </div>
-                  <div className="course-rung-grid" data-count={rung.courses.length}>
-                    {rung.courses.map((variant) => (
-                      <CourseTile key={variant.slug} course={toCardData(variant)} lang={variant.locale} />
-                    ))}
-                  </div>
+                  <CourseLedger courses={rung.courses} lang={locale} startSlug={rungs[0]?.courses[0]?.slug} />
                 </section>
               );
             })}
           </div>
         )}
 
-        <aside className="course-library-cta">
-          <div>
-            <h2>{copy.reader.library.ctaTitle}</h2>
-            <p>{copy.reader.library.ctaBody}</p>
-          </div>
-          <a href="https://agentmentor.dev/?utm_source=learn&utm_medium=library_cta&utm_campaign=open_courses">
-            {copy.reader.library.ctaButton}
+        <p className="course-library-colophon">
+          {copy.reader.library.colophon}{" "}
+          <a href="https://agentmentor.dev/?utm_source=learn&utm_medium=library_colophon&utm_campaign=open_courses">
+            {copy.reader.library.colophonLink}
           </a>
-        </aside>
+        </p>
       </main>
     </>
   );

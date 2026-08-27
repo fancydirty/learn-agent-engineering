@@ -685,6 +685,11 @@
 .course-library-lede{
   margin-top:1.15rem; font-size:1rem; line-height:1.75; color:var(--muted-foreground); max-width:40rem;
 }
+/* Inventory header: real counts, no adjectives. */
+.course-library-stat{
+  margin-top:1.15rem; font-family:var(--font-kicker),monospace; font-size:.78rem;
+  letter-spacing:.02em; color:var(--muted-foreground); font-variant-numeric:tabular-nums;
+}
 
 /* The rail. A single gradient spine behind all rungs turns "further down" into
    "further in" without a word of explanation. */
@@ -706,46 +711,41 @@
 .course-rung-label{ font-size:1.02rem; font-weight:650; color:var(--ink-strong); letter-spacing:-.01em; }
 .course-rung-blurb{ margin-top:.25rem; font-size:.82rem; color:var(--ink-subtle); }
 
-/* Tier 1 breathes (two wide cards); deeper rungs pack tighter. The density itself
-   signals difficulty before any label is read. */
-.course-rung-grid{ display:grid; gap:.85rem; grid-template-columns:repeat(3,1fr); }
-.course-rung[data-tier="1"] .course-rung-grid{ grid-template-columns:repeat(2,1fr); gap:1rem; }
-
-.course-tile{
-  position:relative; display:flex; flex-direction:column; min-height:9.5rem;
-  padding:1.15rem 1.2rem; border:1px solid var(--border); border-radius:12px;
-  background:var(--card); box-shadow:var(--shadow-card); text-decoration:none;
-  transition:border-color .18s cubic-bezier(.2,.7,.2,1), background-color .18s, transform .18s;
+/* Ledger: the path is a syllabus, not a shop floor. Row = number · mark ·
+   title + one-line outcome · length; the whole row is the link. Number and mark
+   inherit the rung accent, so depth reads by color before any label. */
+.course-ledger{ border-top:1px solid var(--border-strong); }
+.course-ledger-row{
+  display:grid; grid-template-columns:2.2rem 30px minmax(0,1fr) auto; gap:.9rem; align-items:center;
+  padding:.8rem .4rem; border-bottom:1px solid var(--border); text-decoration:none;
+  transition:background-color .15s cubic-bezier(.2,.7,.2,1);
 }
-.course-tile:hover{
-  background:var(--card-hover); transform:translateY(-1px);
-  border-color:color-mix(in srgb, var(--cat) 45%, var(--border));
+.course-ledger-row:hover{ background:var(--card-hover); }
+@media (prefers-reduced-motion:reduce){ .course-ledger-row{ transition:none } }
+.course-ledger-no{
+  font-family:var(--font-kicker),monospace; font-size:.8rem; color:var(--rung);
+  font-variant-numeric:tabular-nums;
 }
-@media (prefers-reduced-motion:reduce){ .course-tile{ transition:none } .course-tile:hover{ transform:none } }
-.course-tile-arrow{
-  position:absolute; right:1rem; top:.9rem; font-size:.78rem; color:var(--ink-subtle);
-  transition:color .18s;
+.course-ledger-mark{ color:var(--rung); }
+.course-ledger-mark svg{ width:26px; height:26px; display:block; }
+.course-ledger-mark-fallback{ display:block; width:7px; height:7px; border-radius:50%; background:currentColor; margin:9px auto; }
+.course-ledger-main{ min-width:0; }
+.course-ledger-title{
+  display:block; font-size:.92rem; font-weight:620; line-height:1.4; color:var(--ink-strong);
 }
-.course-tile:hover .course-tile-arrow{ color:var(--cat); }
-.course-tile-mark{ display:block; width:22px; height:22px; }
-.course-tile-mark svg{ width:100%; height:100%; display:block; }
-.course-tile-mark-fallback{
-  display:block; width:7px; height:7px; margin:7px; border-radius:50%; background:currentColor;
+.course-ledger-row:hover .course-ledger-title{ color:var(--accent); }
+.course-ledger-outcome{
+  display:block; margin-top:.1rem; font-size:.79rem; line-height:1.5; color:var(--muted-foreground);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
-.course-tile-title{
-  margin-top:.8rem; font-size:.95rem; font-weight:640; line-height:1.35;
-  color:var(--ink-strong); max-width:26ch;
+.course-ledger-chip{
+  display:inline-block; margin-left:.55rem; padding:.1rem .45rem; vertical-align:.12em;
+  font-family:var(--font-kicker),monospace; font-size:.6rem; letter-spacing:.1em;
+  color:var(--accent); background:var(--accent-soft); border-radius:4px;
 }
-.course-tile-outcome{
-  margin-top:.45rem; font-size:.79rem; line-height:1.55; color:var(--muted-foreground);
-  /* Cards must not grow with the README intro: outcome frontmatter is the
-     intended one-liner, and this clamp is the guarantee when a course ships
-     without one and the full intro falls through. */
-  display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden;
-}
-.course-tile-meta{
-  margin-top:auto; padding-top:1rem; display:flex; gap:.4rem; align-items:baseline;
+.course-ledger-meta{
   font-family:var(--font-kicker),monospace; font-size:.68rem; color:var(--ink-subtle);
+  white-space:nowrap; font-variant-numeric:tabular-nums;
 }
 
 .course-library-empty{
@@ -754,23 +754,12 @@
 .course-library-empty h2{ font-weight:600; color:var(--ink-strong); }
 .course-library-empty p{ margin-top:.5rem; font-size:.875rem; color:var(--muted-foreground); }
 
-.course-library-cta{
-  margin-top:4rem; display:flex; flex-direction:row; align-items:center; justify-content:space-between;
-  gap:1rem; border:1px solid var(--border); border-radius:12px; padding:1.5rem; background:var(--card);
+/* Colophon close: a quiet line, not a marketing band — this is a browsing page. */
+.course-library-colophon{
+  margin-top:3.5rem; padding-top:1rem; border-top:1px solid var(--border);
+  font-size:.82rem; color:var(--ink-subtle); max-width:46rem;
 }
-.course-library-cta h2{ font-weight:600; color:var(--ink-strong); }
-.course-library-cta p{ margin-top:.25rem; font-size:.875rem; color:var(--muted-foreground); }
-.course-library-cta a{
-  flex:none; display:inline-flex; align-items:center; justify-content:center;
-  padding:.55rem 1rem; border-radius:8px; font-size:.875rem; font-weight:500;
-  background:var(--accent); color:var(--on-accent); text-decoration:none;
-}
-
-/* Tablet: three-across becomes two, tier 1 stays two. */
-@media (max-width:1023px){
-  .course-rung-grid,
-  .course-rung[data-tier="1"] .course-rung-grid{ grid-template-columns:repeat(2,1fr); }
-}
+.course-library-colophon a{ color:var(--accent); text-decoration:underline; text-underline-offset:3px; }
 
 /* Phone: single column, and the rail tucks in so it never eats content width. */
 @media (max-width:639px){
@@ -778,9 +767,8 @@
   .course-library-intro{ margin-bottom:2.25rem; }
   .course-ladder{ padding-left:1.1rem; }
   .course-rung-dot{ left:-1.16rem; width:8px; height:8px; }
-  .course-rung-grid,
-  .course-rung[data-tier="1"] .course-rung-grid{ grid-template-columns:1fr; gap:.75rem; }
-  .course-tile{ min-height:0; }
-  .course-library-cta{ flex-direction:column; align-items:flex-start; }
-  .course-library-cta a{ width:100%; }
+  .course-ledger-row{ grid-template-columns:1.8rem 24px minmax(0,1fr); gap:.7rem; }
+  .course-ledger-mark svg{ width:22px; height:22px; }
+  .course-ledger-meta{ grid-column:3; justify-self:start; }
+  .course-ledger-outcome{ white-space:normal; }
 }
