@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
-import "katex/dist/katex.min.css";
 import "@xyflow/react/dist/style.css";
 import "../globals.css";
 import { ThemeBoot } from "@/components/theme-boot";

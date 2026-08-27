@@ -9,6 +9,12 @@
     "binding": "ASSETS"
   },
   "workers_dev": true,
+  // learn.agentmentor.dev is the public home of the open-course library; the
+  // marketing site (agentmentor.dev, Vercel) only links here — the two repos
+  // deploy independently and must not share code.
+  "routes": [
+    { "pattern": "learn.agentmentor.dev", "custom_domain": true }
+  ],
   "observability": {
     "enabled": true
   }

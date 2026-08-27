@@ -1,13 +1,11 @@
 "use client";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Streamdown, type CustomRenderer, type PluginConfig } from "streamdown";
 import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
-import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
 import rehypeRaw from "rehype-raw";
 import type { Lang } from "@/lib/i18n";
-import { createBeautifulMermaidPlugin } from "@/lib/beautiful-mermaid-plugin";
+import type { createBeautifulMermaidPlugin } from "@/lib/beautiful-mermaid-plugin";
 import { rehypeRewriteMdLinks } from "@/lib/rehype-rewrite-md-links";
 import { rehypeFixFootnoteLinks } from "@/lib/rehype-fix-footnote-links";
 import { rehypeDetailsWhitelist } from "@/lib/rehype-details-whitelist";
@@ -34,7 +32,13 @@ import { parseLiveBlock, validateLiveBlock } from "@/lib/live-sandbox";
 import { LiveSandboxBlock } from "@/components/live-sandbox-block";
 import { stripHtmlComments } from "@/lib/strip-html-comments";
 
-const beautifulMermaidPlugin = createBeautifulMermaidPlugin();
+// Mermaid renders on 5 of 72 lessons; beautiful-mermaid (+ its transitive weight)
+// must not ride the base lesson chunk. Load it only when the markdown actually
+// carries a mermaid fence; until it lands, the fence shows as a plain code block.
+// KaTeX/remark-math were dropped outright: zero lessons use math ($ stays literal),
+// and they were the bulk of a 2.4MB always-loaded chunk.
+type MermaidPlugin = ReturnType<typeof createBeautifulMermaidPlugin>;
+let mermaidPluginCache: MermaidPlugin | null = null;
 
 function renderInteractive(
   language: "agentmentor-check" | "agentmentor-order",
@@ -107,6 +111,17 @@ export function CourseMarkdown({
   lang: Lang;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const needsMermaid = useMemo(() => md.includes("```mermaid"), [md]);
+  const [mermaidPlugin, setMermaidPlugin] = useState<MermaidPlugin | null>(mermaidPluginCache);
+  useEffect(() => {
+    if (!needsMermaid || mermaidPlugin) return;
+    let alive = true;
+    import("@/lib/beautiful-mermaid-plugin").then((m) => {
+      mermaidPluginCache = m.createBeautifulMermaidPlugin();
+      if (alive) setMermaidPlugin(mermaidPluginCache);
+    });
+    return () => { alive = false; };
+  }, [needsMermaid, mermaidPlugin]);
   const plugins = useMemo<PluginConfig>(() => {
     const renderers: CustomRenderer[] = [
       {
@@ -158,8 +173,8 @@ export function CourseMarkdown({
         ),
       });
     }
-    return { mermaid: beautifulMermaidPlugin, renderers };
-  }, [mentorActionContext, lang]);
+    return mermaidPlugin ? { mermaid: mermaidPlugin, renderers } : { renderers };
+  }, [mentorActionContext, lang, mermaidPlugin]);
 
   const cleanedMd = useMemo(() => stripHtmlComments(md), [md]);
 
@@ -178,8 +193,8 @@ export function CourseMarkdown({
       <Streamdown
         // static markdown — disable parseIncompleteMarkdown to avoid escaped fence JSON
         parseIncompleteMarkdown={false}
-        remarkPlugins={[remarkGfm, remarkMath]}
-        rehypePlugins={[rehypeDetailsWhitelist, rehypeRaw, rehypeKatex, rehypeSlug, [rehypeRewriteMdLinks, { courseSlug, locale: lang }], rehypeFixFootnoteLinks]}
+        remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeDetailsWhitelist, rehypeRaw, rehypeSlug, [rehypeRewriteMdLinks, { courseSlug, locale: lang }], rehypeFixFootnoteLinks]}
         plugins={plugins}
         controls={streamdownControls}
         linkSafety={{ enabled: false }}
