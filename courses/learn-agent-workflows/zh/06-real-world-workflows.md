@@ -469,7 +469,7 @@ async function e2eTestingWorkflow(config) {
     startTime: Date.now()
   };
   
-  console.log(`🧪 S8E 测试工作流 (${state.environments.length} 个环境)`);
+  console.log(`🧪 E2E 测试工作流 (${state.environments.length} 个环境)`);
   
   try {
     // 阶段 1: 准备环境

@@ -1,0 +1,422 @@
+[
+  {
+    "term": "workflow",
+    "def": "An executable script that breaks a complex task into steps, delegates each step to a fresh agent, and owns the coordination and control flow itself.",
+    "source": "[^S2]",
+    "pitfall": "Thinking a workflow is just several conversations chained together, when its essence is that the script holds the control flow (loops, branches) rather than letting the agent improvise the next move.",
+    "distractor_rationale": "Beginners conflate a workflow with 'calling an agent several times' and miss the value of deterministic orchestration: the same input always produces the same execution path."
+  },
+  {
+    "term": "orchestration",
+    "def": "The script deciding the order, parallelism, and branching of a task, instead of the agent deciding the control flow for itself.",
+    "source": "[^S3]",
+    "pitfall": "Letting the agent decide 'what to do next' instead of the script, which makes the execution path unpredictable, hard to debug, and impossible to reproduce.",
+    "distractor_rationale": "'Let the AI plan it' sounds smart, but production needs predictability: control flow belongs in code, reasoning belongs to the agent."
+  },
+  {
+    "term": "single conversation",
+    "def": "One agent finishing a task within a single context window, where all history and results live inside that one conversation.",
+    "source": "[^S1]",
+    "pitfall": "Using a single conversation for a task that spans 50+ files or several validation stages, which overflows the context window or makes the agent forget earlier work.",
+    "distractor_rationale": "A single conversation suits small tasks, but complex work exceeds the context window and needs a workflow to decompose it."
+  },
+  {
+    "term": "subagent",
+    "def": "The independent agent instance a workflow step launches, with its own context window, that finishes one subtask and returns a result.",
+    "source": "[^S3]",
+    "pitfall": "Expecting a subagent to inherit the parent's context automatically, when each subagent is independent and needs the context passed to it explicitly.",
+    "distractor_rationale": "A subagent's isolation is a feature, not a bug: it prevents context pollution so each step sees only relevant information."
+  },
+  {
+    "term": "fan-out-reduce",
+    "def": "The core of parallel decomposition: spread work across many parallel subagents (fan out), then merge every result into one output (reduce).",
+    "source": "[^S4]",
+    "pitfall": "Forgetting the reduce step, leaving parallel results scattered with no unified final output.",
+    "distractor_rationale": "Fan-out is intuitive, but reduce is often overlooked; without it, 100 parallel results are 100 fragments, not one answer."
+  },
+  {
+    "term": "step",
+    "def": "A workflow's atomic operation, either an agent call (needs reasoning) or a deterministic function (data transforms, math).",
+    "source": "[^S5]",
+    "pitfall": "Making the agent do simple array filtering or summing numbers, when those deterministic operations should be plain functions and the agent should focus on reasoning.",
+    "distractor_rationale": "Agent reasoning is costly and unreliable; deterministic operations run faster, cheaper, and more reliably as code."
+  },
+  {
+    "term": "state",
+    "def": "All the information a workflow currently holds: which step it's on, each step's result, and what it needs next, like the workflow's memory.",
+    "source": "[^S12]",
+    "pitfall": "Confusing state with the agent's conversation history; state is structured, persisted data, while conversation history gets truncated and forgotten.",
+    "distractor_rationale": "Conversation history is unreliable (it overflows and gets forgotten), so state is the workflow's dependable memory and should be managed explicitly."
+  },
+  {
+    "term": "context",
+    "def": "The information handed to a single agent call, selectively pulled from workflow state, containing only what that step needs.",
+    "source": "[^S15]",
+    "pitfall": "Passing all state into every agent call; the larger the context, the more the agent gets distracted, and reasoning quality drops while cost rises.",
+    "distractor_rationale": "'The more the agent knows, the better' is wrong; a lean context keeps the agent focused on the current task and improves quality."
+  },
+  {
+    "term": "workflow state",
+    "def": "All the information about the current task, passed between steps but not across sessions, and persistable to a database for recovery.",
+    "source": "[^S11]",
+    "pitfall": "Relying on the agent to remember 'we are on step 3 now'; agents forget, so state must live explicitly in script variables or a database.",
+    "distractor_rationale": "An agent's memory is unreliable, so workflow state must be externalized, structured, and persistable."
+  },
+  {
+    "term": "Session State",
+    "def": "The conversation history and transient context the agent manages for itself, which the workflow doesn't need to track.",
+    "source": "[^S11]",
+    "pitfall": "Trying to manage the agent's session state from inside the workflow; that's the agent system's job, and the workflow should manage only task state.",
+    "distractor_rationale": "Separation of concerns: the workflow tracks task progress, the agent tracks conversation history, and the two shouldn't be mixed."
+  },
+  {
+    "term": "checkpoint",
+    "def": "Saving workflow state to external storage after a key step, so a crash resumes from the latest checkpoint instead of starting over.",
+    "source": "[^S12]",
+    "pitfall": "Checkpointing after every tiny operation; overly frequent checkpoints slow the workflow, so save after expensive operations or before irreversible ones.",
+    "distractor_rationale": "Checkpoints carry overhead (disk I/O, serialization), so they should be placed strategically, not scattered everywhere."
+  },
+  {
+    "term": "state machine",
+    "def": "Modeling a workflow with discrete states (init, processing, completed) and explicit transition rules, persisting each transition.",
+    "source": "[^S11]",
+    "pitfall": "Using strings for phases without defining legal transitions, which lets the workflow reach an illegal state (like jumping from completed back to init).",
+    "distractor_rationale": "A state machine forces you to think about which transitions are legal, keeping the workflow out of an unrecoverable mess."
+  },
+  {
+    "term": "sequential decomposition",
+    "def": "A decomposition strategy that splits a task into steps that must run in order, each depending on the previous step's output.",
+    "source": "[^S18]",
+    "pitfall": "Using sequential decomposition for everything, missing parallel opportunities and making the workflow needlessly slow.",
+    "distractor_rationale": "Sequential decomposition is clear but inefficient; identify parallel opportunities first and only run steps in order when a real dependency exists."
+  },
+  {
+    "term": "parallel decomposition",
+    "def": "A decomposition strategy that splits a task into independent subtasks that can run at the same time, with results merged at the end.",
+    "source": "[^S18]",
+    "pitfall": "Running dependent tasks in parallel, so step B needs step A's result but A hasn't finished, producing a data race.",
+    "distractor_rationale": "Parallelism assumes independence; you must confirm there are no data dependencies between tasks before running them in parallel."
+  },
+  {
+    "term": "hybrid decomposition",
+    "def": "A decomposition strategy where high-level phases run in order and each phase's internal steps run in parallel, combining both strengths.",
+    "source": "[^S18]",
+    "pitfall": "Going all-sequential or all-parallel, ignoring that most real tasks are hybrid, with both dependencies and parallel opportunities.",
+    "distractor_rationale": "Real tasks are usually hybrid: phases depend on one another (must be ordered) while subtasks within a phase are independent (can run in parallel)."
+  },
+  {
+    "term": "dependency",
+    "def": "The input/output relationship between steps; if step B needs step A's output, B depends on A and can't run until A finishes.",
+    "source": "[^S17]",
+    "pitfall": "Forgetting to mark dependencies when sketching the flow, so you only discover during implementation that the step order is wrong and needs redesign.",
+    "distractor_rationale": "Dependencies decide execution order and parallel potential, so they should be marked explicitly during the design phase."
+  },
+  {
+    "term": "chain-of-thought",
+    "def": "A prompting technique that asks the LLM to show its intermediate reasoning while decomposing or reasoning, instead of jumping straight to an answer.",
+    "source": "[^S16]",
+    "pitfall": "Expecting the LLM to decompose a complex task accurately without chain-of-thought; complex tasks need a reasoning chain, and a direct ask tends to yield incomplete or wrong decompositions.",
+    "distractor_rationale": "Chain-of-thought makes the LLM expose its reasoning, improving decomposition quality on complex tasks."
+  },
+  {
+    "term": "zero-shot",
+    "def": "Asking the LLM to complete a task with no examples, relying on its pretrained knowledge.",
+    "source": "[^S16]",
+    "pitfall": "Using a zero-shot prompt while expecting a decomposition in your specific format; without examples, the output format may not match your expectation.",
+    "distractor_rationale": "Zero-shot suits general tasks, but output in a specific format or structure is best guided with few-shot examples."
+  },
+  {
+    "term": "transient error",
+    "def": "A temporary error, usually from network fluctuation, resource contention, or brief overload, that may succeed on retry.",
+    "source": "[^S8]",
+    "pitfall": "Retrying every error as if it were transient; retrying a permanent error (like missing permissions) only wastes resources.",
+    "distractor_rationale": "Retry suits transient errors; permanent errors need a config or code fix, so telling the two apart is the basis of efficient error handling."
+  },
+  {
+    "term": "permanent error",
+    "def": "A persistent error, usually from misconfiguration, missing permissions, or a code bug, that won't succeed on retry.",
+    "source": "[^S9]",
+    "pitfall": "Retrying a permanent error three times before giving up; you should fail fast the moment it's identified as permanent, to avoid wasting time.",
+    "distractor_rationale": "A permanent error's hallmark is 'retrying won't help'; failing early lets the developer fix the root cause fast."
+  },
+  {
+    "term": "exponential backoff",
+    "def": "A retry strategy where each retry's delay grows exponentially (1s, 2s, 4s, 8s...), giving the service more time to recover.",
+    "source": "[^S8]",
+    "pitfall": "Retrying at a fixed delay; if the service is overloaded, every client retrying at once makes the overload worse (the thundering-herd effect).",
+    "distractor_rationale": "Exponential backoff gradually increases the delay, easing pressure and giving the service time to recover, which is why it's the recommended retry strategy."
+  },
+  {
+    "term": "jitter",
+    "def": "Adding a random perturbation to the retry delay so multiple clients don't retry at the exact same instant, spreading the load.",
+    "source": "[^S8]",
+    "pitfall": "Using exponential backoff without jitter; multiple clients can still retry at the same moment (all waiting 4 seconds), causing a traffic spike.",
+    "distractor_rationale": "Jitter improves on exponential backoff by randomizing retry timing, further lowering pressure on the service."
+  },
+  {
+    "term": "circuit breaker",
+    "def": "When the error rate crosses a threshold, it pauses calls to the failing service and fails fast, avoiding wasted resources and cascading failure.",
+    "source": "[^S7]",
+    "pitfall": "Continuing to retry a service that keeps failing, wasting resources and dragging down the workflow, when a circuit breaker should fail fast instead.",
+    "distractor_rationale": "A circuit breaker recognizes the 'the service is already down' pattern, stops pointless retries, and protects the rest of the system."
+  },
+  {
+    "term": "compensating action",
+    "def": "An operation that undoes a completed step, so when a workflow fails partway through it rolls back earlier steps to keep data consistent.",
+    "source": "[^S6]",
+    "pitfall": "Assuming compensation is just a database ROLLBACK; cross-system actions (an email already sent, a third-party API already called) can't truly be undone, so compensation is 'notify to cancel', not 'roll back'.",
+    "distractor_rationale": "Compensating actions are the practical answer to distributed transactions, but they aren't magic; some actions can't be undone and can only be corrected compensatingly."
+  },
+  {
+    "term": "Saga pattern",
+    "def": "Defining a forward action and a compensating action for every step, and on failure running the compensations in reverse to achieve a distributed transaction.",
+    "source": "[^S6]",
+    "pitfall": "The compensation itself fails but nothing handles it; you need to log the compensation failure and flag it for a human.",
+    "distractor_rationale": "The Saga is an elegant pattern, but compensations can also fail (network, permissions), so there must be a fallback plan."
+  },
+  {
+    "term": "idempotency",
+    "def": "The property where running an operation N times has the same effect as running it once, producing no side effects on repeats.",
+    "source": "[^S9]",
+    "pitfall": "Using an incrementing operation (counter++) instead of an assignment (set counter = X); increments aren't idempotent and accumulate on repeat.",
+    "distractor_rationale": "Idempotency makes retries safe: on a network timeout you can't tell if the operation succeeded, and an idempotent operation can just be retried."
+  },
+  {
+    "term": "branch",
+    "def": "A workflow choosing a different execution path based on a condition, like an if-else or switch statement.",
+    "source": "[^S2]",
+    "pitfall": "Letting the agent decide branch logic; if the condition is unambiguous (a numeric comparison, a boolean), use the script's if-else instead of asking the agent.",
+    "distractor_rationale": "A deterministic branch (in the script) is faster, more reliable, and more predictable; the agent should only make branch decisions that require understanding and reasoning."
+  },
+  {
+    "term": "loop",
+    "def": "A workflow repeating the same operation, such as a for loop (over each element) or a while loop (until a condition holds).",
+    "source": "[^S2]",
+    "pitfall": "Letting the agent decide 'whether to continue' inside a loop; if the condition is clear (like the file list is exhausted), use the script's loop control.",
+    "distractor_rationale": "Loop control is deterministic logic and should live in the script, not depend on the agent's judgment."
+  },
+  {
+    "term": "concurrency cap",
+    "def": "Limiting how many parallel tasks run at once to avoid exhausting resources (too many open files, a saturated connection pool).",
+    "source": "[^S8]",
+    "pitfall": "Using Promise.all() to process 1000 files in parallel, which can exceed the file-handle limit, memory limit, or API rate limit.",
+    "distractor_rationale": "Unlimited concurrency sounds fast but exhausts resources and crashes; batching (say 10 at a time) keeps concurrency under control."
+  },
+  {
+    "term": "input/output contract",
+    "def": "Each step clearly defining what input it accepts and what output it returns, as precise as a function signature.",
+    "source": "[^S6]",
+    "pitfall": "Fuzzy input/output types on a step (like data: any), which makes it hard to locate the problem when data passing between steps goes wrong.",
+    "distractor_rationale": "A clear contract makes the workflow easy to understand and debug: when step B breaks, you immediately know step A's output was in the wrong format."
+  },
+  {
+    "term": "observability",
+    "def": "A workflow's ability to answer questions like 'how far along am I, what errors have I hit, where are the performance bottlenecks'.",
+    "source": "[^S20]",
+    "pitfall": "A workflow with no logs or progress output runs like a black box; you can't tell how far it got, how long is left, or whether it's stuck.",
+    "distractor_rationale": "Observability isn't optional; it's a requirement for production-grade workflows, since you can only debug and optimize what you can see."
+  },
+  {
+    "term": "progress tracking",
+    "def": "Recording how many steps a workflow has finished, how many remain, and when it's expected to complete.",
+    "source": "[^S12]",
+    "pitfall": "Only printing at the start and the end, with no progress in between, so the user can't tell whether the workflow is running or stuck.",
+    "distractor_rationale": "User experience: a long-running workflow must show progress, or the user will suspect it's hung and interrupt it."
+  },
+  {
+    "term": "error log",
+    "def": "A record of every error that occurred in the workflow, including step name, error type, error message, and timestamp.",
+    "source": "[^S7]",
+    "pitfall": "A try-catch that catches the error but only prints error.message, losing the stack and context and making the problem hard to locate.",
+    "distractor_rationale": "A complete error log should carry which step, what error, the state at the time, and the full stack, all essential for debugging."
+  },
+  {
+    "term": "performance profiling",
+    "def": "Measuring how long each step takes to identify a workflow's performance bottleneck.",
+    "source": "[^S20]",
+    "pitfall": "Optimizing a workflow by gut feel; you should first measure each step's duration and optimize the slowest one to make a real difference.",
+    "distractor_rationale": "The first step of performance optimization is measurement; find the bottleneck before optimizing, since blind optimization often targets the wrong place."
+  },
+  {
+    "term": "inverted control flow",
+    "def": "A workflow's core innovation: instead of the agent deciding what to do next, the script decides which agent to call next.",
+    "source": "[^S2]",
+    "pitfall": "Handing the agent a task list and letting it decide the order, which loses the determinism of control flow so each run may differ.",
+    "distractor_rationale": "Inverted control flow is the essential difference between a workflow and a single conversation; the script holding control makes execution predictable."
+  },
+  {
+    "term": "deterministic orchestration",
+    "def": "A workflow's execution path is decided by the script's control flow (loops, branches), so the same input yields the same path.",
+    "source": "[^S2]",
+    "pitfall": "Designing the workflow so 'the agent decides the next step', making each run take a different path, impossible to reproduce and hard to debug.",
+    "distractor_rationale": "Determinism is a production requirement: identical input should follow an identical path so you can reproduce bugs and verify fixes."
+  },
+  {
+    "term": "context window",
+    "def": "The maximum amount of text an agent can see at once, usually hundreds of thousands to a million tokens; past that it must truncate or forget.",
+    "source": "[^S3]",
+    "pitfall": "Expecting the agent to remember the contents of 100 files in a single conversation; the context window is finite and overflows into forgetting.",
+    "distractor_rationale": "The context-window limit is why workflows exist: a task too big for one window must be decomposed into multiple steps."
+  },
+  {
+    "term": "context explosion",
+    "def": "When each step's result keeps piling into the context, so it grows without bound until it exceeds the limit or degrades performance.",
+    "source": "[^S14]",
+    "pitfall": "Accumulating context: adding every step's result to the context object, so the last step's context holds all history and can reach hundreds of thousands of tokens.",
+    "distractor_rationale": "Context should be managed by resetting: each step sees only what it needs, and historical results live in workflow state rather than in the context."
+  },
+  {
+    "term": "resetting context",
+    "def": "Each step clears the context and passes only what the current step needs, avoiding context explosion.",
+    "source": "[^S14]",
+    "pitfall": "Being afraid to reset because the agent might need 'everything from before', when in fact most steps need only a small, relevant slice.",
+    "distractor_rationale": "Resetting context is the default strategy; use accumulating context only for steps that genuinely need all the history, like a final summary."
+  },
+  {
+    "term": "accumulating context",
+    "def": "Each step's result is added to the context so later steps see all history, which suits a final summary step.",
+    "source": "[^S14]",
+    "pitfall": "Using accumulating context for every step, so the context balloons, later steps slow down, and cost rises.",
+    "distractor_rationale": "Accumulating context belongs only to the few steps that need a global view (like a final summary report), not as the default."
+  },
+  {
+    "term": "external storage",
+    "def": "Persisting workflow state to a database, Redis, or the file system, rather than keeping it only in in-memory variables.",
+    "source": "[^S13]",
+    "pitfall": "A long-running workflow whose state lives only in memory; a process crash or machine restart loses all of it.",
+    "distractor_rationale": "Workflows that run over an hour, coordinate across machines, or need human approval should persist state to external storage."
+  },
+  {
+    "term": "Phase checkpoints",
+    "def": "Saving a checkpoint after each major phase of the workflow completes, rather than after every small operation.",
+    "source": "[^S12]",
+    "pitfall": "Checkpointing after every line of code; over-frequent saves slow the workflow, so save at meaningful boundaries (a phase completing).",
+    "distractor_rationale": "Checkpoints should be placed strategically: after a phase completes, after an expensive operation, or before an irreversible one, not mindlessly everywhere."
+  },
+  {
+    "term": "recovery logic",
+    "def": "After a workflow resumes from a checkpoint, it skips the already-completed steps and continues from the point of interruption.",
+    "source": "[^S12]",
+    "pitfall": "Loading the checkpoint but still running from the top; the checkpoint is wasted unless you skip completed phases based on the phase field.",
+    "distractor_rationale": "A checkpoint's value is skipping finished work on resume, which requires designing recovery logic (like an if on the phase)."
+  },
+  {
+    "term": "human approval",
+    "def": "The workflow pausing at a key decision point to wait for a human to confirm before continuing, common before production deploys or data deletion.",
+    "source": "[^S13]",
+    "pitfall": "A fully automated workflow deploying straight to production with no human check, so a single mistake has a wide blast radius; add an approval gate before production operations.",
+    "distractor_rationale": "Automation doesn't mean unattended; a human approval before high-risk operations is a safety line, not a step backward from automation."
+  },
+  {
+    "term": "batch",
+    "def": "Splitting a large set of tasks into small groups processed one group at a time, with parallelism inside each group, to control concurrency and resource use.",
+    "source": "[^S8]",
+    "pitfall": "Using Promise.all(array.map(...)) to run 1000 tasks in parallel, which can exhaust memory, file handles, or an API quota.",
+    "distractor_rationale": "Batching balances speed and resources: faster than pure sequential, safer than unlimited concurrency, and a practical middle ground."
+  },
+  {
+    "term": "rate limit",
+    "def": "An API's cap on requests per unit time; exceeding it returns a 429 error, and you must wait or slow your request rate.",
+    "source": "[^S8]",
+    "pitfall": "Retrying immediately on a 429, which can trip the limit again; wait for the Retry-After time or proactively throttle your request rate.",
+    "distractor_rationale": "A rate limit is a predictable transient error, and the best strategy is proactively respecting the limit (batching + delay) rather than passively retrying."
+  },
+  {
+    "term": "resource contention",
+    "def": "Multiple parallel tasks accessing a limited resource (a database connection, a file handle) at once, causing some to fail or time out.",
+    "source": "[^S8]",
+    "pitfall": "Unlimited concurrency exhausting the connection pool, so later tasks can't get a connection and time out; cap concurrency to match resource capacity.",
+    "distractor_rationale": "Parallelism should match resource capacity: with a 10-connection pool, concurrency shouldn't exceed 10, or tasks will contend and fail."
+  },
+  {
+    "term": "cascading failure",
+    "def": "One service's failure causing the services that depend on it to fail too, with the failure spreading outward.",
+    "source": "[^S7]",
+    "pitfall": "Service A is down but the workflow keeps retrying, burning resources and dragging down other parts; a circuit breaker should fail fast instead.",
+    "distractor_rationale": "Cascading failure stems from 'refusing to admit failure'; a circuit breaker admits the service is down, stops calling it, and spares the rest."
+  },
+  {
+    "term": "fail fast",
+    "def": "On an error you clearly can't recover from (a permanent error, an open circuit breaker), failing immediately without retrying, to save resources.",
+    "source": "[^S9]",
+    "pitfall": "Retrying every error three times; retrying a permanent error (permissions, config) just wastes time when you should fail immediately.",
+    "distractor_rationale": "Failing fast surfaces the problem sooner, so the developer can locate and fix the root cause faster than if it's buried in retries."
+  },
+  {
+    "term": "graceful degradation",
+    "def": "When a non-critical step fails, the workflow skips it and continues instead of failing as a whole.",
+    "source": "[^S8]",
+    "pitfall": "An optional notification step failing takes down the whole workflow; distinguish critical steps (abort on failure) from optional ones (log and continue).",
+    "distractor_rationale": "Graceful degradation makes a workflow more robust: a failed email shouldn't block order processing; logging the error is enough."
+  },
+  {
+    "term": "dependency graph",
+    "def": "A graph with nodes for steps and arrows for dependencies, showing the dependencies and execution order between steps clearly.",
+    "source": "[^S17]",
+    "pitfall": "Writing code without drawing the dependency graph, only to find during implementation that the step order is wrong or a dependency was missed, forcing a refactor.",
+    "distractor_rationale": "The dependency graph is a core workflow-design tool; drawing it surfaces design problems more easily than writing code does."
+  },
+  {
+    "term": "DAG",
+    "def": "The formal version of a dependency graph: nodes are steps, directed edges are dependencies, and 'acyclic' guarantees no deadlock.",
+    "source": "[^S17]",
+    "pitfall": "Step A depends on B, B on C, and C on A, forming a cycle that deadlocks so no step can start.",
+    "distractor_rationale": "The DAG's 'acyclic' constraint is what makes a workflow executable; a cyclic dependency means a design error."
+  },
+  {
+    "term": "leaf",
+    "def": "A node in the dependency graph that depends on nothing else, so it can run first.",
+    "source": "[^S21]",
+    "pitfall": "Not identifying the leaves and just running everything in parallel; tasks with dependencies fail when run in parallel (missing input).",
+    "distractor_rationale": "Identifying leaves is the precondition for parallel execution: run all the leaves in parallel first, then the nodes that depend on them."
+  },
+  {
+    "term": "topological sort",
+    "def": "Determining the execution order of steps from their dependencies, guaranteeing each step runs only after its dependencies are done.",
+    "source": "[^S17]",
+    "pitfall": "Ordering steps arbitrarily, ignoring dependencies, so you reach step B and find it needs step A's result but A hasn't run.",
+    "distractor_rationale": "A topological sort computes a legal execution order automatically; hand-ordering a complex dependency graph is error-prone."
+  },
+  {
+    "term": "Code refactoring pipeline",
+    "def": "A full pipeline that analyzes code, generates a refactoring plan, refactors in dependency order, and verifies with tests.",
+    "source": "[^S21]",
+    "pitfall": "Testing only after refactoring every component; when a test fails you can't tell which component caused it, so refactor and test in batches.",
+    "distractor_rationale": "A refactoring workflow should verify incrementally: test after each batch so a failure points quickly to the specific component."
+  },
+  {
+    "term": "Doc generation pipeline",
+    "def": "An automated flow that extracts APIs from code, generates examples, renders docs, and publishes them.",
+    "source": "[^S20]",
+    "pitfall": "Maintaining docs and code as two separate copies; docs go stale fast, so generate docs from code automatically to keep them in sync.",
+    "distractor_rationale": "A doc generation pipeline keeps docs and code in sync: rerun the pipeline after a code change and the docs reflect the latest state."
+  },
+  {
+    "term": "Test automation flow",
+    "def": "An end-to-end testing workflow that sets up environments, runs tests in parallel, collects results, and generates a report.",
+    "source": "[^S20]",
+    "pitfall": "Running the full test suite sequentially per environment, which takes forever; test multiple environments in parallel instead.",
+    "distractor_rationale": "The value of test automation is speed and consistency: parallel testing shortens feedback time, and automation keeps conditions identical each run."
+  },
+  {
+    "term": "task decomposition",
+    "def": "Taking a vague, oversized task and breaking it into small, clear steps, each with defined inputs and outputs.",
+    "source": "[^S16]",
+    "pitfall": "Decomposing into steps that are too big (like 'prepare the data'), which hides what the step actually covers and blocks parallelism.",
+    "distractor_rationale": "Decompose well and building the workflow feels like snapping Lego together; decompose badly and you find mid-run that steps are missing or misordered."
+  },
+  {
+    "term": "Debugging a workflow",
+    "def": "Locating problems in a workflow through logs, state inspection, and step-by-step tracing.",
+    "source": "[^S20]",
+    "pitfall": "A workflow fails with no logs, so you can't tell which step failed or why, and it can't be debugged.",
+    "distractor_rationale": "Debuggability has to be designed in up front: per-step logging, persisted state, and detailed error records are all preconditions for debugging."
+  },
+  {
+    "term": "half-open",
+    "def": "The circuit breaker state where, after a timeout, a few trial requests go through: if they succeed the breaker closes, otherwise it stays open.",
+    "source": "[^S7]",
+    "pitfall": "Reopening the breaker to full traffic the instant the timeout passes, skipping the trial phase, so a still-broken service gets flooded again.",
+    "distractor_rationale": "Beginners treat a circuit breaker as binary (open/closed) and miss the half-open probe that tests recovery before restoring full traffic."
+  }
+]

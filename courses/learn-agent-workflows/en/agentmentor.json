@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Produce the English variant of the shipped Chinese course learn-agent-workflows for learn.agentmentor.dev. Teaching rewrite in English (not a translation): same 6-lesson structure, same lesson slugs, same interactive-block ids and answer positions, source quotes restored to their verbatim English originals from sources.md, runnable code kept logic-identical with only comments and user-facing strings translated, natural desk-voice English prose with no AI-slop register.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "The owner ratified the multilingual plan explicitly: all six locales on learn.agentmentor.dev, English first, batches of 2-3 courses in path order with a commit per course. The zh course is the verified source of truth for scope, learner model, structure, and grounding, so no additional clarification was needed."
+  },
+  "learnerModel": {
+    "targetReader": "A developer who has used Claude Code or a similar AI agent tool, understands basic flowcharts and state machines, and wants to design complex multi-step automation workflows",
+    "knownConcepts": [
+      "Basic use of Claude Code or a similar AI tool",
+      "The single-conversation agent pattern",
+      "Basic flowchart concepts (nodes, arrows, branches)",
+      "Basic state-machine concepts (states, transitions)",
+      "Fundamentals of at least one programming language (can read JavaScript)",
+      "Basic terminal commands",
+      "Git and version-control basics"
+    ],
+    "unknownConcepts": [
+      "What fundamentally separates a workflow from a one-off conversation",
+      "The concept of orchestration",
+      "Subagents and the fan-out/aggregate pattern",
+      "Task decomposition strategies (sequential, parallel, hybrid)",
+      "Workflow state vs agent context",
+      "Checkpoints and recovery",
+      "Transient vs permanent errors",
+      "Exponential backoff and jitter",
+      "The circuit-breaker pattern",
+      "Compensating actions and the Saga pattern"
+    ],
+    "assumedEnvironment": "Can run JavaScript/Node.js code, has terminal access and a text editor, and can read and follow code examples",
+    "firstIndependentAction": "Identify one repetitive task in their own work that a workflow could automate",
+    "noviceRamp": [
+      "Lesson 1 starts from concrete pain (context overflow, re-explaining the same process) and uses a code-review pipeline example to build intuition for why workflows exist",
+      "Lesson 2 builds the mental model step by step through four simple building blocks (steps, state, branches, loops), each with a code example",
+      "Lesson 3 teaches task decomposition systematically, from simple to complex (sequential, then parallel, then hybrid), each strategy with a complete example",
+      "Lessons 4 and 5 go deep on state management and error handling — the keys to workflow reliability — as relatively independent units that can be studied separately",
+      "Lesson 6 brings everything together through three real scenarios showing complete production-grade workflows"
+    ]
+  },
+  "learnerBrief": "The target reader is a developer who already uses Claude Code and wants to design complex multi-step automation. They understand basic flowcharts and state machines and have programming experience, but they don't know workflow orchestration, task decomposition strategy, or the best practices for state management and error handling. The course gets them to independently design and build production-grade workflows: understanding why workflows matter, mastering decomposition, designing state and checkpoints, building solid error handling, and studying real patterns through worked scenarios.",
+  "scope": "Covered: the workflow concept and where it applies, orchestration vs one-off conversation, the four building blocks (steps, state, branches, loops), three decomposition strategies (sequential, parallel, hybrid), dependency identification, workflow state vs agent context, three state-management patterns (script variables, checkpoints, external storage), context-passing practices, error classification (transient vs permanent), retry strategies (exponential backoff, jitter), the circuit-breaker pattern, compensating actions and the Saga pattern, idempotency, three real scenarios (code refactoring, docs generation, test automation), and observability for debugging. Not covered: installing or basic use of Claude Code, advanced language-specific knowledge, distributed workflow engines (Temporal, Airflow), visual workflow editors, or deploying workflows on Kubernetes. Depth: from zero to independently designing and shipping production-grade multi-step workflows.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-workflows/en/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Mermaid diagrams are kept exactly where the zh original uses them (workflow structure, branching, and decomposition visuals), with node labels rewritten in English. No diagrams were added or removed: the zh placement decisions were already validated in review, and workflow shape is precisely the content where a diagram beats prose.",
+    "weakestPoints": [
+      "Lesson 6's three scenarios are long; an English reader skimming may miss that each scenario reuses patterns from lessons 3-5 — the recap cross-references mitigate this",
+      "Retry/backoff code uses simplified in-memory examples rather than a real queue or scheduler, by design, but readers running production loads must adapt them",
+      "Advanced orchestration engines (Temporal, Airflow) are explicitly out of scope, so readers needing distributed guarantees get pointers, not instruction",
+      "As an English teaching rewrite of a verified zh course, idiomatic drift is the residual risk: source quotes were restored verbatim from English originals and runnable code kept logic-identical, but prose was re-taught rather than translated, so review must check meaning-equivalence against the zh lessons"
+    ],
+    "followUpChecks": [
+      "Render pass on learn.agentmentor.dev /en/agent-workflows/... after deploy: all 6 lessons plus README, interactive cards hydrate, mermaid diagrams render",
+      "Verify every glossary term appears verbatim in the en lessons (attach check)",
+      "Verify every [^Sn] anchor in en lessons has a matching ## Sn block in en sources.md",
+      "Confirm check-block ids and correct-answer positions are byte-identical to zh (b/b/b/b/b for lessons 1-5)",
+      "Re-run any executable JS examples and confirm outputs match the asserted logs"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "The learner can take one real multi-step task from their own work, decompose it into a workflow with explicit steps, state, branches, and error handling, implement it with checkpoints so an interrupted run resumes instead of restarting, and justify each retry/compensation decision.",
+    "interactionCheck": "Five lessons carry one agentmentor-check block each (scenario fit in lesson 1, branching logic in lesson 2, decomposition strategy in lesson 3, checkpoint placement in lesson 4, retry strategy in lesson 5), preserved from the zh variant with identical ids, modes, choice counts, and correct-answer positions; label, prompt, whyHere, choice text, and feedback are English teaching rewrites specific to each lesson's misconception. Exercises keep the zh Level structure with rubric, answer, and hints per Level.",
+    "learnerFitCheck": "The course assumes only what the learner model grants: reading JavaScript, basic flowchart/state-machine intuition, and prior Claude Code use. Orchestration, decomposition, checkpointing, and error taxonomy are all taught from zero in dependency order; the learner first assembles a full workflow in lesson 6, after every prerequisite has been introduced. Lesson 1's first exercise asks only for reflection on the reader's own work.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "English variant of a shipped zh course: structure, grounding, and answer positions inherited from the verified original",
+      "All interactive blocks preserve id/mode/choice-count/correct-answer byte-parity with zh",
+      "All source quotes restored to verbatim English originals and checked byte-exact against sources.md",
+      "Runnable JS examples kept logic-identical; only comments and user-facing strings translated"
+    ]
+  },
+  "nextSteps": [
+    "Run course-guard on the en variant and fix anything it flags",
+    "Deploy learn.agentmentor.dev and spot-check the /en pages render with hydrated interactive cards and mermaid diagrams",
+    "Produce the remaining locale variants (ja/ko/es/pt-BR) using this en variant as the translation base",
+    "Encourage learners to automate one real task from their own backlog as the post-course consolidation project"
+  ],
+  "memoryBoundary": "This agentmentor.json is a course-local state record, stored only in the course directory for quality checks and learning-path tracking. It is never written back to any host AI system's long-term memory and does not affect other courses or conversations."
+}
