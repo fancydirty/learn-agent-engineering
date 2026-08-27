@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Produce the English variant of the shipped Chinese course learn-prompt-engineering for learn.agentmentor.dev. Teaching rewrite in English (not a translation): same 6-lesson structure, same lesson slugs, same interactive-block ids and answer positions, source key-facts kept as verbatim English quotes from sources.md, natural desk-voice English prose with no AI-slop register, every concept keeping its good-prompt-vs-bad-prompt contrast example.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "The owner ratified the multilingual plan explicitly: all six locales on learn.agentmentor.dev, English first, batches of 2-3 courses in path order with a commit per course. The zh course is the verified source of truth for scope, learner model, structure, and grounding, so no additional clarification was needed."
+  },
+  "learnerModel": {
+    "targetReader": "Users who have tried AI tools (ChatGPT, Claude) but don't understand how prompt design works, plus developers and knowledge workers who want to get more out of AI",
+    "knownConcepts": [
+      "Basic text editing",
+      "Experience using a conversational AI tool",
+      "Being able to describe a task's requirements",
+      "The concept of input and output"
+    ],
+    "unknownConcepts": [
+      "Structured prompt design",
+      "Few-shot learning",
+      "Chain-of-thought reasoning",
+      "Prompt debugging and iteration strategy",
+      "Prompt patterns for different task types"
+    ],
+    "assumedEnvironment": "Access to at least one conversational AI tool (ChatGPT, Claude, etc.); no programming environment required",
+    "firstIndependentAction": "Use the basic prompt structure they learned to rewrite one vague instruction so it becomes clearer and more specific",
+    "noviceRamp": [
+      "Lesson 1 starts from the reader's existing AI-chat experience and contrasts a good prompt with a bad one to build intuition for how prompt quality affects output",
+      "Lesson 2 builds the mental model of prompt structure through four elements (role, task, format, constraints), each with a contrast example",
+      "Lesson 3 introduces few-shot learning, moving from concept to example-design principles step by step",
+      "Lesson 4 covers chain-of-thought, from a simple 'let's think step by step' to more complex reasoning examples",
+      "Lesson 5 teaches a systematic debugging method and builds a reusable optimization routine",
+      "Lesson 6 brings it together with concrete strategies for three common task types"
+    ]
+  },
+  "learnerBrief": "The target reader has used conversational AI tools but doesn't understand the principles of prompt design, plus developers and knowledge workers who want to work with AI more effectively. They can edit text and have chatted with AI, but they don't know structured prompt design, few-shot learning, chain-of-thought, or a systematic debug-and-iterate method. The course gets them to design clear, effective prompts, guide AI with examples, make AI show its reasoning, debug and optimize systematically, and choose the right strategy per task.",
+  "scope": "Covered: what a prompt is and why it matters, the four prompt elements (role, task, format, constraints), few-shot learning (zero-shot vs one-shot vs few-shot, example-design principles), chain-of-thought (zero-shot CoT, few-shot CoT, when it fits), prompt debugging (problem identification, diagnosis, iteration, test cases, version management), and task-specific strategies (best practices for code generation, writing, data extraction). Every concept carries a bad-prompt-vs-good-prompt contrast example. Not covered: advanced techniques (prompt chains, agent design, RAG), model fine-tuning, tool-specific API parameter configuration, or programming skills. Depth: from zero to independently designing and optimizing prompts for a range of tasks.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-prompt-engineering/en/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "One mermaid diagram is kept exactly where the zh original places it (the debugging loop in lesson 5), with labels rewritten in English. No diagrams added or removed: the zh placement was already validated in review, and the iterative debug loop is the one spot where a diagram reads faster than prose.",
+    "weakestPoints": [
+      "The good-vs-bad prompt contrasts are English-authored rather than translated, so a reviewer must confirm the 'bad' example is convincingly bad and the 'good' example is genuinely better for an English-writing reader",
+      "Few-shot and chain-of-thought examples use short illustrative prompts; readers with domain-specific tasks must adapt the example shapes",
+      "Advanced techniques (prompt chains, RAG, agent design) are out of scope, so readers wanting those get pointers, not instruction",
+      "As an English teaching rewrite of a verified zh course, idiomatic drift is the residual risk: source key-facts were restored verbatim from English originals, but prose was re-taught rather than translated, so review must check meaning-equivalence against the zh lessons"
+    ],
+    "followUpChecks": [
+      "Render pass on learn.agentmentor.dev /en/prompt-engineering/... after deploy: all 6 lessons plus README, interactive cards hydrate, the mermaid debug loop renders",
+      "Verify every glossary term appears verbatim in the en lessons (attach check)",
+      "Verify every [^Sn] anchor in en lessons has a matching ## Sn block in en sources.md",
+      "Confirm check-block ids and correct-answer positions are byte-identical to zh (b/c/b/b/b/b for lessons 1-6, choice counts 2/4/2/4/4/4)"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "The learner can take one vague instruction of their own, rewrite it with an explicit role, task, format, and constraints, add few-shot examples or a chain-of-thought request where the task warrants it, and run a debug iteration that measurably improves the output.",
+    "interactionCheck": "All six lessons carry one agentmentor-check block each (clear-vs-vague in lesson 1, identify the missing element in lesson 2, example quality in lesson 3, CoT task fit in lesson 4, identify-the-fix in lesson 5, match-strategy-to-task in lesson 6), preserved from the zh variant with identical ids, modes, choice counts (2/4/2/4/4/4), and correct-answer positions (b/c/b/b/b/b); label, prompt, whyHere, choice text, and feedback are English teaching rewrites specific to each lesson's misconception. Exercises keep the zh Level structure with rubric, answer, and hints per Level.",
+    "learnerFitCheck": "The course assumes only prior AI-chat experience and basic text editing; it needs no programming environment. Structured design, few-shot, chain-of-thought, debugging, and task strategies are taught from zero in dependency order. Lesson 1's first exercise asks only to rewrite one vague instruction, depending on nothing from unknownConcepts, and each later concept builds on the one before it.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "English variant of a shipped zh course: structure, grounding, and answer positions inherited from the verified original",
+      "All interactive blocks preserve id/mode/choice-count/correct-answer byte-parity with zh",
+      "All source key-facts kept as verbatim English quotes and checked against sources.md",
+      "Glossary terms verified to appear verbatim in the en lessons"
+    ]
+  },
+  "nextSteps": [
+    "Run course-guard on the en variant and fix anything it flags",
+    "Deploy learn.agentmentor.dev and spot-check the /en pages render with hydrated interactive cards",
+    "Produce the remaining locale variants (ja/ko/es/pt-BR) using this en variant as the translation base",
+    "Encourage learners to rewrite and debug three real prompts from their own work during the first week"
+  ],
+  "memoryBoundary": "This agentmentor.json is a course-local state record, stored only in the course directory for quality checks and learning-path tracking. It is never written back to any host AI system's long-term memory and does not affect other courses or conversations."
+}

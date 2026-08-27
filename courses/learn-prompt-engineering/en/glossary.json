@@ -1,0 +1,464 @@
+[
+  {
+    "term": "prompt",
+    "def": "The text instruction you give an AI model to tell it what you want — a question, a description, a task, or some mix of the three. It is the only channel through which the model can learn what your task is.",
+    "source": "[^S13]",
+    "pitfall": "Treating a prompt like a search query and throwing three or four keywords at the model, then blaming the model when the answer comes back generic.",
+    "distractor_rationale": "People who learned to phrase things for search engines assume shorter is better, because search rewards terse keywords. A prompt is an instruction, not a query, and anything you leave out the model has to guess."
+  },
+  {
+    "term": "large language model (LLM)",
+    "def": "An AI system trained on huge amounts of text that can understand natural language and generate new text in response; ChatGPT and Claude are examples.",
+    "source": "[^S14]",
+    "pitfall": "Assuming an LLM looks up a stored answer, when it actually generates new text from patterns learned during training — which is why it can be confidently wrong.",
+    "distractor_rationale": "The chat box looks like a search box, so beginners expect retrieval of a filed-away fact. That mental model also makes them trust output they should be verifying."
+  },
+  {
+    "term": "Prompt engineering",
+    "def": "The systematic practice of designing and refining prompts so a model can act on what you actually need. It is a reusable skill, not a collection of one-off tricks.",
+    "source": "[^S13]",
+    "pitfall": "Hunting for a magic phrase or a universal template to paste in front of every request, instead of learning to state the task, the format, and the boundaries.",
+    "distractor_rationale": "Viral 'best prompt ever' posts sell the idea that a secret incantation exists. Beginners chase the wording and skip the part that actually moves quality: saying clearly what they want."
+  },
+  {
+    "term": "vague prompt",
+    "def": "An instruction that leaves out the information the model needs — no audience, no format, no scope — so the model has to guess your intent.",
+    "source": "[^S2]",
+    "pitfall": "Mistaking brevity for clarity: 'summarize this article' feels clean and direct, but it never says how many points, how long, or for whom.",
+    "distractor_rationale": "Short prompts read as confident and efficient, so people assume a concise instruction is a clear one. The test is not length — it is whether the model could restate what you want."
+  },
+  {
+    "term": "clear prompt",
+    "def": "An instruction that pins down the task, the output format, and the background the model needs, leaving little room for it to improvise.",
+    "source": "[^S2]",
+    "pitfall": "Overcorrecting into a 500-word monster prompt that lists every conceivable detail, which buries the requirements that actually matter.",
+    "distractor_rationale": "Once someone learns that vague prompts fail, they swing to 'more is safer.' The goal is enough clarity to remove guesswork, not exhaustive coverage."
+  },
+  {
+    "term": "output quality",
+    "def": "How well the model's response matches what you needed — accuracy, relevance, completeness, and correct format together, not just whether the content is right.",
+    "source": "[^S7]",
+    "pitfall": "Judging output only on whether the facts are correct, while ignoring format, tone, and level of detail — the dimensions that decide whether you can actually use the result.",
+    "distractor_rationale": "Right-or-wrong is the easiest thing to check, so people default to it. A factually correct answer in the wrong shape still costs you a rewrite."
+  },
+  {
+    "term": "back-and-forth refinements",
+    "def": "The extra rounds of conversation needed to patch a prompt that was underspecified. Research on code generation found explicit specifications cut these rounds by 68%.",
+    "source": "[^S12]",
+    "pitfall": "Accepting several rounds of clarification as the normal way to work with AI, rather than as a symptom that the first prompt was missing information.",
+    "distractor_rationale": "Chatting feels natural, so iterating in the conversation seems like collaboration. It is usually just paying, one message at a time, for detail you could have stated up front."
+  },
+  {
+    "term": "follow instructions",
+    "def": "A model's ability to take in and act on what a prompt actually asks for. As of 2026 models do this well across complex directions, long documents, and multi-step tasks.",
+    "source": "[^S6]",
+    "pitfall": "Concluding that because modern models follow instructions well, the prompt matters less — when the model still can only work from the boundaries your prompt sets.",
+    "distractor_rationale": "Strong models make sloppy prompts feel survivable on easy tasks, so people generalize that to hard ones. Capability handles execution; the prompt still has to supply intent."
+  },
+  {
+    "term": "token",
+    "def": "The unit an LLM uses to process text, roughly a word fragment. Both your prompt and the model's response consume tokens, which is what you pay for and wait on.",
+    "source": "[^S2]",
+    "pitfall": "Padding a prompt with unlimited examples and instructions on the assumption that tokens are free, which raises cost and slows every single run.",
+    "distractor_rationale": "In a chat subscription the cost is invisible, so beginners never feel it. On an API bill, or on a prompt run thousands of times, the same habit is expensive."
+  },
+  {
+    "term": "role",
+    "def": "The identity or perspective you tell the AI to answer from, such as 'you are a senior Python engineer' or 'you are a teacher explaining through analogies'. It sets expertise level and tone.",
+    "source": "[^S3]",
+    "pitfall": "Picking a role that doesn't match the task — asking an 'elementary school teacher' to audit production code — or adding a role to a task where it changes nothing.",
+    "distractor_rationale": "Role prompts are the most quoted trick online, so people treat them as decoration they should always add. A role shapes perspective; it cannot supply missing task detail."
+  },
+  {
+    "term": "task description",
+    "def": "The part of the prompt that says exactly what you want done. It has three layers: a verb (summarize, analyze, generate), an object (what it acts on), and a goal (what result to reach).",
+    "source": "[^S2]",
+    "pitfall": "Writing a task that names the object but not the angle — 'analyze this code' — leaving the model to pick between performance, security, readability, and bugs.",
+    "distractor_rationale": "The writer already knows which angle they mean, so the instruction feels complete to them. This is the single most common prompt failure."
+  },
+  {
+    "term": "output format",
+    "def": "The structure and style you want the answer in — JSON, a table, three bullets, a fixed set of sections — stated explicitly rather than left to the model.",
+    "source": "[^S2]",
+    "pitfall": "Leaving format unstated and getting a different shape on every run: prose one time, five bullets the next, a one-line takeaway after that.",
+    "distractor_rationale": "People assume the model will pick the 'best' presentation. With no constraint it picks a different plausible one each time, which breaks anything downstream."
+  },
+  {
+    "term": "constraints",
+    "def": "The 'only...' and 'don't...' rules that bound the response — length, scope, tone, exclusions, priorities — keeping the model from wandering off task.",
+    "source": "[^S2]",
+    "pitfall": "Going to an extreme in either direction: no constraints at all, so the output drifts; or so many that the model has no room left and the answer turns stiff.",
+    "distractor_rationale": "Constraints are the last element beginners add, so they either forget them entirely or, once burned, over-apply them. Match the count to the task: exploratory tasks need few, execution tasks need more."
+  },
+  {
+    "term": "context",
+    "def": "The background information you supply in the prompt so the model understands the specific situation, audience, and boundaries of the task.",
+    "source": "[^S3]",
+    "pitfall": "Dumping in every document and detail you have, which buries the parts that matter and makes the output worse rather than better.",
+    "distractor_rationale": "'More context is always better' sounds safe, and long context windows encourage it. Relevance beats volume — irrelevant background competes for the model's attention."
+  },
+  {
+    "term": "Audience perspective",
+    "def": "A role pattern that frames the answer around who will read it, such as 'you're explaining this to non-technical leadership'. It controls depth and vocabulary.",
+    "source": "[^S3]",
+    "pitfall": "Naming the audience with a broad label ('technical people') that doesn't say what they already know, so the model can't calibrate how deep to go.",
+    "distractor_rationale": "A job title feels specific enough to the writer. But 'engineer' spans someone who has never touched this API and someone who wrote it — the model needs the background, not the badge."
+  },
+  {
+    "term": "jargon",
+    "def": "Domain-specific vocabulary whose use should be decided by who is reading. Aimed at the wrong audience it either loses the reader or wastes their time on explanation they don't need.",
+    "source": "[^S3]",
+    "pitfall": "Never telling the model what to do with jargon, so it either buries a non-technical reader in terms or over-explains basics to an expert.",
+    "distractor_rationale": "People think 'write clearly' is an objective standard the model can apply on its own. Clarity is relative to a reader, and the model only knows the reader you describe."
+  },
+  {
+    "term": "template",
+    "def": "A prompt whose variable part is replaced by a placeholder, so the same structure can be reused across runs with only the input swapped in.",
+    "source": "[^S3]",
+    "pitfall": "Forcing one rigid template onto every situation, so prompts that need different roles, formats, or constraints all get the same shape and the results degrade.",
+    "distractor_rationale": "A template that worked once feels like a formula worth reusing everywhere. Templates save the structure you already validated; they don't remove the need to fit the task."
+  },
+  {
+    "term": "review dimensions",
+    "def": "The named angles you tell the AI to examine something from — correctness, performance, security, clarity — usually with a priority order.",
+    "source": "[^S12]",
+    "pitfall": "Asking for a generic 'review' and getting comments on whatever the model noticed first, typically naming and style rather than the bugs you cared about.",
+    "distractor_rationale": "'Review this' feels like a complete request because a human reviewer would ask what you want. The model won't ask — it picks a dimension and runs with it."
+  },
+  {
+    "term": "few-shot learning",
+    "def": "A technique that guides the model by placing a small number of examples (usually 2-5) in the prompt, so it infers the input-output mapping, the format, and the style from them.",
+    "source": "[^S4]",
+    "pitfall": "Treating any handful of examples as good enough, when the examples' format and coverage — not their sheer presence — are what determine the output.",
+    "distractor_rationale": "The headline lesson is 'add examples', so people add two easy ones and stop. Example quality is the whole technique; bad examples teach a bad pattern."
+  },
+  {
+    "term": "zero-shot",
+    "def": "Prompting with an instruction and no examples at all, leaving the model to apply its own judgment to the task.",
+    "source": "[^S15]",
+    "pitfall": "Using zero-shot for a task with a strict output format or ambiguous edge cases, then getting a different shape and a different judgment call on every run.",
+    "distractor_rationale": "Zero-shot works fine on simple tasks like translation, so people generalize it to extraction and classification, where the model has no way to know your standard."
+  },
+  {
+    "term": "one-shot",
+    "def": "Prompting with exactly one example — more guidance than zero-shot, less than few-shot.",
+    "source": "[^S11]",
+    "pitfall": "Assuming one example establishes a rule, when the model may read it as a special case rather than a pattern to generalize from.",
+    "distractor_rationale": "One example is cheap and feels sufficient once you see it work on a similar input. Two or three are what let the model see what varies and what stays fixed."
+  },
+  {
+    "term": "in-context learning",
+    "def": "An LLM's ability to infer a rule from examples inside the current conversation and apply it to a new input, with no retraining involved.",
+    "source": "[^S4]",
+    "pitfall": "Assuming the model filters your examples for quality — it learns from all of them, including the sloppy or unrepresentative ones you left in.",
+    "distractor_rationale": "'Learning' suggests judgment, so people expect the model to keep the good examples and ignore the bad. It has no way to know which ones you meant seriously."
+  },
+  {
+    "term": "example diversity",
+    "def": "Choosing few-shot examples that cover the different kinds of input the task will actually see, instead of several variations on the same case.",
+    "source": "[^S4]",
+    "pitfall": "Using three examples that are all the same type — three phones in a product classifier — so the model never learns how to handle anything else.",
+    "distractor_rationale": "Similar examples look consistent and well-matched, which feels like a virtue. Consistency belongs in the format; the content should span the real input space."
+  },
+  {
+    "term": "Format consistency",
+    "def": "Using the exact same structure and markers across every few-shot example, so the model learns one unambiguous output shape.",
+    "source": "[^S4]",
+    "pitfall": "Mixing an arrow in one example, a colon in the next, and a multi-line block in a third, then wondering why the output format keeps shifting.",
+    "distractor_rationale": "Humans read past cosmetic differences and see the same meaning, so the variation looks harmless. The model imitates the surface form closely and has no single form to copy."
+  },
+  {
+    "term": "edge cases",
+    "def": "The ambiguous, incomplete, or unusual inputs a task will hit in reality — missing fields, mixed signals, extreme values — as opposed to the clean ideal case.",
+    "source": "[^S11]",
+    "pitfall": "Building examples and tests only from clean, obvious inputs, so the prompt looks perfect until it meets real data and stalls.",
+    "distractor_rationale": "Clean examples are faster to write and make the prompt appear to work. Real inputs carry noise and gaps, and the model has seen no standard for handling them."
+  },
+  {
+    "term": "JSON",
+    "def": "A structured data format commonly requested as output for extraction tasks, because a program can parse it directly.",
+    "source": "[^S4]",
+    "pitfall": "Writing 'return JSON' and nothing else, then getting inconsistent field names, nesting, and units across runs.",
+    "distractor_rationale": "'JSON' sounds like a complete specification because it names a standard. It fixes the syntax, not your schema — field names and value formats still have to be shown or stated."
+  },
+  {
+    "term": "chain-of-thought",
+    "def": "A prompting technique that has the model lay out intermediate reasoning steps before giving a final answer, which raises accuracy on tasks needing multi-step reasoning.",
+    "source": "[^S5]",
+    "pitfall": "Bolting reasoning steps onto every task, including translation, formatting, and creative work, where they add length and cost without improving anything.",
+    "distractor_rationale": "Once someone sees CoT lift accuracy on a hard problem, 'always make it think' feels like free quality. On non-reasoning tasks it just makes output longer and, for creative work, more mechanical."
+  },
+  {
+    "term": "CoT",
+    "def": "The standard abbreviation for chain-of-thought prompting, used interchangeably with the full term.",
+    "source": "[^S5]",
+    "pitfall": "Reading CoT as a setting you switch on rather than a prompt pattern you write — it only exists because your prompt asked for the steps.",
+    "distractor_rationale": "The acronym makes it sound like a model feature or API flag. It's a way of writing the prompt, which is why the phrasing and the examples still matter."
+  },
+  {
+    "term": "reasoning steps",
+    "def": "The visible step-by-step path the model shows from problem to answer, so each link in the logic can be checked instead of taken on faith.",
+    "source": "[^S10]",
+    "pitfall": "Reading the steps as proof the answer is right, when the reasoning itself can contain a hole and still arrive at a plausible number.",
+    "distractor_rationale": "Visible work looks authoritative, the way a shown calculation does on paper. The value of CoT is that it makes errors findable, not that it prevents them."
+  },
+  {
+    "term": "let's think step by step",
+    "def": "The standard cue phrase appended to a prompt to trigger step-by-step reasoning without supplying any examples.",
+    "source": "[^S5]",
+    "pitfall": "Treating the phrase as a universal fix, when highly specialized or tightly structured reasoning still needs worked examples to control the shape of the steps.",
+    "distractor_rationale": "It's one line and it demonstrably works on math word problems, so it reads like a magic incantation. It triggers reasoning; it doesn't specify how detailed or how structured that reasoning should be."
+  },
+  {
+    "term": "Zero-Shot CoT",
+    "def": "Chain-of-thought triggered by a cue phrase alone, with no examples — the simplest way to get the model to break a problem down.",
+    "source": "[^S5]",
+    "pitfall": "Reaching for zero-shot CoT on a task that needs a specific reasoning format, then getting steps at whatever granularity the model chose.",
+    "distractor_rationale": "It costs one line, so it's the obvious first try — and it works well enough on general problems that people never learn when few-shot CoT is the right call."
+  },
+  {
+    "term": "Few-Shot CoT",
+    "def": "Chain-of-thought guided by one or two examples that show the full reasoning process, so the model imitates both the steps and their level of detail.",
+    "source": "[^S5]",
+    "pitfall": "Writing example reasoning that skips from problem to answer in two lines, so the model learns to skip too and you lose the checkable middle.",
+    "distractor_rationale": "Writing out full reasoning is tedious, so people compress their examples and expect the model to fill in the detail. The examples set the standard — abbreviated examples produce abbreviated reasoning."
+  },
+  {
+    "term": "intermediate steps",
+    "def": "The individual calculations or inferences between the question and the final answer. Making them explicit is what chain-of-thought is for.",
+    "source": "[^S5]",
+    "pitfall": "Accepting steps so coarse they jump straight from the problem to the conclusion, which technically looks like CoT but gives you nothing to verify.",
+    "distractor_rationale": "Any numbered list reads as 'showing the work,' so the form gets copied without the substance. If you can't check a step on its own, it isn't doing its job."
+  },
+  {
+    "term": "multi-step reasoning",
+    "def": "Tasks where the answer depends on a chain of dependent inferences or calculations — word problems, complexity analysis, root-cause analysis, planning decisions.",
+    "source": "[^S10]",
+    "pitfall": "Failing to recognize which tasks are actually multi-step, and so answering directly on problems where each step feeds the next and a single slip corrupts the result.",
+    "distractor_rationale": "A question with a short numeric answer looks simple, hiding the chain of steps behind it. The test: would you reach for scratch paper to do it yourself?"
+  },
+  {
+    "term": "prompt debugging",
+    "def": "Fixing a failing prompt the way you debug code: identify the specific symptom, diagnose which part caused it, change one thing, and verify.",
+    "source": "[^S8]",
+    "pitfall": "Rewording several parts of the prompt at once, so that when the output improves you have no idea which change did the work or which to keep.",
+    "distractor_rationale": "Rewriting the whole prompt feels faster than isolating one variable. It converts debugging into random search — you can't reproduce the win or roll back the regression."
+  },
+  {
+    "term": "debugging loop",
+    "def": "The repeating cycle of run, check the output, identify the problem, diagnose, change one thing, verify against test cases, and record the version that works.",
+    "source": "[^S8]",
+    "pitfall": "Running the loop forever with no stopping rule, polishing a prompt long past the point where the next improvement costs more than it's worth.",
+    "distractor_rationale": "Each round produces a visible small gain, which makes stopping feel like settling. Refusing to accept iteration and expecting a perfect first draft is the same mistake from the other side."
+  },
+  {
+    "term": "Identify the problem",
+    "def": "The first debugging step: naming exactly what's wrong with the output — wrong format, off-target content, missing information, overreach, misread intent, or instability.",
+    "source": "[^S8]",
+    "pitfall": "Stopping at 'the output is bad', which names no dimension and so points to no fix.",
+    "distractor_rationale": "The feeling that something is off arrives before the analysis does, and it's tempting to act on it. Until you can say which of the six failure types it is, you're guessing at the cause."
+  },
+  {
+    "term": "Diagnose the cause",
+    "def": "The second debugging step: working out which part of the prompt — or which missing part — produced the problem you identified.",
+    "source": "[^S8]",
+    "pitfall": "Jumping straight from symptom to edit, which often changes the wrong section and introduces a new problem alongside the old one.",
+    "distractor_rationale": "Once you can see what's wrong, a fix suggests itself immediately and diagnosis feels like a formality. Symptoms and causes rarely sit in the same part of the prompt."
+  },
+  {
+    "term": "one variable at a time",
+    "def": "The core debugging discipline: change exactly one thing per iteration so the effect of that change is unambiguous.",
+    "source": "[^S8]",
+    "pitfall": "Batching three fixes into one edit to save time, then being unable to tell whether all three helped, one helped, or one helped while another hurt.",
+    "distractor_rationale": "Batching looks efficient when each individual test run costs time. It destroys the signal — and with non-deterministic output, you can't reason backwards to recover it."
+  },
+  {
+    "term": "iteration",
+    "def": "One pass through the change-test-evaluate cycle. Prompts get good through a series of small, verified passes, not through one perfect draft.",
+    "source": "[^S8]",
+    "pitfall": "Opening with a 500-word prompt that tries to anticipate everything, instead of starting simple and adding constraints as real failures appear.",
+    "distractor_rationale": "Writing everything up front feels thorough and saves rounds. It buries you in constraints you never tested, so when it fails you don't know which of them is responsible."
+  },
+  {
+    "term": "test cases",
+    "def": "A set of 3-5 representative inputs — clear cases, mixed cases, and edge cases — that you re-run after every prompt change to check whether it actually improved.",
+    "source": "[^S8]",
+    "pitfall": "Building the test set from easy inputs only, so a prompt passes everything and then falls over on the first ambiguous or incomplete real input.",
+    "distractor_rationale": "Clean inputs are quick to write and produce a satisfying pass rate. The failures worth catching all live in the cases people leave out."
+  },
+  {
+    "term": "prompt versions",
+    "def": "Prompts managed the way code is: each version logged with what changed and what it produced, so you can compare and roll back.",
+    "source": "[^S8]",
+    "pitfall": "Editing a prompt in place with no record, so when a change makes things worse the last good version is gone.",
+    "distractor_rationale": "A prompt looks like a throwaway chat message, not an asset. Once it's reused or shipped, it's code — and it deserves the same version discipline."
+  },
+  {
+    "term": "A/B test",
+    "def": "Keeping two prompt versions, running each one about 10 times, and comparing success rates so data decides which is better.",
+    "source": "[^S8]",
+    "pitfall": "Declaring a winner after one or two runs of each, when model output varies enough that a small sample tells you nothing.",
+    "distractor_rationale": "A single impressive run feels like proof. LLM output is non-deterministic — the same prompt gives different results, so you need repetition before the difference means anything."
+  },
+  {
+    "term": "success rate",
+    "def": "The share of your test cases that produce output matching expectations. It turns 'this prompt feels better' into a number you can compare across versions.",
+    "source": "[^S8]",
+    "pitfall": "Tracking only the percentage and never examining what the failures have in common, which leaves you with no idea what to fix next.",
+    "distractor_rationale": "A single number is easy to compare and feels rigorous. The failure pattern — always the same field, always the ambiguous input — is where the next fix actually comes from."
+  },
+  {
+    "term": "unstable format",
+    "def": "A failure mode where the same prompt produces a different output shape on each run — JSON one time, prose the next, capitalization drifting between them.",
+    "source": "[^S8]",
+    "pitfall": "Blaming the model's randomness for the variation, when the real cause is a prompt loose enough to leave the model several equally valid choices.",
+    "distractor_rationale": "Because output is non-deterministic, inconsistency looks like an inherent limitation. It's usually a specification gap: everywhere the prompt permits improvisation, you'll get it."
+  },
+  {
+    "term": "lead-in",
+    "def": "The introductory filler a model adds before the content you asked for — 'Here are the key points:', 'Here's the email:' — which has to be stripped when you want clean output.",
+    "source": "[^S2]",
+    "pitfall": "Forgetting to rule it out, so every result needs manual cleanup before it can be pasted or parsed.",
+    "distractor_rationale": "The lead-in makes the reply sound conversational and polite, so it doesn't register as a problem — until the output is feeding a script or a document and you're deleting the first line every time."
+  },
+  {
+    "term": "good-enough bar",
+    "def": "The practical stopping rule for prompt tuning: around 90% success on your test cases, a stable format, and every part of the prompt doing something you can explain.",
+    "source": "[^S8]",
+    "pitfall": "Chasing 100% and spending hours on the last few percent, when a human handling the remaining edge cases is cheaper than the tuning.",
+    "distractor_rationale": "Perfectionism reads as professionalism, and the last few failures are the most conspicuous. Marginal returns collapse near the top — that time is worth more spent elsewhere."
+  },
+  {
+    "term": "code-generation prompt",
+    "def": "A prompt asking the AI to write runnable code. A good one covers six things: language and version, function signature, core logic, edge cases, code style, and dependency limits.",
+    "source": "[^S12]",
+    "pitfall": "Asking for 'a function to process user data' without input and output types, so the model guesses at the data shape and produces something you can't use.",
+    "distractor_rationale": "The requester holds the whole spec in their head, so the request feels complete. Explicit specifications are what cut back-and-forth refinements by 68%."
+  },
+  {
+    "term": "function signature",
+    "def": "The function's name, its input parameter types, and its return type — the interface contract a code-generation prompt should state up front.",
+    "source": "[^S12]",
+    "pitfall": "Leaving the types unstated, so the generated code makes its own assumptions and won't slot into the code around it.",
+    "distractor_rationale": "In dynamically typed languages types feel optional, so people skip them. The signature is what makes the request unambiguous — without it the model invents an interface."
+  },
+  {
+    "term": "special cases",
+    "def": "The specific input conditions you tell the model how to handle: empty list, None value, duplicate entry, missing field.",
+    "source": "[^S12]",
+    "pitfall": "Naming only the happy path, so the generated code crashes or silently does the wrong thing the first time it sees a null or an empty input.",
+    "distractor_rationale": "Beginners assume the AI will handle obvious cases sensibly on its own. Without a stated rule it picks one — skip, error, or default — and it may not be the one you wanted."
+  },
+  {
+    "term": "code style",
+    "def": "The formatting, naming, commenting, and typing conventions the generated code should follow, stated in the prompt rather than left to the model.",
+    "source": "[^S12]",
+    "pitfall": "Not specifying style, so every generation comes back in a different shape and the code takes extra work to fit into an existing codebase.",
+    "distractor_rationale": "Style feels cosmetic next to correctness, so it's the first thing left out. Inconsistent style is exactly what makes AI-generated code expensive to maintain across a team."
+  },
+  {
+    "term": "dependency limits",
+    "def": "The rule stating which libraries the generated code may use — standard library only, or a named allowlist of third-party packages.",
+    "source": "[^S12]",
+    "pitfall": "Leaving dependencies open, so the model reaches for a heavyweight package to do something the standard library already handles.",
+    "distractor_rationale": "More libraries look like more capability, and the generated code does work. Every import is something to install, secure, and keep updated in deployment."
+  },
+  {
+    "term": "standard library",
+    "def": "The modules a language ships with, requiring no installation. Restricting generated code to it keeps the result portable and dependency-free.",
+    "source": "[^S12]",
+    "pitfall": "Saying nothing about the standard library and receiving code that pulls in third-party packages for a task it could handle natively.",
+    "distractor_rationale": "The idiomatic solution in tutorials often uses a popular package, so that's what the model reaches for. For small utilities the dependency usually costs more than it saves."
+  },
+  {
+    "term": "type hints",
+    "def": "Explicit type annotations on parameters and return values that make the interface contract visible in the code itself.",
+    "source": "[^S12]",
+    "pitfall": "Treating type hints as optional decoration and omitting them from the prompt, so the generated code's interface stays implicit and ambiguous.",
+    "distractor_rationale": "Code runs fine without them, so they look like overhead. They're how the next reader — human or AI — knows what the function accepts and returns without running it."
+  },
+  {
+    "term": "error handling",
+    "def": "The code's logic for invalid input, exceptions, and edge conditions — something to specify in the prompt, not to bolt on afterwards.",
+    "source": "[^S12]",
+    "pitfall": "Asking for the happy path with a plan to 'add error handling later', which usually means the code goes to production without it.",
+    "distractor_rationale": "'Make it work first' is a real principle in prototyping, so it gets applied where it shouldn't. Error handling changes the structure of a function; retrofitting is a rewrite."
+  },
+  {
+    "term": "defensive programming",
+    "def": "Writing code on the assumption that input may be invalid, deciding up front how to respond to bad data rather than trusting the caller.",
+    "source": "[^S12]",
+    "pitfall": "Assuming upstream data is always well-formed, so the code works on your test inputs and breaks on real ones.",
+    "distractor_rationale": "Validating input can feel like distrust of teammates or wasted lines. It's a normal engineering standard — real data has gaps, wrong types, and surprises."
+  },
+  {
+    "term": "docstring",
+    "def": "The documentation block inside a function describing what it does, how to use it, and any relevant characteristics — a code-style requirement worth stating explicitly.",
+    "source": "[^S12]",
+    "pitfall": "Asking for 'comments' in general and getting a line-by-line narration of obvious code, instead of one docstring explaining usage.",
+    "distractor_rationale": "'Add comments' seems like it should improve readability. Restating what the code plainly says adds noise; a docstring captures the part the code can't express."
+  },
+  {
+    "term": "document writing",
+    "def": "Prompt work aimed at producing or reshaping prose — technical docs, meeting notes, summaries, reports — where audience, purpose, tone, and structure carry the task.",
+    "source": "[^S3]",
+    "pitfall": "Asking for a summary without saying who reads it, so the model lands at a random depth: too technical for a manager, too shallow for an engineer.",
+    "distractor_rationale": "Writers assume 'summarize clearly' is an objective instruction. Clarity depends entirely on the reader, and the model only knows the reader you name."
+  },
+  {
+    "term": "Target audience",
+    "def": "The intended reader of a document, described by role, background knowledge, and reading goal — not just by job title.",
+    "source": "[^S3]",
+    "pitfall": "Describing the audience with a broad label like 'technical staff' rather than what they know and what they'll do with the document.",
+    "distractor_rationale": "A title feels concrete because it's specific in an org chart. It says nothing about prior knowledge — which is the only thing that tells the model how deep to pitch it."
+  },
+  {
+    "term": "structure template",
+    "def": "A predefined organization for the output — background, options compared, recommendation, risks — given so the model fills a fixed shape instead of choosing one.",
+    "source": "[^S3]",
+    "pitfall": "Leaving the structure open, so each run organizes the material differently and outputs can't be compared or reused.",
+    "distractor_rationale": "People expect the model to pick the structure best suited to the content. It picks a plausible one each time, which sacrifices the consistency that makes documents usable at scale."
+  },
+  {
+    "term": "Tone and style",
+    "def": "The register of the writing — formal or casual, detailed or terse, practical or promotional — specified so the document sounds the way the situation calls for.",
+    "source": "[^S3]",
+    "pitfall": "Not specifying tone, so register drifts within a single document and the result reads as unprofessional even when the content is right.",
+    "distractor_rationale": "Once the facts are correct, tone feels like polish. For a customer email or an executive brief, the wrong tone can undo the content entirely."
+  },
+  {
+    "term": "data-extraction prompt",
+    "def": "A prompt that pulls structured information out of unstructured text. A reliable one spells out four things: field definitions, missing-value handling, output format, and data validation.",
+    "source": "[^S4]",
+    "pitfall": "Asking to 'extract the key information', which leaves the model to decide what counts as key — a different decision on each run.",
+    "distractor_rationale": "The requester knows which fields they mean, so listing them feels redundant. Subjective words like 'key' and 'important' are exactly what makes extraction unstable."
+  },
+  {
+    "term": "field definitions",
+    "def": "The stated meaning, type, and allowed values of each field you want extracted — for example sentiment must be exactly one of positive, negative, or neutral.",
+    "source": "[^S4]",
+    "pitfall": "Naming the fields but not their allowed values, so a sentiment field comes back as 'good', 'upbeat', or 'favorable' instead of your three categories.",
+    "distractor_rationale": "The field name seems self-explanatory, so constraining its values looks like over-specification. Anything you don't constrain, the model paraphrases."
+  },
+  {
+    "term": "missing-value handling",
+    "def": "The explicit rule for what to output when a field isn't present in the source — null, 'not provided', or 'TBD' — plus an instruction not to guess.",
+    "source": "[^S4]",
+    "pitfall": "Saying nothing about missing values, so the model either drops the field entirely or infers one, quietly corrupting the dataset.",
+    "distractor_rationale": "People expect the model to handle absence sensibly. Its default is to be helpful, which means inferring a plausible value — a guess that looks exactly like real data."
+  },
+  {
+    "term": "data validation",
+    "def": "Rules checking that extracted data has the expected shape and range — a salary field must contain a number, a location can be a value or null but never an empty string.",
+    "source": "[^S4]",
+    "pitfall": "Accepting extracted output without checks, so malformed or out-of-range values flow straight into whatever consumes them.",
+    "distractor_rationale": "Output that looks well-formed passes the eye test, and JSON that parses feels validated. Syntax being correct says nothing about the values being right."
+  },
+  {
+    "term": "hallucination",
+    "def": "The model's habit of confidently fabricating facts — inventing information that reads as plausible but isn't in the source and isn't true.",
+    "source": "[^S6]",
+    "pitfall": "Trusting output without verifying the key facts, especially in extraction tasks where an invented value is indistinguishable from a real one.",
+    "distractor_rationale": "Fluent, confident prose reads as reliable, and there's no visible marker separating a fabricated fact from a real one. The defense is an explicit instruction not to guess, plus verification."
+  }
+]
