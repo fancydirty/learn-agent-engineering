@@ -2,6 +2,7 @@
 domain: 软件开发
 tags: [Agent Harness, 循环控制, 停止条件, 人在环, Agent 可靠性]
 lang: zh
+outcome: 亲手写一个以 stop_reason 驱动的 Agent 循环，并装上四道停止阀。
 tier: 2
 order: 7
 ---

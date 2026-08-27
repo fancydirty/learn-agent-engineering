@@ -2,6 +2,7 @@
 domain: 软件开发
 tags: [Agent 评测, 验证器, LLM 裁判, 评测集, 质量保证]
 lang: zh
+outcome: 给 Agent 产出建一条评测跑道，把「看起来做完了」和「做完了」分开。
 tier: 2
 order: 10
 ---

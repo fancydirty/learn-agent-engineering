@@ -2,6 +2,7 @@
 domain: 软件开发
 tags: [编排, 工作流模式, 并行化, 编排者-工人, 多 Agent 系统]
 lang: zh
+outcome: 把单循环 harness 升级成路由、扇出、评审回路俱全的编排脚本。
 tier: 3
 order: 12
 ---

@@ -2,6 +2,7 @@
 domain: AI 应用
 tags: [prompt-engineering, AI, 大语言模型, 对话优化, 实用技能]
 lang: zh
+outcome: 写出一次就把要求说清楚的提示词，并能系统地调试它。
 tier: 1
 order: 3
 ---

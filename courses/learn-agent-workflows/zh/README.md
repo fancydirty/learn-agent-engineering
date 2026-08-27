@@ -2,6 +2,7 @@
 domain: 软件开发
 tags: [Agent 工作流, 多代理编排, 任务分解, 状态管理, 错误处理, AI 自动化]
 lang: zh
+outcome: 把一件多步骤的活拆成可编排、断了能接着跑的自动化流程。
 tier: 1
 order: 2
 ---

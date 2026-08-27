@@ -2,6 +2,7 @@
 domain: 软件开发
 tags: [Agent 记忆, 上下文窗口, 摘要压缩, 持久记忆, 提示注入]
 lang: zh
+outcome: 分清记忆与状态，给 Agent 配上跨会话不丢、不被污染的记忆。
 tier: 2
 order: 5
 ---

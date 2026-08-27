@@ -2,6 +2,7 @@
 domain: 软件开发
 tags: [可观测性, 调试, tracing, 结构化日志, 指标监控]
 lang: zh
+outcome: 给 Agent 装上日志、指标与 trace 树，出了错能查到第几条消息。
 tier: 3
 order: 11
 ---

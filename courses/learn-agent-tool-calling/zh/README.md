@@ -2,6 +2,7 @@
 domain: 软件开发
 tags: [Agent 工具调用, 提示注入, 权限设计, 工具接口设计, Claude API]
 lang: zh
+outcome: 看懂工具调用协议，设计模型选得对、填得对、越不了权的工具接口。
 tier: 1
 order: 4
 ---

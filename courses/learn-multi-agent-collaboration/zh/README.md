@@ -2,6 +2,7 @@
 domain: 软件开发
 tags: [多 Agent 协作, 编排, 提示词设计, 子代理, Claude API]
 lang: zh
+outcome: 把活分给多个 Agent 而不乱：分工、派活提示词、生产者-评审者。
 tier: 2
 order: 6
 ---

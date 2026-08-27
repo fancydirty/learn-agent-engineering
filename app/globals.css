@@ -738,6 +738,10 @@
 }
 .course-tile-outcome{
   margin-top:.45rem; font-size:.79rem; line-height:1.55; color:var(--muted-foreground);
+  /* Cards must not grow with the README intro: outcome frontmatter is the
+     intended one-liner, and this clamp is the guarantee when a course ships
+     without one and the full intro falls through. */
+  display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden;
 }
 .course-tile-meta{
   margin-top:auto; padding-top:1rem; display:flex; gap:.4rem; align-items:baseline;

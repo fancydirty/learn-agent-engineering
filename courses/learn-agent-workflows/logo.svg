@@ -1,9 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" fill="#4F46E5"/>
-  <path d="M20 30 L50 50 L80 30 M50 50 L50 70 M35 70 L65 70" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="20" cy="30" r="4" fill="white"/>
-  <circle cx="50" cy="50" r="4" fill="white"/>
-  <circle cx="80" cy="30" r="4" fill="white"/>
-  <circle cx="35" cy="70" r="4" fill="white"/>
-  <circle cx="65" cy="70" r="4" fill="white"/>
+<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Workflow: two sources fan in, flow down, land on a shared stage -->
+  <g stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="10" cy="14" r="3.5"/>
+    <circle cx="38" cy="14" r="3.5"/>
+    <circle cx="24" cy="26" r="3.5"/>
+    <path d="M12.6 16.2 21.4 23.8M35.4 16.2 26.6 23.8M24 29.5 24 36M17.5 36 30.5 36"/>
+    <circle cx="14" cy="36" r="1.5" fill="currentColor" stroke="none"/>
+    <circle cx="34" cy="36" r="1.5" fill="currentColor" stroke="none"/>
+  </g>
 </svg>

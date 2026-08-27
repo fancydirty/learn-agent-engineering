@@ -2,6 +2,7 @@
 domain: 软件开发
 tags: [Claude Code, Skills, 自定义工作流, AI 辅助开发, 开发效率]
 lang: zh
+outcome: 把重复的工作流程写成 Claude Code 能自动照做的 Skill。
 tier: 1
 order: 1
 ---
