@@ -1,0 +1,345 @@
+[
+  {
+    "term": "Skill",
+    "def": "A directory plus a SKILL.md file: a reusable package of workflow instructions that tells Claude how to do one specific task.",
+    "source": "[^S3]",
+    "pitfall": "Assuming a Skill is a piece of code or a script. It's Markdown instructions written for Claude to read, not an executable program.",
+    "distractor_rationale": "Beginners conflate a Skill with a function or script from traditional programming because both 'package reusable logic,' but a Skill is natural-language instruction, not code."
+  },
+  {
+    "term": "SKILL.md",
+    "def": "The core file of a Skill, containing two parts: YAML frontmatter (metadata) and Markdown instructions (the directions Claude follows).",
+    "source": "[^S1]",
+    "pitfall": "Writing only the frontmatter or only the instructions, so Claude can't recognize or run the Skill correctly.",
+    "distractor_rationale": "Newcomers forget SKILL.md must contain both parts, because other Markdown files usually have only body text and no frontmatter."
+  },
+  {
+    "term": "YAML frontmatter",
+    "def": "The metadata block at the top of SKILL.md, wrapped in triple-dash (---) markers, holding fields like name and description.",
+    "source": "[^S1]",
+    "pitfall": "Forgetting the closing ---, or using wrong indentation inside the frontmatter, so the YAML fails to parse.",
+    "distractor_rationale": "YAML is strict about indentation and format, but people used to JSON's flexibility often produce malformed frontmatter."
+  },
+  {
+    "term": "name",
+    "def": "A required frontmatter field that defines the Skill's unique identifier; it becomes the command and must use lowercase letters, digits, and hyphens.",
+    "source": "[^S3]",
+    "pitfall": "Using spaces, capital letters, or camelCase in name (like taskOrganizer), so the Skill can't be invoked correctly.",
+    "distractor_rationale": "People used to filenames or variable names reach for underscores or camelCase, but a Skill name only allows lowercase and hyphens."
+  },
+  {
+    "term": "description",
+    "def": "A required frontmatter field that tells Claude what the Skill does and when to use it. It is the sole basis for automatic triggering.",
+    "source": "[^S6]",
+    "pitfall": "Writing a vague description like 'Helps with tasks,' so Claude never knows when it applies and never loads it on its own.",
+    "distractor_rationale": "Newcomers treat description as marketing copy for humans, not realizing it's the field Claude matches against to decide whether to load the Skill."
+  },
+  {
+    "term": "automatic triggering",
+    "def": "When what the user says matches a Skill's description, Claude loads and runs that Skill on its own, with no manual command.",
+    "source": "[^S6]",
+    "pitfall": "Expecting Claude to trigger on 'intent' when the description contains none of the words the user actually says, so the match never fires.",
+    "distractor_rationale": "Users assume Claude infers synonyms or context, but automatic triggering leans mostly on keyword matching against the description."
+  },
+  {
+    "term": "manual invocation",
+    "def": "Calling a Skill directly with /skill-name, which forces Claude to load it without relying on the description matching.",
+    "source": "[^S1]",
+    "pitfall": "Forgetting that the Skill name can't contain spaces or capitals, and typing /MySkill or /my skill so the call fails.",
+    "distractor_rationale": "People used to command lines separate arguments with spaces, but a Skill name itself can't contain spaces."
+  },
+  {
+    "term": "Markdown instructions",
+    "def": "Everything in SKILL.md after the frontmatter: the concrete, step-by-step directions Claude follows, written in Markdown.",
+    "source": "[^S1]",
+    "pitfall": "Writing vague steps like 'analyze the data' or 'process the task,' so Claude has no idea what to actually do and the output misses.",
+    "distractor_rationale": "People used to writing high-level abstractions overlook that Claude needs very specific steps, because it won't 'get what you mean' the way a person would."
+  },
+  {
+    "term": "progressive disclosure",
+    "def": "Giving Claude only what it needs right now instead of dumping every detail at once, so the Skill stays short and loads fast.",
+    "source": "[^S2]",
+    "pitfall": "Trying to cover every edge case in version one and producing a 500-line SKILL.md that loads slowly and is hard to maintain.",
+    "distractor_rationale": "Perfectionists write too much in the first pass, not knowing progressive disclosure is core to Skill design: concise beats comprehensive."
+  },
+  {
+    "term": "supporting files",
+    "def": "Files in a Skill directory other than SKILL.md (checklists, config, scripts) that are loaded on demand and don't consume initial context.",
+    "source": "[^S2]",
+    "pitfall": "Cramming every check rule into SKILL.md, making the file huge and burning context on every load.",
+    "distractor_rationale": "People unaware supporting files exist assume everything must live in SKILL.md, missing the benefit of modular organization."
+  },
+  {
+    "term": "personal skills",
+    "def": "Skills stored in ~/.claude/skills/, available only to you but usable across every project. Good for personal habits and general-purpose tools.",
+    "source": "[^S9]",
+    "pitfall": "Putting a team-standard Skill in personal skills, so teammates can't use it.",
+    "distractor_rationale": "People who don't know the personal-vs-project distinction assume every Skill belongs in ~/.claude/skills/."
+  },
+  {
+    "term": "project skills",
+    "def": "Skills stored in a project's .claude/skills/ directory, committed to Git so teammates get them automatically when they clone the repo.",
+    "source": "[^S9]",
+    "pitfall": "Adding project skills to .gitignore, so teammates can't sync them and the point of sharing is lost.",
+    "distractor_rationale": "People habitually ignore dot-directories as local config, not knowing .claude/skills/ is meant to be committed to version control."
+  },
+  {
+    "term": "Repetition",
+    "def": "One of the three traits that make a scenario suit a Skill: you do the same thing daily, weekly, sometimes hourly.",
+    "source": "[^S1]",
+    "pitfall": "Creating a Skill for a one-off task, then never using it again after writing it.",
+    "distractor_rationale": "People overestimate how often a task repeats, or confuse a varying process with varying content; only a repeating process suits a Skill."
+  },
+  {
+    "term": "Fixed steps",
+    "def": "One of the three traits that make a scenario suit a Skill: the process can be written as clear steps rather than changing every time.",
+    "source": "[^S1]",
+    "pitfall": "Building a Skill for fully open-ended creative work, which then needs heavy manual intervention on every run.",
+    "distractor_rationale": "People assume a Skill can handle any task, not knowing it fits structured, repeatable workflows far better than open-ended ones."
+  },
+  {
+    "term": "Verifiable",
+    "def": "One of the three traits that make a scenario suit a Skill: you can tell whether Claude got the result right.",
+    "source": "[^S1]",
+    "pitfall": "Building a Skill for a subjective judgment call (like 'is this design any good'), where you can't verify the output quality.",
+    "distractor_rationale": "People expect a Skill to handle tasks needing taste or business judgment, but those have no objective standard to write into a checklist."
+  },
+  {
+    "term": "description formula",
+    "def": "The guideline for writing an effective description: what it does + when to use it + key capabilities.",
+    "source": "[^S6]",
+    "pitfall": "Writing only 'what it does' and dropping 'when to use it,' so Claude has no signal for which scenario to load it in.",
+    "distractor_rationale": "People assume a shorter description is better, not realizing that leaving out the use case breaks automatic triggering."
+  },
+  {
+    "term": "trigger keywords",
+    "def": "The words in a description that a user might plausibly say; Claude matches on these to decide whether to auto-load the Skill.",
+    "source": "[^S6]",
+    "pitfall": "Writing 'generate documentation' in the description while the user says 'create docs' or 'write docs,' so the keywords don't match and it never fires.",
+    "distractor_rationale": "People assume Claude understands synonyms, not knowing you should write the various phrasings a user might use into the description."
+  },
+  {
+    "term": "Input Format",
+    "def": "The instructions section that spells out what kind of input the Skill accepts, including shape, source, and a concrete example.",
+    "source": "[^S1]",
+    "pitfall": "Never stating the input format, so Claude can't handle input that arrives in an unexpected shape.",
+    "distractor_rationale": "People assume Claude auto-detects any format, not knowing that stating the input format explicitly sharply improves accuracy."
+  },
+  {
+    "term": "Processing Steps",
+    "def": "The ordered, concrete operations the Skill runs; the heart of the instructions, where each step should be specific enough to be unambiguous.",
+    "source": "[^S1]",
+    "pitfall": "Writing vague steps like 'analyze the input' or 'judge priority' with no stated criteria, so Claude doesn't know the actual standard to apply.",
+    "distractor_rationale": "People used to writing high-level flow overlook that Claude needs explicit decision criteria, like 'contains \"urgent\" -> Urgent.'"
+  },
+  {
+    "term": "Output Format",
+    "def": "The instructions section defining what the result should look like, including structure, symbols, and a worked example.",
+    "source": "[^S1]",
+    "pitfall": "Saying only 'output a list' with no example, so Claude's output format comes out different on every run.",
+    "distractor_rationale": "People assume Claude knows what a 'standard format' is, not knowing a complete example is what guarantees consistent formatting."
+  },
+  {
+    "term": "edge cases",
+    "def": "Unusual or abnormal inputs (empty input, malformed input, over-long content) whose handling must be spelled out explicitly in the instructions.",
+    "source": "[^S1]",
+    "pitfall": "Testing only well-behaved input, so the Skill misbehaves or stalls on an empty string or garbled format.",
+    "distractor_rationale": "People focus on the happy path and skip edge cases, not knowing that's the main reason a Skill turns out unstable."
+  },
+  {
+    "term": "direct invocation",
+    "def": "The simplest test: call the Skill with /skill-name and watch whether the output matches expectations.",
+    "source": "[^S1]",
+    "pitfall": "Testing once, seeing it work, and declaring the Skill fine, without preparing multiple cases across different situations.",
+    "distractor_rationale": "People underestimate the variability of AI behavior; one success doesn't mean every run succeeds, and several cases are needed to prove stability."
+  },
+  {
+    "term": "test cases",
+    "def": "Prepared input-and-expected-output pairs used to test a Skill systematically before relying on it.",
+    "source": "[^S1]",
+    "pitfall": "Preparing only normal-case tests and never covering edge or garbage input.",
+    "distractor_rationale": "Incomplete testing mindset: people don't realize edge and abnormal cases are where the real problems surface."
+  },
+  {
+    "term": "iteration loop",
+    "def": "The test-find-fix-retest cycle a Skill goes through; the path from 'it runs' to 'it runs well.'",
+    "source": "[^S8]",
+    "pitfall": "Expecting version one to be perfect and giving up at the first problem, not knowing every good Skill is iterated into shape.",
+    "distractor_rationale": "Perfectionists won't accept a flawed first version, so they miss the chance to learn and improve from real use."
+  },
+  {
+    "term": "A/B it",
+    "def": "Running the same task with and without the Skill and timing both, to prove whether the Skill is actually faster and more consistent.",
+    "source": "[^S8]",
+    "pitfall": "Assuming a Skill saves time just because it exists, without measuring, then finding the Skill version is slower or lower quality.",
+    "distractor_rationale": "People let subjective impression stand in for objective measurement, not knowing you need data to confirm a Skill's real value."
+  },
+  {
+    "term": "checklist pattern",
+    "def": "Organizing a complex task as a series of explicit check items, each of which can independently pass or fail.",
+    "source": "[^S1]",
+    "pitfall": "Writing check items too vaguely (like 'check code quality'), so there's no clear way to judge pass or fail.",
+    "distractor_rationale": "People miss that the point of a checklist is measurability: every item needs an explicit pass/fail standard."
+  },
+  {
+    "term": "multi-step workflow",
+    "def": "A Skill that runs several sequential steps to finish a complex task, where one step's output may feed the next.",
+    "source": "[^S1]",
+    "pitfall": "Leaving the dependencies between steps unclear, so Claude runs them out of order or skips an intermediate step.",
+    "distractor_rationale": "People assume Claude infers step dependencies, not knowing you must write 'step 2 uses the result of step 1' explicitly."
+  },
+  {
+    "term": "Grading the output",
+    "def": "Splitting a Skill's findings by severity (passed, worth a look, must fix) so the reader knows what to act on first.",
+    "source": "[^S1]",
+    "pitfall": "Listing every problem flat, so the user can't tell which items must be fixed now and which can wait.",
+    "distractor_rationale": "People think listing problems is enough, not knowing severity grading is what makes a Skill usable, letting the reader decide fast."
+  },
+  {
+    "term": "version control",
+    "def": "Managing project skills with Git so you can view history, roll back, and compare versions, the same way you manage code.",
+    "source": "[^S8]",
+    "pitfall": "Editing a Skill but never committing it, so teammates keep using the old version and the review bar drifts apart.",
+    "distractor_rationale": "People treat a Skill as a config file to tweak freely, not knowing it also needs version control and team syncing."
+  },
+  {
+    "term": "Reviewing a Skill",
+    "def": "Reviewing a new or changed Skill the way you review code: check the description, the instructions, and the tests before merging.",
+    "source": "[^S10]",
+    "pitfall": "Merging a teammate's Skill without review, then finding the description is too vague or the instructions are wrong.",
+    "distractor_rationale": "People think a Skill is just documentation and needs no review, not knowing a poor Skill drags down the whole team's efficiency."
+  },
+  {
+    "term": "naming convention",
+    "def": "A team-wide, agreed-on style for Skill names: hyphens, verb-noun or noun-verb order, two or three words.",
+    "source": "[^S8]",
+    "pitfall": "Everyone using a different style (underscores, camelCase, numeric suffixes), which makes Skills hard to manage and find.",
+    "distractor_rationale": "People don't notice how much naming convention matters and each name things their own way, producing a mess."
+  },
+  {
+    "term": "prune on a schedule",
+    "def": "Reviewing all Skills once a quarter and deleting or improving the ones that barely get used, so an unused pile doesn't crowd Claude's choices.",
+    "source": "[^S8]",
+    "pitfall": "Creating many Skills but never pruning, so Claude has to search a pile of dead Skills at load time.",
+    "distractor_rationale": "People focus only on adding new Skills and overlook that deleting dead ones is just as important."
+  },
+  {
+    "term": "announce changes",
+    "def": "After changing an existing Skill, post the change and its impact in the team channel so people don't operate the new Skill on old assumptions.",
+    "source": "[^S1]",
+    "pitfall": "Quietly changing code-review's standards, so teammates still read the results by the old bar and get confused.",
+    "distractor_rationale": "People think editing one file is no big deal, not knowing a Skill change directly shifts the team's workflow and expectations."
+  },
+  {
+    "term": "Composing Skills",
+    "def": "Chaining several single-purpose Skills to handle one larger task, or referencing one Skill from inside another.",
+    "source": "[^S3]",
+    "pitfall": "Building one big all-in-one Skill that tries to do everything, which then becomes hard to maintain and reuse.",
+    "distractor_rationale": "People don't grasp that small, focused Skills composed together beat a monolithic Skill, which violates single responsibility."
+  },
+  {
+    "term": "allowed-tools",
+    "def": "An optional frontmatter field that restricts a Skill to a specified set of tools, drawing a permission boundary for security-sensitive cases.",
+    "source": "[^S5]",
+    "pitfall": "Leaving tools unrestricted, so the Skill unexpectedly uses a tool it shouldn't (editing files, running scripts).",
+    "distractor_rationale": "People don't know tool permissions can be limited and assume a Skill just won't do anything dangerous on its own."
+  },
+  {
+    "term": "disable-model-invocation",
+    "def": "An optional frontmatter field that, when set, stops Claude from auto-loading the Skill, leaving manual invocation only, to avoid accidental triggers.",
+    "source": "[^S5]",
+    "pitfall": "Building an expensive Skill (one that calls a paid API) without disabling auto-invocation, so it fires by accident and runs up cost.",
+    "distractor_rationale": "People don't know this field exists and assume the only way to avoid accidental triggers is to edit the description."
+  },
+  {
+    "term": "model",
+    "def": "An optional frontmatter field that pins a specific model for the Skill, for example a stronger reasoning model when the task needs it.",
+    "source": "[^S5]",
+    "pitfall": "Leaving every Skill on the default model, so a Skill that needs careful reasoning comes out inconsistent.",
+    "distractor_rationale": "People don't know a model can be set per Skill and assume it's a global setting only."
+  },
+  {
+    "term": "MCP server",
+    "def": "A Model Context Protocol server that supplies tools (database access, API calls) to Claude; a Skill supplies the workflow knowledge for using them.",
+    "source": "[^S7]",
+    "pitfall": "Having an MCP tool but not knowing how to use it, or writing a Skill with no matching MCP tool to back it.",
+    "distractor_rationale": "People confuse MCP (supplies tools) with Skills (supply workflow), missing that the two are complementary."
+  },
+  {
+    "term": "Community Skills",
+    "def": "Skills built and shared by other developers, findable on GitHub and elsewhere.",
+    "source": "[^S1]",
+    "pitfall": "Copying a community Skill straight into a production project without first vetting it for safety and fit.",
+    "distractor_rationale": "People over-trust community resources, not knowing you should first try it in a scratch project and check for anything risky."
+  },
+  {
+    "term": "Documenting Skills",
+    "def": "Listing every project skill, with usage and examples, in the project README or .claude/README.md.",
+    "source": "[^S10]",
+    "pitfall": "Creating many project skills but documenting none, so new members don't know which Skills exist or how to use them.",
+    "distractor_rationale": "People think the Skill file is its own documentation, not knowing you need an index so people can find and understand what's available."
+  },
+  {
+    "term": "single responsibility",
+    "def": "Each Skill should do one thing and do it well, rather than trying to solve several unrelated problems in one Skill.",
+    "source": "[^S3]",
+    "pitfall": "Building an 'everything assistant' Skill that tries to handle every task and ends up doing each one poorly.",
+    "distractor_rationale": "People chase the convenience of 'one Skill for everything,' not grasping that small, focused Skills are easier to maintain and compose."
+  },
+  {
+    "term": "context",
+    "def": "When Claude loads a Skill, the SKILL.md content occupies the context window; the longer the file, the more it consumes.",
+    "source": "[^S2]",
+    "pitfall": "Writing a 500-line SKILL.md, so every load burns a large amount of context and crowds out Claude's ability to handle other information.",
+    "distractor_rationale": "People don't realize context is a limited resource and assume more detail is always better."
+  },
+  {
+    "term": "loaded on demand",
+    "def": "Supporting-file content is read only when Claude actually needs it, so it doesn't occupy context at the Skill's initial load.",
+    "source": "[^S2]",
+    "pitfall": "Writing everything into SKILL.md and never using the on-demand loading that supporting files provide.",
+    "distractor_rationale": "People don't grasp the technical mechanism behind progressive disclosure and assume splitting files is just about organizing code."
+  },
+  {
+    "term": "false positives",
+    "def": "When a Skill flags normal code or content as a problem; fix it by adding a 'needs confirmation' category or tuning the criteria.",
+    "source": "[^S1]",
+    "pitfall": "A high false-positive rate forces the user to hand-filter every run, making the Skill slower than not using one.",
+    "distractor_rationale": "Check rules written too strictly, or that ignore special cases, produce a flood of false positives."
+  },
+  {
+    "term": "Misses",
+    "def": "When a Skill fails to catch a problem it should have found; fix it by adding check rules or adjusting the judgment logic.",
+    "source": "[^S1]",
+    "pitfall": "A code review Skill misses an obvious gap in error handling, and the user loses trust in it.",
+    "distractor_rationale": "Check rules aren't comprehensive enough and don't cover common problem scenarios."
+  },
+  {
+    "term": "loading-failure",
+    "def": "When a Skill won't auto-load or a manual call fails, the diagnostic process of checking file path, frontmatter format, and name spelling in that order.",
+    "source": "[^S1]",
+    "pitfall": "The Skill file exists but won't invoke, and with no idea where to start, the person changes things blindly and makes it worse.",
+    "distractor_rationale": "People lack a systematic diagnosis method and try things at random, not knowing to check file path -> frontmatter format -> name spelling in order."
+  },
+  {
+    "term": "Examples",
+    "def": "Providing input/output examples so Claude understands the expected behavior; a worked example does more than prose description.",
+    "source": "[^S1]",
+    "pitfall": "Describing the format in words only, so Claude misreads it and the output diverges from what you wanted.",
+    "distractor_rationale": "People think a prose description is already clear, not knowing Claude learns far better from an example than from words."
+  },
+  {
+    "term": "feature branch",
+    "def": "Creating or changing an experimental Skill on a Git branch and merging to main only once it earns it, so the team isn't disrupted.",
+    "source": "[^S1]",
+    "pitfall": "Editing a Skill directly on main, breaking it, and disrupting the whole team's work.",
+    "distractor_rationale": "People don't know a branch can isolate experimental changes, or worry branch management is too complex."
+  },
+  {
+    "term": "workflow knowledge",
+    "def": "Knowledge about how to organize steps, when to use which tool, and how to judge the result; the core value a Skill supplies.",
+    "source": "[^S7]",
+    "pitfall": "Supplying only the tools (an MCP server) with no workflow knowledge, so Claude doesn't know how to use them to finish the task.",
+    "distractor_rationale": "People assume having the tools is enough, not knowing workflow knowledge is the bridge between tools and the goal."
+  }
+]

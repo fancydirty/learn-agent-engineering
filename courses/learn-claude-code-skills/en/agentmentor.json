@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Produce the English variant of the shipped Chinese course learn-claude-code-skills for learn.agentmentor.dev. Teaching rewrite in English (not a translation): same 6-lesson structure, same lesson slugs, same interactive-block ids and answer positions, source quotes restored to their verbatim English originals from sources.md, natural desk-voice English prose with no AI-slop register.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "The owner ratified the multilingual plan explicitly: all six locales on learn.agentmentor.dev, English first, batches of 2-3 courses in path order with a commit per course. The zh course is the verified source of truth for scope, learner model, structure, and grounding, so no additional clarification was needed."
+  },
+  "learnerModel": {
+    "targetReader": "A developer who already uses Claude Code's basic features, understands basic Markdown and command-line operations, and wants to customize their workflows with Skills",
+    "knownConcepts": [
+      "Basic interaction with Claude Code",
+      "Basic Markdown syntax",
+      "Basic terminal commands (cd, ls, mkdir, using a text editor)",
+      "Files and directories",
+      "Fundamentals of at least one programming language",
+      "The general idea of code review"
+    ],
+    "unknownConcepts": [
+      "How Skills work",
+      "YAML frontmatter syntax",
+      "SKILL.md file structure",
+      "How the description field triggers a skill",
+      "The progressive disclosure principle",
+      "How to organize supporting files",
+      "How to debug a Skill"
+    ],
+    "assumedEnvironment": "Claude Code installed, access to the .claude/skills directory, a text editor (VS Code or similar), and a terminal for basic commands",
+    "firstIndependentAction": "Identify one repetitive task in their own project that a Skill could automate",
+    "noviceRamp": [
+      "Lesson 1 starts from a concrete pain point (re-explaining the same workflow) and uses a meeting-notes example to build intuition for why Skills exist",
+      "Lesson 2 dissects a real SKILL.md file part by part (frontmatter, instructions) instead of dumping every concept at once",
+      "Lesson 3 builds one complete but simple Skill (a task organizer) from scratch, with every step spelled out and copyable",
+      "Testing and debugging get their own lesson (4) so debugging complexity doesn't leak into the writing stage"
+    ]
+  },
+  "learnerBrief": "The target reader is a developer who already uses Claude Code and wants to customize workflows with Skills. They know basic Markdown and the command line and have programming experience, but they don't know what Skills are, how YAML frontmatter works, or how to write one. The course gets them to independently create their first practical Skill: understanding why Skills matter, mastering the SKILL.md structure, learning to test and debug, and studying real patterns through a code-review case study.",
+  "scope": "Covered: the Skill concept and where it applies, SKILL.md structure (YAML frontmatter + Markdown instructions), writing the name and description fields, the automatic trigger mechanism, writing executable instructions, organizing supporting files, testing and debugging (direct invocation, iterative improvement), a code-review Skill case study, and personal vs project skills. Not covered: installing Claude Code, YAML syntax in depth, complex scripting, advanced language-specific knowledge, distributing Skills, or MCP integration details. Depth: from zero to independently shipping a production-ready Skill.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-claude-code-skills/en/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "No mermaid diagrams, matching the zh original. The core of learning Skills is understanding a text structure (YAML frontmatter + Markdown instructions) and writing concrete executable steps, so real SKILL.md code examples carry the teaching better than an abstract diagram would. Every lesson includes complete Skill file examples and step-by-step builds. The one candidate for a diagram — the test-fix-test loop in lesson 4 — reads clearly as an annotated list.",
+    "weakestPoints": [
+      "Lesson 1's 'identify your first Skill candidate' exercise is open-ended; a beginner may be unsure whether their chosen task fits. Mitigated with explicit judgment criteria (repetitive, fixed steps, verifiable) and progressive hints",
+      "Lesson 5's code-review Skill spans multiple files and is the longest example in the course; it may feel heavy, but it exists to show real project completeness and is broken into modular steps",
+      "Advanced frontmatter fields (model, allowed-tools) are only touched briefly in lesson 6 by design (progressive disclosure), so readers who need them must consult the official docs",
+      "As an English teaching rewrite of a verified zh course, idiomatic drift is the residual risk: every source quote was restored verbatim from the English originals and checked byte-exact, but prose sections were re-taught rather than translated, so reviewers must check meaning-equivalence against the zh lesson rather than sentence alignment"
+    ],
+    "followUpChecks": [
+      "Full render pass on learn.agentmentor.dev /en/claude-code-skills/... after deploy: all 6 lessons plus README, interactive cards hydrate",
+      "Verify every glossary term appears verbatim in the en lessons (attach check)",
+      "Verify every [^Sn] anchor in en lessons has a matching ## Sn block in en sources.md",
+      "Confirm check-block ids and correct-answer positions are byte-identical to the zh variant (b/b/b/b for lessons 1/2/4/5)"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "The learner can independently write a complete SKILL.md (correct frontmatter plus concrete, executable instructions) for one repetitive task from their own work, invoke it successfully, test and iterate on it, and decide when a personal skill versus a project skill is the right home.",
+    "interactionCheck": "Four lessons carry one agentmentor-check block each (scenario fit in lesson 1, description quality in lesson 2, load-failure diagnosis in lesson 4, file organization in lesson 5), preserved from the zh variant with identical ids, modes, choice counts, and correct-answer positions; label, prompt, whyHere, choice text, and feedback are English teaching rewrites specific to each lesson's misconception. Exercises keep the zh Level structure with rubric, answer, and hints per Level, all pointing at the learner's real environment (their own project, their own code).",
+    "learnerFitCheck": "The course assumes no YAML knowledge (lesson 2 teaches the two required frontmatter fields from zero), no complex programming (examples are text processing and checklist auditing), and no language- or framework-specific expertise. Lesson 1's first exercise only asks the reader to reflect on their own work history and depends on nothing from unknownConcepts. Unknown concepts are introduced stepwise; the learner first builds a Skill in lesson 3, after all prerequisites have been taught.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "English variant of a shipped zh course: structure, grounding, and answer positions inherited from the verified original",
+      "All interactive blocks preserve id/mode/choice-count/correct-answer byte-parity with zh",
+      "All source quotes restored to verbatim English originals and checked byte-exact against sources.md",
+      "Glossary terms verified to appear verbatim in the en lessons"
+    ]
+  },
+  "nextSteps": [
+    "Run course-guard on the en variant and fix anything it flags",
+    "Deploy learn.agentmentor.dev and spot-check the /en pages render with hydrated interactive cards",
+    "Produce the remaining locale variants (ja/ko/es/pt-BR) using this en variant as the translation base",
+    "Encourage learners to apply the course by shipping 2-3 real Skills in their own projects during the first week"
+  ],
+  "memoryBoundary": "This agentmentor.json is a course-local state record, stored only in the course directory for quality checks and learning-path tracking. It is never written back to any host AI system's long-term memory and does not affect other courses or conversations."
+}
