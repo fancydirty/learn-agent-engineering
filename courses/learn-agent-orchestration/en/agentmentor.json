@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Produce the English variant of the shipped Chinese course learn-agent-orchestration (the series finale) for learn.agentmentor.dev. Teaching rewrite in English (not a translation): same 6-lesson structure, same lesson slugs, same interactive-block ids and answer positions, source quotes restored to their verbatim English originals from sources.md, runnable code kept logic-identical with only comments and user-facing strings translated, all review-era seam declarations preserved, cross-course references pointing at the live English course titles, natural desk-voice English prose with no AI-slop register.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "The owner ratified the multilingual plan explicitly: all six locales on learn.agentmentor.dev, English first, batches of 2-3 courses in path order with a commit per course. The zh course is the verified source of truth for scope, learner model, structure, and grounding, so no additional clarification was needed."
+  },
+  "learnerModel": {
+    "targetReader": "A developer who has finished the first eleven courses in this series, hand-writes the harness loop, and wants control flow in code — routing, fan-out, merge, and review across multiple loops",
+    "knownConcepts": [
+      "Hand-writing a stop_reason-driven harness loop (course 7)",
+      "Multi-agent division of labor and dispatch prompts (course 6)",
+      "Eval-based verification (course 10) and observability (course 11)",
+      "Checkpoints and resume (course 9)",
+      "Basic JavaScript / Node.js reading and writing"
+    ],
+    "unknownConcepts": [
+      "The workflow-vs-agent architectural distinction and the who-holds-the-plan axis",
+      "Chaining with programmatic gates; routing to specialized prompts",
+      "Parallelization variants (sectioning, voting) and bounded fan-out",
+      "Orchestrator-workers: model-decided decomposition under a code-enforced concurrency gate",
+      "The evaluator-optimizer loop and when it pays",
+      "Composing patterns into a deterministic orchestration script (this course's 'graph')"
+    ],
+    "assumedEnvironment": "A Node.js environment, terminal access, a text editor, and the course-7 harness code available to extend",
+    "firstIndependentAction": "Take one oversized task from their own work and name which trigger (window, repetition, coordination) makes one loop insufficient",
+    "noviceRamp": [
+      "Lesson 1 draws the workflow/agent line and the real triggers before any pattern",
+      "Lesson 2 turns the familiar single loop into a three-stage chain with gates, then adds routing",
+      "Lesson 3 adds parallelization with code aggregation and an explicit concurrency cap",
+      "Lesson 4 makes decomposition dynamic under orchestrator-workers with the four-element dispatch prompt",
+      "Lesson 5 adds the review loop and composes the patterns; lesson 6 upgrades the course-7 harness into the full deterministic script"
+    ]
+  },
+  "learnerBrief": "The target reader has finished the first eleven courses, writes the harness loop, and reads JavaScript. They can run one loop well; they can't yet put routing, fan-out, merge, and review around several loops with the plan held in code. The course gets them to place systems on the determinism spectrum, implement the five production-proven patterns as code, face the real cost ledger (90.2% gain vs 15x tokens, capped concurrency, dispatch-prompt discipline), and upgrade their own harness into a deterministic orchestration script with a step-by-step audit trail.",
+  "scope": "Covered: workflow vs agent and who-holds-the-plan, chaining with gates, routing, parallelization (sectioning and voting) with bounded fan-out and pass-references-not-payloads merging, orchestrator-workers with four-element dispatch prompts, the evaluator-optimizer loop, pattern composition as this course's 'graph' metaphor, and a hands-on deterministic orchestration script over the course-7 harness. Not covered: third-party orchestration frameworks (LangGraph et al. unmentioned), multi-agent collaboration principles (course 6), workflow concepts and diagramming (course 2). Depth: from one loop to a readable, runnable, re-runnable orchestration script.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-orchestration/en/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Diagrams are kept exactly where the zh original uses them — most importantly the composition diagram in lesson 5 whose topology (including the gate node and the classification-as-model-call classification) was review-validated; labels rewritten in English, topology untouched. No diagrams added or removed.",
+    "weakestPoints": [
+      "The 'graph' is explicitly this course's own engineering metaphor, not official vocabulary — the text says so wherever it leans on the term, and reviewers must keep that honesty intact",
+      "The 90.2%/15x figures are one production system's reported numbers under its own eval, framed as such rather than as constants",
+      "The capstone deliberately builds a VARIANT of lesson 5's graph with all differences declared in a reconciliation table rather than code-unified — a reader skimming past the table may miss that the naming differs by declaration, not by accident",
+      "As an English teaching rewrite of a verified zh course, idiomatic drift is the residual risk: source quotes were restored verbatim and code kept logic-identical, but prose was re-taught rather than translated, so review must check meaning-equivalence against the zh lessons"
+    ],
+    "followUpChecks": [
+      "Render pass on learn.agentmentor.dev /en/agent-orchestration/... after deploy: all 6 lessons plus README, interactive cards hydrate",
+      "Verify every glossary term appears verbatim in the en lessons (attach check)",
+      "Verify every [^Sn] anchor in en lessons has a matching ## Sn block in en sources.md",
+      "Confirm the six check-block ids and correct-answer positions are byte-identical to zh (b/c/a/b/c/a in lesson order)",
+      "Re-run the three scripts (chain, fanout, orchestrate) and confirm the POOL_SIZE=0 guard, exit codes (crash 3 / needs_human 1), STOP_AFTER-only-merge behavior, and pasted outputs all match"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "The learner can upgrade a single-loop harness into a deterministic orchestration script — route, fan out three workers under a code-enforced pool, merge by references, run a review loop that returns the best draft, report with an audit trail — and reconcile it line by line against the promises the earlier lessons and courses made.",
+    "interactionCheck": "Six agentmentor-check blocks, one per lesson (bigger-window in L1, chain-vs-one-prompt in L2, unbounded-fanout in L3, vague-dispatch in L4, graph-is-ours in L5, llm-as-glue in L6), preserved from the zh variant with identical ids, modes, choice counts, and correct-answer positions; label, prompt, whyHere, choice text, and feedback are English teaching rewrites specific to each lesson's misconception. Exercises keep the zh Level structure with rubric, answer, and hints per Level.",
+    "learnerFitCheck": "The course assumes the prior eleven courses: the harness loop, dispatch prompts, evals, and observability. The determinism axis, gates, bounded fan-out, dynamic decomposition, and the review loop are taught from zero in dependency order; the learner first assembles the full script in lesson 6, after every prerequisite. Lesson 1's first exercise asks only for a which-trigger judgment on the reader's own oversized task.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "English variant of a shipped zh course: structure, grounding, and answer positions inherited from the verified original",
+      "All interactive blocks preserve id/mode/choice-count/correct-answer byte-parity with zh",
+      "All source quotes restored to verbatim English originals and checked byte-exact against sources.md",
+      "The capstone's declared-variant reconciliation table (stop-field renames, rounds semantics, observability differences, orchestrator-workers unimplemented) preserved in English — declared, never silently code-unified"
+    ]
+  },
+  "nextSteps": [
+    "Run course-guard on the en variant and fix anything it flags",
+    "Deploy learn.agentmentor.dev and spot-check the /en pages render with hydrated interactive cards",
+    "Produce the remaining locale variants (ja/ko/es/pt-BR) using this en variant as the translation base",
+    "Encourage learners to orchestrate one real oversized task from their own backlog as the post-course consolidation project"
+  ],
+  "memoryBoundary": "This agentmentor.json is a course-local state record, stored only in the course directory for quality checks and learning-path tracking. It is never written back to Claude Code or any host AI system's long-term memory and does not affect other courses or conversations."
+}

@@ -1,0 +1,520 @@
+[
+  {
+    "term": "workflow",
+    "def": "A system where LLMs and tools are orchestrated through predefined code paths—steps are hardcoded, the model is only autonomous within each individual step. It's one half of an architectural distinction; the five patterns this course teaches all belong to this end.",
+    "source": "[^S1]",
+    "pitfall": "Thinking 'using workflow patterns' means 'no agents'—each stage in a chain is still an autonomous harness loop.",
+    "distractor_rationale": "Easy to confuse with agent: the distinction is only 'who holds the plan,' not whether you're using models."
+  },
+  {
+    "term": "agent",
+    "def": "A system where LLMs dynamically direct their own processes and maintain control over how they accomplish tasks. Implementation is often straightforward—typically just LLMs using tools based on environmental feedback in a loop.",
+    "source": "[^S1]",
+    "pitfall": "Thinking agents are 'more advanced' than workflows—they just put the plan in the model's hands, which isn't necessarily better.",
+    "distractor_rationale": "Contrasts with workflow; also easy to confuse with 'multi-agent system,' which is multiple agents working together."
+  },
+  {
+    "term": "chaining",
+    "def": "Prompt chaining: decomposing a task into a sequence of steps where each LLM call processes the previous one's output, with programmatic checks insertable between steps. Fits when tasks can be cleanly decomposed into fixed subtasks.",
+    "source": "[^S1]",
+    "pitfall": "Forcing decomposition when the task doesn't split cleanly—information gets stuck between stages and lost.",
+    "distractor_rationale": "Contrasts with routing: chaining is one thing split into steps, routing is multiple things each taking its own path."
+  },
+  {
+    "term": "routing",
+    "def": "Classifying an input first, then dispatching to specialized followup tasks, trading for separation of concerns and more specialized prompts. Prerequisite: categories are distinct and classification itself can be handled accurately.",
+    "source": "[^S1]",
+    "pitfall": "Adding routing when there's really only one category—you pay for a classification call and latency, plus add one more failure point.",
+    "distractor_rationale": "Contrasts with chaining; classification can use either a model or a traditional classifier, easy to assume it must be a model."
+  },
+  {
+    "term": "parallelization",
+    "def": "A workflow where LLMs handle multiple subtasks simultaneously and outputs are aggregated programmatically, with two variations: sectioning and voting.",
+    "source": "[^S1]",
+    "pitfall": "Handing 'aggregation' to a model too—that's orchestrator-workers, not parallelization. Parallelization's aggregation is done by code.",
+    "distractor_rationale": "Topographically similar to orchestrator-workers; the difference is whether subtasks are predefined and who does aggregation."
+  },
+  {
+    "term": "sectioning",
+    "def": "Breaking a task into mutually independent subtasks and running them in parallel—like reviewing 12 documents one each.",
+    "source": "[^S1]",
+    "pitfall": "Subtasks actually have dependencies but you force fan-out anyway—each path writes its own thing, then you manually smooth contradictions at merge.",
+    "distractor_rationale": "Both sectioning and voting belong to parallelization: sectioning is different subtasks, voting is the same task run multiple times."
+  },
+  {
+    "term": "voting",
+    "def": "Running the same task multiple times to get diverse outputs, then aggregating via code.",
+    "source": "[^S1]",
+    "pitfall": "Thinking voting buys 'majority correctness'—it buys independence and diversity, not a guarantee that the voted result is right.",
+    "distractor_rationale": "Often misunderstood as 'majority rules'; aggregation rules can be thresholds or best-selection."
+  },
+  {
+    "term": "orchestrator-workers",
+    "def": "A workflow where a central LLM dynamically breaks down tasks, delegates to worker LLMs, and synthesizes results. The key is that subtasks aren't predefined—the orchestrator determines them based on specific input.",
+    "source": "[^S1]",
+    "pitfall": "Confusing with parallelization—parallelization's subtasks are locked in when you write code, orchestrator-workers' subtasks are computed by the model.",
+    "distractor_rationale": "Topologically identical to parallelization (fan out then merge); difference is who decides how many dispatches."
+  },
+  {
+    "term": "evaluator-optimizer",
+    "def": "One LLM generates a response while another provides evaluation and feedback in a loop, repeating until it passes or stops making progress. Fits when evaluation criteria are clear and iterative refinement provides measurable value.",
+    "source": "[^S1]",
+    "pitfall": "Building the loop before evaluation criteria are defined—the judge gives feedback pointing different directions each round, rounds burn out without improvement.",
+    "distractor_rationale": "This course calls it the review loop, Course 6 in this series calls it producer-reviewer, Claude Code docs call it adversarial cross-review—three names, one shape."
+  },
+  {
+    "term": "gate",
+    "def": "A programmatic check (not another model call) in a chain or loop that uses code to make deterministic checks, same input forever the same conclusion, used to block unqualified intermediate results.",
+    "source": "[^S1]",
+    "pitfall": "Treating 'have the model judge whether this outline is good enough' as a gate—that's the review loop, not a deterministic check.",
+    "distractor_rationale": "Complements LLM judges: gates are free and deterministic, ranked before judges."
+  },
+  {
+    "term": "harness loop",
+    "def": "The while loop driven by stop_reason: send message, check stop reason, if tool_use execute tools and send back, otherwise return. Every 'node' in this course internally runs this loop.",
+    "source": "[^S1]",
+    "pitfall": "Thinking orchestration replaces this loop—the loop hasn't changed one line, there's just an outer layer of code-written control flow around it.",
+    "distractor_rationale": "Loop vs 'graph' are two levels: the loop is inside nodes, the graph is between nodes."
+  },
+  {
+    "term": "stop_reason",
+    "def": "The field in each model response stating 'why this turn stopped,' which the harness loop relies on to decide whether to continue calling tools or wrap up.",
+    "source": "[^S1]",
+    "pitfall": "Only handling tool_use and end_turn, forgetting other stop reasons—real client will hang or error.",
+    "distractor_rationale": "Different from STOP_AFTER: the former is a field returned by the model, the latter is this course's script's own debug switch."
+  },
+  {
+    "term": "maximum rounds",
+    "def": "The iteration ceiling set for a loop, a fuse—guaranteeing code stops under any circumstance. It maintains control, doesn't judge quality.",
+    "source": "[^S1]",
+    "pitfall": "Using maximum rounds as the primary stopping mechanism—it should only trigger when the smarter 'no further progress' fails.",
+    "distractor_rationale": "'Maximum rounds' and 'no further progress' are two stopping conditions: one counts rounds, one watches whether things got better."
+  },
+  {
+    "term": "fuse",
+    "def": "This course's metaphor for 'maximum rounds' class fallback stopping conditions: shouldn't trigger normally, triggering means other stopping mechanisms didn't catch it.",
+    "source": "[^S1]",
+    "pitfall": "Setting the fuse too small—the normal loop hasn't converged yet and it gets cut off.",
+    "distractor_rationale": "It's fallback, not the primary stopping mechanism; primary is usually 'no further progress.'"
+  },
+  {
+    "term": "deterministic verifier",
+    "def": "A checker that can judge right or wrong via code: if code can judge it, don't spend money asking the model. This course moved it from 'terminal state' to 'between links in the chain.'",
+    "source": "[^S1]",
+    "pitfall": "Having the model judge everything, outsourcing even checks that could be deterministic—extra cost plus added non-determinism.",
+    "distractor_rationale": "Division of labor with LLM judges: verifiers judge things writable as rules, judges judge things like 'is the tone appropriate.'"
+  },
+  {
+    "term": "layered scoring",
+    "def": "Use code to judge what code can judge first, only hand to the model what code can't. This course copied this discipline straight into the loop's node ordering (gate before judge).",
+    "source": "[^S1]",
+    "pitfall": "Skipping the deterministic layer and going straight to a judge—spending money for the model to do what code could do for free.",
+    "distractor_rationale": "This is Course 10 in this series' phrasing, this course continues it; not a concept unique to orchestration."
+  },
+  {
+    "term": "demonstrably",
+    "def": "Only consider adding complexity when it demonstrably improves outcomes—every added node or pattern layer must pass this gate.",
+    "source": "[^S1]",
+    "pitfall": "Five patterns laid out and using them all, without asking first 'remove it, do metrics drop?'",
+    "distractor_rationale": "Opposite of 'start with the most complex solution': primary materials consistently advocate starting with the simplest solution."
+  },
+  {
+    "term": "who holds the plan",
+    "def": "The axis for judging which end of the determinism spectrum a system falls on: is the plan in code's hands (workflow) or in the model's hands (agent)?",
+    "source": "[^S5]",
+    "pitfall": "Only looking at 'did you use a model' without looking at 'who counts, who branches'—can't distinguish workflow from agent.",
+    "distractor_rationale": "This is the core question this course uses to judge architecture, not official terminology."
+  },
+  {
+    "term": "the workflow script itself holds the loop, branching, and intermediate results",
+    "def": "The sentence from primary materials describing workflow, also the sole primary anchor for this course's 'graph' metaphor: the plan is in the script, the model's context only holds the final answer.",
+    "source": "[^S5]",
+    "pitfall": "Using this sentence to prove 'graphs beat loops'—it only says the plan is in the script, doesn't compare who's stronger.",
+    "distractor_rationale": "Graph/node/edge all stand on this one sentence; without it this visualization becomes invented jargon."
+  },
+  {
+    "term": "incrementally tracking",
+    "def": "The runtime incrementally tracks each agent's result as the run progresses. This is what makes a run resumable within the same session; cross-process resumption still requires persisting state to disk yourself.",
+    "source": "[^S5]",
+    "pitfall": "Treating 'resumable within the same session' as 'resumable after process dies'—the original sentence only guarantees the former.",
+    "distractor_rationale": "Easy to confuse with checkpoints: tracking is continuous recording, checkpoints are snapshots at specific moments."
+  },
+  {
+    "term": "check-fix-recheck",
+    "def": "The review loop's product form: run a checker, fix what failed, repeat until it passes or stops making progress.",
+    "source": "[^S5]",
+    "pitfall": "Forgetting the 'or stops making progress' half—the loop will just keep revising until it hits maximum rounds.",
+    "distractor_rationale": "It's the product phrasing of evaluator-optimizer, same thing as the primary pattern name."
+  },
+  {
+    "term": "no further progress",
+    "def": "A stopping mechanism smarter than maximum rounds: watches whether this round beat the last round (score didn't rise, count of failing items didn't decrease), if it didn't get better then cut losses.",
+    "source": "[^S5]",
+    "pitfall": "Defining it as 'model looks like it didn't improve'—something unjudgeable—the loop won't know when to stop.",
+    "distractor_rationale": "Coexists with maximum rounds: one watches quality changes, one counts rounds as fallback."
+  },
+  {
+    "term": "adversarial cross-review",
+    "def": "Have independent agents adversarially review each other's findings before reporting. It's a one-time cross-review before reporting, no back edge, no iteration—lumping it into the review loop is this lesson's categorization, not the original text describing the same topology.",
+    "source": "[^S5]",
+    "pitfall": "Thinking it's the same looped topology as check-fix-recheck—it's actually a single cross-evaluation.",
+    "distractor_rationale": "'Adversarial cross-review' is this course's shorthand for that source sentence, not primary terminology."
+  },
+  {
+    "term": "Composing Patterns into a Graph",
+    "def": "This course's own engineering metaphor, not official terminology: a visualization system used to clarify relationships when combining the five patterns. Its sole primary anchor is 'the workflow script itself holds the loop, branching, and intermediate results.'",
+    "source": "[^S5]",
+    "pitfall": "Writing 'graph' as an official category in architecture docs—readers will think it's the formal concept for orchestration.",
+    "distractor_rationale": "Graph/node/edge/DAG/state machine all appear zero times across all primary sources in this course—don't treat as official categories."
+  },
+  {
+    "term": "node",
+    "def": "A point in this course's visualization: internally either a complete runAgent loop or a piece of pure code.",
+    "source": "[^S5]",
+    "pitfall": "Thinking nodes are a new execution unit—it's just the harness loop you already know how to write.",
+    "distractor_rationale": "Paired with 'edge': nodes are the points that do work, edges are whose output feeds whom."
+  },
+  {
+    "term": "back edge",
+    "def": "The line in a review loop that sends output back to the generation node. The first four patterns are all straight lines, the review loop is the first with a back edge.",
+    "source": "[^S5]",
+    "pitfall": "Drawing it as a straight line loses the essence of the loop—unqualified must be able to kick back for redo.",
+    "distractor_rationale": "Back edge corresponds to continue/loop in code, one of the few custom terms in 'graph.'"
+  },
+  {
+    "term": "fork point",
+    "def": "A point in this course's visualization for routing where 'walk different edges based on judgment result'—corresponds to branching in code.",
+    "source": "[^S5]",
+    "pitfall": "Confusing fork point with fan-out: fork is choosing one edge, fan-out is walking multiple edges simultaneously.",
+    "distractor_rationale": "Fork = branch (routing), fan-out = parallel (parallelization), two different things."
+  },
+  {
+    "term": "16 concurrent agents",
+    "def": "Claude Code workflow runtime's concurrency ceiling, fewer when CPU is limited; 1,000 agents total ceiling per run.",
+    "source": "[^S5]",
+    "pitfall": "Thinking higher concurrency is always faster—three real products all set modest ceilings.",
+    "distractor_rationale": "Different from Claude Code's default 20 subagents and Managed Agents' 25 threads—three different implementations, three different numbers."
+  },
+  {
+    "term": "90.2%",
+    "def": "Multi-agent system's improvement over single-agent, only holds in complete context: their internal research eval, Opus 4 lead + Sonnet 4 subagents, excelling especially for breadth-first queries.",
+    "source": "[^S2]",
+    "pitfall": "Using it to argue 'graphs beat loops' or 'multi-agent is universally better'—it compares multi vs single agent, not orchestration vs loops.",
+    "distractor_rationale": "Different from the 90% (speedup number): one is quality improvement, the other is latency reduction."
+  },
+  {
+    "term": "4×",
+    "def": "By their own data, agents consume about 4× the tokens of chat interactions.",
+    "source": "[^S2]",
+    "pitfall": "Treating it as a universal baseline to apply everywhere—it's an observation from their system, not an industry constant.",
+    "distractor_rationale": "Appears paired with multi-agent's 15×, don't mix the two multipliers."
+  },
+  {
+    "term": "15×",
+    "def": "By their own data, multi-agent systems consume about 15× the tokens of chat interactions; for economic viability, task value must be high enough to justify this improvement.",
+    "source": "[^S2]",
+    "pitfall": "Multiplying 15× by 3 again to calculate voting cost—the 15× already includes fan-out's bill.",
+    "distractor_rationale": "It measures multi-agent relative to chat, not the cost tag of 'moving the plan into code' itself."
+  },
+  {
+    "term": "90%",
+    "def": "After introducing two-level parallelism (lead agent spins up 3-5 subagents in parallel, subagents use 3+ tools in parallel), maximum percentage research time was cut for complex queries. It's a latency number, not quality.",
+    "source": "[^S2]",
+    "pitfall": "Treating it as quality improvement, or applying to simple queries—it's limited to complex queries' latency.",
+    "distractor_rationale": "One character different from 90.2% but two different things: this is speedup, that is multi vs single agent quality."
+  },
+  {
+    "term": "delegation prompts",
+    "def": "The task description the orchestrator hands each worker. Delegation prompts must be self-contained with all four elements complete, otherwise workers will duplicate work, leave gaps, or fail to find necessary information.",
+    "source": "[^S2]",
+    "pitfall": "Dispatching with one sentence ('help me check this library's performance'), all four elements missing, multiple workers each guessing from the same sentence.",
+    "distractor_rationale": "Different from general prompts in 'self-contained': workers can't see the context between you and the orchestrator."
+  },
+  {
+    "term": "four elements",
+    "def": "The four sections a qualified dispatch must write fully: objective, output format, guidance on tools and sources, clear task boundaries.",
+    "source": "[^S2]",
+    "pitfall": "Only writing objective without boundaries—workers trespass into each other's territory or duplicate each other's work.",
+    "distractor_rationale": "The boundaries item is easiest to omit; it must explicitly state 'don't do what.'"
+  },
+  {
+    "term": "Quota rules",
+    "def": "Scaling calibration written into the orchestrator's prompt: specify subagent count and per-subagent tool call ceiling by task complexity, because agents aren't good at judging appropriate effort themselves.",
+    "source": "[^S2]",
+    "pitfall": "Only writing quotas into the prompt thinking it's foolproof—for non-deterministic models it's only advice, code side still needs hard ceilings.",
+    "distractor_rationale": "It's the prompt layer's soft constraint, used together with the concurrency pool's LIMIT (code layer's hard gate)."
+  },
+  {
+    "term": "scaling rules",
+    "def": "Example scaling rules they embedded in prompts: simple fact-finding 1 agent 3-10 calls; direct comparisons 2-4 subagents 10-15 calls each; complex research 10+ subagents with clear division.",
+    "source": "[^S2]",
+    "pitfall": "Treating these numbers as industry standards to copy verbatim—they're the scale in their own prompts.",
+    "distractor_rationale": "This is quota rules' specific values, not universal configuration."
+  },
+  {
+    "term": "synchronous execution",
+    "def": "The execution mode where the orchestrator waits for all workers to finish before proceeding. Bottleneck: one step stalls the whole batch waiting, results all return to the orchestrator.",
+    "source": "[^S2]",
+    "pitfall": "Thinking synchronous is always slow so rushing to async—async requires carrying three new costs: coordination, state consistency, error propagation.",
+    "distractor_rationale": "Contrasts with async: synchronous is simple but has bottlenecks, async is flexible but complexity explodes."
+  },
+  {
+    "term": "pass references not payloads",
+    "def": "Workers store outputs in external systems, passing only lightweight references (file path + one-line summary) back to the orchestrator, not stuffing detailed results back into the main conversation.",
+    "source": "[^S2]",
+    "pitfall": "Having each worker pass full text back to the merge side—fan-out saved time gets spent back at merge.",
+    "distractor_rationale": "Payload is detailed output, reference is the path pointing to it; reversed means context explodes."
+  },
+  {
+    "term": "artifact systems",
+    "def": "Having specialized agents create outputs as independently persisting things (files, external records), rather than relaying everything through the lead agent. Pass references not payloads relies on this.",
+    "source": "[^S2]",
+    "pitfall": "No external landing spot, all output can only pass through main conversation, main conversation quickly fills.",
+    "distractor_rationale": "Artifacts and 'lightweight references' are two sides of one coin: artifact is what's stored out, reference is the handle pointing to it."
+  },
+  {
+    "term": "lightweight references",
+    "def": "The short record passed back to the orchestrator: id, file path, one-line summary. Whoever wants the full text reads via the path.",
+    "source": "[^S2]",
+    "pitfall": "Thinking references must carry enough info for the orchestrator to avoid looking back—references should be light, heavy stuff stays in artifacts.",
+    "distractor_rationale": "It's the payload's stand-in, not the payload's compressed version."
+  },
+  {
+    "term": "emergent behavior",
+    "def": "In multi-agent systems, overall behavior that can't be predicted by looking step-by-step, produced by each subagent's small decisions stacking; tiny changes amplify along the chain.",
+    "source": "[^S2]",
+    "pitfall": "Thinking tuning each worker makes the whole controllable—emergence means overall behavior must be observed separately.",
+    "distractor_rationale": "It's part of multi-agent coordination complexity, not a bug in a particular worker."
+  },
+  {
+    "term": "separation of concerns",
+    "def": "Each subagent carries different tools, prompts, exploration trajectories, naturally non-polluting, also reduces path dependency. This is what fan-out buys besides speed.",
+    "source": "[^S2]",
+    "pitfall": "Only treating fan-out as a speed technique, ignoring its quality gains (independent perspectives).",
+    "distractor_rationale": "Listed alongside 'window capacity', one of parallelization's three context-side benefits."
+  },
+  {
+    "term": "path dependency",
+    "def": "In one loop, later steps' judgments get biased by earlier steps' wording. Multiple independent trajectories don't share the same bias, hence reducing path dependency.",
+    "source": "[^S2]",
+    "pitfall": "Thinking the same model run multiple times is independent enough—multiple steps in the same context share the same starting bias.",
+    "distractor_rationale": "Related to separation of concerns: separating tools/prompts is to sever path dependency."
+  },
+  {
+    "term": "shared context",
+    "def": "One scenario multi-agent isn't good at today: work requiring all agents to see the same context or with many inter-agent dependencies (like most coding tasks), truly parallelizable portions fewer than research.",
+    "source": "[^S2]",
+    "pitfall": "Directly applying research task parallelism experience to coding—fan-out adds confusion instead.",
+    "distractor_rationale": "It's a reverse condition for multi-agent, opposite the positive conditions 'heavy parallelization, information exceeding windows.'"
+  },
+  {
+    "term": "deterministic safeguards",
+    "def": "The deterministic mechanisms wrapping non-deterministic agents: retry logic, regular checkpoints. The graph's skeleton is deterministic, node interiors are non-deterministic.",
+    "source": "[^S2]",
+    "pitfall": "Treating node-level retry/timeout as official design—primary sources offer only 'retry logic and regular checkpoints' one subordinate clause, more detail is ordinary engineering practice.",
+    "distractor_rationale": "Different from gates: safeguards handle 'what if it crashes,' gates handle 'is it qualified.'"
+  },
+  {
+    "term": "deterministic systems",
+    "def": "Systems that produce the same output every time given the same input. Code-written gates, verifiers, aggregation all belong to this category.",
+    "source": "[^S3]",
+    "pitfall": "Thinking 'written in code' is always deterministic—if it calls a model inside, it's non-deterministic.",
+    "distractor_rationale": "Contrasts with non-deterministic systems, the vocabulary foundation for the whole course."
+  },
+  {
+    "term": "non-deterministic",
+    "def": "The property of potentially giving different responses even with the same starting conditions—agents are this type.",
+    "source": "[^S3]",
+    "pitfall": "Using 'reproduce once then set breakpoint' traditional debugging intuition to investigate it—can't reproduce.",
+    "distractor_rationale": "Easy to confuse with occasional concurrency bugs: the latter at least runs in the same deterministic code."
+  },
+  {
+    "term": "one loop per evaluation task",
+    "def": "Official recommendation for running evaluations: call LLM API directly, use simple agentic while loops, one loop per evaluation task. This course borrows it to illustrate 'a chain stage is a complete loop.'",
+    "source": "[^S3]",
+    "pitfall": "Forgetting this original quote is in an evaluation context, citing it as general orchestration advice.",
+    "distractor_rationale": "It argues 'stage = complete loop' as a component, not the evaluation method itself."
+  },
+  {
+    "term": "subagent",
+    "def": "An agent dispatched from the main conversation, works in its own independent context window, only hands summary back. Used to keep exploration and implementation out of the main conversation, preserving context.",
+    "source": "[^S4]",
+    "pitfall": "Dispatching many subagents each returning detailed results—returns too heavy and exhaust main conversation context anyway.",
+    "distractor_rationale": "Often used interchangeably with 'worker' in this course, but subagent emphasizes context isolation."
+  },
+  {
+    "term": "main conversation",
+    "def": "The orchestrator's main-line context. When subagents finish, results return here, so returns must be light or protection becomes burden.",
+    "source": "[^S4]",
+    "pitfall": "Thinking subagents inherently save context—whether they save depends on how heavy the returns are.",
+    "distractor_rationale": "Contrasts with each subagent's own context window: main conversation is the merge point, easy to fill up."
+  },
+  {
+    "term": "20 subagents",
+    "def": "Claude Code's default concurrency ceiling: when 20 subagents are running in a session, spawning another fails and explicitly tells the model not to retry.",
+    "source": "[^S4]",
+    "pitfall": "Seeing failure and having the model retry—the error message itself says don't retry.",
+    "distractor_rationale": "Different from workflow runtime's 16 and Managed Agents' 25—three different implementations, three different numbers."
+  },
+  {
+    "term": "subagents sequentially",
+    "def": "Claude Code's suggestion for multi-step workflows: have Claude use subagents sequentially, each finishes and hands results back, then pass relevant context to the next. This is chaining's product form.",
+    "source": "[^S4]",
+    "pitfall": "Thinking 'what to pass to the next' is automatic—in product that's Claude deciding, when you write script that's your code.",
+    "distractor_rationale": "Contrasts with parallel fan-out: this is one after another, not simultaneous."
+  },
+  {
+    "term": "Specialization",
+    "def": "Routing work to agents with domain-specific system prompts and tools (security agent, documentation agent), rather than stuffing all capabilities into one agent. Routing's name in current first-party vocabulary.",
+    "source": "[^S6]",
+    "pitfall": "Confusing with Escalation: specialization divides by topic, escalation divides by difficulty.",
+    "distractor_rationale": "It corresponds to the HANDLERS table in code, dispatch by topic."
+  },
+  {
+    "term": "Escalation",
+    "def": "Consulting a more capable agent or model for a subset of complex subtasks. Note it's 'consult' (coordinator still holds control), not complete handoff.",
+    "source": "[^S6]",
+    "pitfall": "Reading 'consult' as 'hand off'—escalation is asking the stronger party, not throwing the task away.",
+    "distractor_rationale": "It dispatches by difficulty, while specialization dispatches by topic—two routing variants."
+  },
+  {
+    "term": "Parallelization",
+    "def": "In current Claude platform multi-agent orchestration docs: fan out independent subtasks in parallel (search multiple sources, analyze separate files), coordinator synthesizes results.",
+    "source": "[^S6]",
+    "pitfall": "Note this version's synthesis is done by the coordinator (model), different from this course's 'programmatic aggregation' version.",
+    "distractor_rationale": "Same word, but who does aggregation (model vs code) is two different things."
+  },
+  {
+    "term": "25 concurrent threads",
+    "def": "Managed Agents' supported concurrency ceiling; coordinator can call multiple copies of the same agent, each opening a thread.",
+    "source": "[^S6]",
+    "pitfall": "Thinking different products' concurrency ceilings are universal—20/16/25 are three different implementations' respective numbers.",
+    "distractor_rationale": "Listed alongside Claude Code's 20 and workflow runtime's 16, don't mix them up."
+  },
+  {
+    "term": "concurrency pool",
+    "def": "Open a fixed N lanes, each finishes its current item then grabs the next from a shared cursor, always N in flight. Has less bucket effect than batching. This course's script calls it runPool.",
+    "source": "[^S5]",
+    "pitfall": "Opening another concurrency layer inside the pool, total concurrency becomes LIMIT×2, silently breaking the ceiling.",
+    "distractor_rationale": "Contrasts with batching: batching waits for each batch's slowest, pool doesn't."
+  },
+  {
+    "term": "concurrency ceiling",
+    "def": "The hard cap on simultaneous in-flight tasks. Three real products (Claude Code 20, workflow runtime 16, Managed Agents 25) all set one—unbounded fan-out is an accident not an optimization.",
+    "source": "[^S4]",
+    "pitfall": "Writing Promise.all(arr.map(...)) and concurrency silently equals array length, array gets long and hits ceiling.",
+    "distractor_rationale": "Quotas in prompts are soft constraints, concurrency pool's LIMIT is the hard ceiling."
+  },
+  {
+    "term": "batching",
+    "def": "A rate-limiting approach: N per batch, batches serial. Works but has bucket effect: each batch waits for that batch's slowest to finish before starting the next.",
+    "source": "[^S5]",
+    "pitfall": "Using batching for rate-limiting then complaining it's slow—should switch to concurrency pool, don't blame parallelization.",
+    "distractor_rationale": "Batching and concurrency pool are both rate-limiting means; batching is simpler but has waiting waste."
+  },
+  {
+    "term": "Promise.all",
+    "def": "The pattern for running a group of async tasks concurrently, returning when all complete. Temperament: any one path rejects, the whole rejects—even if the rest finished, you can't get their results.",
+    "source": "[^S1]",
+    "pitfall": "Directly Promise.all(docs.map(...)), one path 500s and you lose all other completed results.",
+    "distractor_rationale": "Contrasts with Promise.allSettled: the latter doesn't let one failure drag down the rest."
+  },
+  {
+    "term": "fan out",
+    "def": "Spreading one piece of work to multiple agents/nodes to run simultaneously. Buys speed, independent perspectives, parallel context capacity; cost is results return to orchestrator, real products all set ceilings.",
+    "source": "[^S5]",
+    "pitfall": "Thinking independence means unlimited fan-out—unbounded fan-out maxes rate limits, memory, batch-failure risk all at once.",
+    "distractor_rationale": "Paired with merge: fan out is sending out, merge is collecting back—the collection step is most likely to fail."
+  },
+  {
+    "term": "merge",
+    "def": "After fan-out results come back, code does filtering, aggregation, judgment. This course has it only read references back from files, not stuff full text into context.",
+    "source": "[^S1]",
+    "pitfall": "Having the model read all output and write a summary—that's orchestrator-workers, not programmatic aggregation.",
+    "distractor_rationale": "Paired with fan out; whether aggregation is done by code (parallelization) or model (orchestrator-workers) is the key distinction."
+  },
+  {
+    "term": "payload",
+    "def": "The detailed content of worker output itself. Payload backflow at merge explodes context, so pass references not payloads.",
+    "source": "[^S2]",
+    "pitfall": "Confusing payload with reference, passing full text back as 'reference.'",
+    "distractor_rationale": "Payload is content, reference is the path pointing to content."
+  },
+  {
+    "term": "classifier",
+    "def": "The first step in routing: judge which category input belongs to, output tightened to one word. Can be a model or a traditional classification model/algorithm.",
+    "source": "[^S1]",
+    "pitfall": "Thinking classification must use a model—when mail has fixed format or comes from dedicated entry points, one regex suffices and is faster.",
+    "distractor_rationale": "Classifier judges 'which category,' gate judges 'is it qualified'—two kinds of deterministic checks, different."
+  },
+  {
+    "term": "fallback",
+    "def": "The branch walked when classification doesn't fit the legal label table (like falling to 'other'). Model occasionally returns a whole sentence instead of one word, fallback contains this non-determinism in one line.",
+    "source": "[^S1]",
+    "pitfall": "Not leaving a fallback branch, model returns something outside the table, HANDLERS[that string] is undefined and next line crashes.",
+    "distractor_rationale": "It's for defending against classification non-determinism, not defensive perfectionism."
+  },
+  {
+    "term": "determinism spectrum",
+    "def": "This course's own phrasing, not official terminology: treating that 'who holds the plan' axis from workflow to agent as a continuous range from deterministic to autonomous.",
+    "source": "[^S5]",
+    "pitfall": "Looking for 'spectrum' in official docs—won't find it, it's this course's visualization.",
+    "distractor_rationale": "Like 'graph,' it's this course's custom metaphor; primary sources only gave definitions of the two ends plus the 'who holds the plan' question."
+  },
+  {
+    "term": "controlled crash",
+    "def": "Course 9 in this series' practice: deliberately stop the process at a specified point to verify state actually fell to disk. This course's STOP_AFTER is its simplified version.",
+    "source": "[^S5]",
+    "pitfall": "Thinking crashes can only be accidental—controlled crashes are deliberate, used to test recoverability.",
+    "distractor_rationale": "Different from real crashes in 'controlled': you pick the timing to stop, so you can check persistence."
+  },
+  {
+    "term": "spin",
+    "def": "The state where a loop does the same thing for multiple consecutive rounds without any progress. Course 7 in this series' Valve 3 (spin detection) is for blocking this.",
+    "source": "[^S1]",
+    "pitfall": "No spin detection—model gets stuck and burns money spinning in circles.",
+    "distractor_rationale": "Related to but different from 'no further progress': spin is action repetition, no further progress is quality not rising."
+  },
+  {
+    "term": "atomic write",
+    "def": "The disk persistence method of writing .tmp first then rename to replace: killed at any moment, disk has either the previous complete state or the new complete state, never half a JSON.",
+    "source": "[^S5]",
+    "pitfall": "Writing directly to target file, killed halfway leaves a corrupted half-file.",
+    "distractor_rationale": "This is Course 9 in this series' house rule, this course's run-state.json continues it."
+  },
+  {
+    "term": "run-state.json",
+    "def": "This course's script's execution tracking file (persisted once after each node completes, again after each judgment in review), atomic write guarantees it's readable at any moment. It records execution progress, not 'the graph's state variables.'",
+    "source": "[^S5]",
+    "pitfall": "Treating it as the same thing as 'the graph's state = script variables'—one is a progress snapshot on disk, the other is intermediate results in memory.",
+    "distractor_rationale": "Division of labor with run.jsonl: one is latest state snapshot, the other is line-by-line event stream."
+  },
+  {
+    "term": "run.jsonl",
+    "def": "This course's script's structured log: one JSON event per line, carrying ts and run_id, only records id/category/filename/counts, not reply body.",
+    "source": "[^S5]",
+    "pitfall": "Thinking it matches Course 11's logger—this doesn't have a span tree, clears on each run, coarser granularity.",
+    "distractor_rationale": "Division of labor with run-state.json: jsonl is stream, state is snapshot."
+  },
+  {
+    "term": "stub client",
+    "def": "A test stand-in that uses a fixed response queue to impersonate the real API: client.messages.create() returns preset responses in order, letting the whole orchestration run zero-dependency and reproducibly.",
+    "source": "[^S3]",
+    "pitfall": "Stub queue length is fixed, exhaustion throws directly; before connecting real client don't forget to install back the valves that didn't move.",
+    "distractor_rationale": "It replaces the model side, so when stubs are nailed down, full reruns introduce no non-determinism."
+  },
+  {
+    "term": "STOP_AFTER",
+    "def": "This course's script's controlled crash switch: set to merge stops before review, exit code 2, used to verify fan-out/merge state actually persisted. Only recognizes merge as one value.",
+    "source": "[^S5]",
+    "pitfall": "Thinking it's universal config—it's this course's script's own debug knob, not an API field.",
+    "distractor_rationale": "Completely different from the model's returned stop_reason; don't mix because names look similar."
+  },
+  {
+    "term": "needs_human",
+    "def": "The outcome marker when the loop can't produce qualified output: exit code 1 tickets stop here, handed to human.",
+    "source": "[^S5]",
+    "pitfall": "Mixing needs_human (exit 1) with script crash (exit 3)—CI must distinguish 'ran but some need handoff' from 'crashed.'",
+    "distractor_rationale": "It's one of three stopping outcomes (pass/human handoff/no progress), not an error."
+  }
+]
