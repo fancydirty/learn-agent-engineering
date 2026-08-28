@@ -1,0 +1,597 @@
+[
+  {
+    "term": "stateless",
+    "def": "The property that the server keeps no private per-session state between one API call and the next, so every request must carry the full conversation history itself.",
+    "source": "[^S6]",
+    "pitfall": "Assuming the server quietly holds on to some state from earlier turns, so the model can still \"recall\" the conversation even when this request doesn't include the history.",
+    "distractor_rationale": "An agent behaves as if it remembers, and it is easy to attribute that behavior to server-side storage rather than to the grunt work of the client resending the whole history every single turn."
+  },
+  {
+    "term": "context window",
+    "def": "The container holding everything the model can actually see in one request: the system prompt, every message in the messages array, the tool definitions, and the model's own output for the turn.",
+    "source": "[^S1]",
+    "pitfall": "Assuming the context window only holds the user and agent dialogue text, and not tool results, tool definitions, or the model's own generated output.",
+    "distractor_rationale": "The word \"window\" reads intuitively as \"chat log,\" which hides the parts the official docs list explicitly — system prompt, tool definitions, model output — that count toward the same window."
+  },
+  {
+    "term": "system prompt",
+    "def": "Text sent with the request that sets the model's role and behavior; the official docs list it as one of the components that counts toward the context window.",
+    "source": "[^S1]",
+    "pitfall": "Treating the system prompt as a \"configuration setting\" that doesn't consume the same token budget as an ordinary message.",
+    "distractor_rationale": "The system prompt usually appears as its own separate field in code, so it reads as categorically different from the messages array, obscuring that it counts toward window usage just the same."
+  },
+  {
+    "term": "tool definitions",
+    "def": "The name, description, and input_schema you pass to the model to describe each available tool; the docs state they count toward the same request's context window.",
+    "source": "[^S1]",
+    "pitfall": "Assuming a tool definition only costs context when the model actually calls that tool, so unused tool definitions are \"free.\"",
+    "distractor_rationale": "Learners conflate \"was the tool called\" with \"does the tool definition count toward the window,\" but these are independent — once it's in the request, it counts whether or not it's ever invoked."
+  },
+  {
+    "term": "extended thinking",
+    "def": "The reasoning content the model produces while generating this turn's reply; the docs state it counts toward this turn's context window usage.",
+    "source": "[^S1]",
+    "pitfall": "Assuming extended thinking is an internal \"scratchpad\" that doesn't consume the request's token budget.",
+    "distractor_rationale": "The word \"thinking\" suggests something that happens quietly in the background leaving no trace, which hides that it is model output like any other and therefore counts toward the window."
+  },
+  {
+    "term": "usage",
+    "def": "The field in the API response that reports how many input and output tokens the request actually consumed.",
+    "source": "[^S1]",
+    "pitfall": "Assuming you can only estimate token consumption by counting characters yourself, and that the response never hands you an exact number.",
+    "distractor_rationale": "Learners often haven't built the habit of inspecting response fields, so they overlook that the usage field is official, precise, and directly readable."
+  },
+  {
+    "term": "context rot",
+    "def": "The phenomenon named in the official docs where accuracy and recall degrade as the token count in the window grows.",
+    "source": "[^S1]",
+    "pitfall": "Assuming a bigger window holding more history can only make the model perform better, with no such thing as \"packed too full, therefore worse.\"",
+    "distractor_rationale": "\"Better memory means better performance\" is the everyday default expectation about memory, and it gets applied directly to window capacity, missing the docs' point that more clutter makes the genuinely useful part harder to find."
+  },
+  {
+    "term": "accumulation",
+    "def": "The default behavior in which conversation history piles up in the context window turn after turn, growing and never shrinking unless something actively clears it.",
+    "source": "[^S1]",
+    "pitfall": "Assuming conversation history gets automatically condensed or rotated out by the system as turns add up, staying at a reasonable size with no extra work.",
+    "distractor_rationale": "Plenty of other software systems clean up data on their own, which makes learners default to expecting a similar \"auto-slimming\" mechanism for conversation history."
+  },
+  {
+    "term": "resend",
+    "def": "The real mechanism behind the word \"memory\" — every request re-sends the earlier history messages to the model verbatim, rather than the model storing or recalling anything itself.",
+    "source": "[^S6]",
+    "pitfall": "Assuming an agent that appears to \"remember\" does so because the model kept a copy of the history internally, rather than the host code repacking and re-sending it every turn.",
+    "distractor_rationale": "From the user's seat the agent looks like it remembers, and that surface impression gets taken as evidence of a model memory capability, hiding the resend that actually produces it."
+  },
+  {
+    "term": "multiple sessions",
+    "def": "The scope of information that has to outlive a single conversation and survive across independent sessions, which stuffing it into the current messages array cannot achieve.",
+    "source": "[^S1]",
+    "pitfall": "Assuming that once information is written into this conversation's history, the agent will still see it when a new session opens later.",
+    "distractor_rationale": "Learners conflate \"this conversation remembered it\" with \"future conversations can see it,\" missing that the window's lifetime ends when this session does."
+  },
+  {
+    "term": "Messages API",
+    "def": "The API this course builds on; its official docs state plainly that it is stateless and that you always send the full conversational history with each request.",
+    "source": "[^S6]",
+    "pitfall": "Assuming the API tracks a session identity of some kind, so passing a user or conversation ID would be enough for it to reconstruct history on the server.",
+    "distractor_rationale": "Most familiar web APIs do carry session state behind an ID, so learners import that expectation and miss the explicit statement that this one carries none."
+  },
+  {
+    "term": "append",
+    "def": "The plainest way to manage conversation history — after each turn, tack the new messages onto the end of the existing messages array and send the whole array again next turn.",
+    "source": "[^S1]",
+    "pitfall": "Assuming appending just adds new messages without affecting the older messages already in the array or the window's remaining capacity.",
+    "distractor_rationale": "\"Append\" sounds like a trivially simple operation, which hides that it is the root cause of history that only grows and eventually fills the window."
+  },
+  {
+    "term": "truncation",
+    "def": "Cutting the oldest batch of messages outright when the window is nearly full and keeping only the most recent N — simple to implement, but what it drops is gone irreversibly.",
+    "source": "[^S1]",
+    "pitfall": "Assuming truncation merely \"stops sending\" the cut messages temporarily, so they can be recovered when needed.",
+    "distractor_rationale": "\"Truncate\" and \"delete\" feel intuitively distinct, leading learners to believe the cut portion is only hidden rather than genuinely removed from the array about to be sent."
+  },
+  {
+    "term": "compaction",
+    "def": "The official mechanism that distills the contents of a context window into a high-fidelity summary, letting the agent continue with minimal performance degradation once the conversation gets long.",
+    "source": "[^S2]",
+    "pitfall": "Assuming compaction and truncation are fundamentally the same thing under a nicer name.",
+    "distractor_rationale": "Both are ways of making history shorter, so learners treat them as synonyms and miss the key difference — compaction rewrites the whole thing, truncation discards whole stretches."
+  },
+  {
+    "term": "high-fidelity summary",
+    "def": "What compaction produces — a distilled version that replaces the long run of raw history and sits at the front of the window, keeping what happened and what was concluded while dropping word-for-word detail.",
+    "source": "[^S2]",
+    "pitfall": "Assuming a high-fidelity summary can fully reconstruct every detail of the original conversation with nothing lost.",
+    "distractor_rationale": "\"High-fidelity\" reads as \"lossless,\" obscuring the lesson's explicit point that a summary is ultimately a lossy version of the original — specific numbers and exact phrasing may be gone."
+  },
+  {
+    "term": "trigger threshold",
+    "def": "The window-usage level at which an official mechanism automatically starts compacting or clearing tool results.",
+    "source": "[^S2]",
+    "pitfall": "Assuming the trigger threshold is a pure client-side setting the developer can lower to any value at all, with no server-enforced floor.",
+    "distractor_rationale": "Learners read \"the threshold is configurable\" as \"entirely up to me,\" missing that compaction has a server-enforced minimum below which the threshold cannot go."
+  },
+  {
+    "term": "tool-result clearing",
+    "def": "The official mechanism aimed at bloat from tool use itself — it drops old, re-fetchable results while keeping the record that the call happened.",
+    "source": "[^S2]",
+    "pitfall": "Assuming clearing deletes the entire stretch of history containing the tool call, including the record of the call itself.",
+    "distractor_rationale": "The word \"clearing\" suggests wholesale deletion, obscuring the crucial distinction that it wipes only the returned content and preserves the call record."
+  },
+  {
+    "term": "re-fetchable",
+    "def": "The qualifier that decides what clearing may drop — content the tool returned that has gone stale and can be obtained again by calling the same tool with the same arguments.",
+    "source": "[^S2]",
+    "pitfall": "Assuming clearing indiscriminately wipes every tool result regardless of whether it could be fetched again.",
+    "distractor_rationale": "Learners overlook the \"re-fetchable\" qualifier and imagine clearing judges purely on age, rather than on age plus whether the content can be recovered on demand."
+  },
+  {
+    "term": "150K tokens",
+    "def": "Compaction's default trigger threshold — compaction fires automatically once window usage reaches this level.",
+    "source": "[^S2]",
+    "pitfall": "Assuming 150K tokens is a number you can freely lower with no constraint whatsoever.",
+    "distractor_rationale": "Learners miss that this default sits alongside a server-enforced minimum, treating it as a pure client-side dial they can turn arbitrarily far down."
+  },
+  {
+    "term": "100K tokens",
+    "def": "Tool-result clearing's default trigger threshold, lower than compaction's 150K, reflecting its role of stepping in earlier against the single bloat source of tool output.",
+    "source": "[^S2]",
+    "pitfall": "Assuming 100K tokens and 150K tokens are two ways of describing the same mechanism and can be used interchangeably.",
+    "distractor_rationale": "Both numbers appear in adjacent sections of the same lesson, so they get confused for restatements of one thing rather than independent thresholds belonging to two different mechanisms."
+  },
+  {
+    "term": "50K tokens",
+    "def": "The server-enforced floor for compaction's trigger threshold — the configured value must be at least this large, so the threshold cannot be lowered arbitrarily.",
+    "source": "[^S8]",
+    "pitfall": "Assuming that because 150K is only a default, you can set the trigger anywhere you like — say 10K — to compact more aggressively.",
+    "distractor_rationale": "Learners register \"150K is the default\" and stop there, missing the separate server-side minimum that makes very low thresholds simply invalid."
+  },
+  {
+    "term": "the most recent 3 tool calls",
+    "def": "Tool-result clearing's default retention policy — the full results of the last three tool calls stay intact, and older tool results get cleared.",
+    "source": "[^S2]",
+    "pitfall": "Assuming that once clearing fires it wipes every tool result at once, with no regard for the order in which the calls happened.",
+    "distractor_rationale": "\"Clearing\" gets read as \"clear everything,\" missing that the mechanism defines an explicit retention window and only clears what falls outside it."
+  },
+  {
+    "term": "mental model",
+    "def": "The Cookbook's three-way division of labor for handling context bloat — compaction for a window that's grown too large, clearing for stale re-fetchable data inside it, memory for surviving across sessions.",
+    "source": "[^S2]",
+    "pitfall": "Assuming the three mechanisms compete and you must pick exactly one, rather than being a layered design where all three can be in effect at once.",
+    "distractor_rationale": "All three get discussed under the single umbrella of \"handling history bloat,\" which makes them look like overlapping alternatives instead of the layered, non-conflicting arrangement the lesson describes."
+  },
+  {
+    "term": "window usage",
+    "def": "The measure of how much context-window capacity the current conversation history occupies; it's what you check to decide whether to truncate, compact, or clear.",
+    "source": "[^S2]",
+    "pitfall": "Assuming window usage only matters when you're about to trip some threshold, and needs no attention the rest of the time.",
+    "distractor_rationale": "Learners treat window usage as an alarm you glance at only when it goes off, missing that it is the continuous basis for every history-management decision."
+  },
+  {
+    "term": "whole-transcript",
+    "def": "The scope of compaction — user messages, assistant messages, tool calls, tool results, and even prior compaction blocks all get flattened into the new summary.",
+    "source": "[^S2]",
+    "pitfall": "Assuming a second compaction leaves the first compaction's summary block untouched and only compacts the messages that came after it.",
+    "distractor_rationale": "It feels natural that an already-compacted block is \"done\" and safe, obscuring that a later compaction folds the earlier summary back into the new one along with everything else."
+  },
+  {
+    "term": "round-trip",
+    "def": "One complete tool-calling exchange — the assistant message carrying tool_use plus the user message carrying the matching tool_result — the smallest unit history slicing may treat as atomic.",
+    "source": "[^S7]",
+    "pitfall": "Slicing history by message count, so the cut point can land in the middle of a round-trip and split a pair that has to move together.",
+    "distractor_rationale": "\"Keep the last N messages\" is the obvious implementation and looks correct on ordinary dialogue, so the failure only shows up once a tool call happens to straddle the boundary."
+  },
+  {
+    "term": "tool_use_id",
+    "def": "The identifier binding a tool_result block back to the tool_use block that produced it; clearing replaces the result's content but leaves this id in place.",
+    "source": "[^S7]",
+    "pitfall": "Assuming that when a tool result is cleared, the whole message including its tool_use_id disappears from history.",
+    "distractor_rationale": "\"Clearing\" reads as deleting the entire record, missing that the lesson's implementation deliberately keeps tool_use_id and swaps only the content field."
+  },
+  {
+    "term": "external memory",
+    "def": "Storage that isn't bound to a single conversation's lifecycle — usually a file on disk — so information written there can still be read after the session ends.",
+    "source": "[^S2]",
+    "pitfall": "Assuming that writing information into the current session's messages array already counts as external memory and will persist across sessions.",
+    "distractor_rationale": "The act of \"writing it down\" gets loosely equated with \"remembering it,\" missing that only writing somewhere outside the window's lifecycle actually qualifies."
+  },
+  {
+    "term": "memory file",
+    "def": "A file kept on disk to carry information across sessions — CLAUDE.md being the representative case — which may be loaded into context in full or in part when a session begins.",
+    "source": "[^S3]",
+    "pitfall": "Assuming any file called a \"memory file\" must be loaded in full at the start of every session, with no such thing as on-demand retrieval.",
+    "distractor_rationale": "CLAUDE.md, the first example learners meet, really is loaded in full, so that behavior gets generalized to all memory files, missing that Auto memory takes the different on-demand route."
+  },
+  {
+    "term": "loaded into the context window",
+    "def": "The process by which a memory file's contents are read from disk and injected into a specific request, making them visible to the model for that turn.",
+    "source": "[^S3]",
+    "pitfall": "Assuming that because a memory file exists on disk, it is already in context and the model can naturally see it.",
+    "distractor_rationale": "This is where Lesson 1's principle — the model sees only what's in the window — is easiest to forget: sitting on disk and being loaded into this request are two different things."
+  },
+  {
+    "term": "block-level HTML comments",
+    "def": "Content wrapped in <!-- --> inside a CLAUDE.md file; the docs state it is stripped before the content is injected into the agent's context.",
+    "source": "[^S3]",
+    "pitfall": "Assuming an HTML comment written in CLAUDE.md is still visible to the agent when it reads the file, and could influence its behavior.",
+    "distractor_rationale": "In most other settings an HTML comment is something both humans and programs can see and merely doesn't render, so learners miss the docs' specific note that these are stripped before injection and the agent never reads them at all."
+  },
+  {
+    "term": "Auto memory",
+    "def": "Memory written by the model itself as the conversation goes, structured as an index file plus on-demand topic files, complementing the human-written CLAUDE.md.",
+    "source": "[^S3]",
+    "pitfall": "Assuming Auto memory and CLAUDE.md are two names for the same mechanism, loaded into context in exactly the same way.",
+    "distractor_rationale": "Both are memory files, so they get treated as one thing, missing that the official comparison table separates them on both \"who writes it\" and \"when it gets loaded.\""
+  },
+  {
+    "term": "index file",
+    "def": "The first layer of Auto memory's two-layer structure — MEMORY.md, for instance — which stores per-topic entry summaries rather than the full content of each topic.",
+    "source": "[^S3]",
+    "pitfall": "Assuming the index file already contains each topic's complete content, so the corresponding topic file never needs to be read separately.",
+    "distractor_rationale": "In some other settings an \"index\" does carry the whole payload, so learners miss that this one has a size cap and holds only entry summaries."
+  },
+  {
+    "term": "retrieval on demand",
+    "def": "Loading only the index's entry summaries at session start, and reading a specific topic memory file only when the current task actually needs it.",
+    "source": "[^S3]",
+    "pitfall": "Assuming retrieval on demand means the model predicts which memories it will need next and preloads them all in advance.",
+    "distractor_rationale": "\"On demand\" is read as the system intelligently anticipating needs, missing that the actual mechanism is \"read it only once the task genuinely touches that topic,\" not preloading."
+  },
+  {
+    "term": "MEMORY.md",
+    "def": "Auto memory's index file; the official rule is that only its first 200 lines or first 25KB, whichever comes first, load at the start of each conversation.",
+    "source": "[^S3]",
+    "pitfall": "Assuming MEMORY.md is read in full at the start of every session, with no size-based cutoff.",
+    "distractor_rationale": "Learners carry over CLAUDE.md's \"loaded in full\" rule, missing that the docs give MEMORY.md its own separate 200-line-or-25KB loading cap."
+  },
+  {
+    "term": "CLAUDE.md",
+    "def": "A human-written project memory file loaded in full into context at the start of every session; the official size target is under 200 lines, with a hard limit of 4 MiB.",
+    "source": "[^S3]",
+    "pitfall": "Assuming the longer and more complete CLAUDE.md gets, the more it helps the agent.",
+    "distractor_rationale": "\"More complete documentation is more useful\" is a common writing instinct, obscuring the concrete cost that CLAUDE.md is loaded in full every time and an over-long file both burns context and lowers instruction adherence."
+  },
+  {
+    "term": "200 lines",
+    "def": "The official size target recommended for a CLAUDE.md file; going past it consumes more context and lowers the agent's adherence to instructions.",
+    "source": "[^S3]",
+    "pitfall": "Treating 200 lines as a hard technical limit that will cause an error or truncation if exceeded.",
+    "distractor_rationale": "Learners collapse the soft recommendation and the hard limit into one, missing that 200 lines is a quality guideline while 4 MiB is the actual cutoff where the file is skipped."
+  },
+  {
+    "term": "4 MiB",
+    "def": "The genuine hard limit for CLAUDE.md — a file up to this size is loaded in full, and anything larger is skipped entirely.",
+    "source": "[^S3]",
+    "pitfall": "Assuming a CLAUDE.md that grows past the recommended size gets partially loaded or trimmed, so an oversized file at least still contributes something.",
+    "distractor_rationale": "Partial loading feels like the graceful behavior, obscuring that past 4 MiB the file is skipped outright — the agent sees none of it, not a truncated version."
+  },
+  {
+    "term": "/compact",
+    "def": "The compaction command in Claude Code; the docs note a project-root CLAUDE.md survives it, being re-read from disk and re-injected into the session afterward.",
+    "source": "[^S3]",
+    "pitfall": "Assuming CLAUDE.md's contents only survive compaction if the generated summary happened to preserve them.",
+    "distractor_rationale": "It looks like CLAUDE.md is \"incidentally preserved\" inside the summary, missing that it is separately re-read and re-injected, independent of what the summary kept."
+  },
+  {
+    "term": "boundary check",
+    "def": "Path-checking logic added to a memory file's read/write tool so the tool cannot be talked into reading or writing files outside the memory directory.",
+    "source": "[^S3]",
+    "pitfall": "Assuming that spelling out \"only files inside the memory directory\" in the tool's description is enough, with no code-level check required.",
+    "distractor_rationale": "Learners conflate \"the restriction is stated in the description text\" with \"the restriction is enforced by code,\" missing that description text only steers behavior while the real boundary needs a path check in the implementation."
+  },
+  {
+    "term": "same-prefix sibling directory",
+    "def": "The directory that defeats a bare string-prefix path check — /project/memory-evil shares the prefix /project/memory and so passes startsWith, even though it sits entirely outside the memory root.",
+    "source": "[^S3]",
+    "pitfall": "Assuming that checking whether a path starts with the root directory string is enough to block every out-of-bounds read or write.",
+    "distractor_rationale": "A startsWith check looks intuitively effective, hiding the fine distinction that \"shares a string prefix\" is not the same as \"actually lives inside that directory.\""
+  },
+  {
+    "term": "path.sep",
+    "def": "Node's constant for the platform's path separator, used in the safe boundary condition abs.startsWith(ROOT + path.sep) so only paths beginning with \"root plus separator\" match.",
+    "source": "[^S3]",
+    "pitfall": "Assuming a bare startsWith(ROOT) is sufficient and there's no need to append path.sep.",
+    "distractor_rationale": "Omitting path.sep is the direct cause of the same-prefix bypass, but the detail reads as optional fussiness rather than the piece that actually closes the hole."
+  },
+  {
+    "term": "structured state",
+    "def": "Task progress expressed through fixed fields — a todo list with explicit status markers — that host code can parse reliably, as opposed to progress described in prose.",
+    "source": "[^S4]",
+    "pitfall": "Assuming that once the agent states in its reply which step it reached, that description already counts as structured state.",
+    "distractor_rationale": "A natural-language description appears to convey the same information, obscuring that \"can a program parse it reliably\" is what actually separates structured state from prose."
+  },
+  {
+    "term": "todo list",
+    "def": "A multi-step task broken into a set of items, each carrying an explicit status field, so the agent and the host code can track progress together.",
+    "source": "[^S4]",
+    "pitfall": "Assuming the todo list is only a progress display for humans and has no effect on which step the agent actually does next.",
+    "distractor_rationale": "\"List\" reads as purely presentational information, missing that it is also what the host code consults to decide what happens next."
+  },
+  {
+    "term": "lifecycle",
+    "def": "The four stages a todo moves through from the moment it is identified until it is no longer needed: created, activated, completed, removed.",
+    "source": "[^S4]",
+    "pitfall": "Assuming a todo only has \"in progress\" and \"done\" states, with no \"created but not started\" and no explicit \"removed.\"",
+    "distractor_rationale": "Everyday talk about task status usually covers only \"working on it\" and \"finished,\" so learners overlook that the official lifecycle also includes creation and removal as equally real stages."
+  },
+  {
+    "term": "pending",
+    "def": "The first state in a todo's lifecycle — the item has been identified and added to the list, but work on it hasn't started.",
+    "source": "[^S4]",
+    "pitfall": "Assuming that as soon as a todo appears on the list, it is by default already in progress.",
+    "distractor_rationale": "\"On the list\" and \"being worked on\" get conflated, missing that pending exists precisely to mark \"created but not yet started.\""
+  },
+  {
+    "term": "in_progress",
+    "def": "The second state in a todo's lifecycle — when the work actually begins, the status moves from pending to this value.",
+    "source": "[^S4]",
+    "pitfall": "Assuming a status change is something the model narrates in its reply text rather than an explicit structured tool call.",
+    "distractor_rationale": "Learners read \"the status changed\" as \"the model said something to that effect,\" missing the lesson's insistence that every status change happens through an explicit tool call."
+  },
+  {
+    "term": "completed",
+    "def": "The third state in a todo's lifecycle — the status set when the task finishes successfully.",
+    "source": "[^S4]",
+    "pitfall": "Assuming a todo becomes completed by default simply because it stopped being mentioned.",
+    "distractor_rationale": "\"No longer mentioned\" and \"marked complete\" are two different things that get treated as equivalent, missing that the status only truly changes via an explicit tool call."
+  },
+  {
+    "term": "deleted",
+    "def": "The fourth state in a todo's lifecycle — a todo that's no longer needed is removed by setting its status to this value in a TaskUpdate call.",
+    "source": "[^S4]",
+    "pitfall": "Assuming an unwanted todo can just quietly vanish from the list with no status record left behind.",
+    "distractor_rationale": "\"Delete\" intuitively means \"disappear without a trace,\" missing the lesson's point that removal is likewise an explicit status change, not an implicit vanishing."
+  },
+  {
+    "term": "task-tracking tool",
+    "def": "The tool that lets an agent create and update todo statuses, so task progress appears in the message stream as structured tool calls.",
+    "source": "[^S4]",
+    "pitfall": "Assuming the task-tracking tool is a display convenience for humans with no bearing on how the agent actually executes the task.",
+    "distractor_rationale": "\"Tracking\" reads as passive recording, missing that it is the mechanism making progress machine-readable and therefore able to shape later execution decisions."
+  },
+  {
+    "term": "structured tool call",
+    "def": "The form in which a task-tracking status change appears in the message stream — an identifiable, independently parseable call rather than a line of prose.",
+    "source": "[^S4]",
+    "pitfall": "Assuming a structured tool call differs from a natural-language progress note only in looking more formal, while conveying the same amount of information.",
+    "distractor_rationale": "Both surfaces communicate \"step two is done\" to a human reader, hiding the substantive difference: only one has fixed fields the host code can read without interpreting language."
+  },
+  {
+    "term": "checkpoint",
+    "def": "A task's state at a point in time written out as data and persisted somewhere outside the session's lifetime, so execution can resume after an interruption.",
+    "source": "[^S4]",
+    "pitfall": "Assuming that because the todo list is already structured state, it is automatically readable after the session ends and needs no separate checkpoint.",
+    "distractor_rationale": "\"Structured\" and \"persistent\" get conflated, missing that structured state living only in the session history vanishes along with the session all the same."
+  },
+  {
+    "term": "recoverability",
+    "def": "The ability, after a process restart, to read the most recent checkpoint and continue from where the work stopped instead of starting over.",
+    "source": "[^S4]",
+    "pitfall": "Assuming that as long as a todo list existed, the agent can pick up where it left off after a restart whether or not a checkpoint was written.",
+    "distractor_rationale": "Learners conflate \"the todo list once existed\" with \"the todo list can still be read now,\" missing that recoverability rests on the checkpoint, not on the list having existed."
+  },
+  {
+    "term": "idempotent",
+    "def": "The property of an operation that produces the same result no matter how many times it runs, so re-running it causes no extra side effects.",
+    "source": "[^S4]",
+    "pitfall": "Assuming every task step costs the same to redo, with no need to distinguish which steps are idempotent and which aren't.",
+    "distractor_rationale": "\"Doing it again\" sounds like it only wastes time, hiding that a non-idempotent operation — inserting a database record, say — can corrupt data when accidentally repeated, not just cost efficiency."
+  },
+  {
+    "term": "TaskUpdate",
+    "def": "The tool call used to change a todo's status; every step of the lifecycle, removal included, goes through it.",
+    "source": "[^S4]",
+    "pitfall": "Assuming removing a todo needs no dedicated tool call and can be done by dropping the entry from the list data directly.",
+    "distractor_rationale": "Learners reduce \"remove\" to \"delete the row,\" missing the docs' explicit statement that removal is done through a TaskUpdate call setting status to deleted, not by quietly erasing the record."
+  },
+  {
+    "term": "MemoryTrap",
+    "def": "A real vulnerability disclosed by Cisco researchers describing how a seemingly harmless routine — clone a repo, approve a dependency install — turns into persistent prompt injection.",
+    "source": "[^S5]",
+    "pitfall": "Assuming MemoryTrap describes an obviously abnormal attack that could be spotted as it happened.",
+    "distractor_rationale": "\"Vulnerability case study\" primes learners to expect something visibly wrong, missing the lesson's emphasis that the attack path was entirely ordinary with no step that looked suspicious."
+  },
+  {
+    "term": "ASI06",
+    "def": "OWASP's risk-category identifier for agent security covering Memory & Context Poisoning, the class MemoryTrap maps to.",
+    "source": "[^S5]",
+    "pitfall": "Assuming ASI06 only covers cases where an attacker actively exploits the memory feature, excluding benign situations like memory simply going stale.",
+    "distractor_rationale": "The word \"poisoning\" suggests deliberate attack only, missing that the lesson later folds stale memory into the same class of risk sharing the same defensive stance."
+  },
+  {
+    "term": "persistent memory",
+    "def": "Storage an agent reads and trusts across sessions; because it is loaded automatically and repeatedly, anything written there shapes future behavior, not just one response.",
+    "source": "[^S5]",
+    "pitfall": "Assuming persistent memory is purely a convenience feature and treating its write path as no more sensitive than any other file write.",
+    "distractor_rationale": "Learners evaluate a write by \"is this content useful,\" missing that what makes persistent memory valuable — automatic repeated trusted loading — is exactly what makes a bad write compound over time."
+  },
+  {
+    "term": "persistent prompt injection",
+    "def": "What a routine developer workflow turned into in MemoryTrap — injected content that isn't confined to one turn but is written where it will be reloaded and re-trusted in future sessions.",
+    "source": "[^S5]",
+    "pitfall": "Assuming an injection is over once the current turn's response looks normal, with nothing left to clean up.",
+    "distractor_rationale": "Ordinary prompt injection is a single-turn event, so learners apply that mental model here and miss that the \"persistent\" part means the payload keeps taking effect after the session ends."
+  },
+  {
+    "term": "stale memory",
+    "def": "Content in persistent memory that was once correct but no longer applies, and is still executed as a currently valid rule simply because it's sitting in memory.",
+    "source": "[^S5]",
+    "pitfall": "Assuming that as long as memory content wasn't written maliciously, it is safe and can be trusted directly.",
+    "distractor_rationale": "Learners equate \"risk\" with \"malicious attack,\" missing the lesson's point that well-meaning but outdated content produces the same class of outcome as poisoning."
+  },
+  {
+    "term": "trusted surfaces",
+    "def": "Places like memory, hooks, and configuration that the system loads repeatedly as a trusted source, so malicious content reaching them can be exploited over and over.",
+    "source": "[^S5]",
+    "pitfall": "Assuming only the memory feature itself is an attack surface, and that hooks configuration and other config files fall outside what needs defending.",
+    "distractor_rationale": "The lesson's title centers on memory, which narrows learners' guard to memory alone, missing that the source explicitly lists hooks and configuration as the same kind of trusted surface."
+  },
+  {
+    "term": "future reasoning",
+    "def": "What an attacker actually influences once malicious content reaches a trusted surface — not this one response, but the model's reasoning across many future sessions.",
+    "source": "[^S5]",
+    "pitfall": "Assuming that if this turn's response looks normal, the attack caused no real impact.",
+    "distractor_rationale": "\"Nothing looked wrong this turn\" gets mistaken for \"the risk is ruled out,\" missing that memory poisoning's harm shows up in later sessions rather than at the moment of the write."
+  },
+  {
+    "term": "hooks configuration",
+    "def": "The global configuration that, alongside persistent memory, malicious content also reached in the MemoryTrap case — another store the system loads and trusts repeatedly.",
+    "source": "[^S5]",
+    "pitfall": "Assuming that defending persistent memory against poisoning closes off every path a MemoryTrap-style attack could take.",
+    "distractor_rationale": "The lesson's framing and most of its discussion center on memory, so learners overlook that the source names hooks configuration as a separate, independently reached target in the same attack."
+  },
+  {
+    "term": "highly trusted instruction layer",
+    "def": "The layer MemoryTrap's malicious content influenced through the system prompt — a source of instructions the system grants a high degree of trust.",
+    "source": "[^S5]",
+    "pitfall": "Assuming the system prompt is fixed text the developer wrote and could never be indirectly influenced by content in memory or other persistent storage.",
+    "distractor_rationale": "The system prompt is usually thought of as static content fully under developer control, so learners miss that it can be assembled from poisoned memory or configuration and carry that content along."
+  },
+  {
+    "term": "memory poisoning",
+    "def": "Malicious content actively written into persistent memory or another trusted surface, so storage that should be trustworthy instead carries an attacker's payload.",
+    "source": "[^S5]",
+    "pitfall": "Assuming memory poisoning and stale memory are the same risk arising the same way.",
+    "distractor_rationale": "Both show up as \"memory contains something that shouldn't be trusted,\" so they get treated as one thing, missing the lesson's explicit split by origin — one written maliciously, one simply gone out of date."
+  },
+  {
+    "term": "Credentials",
+    "def": "Keys, passwords, and access tokens — content that, once written into an automatically loaded memory file, gets re-exposed in the window every session for no matching benefit.",
+    "source": "[^S5]",
+    "pitfall": "Assuming that because a key was used legitimately for this task, writing it into a memory file along the way is harmless.",
+    "distractor_rationale": "\"It was used legitimately here\" gets taken as a reason it's safe to store, missing that once a credential enters repeatedly auto-loaded storage it is re-exposed every session regardless of how legitimate the original use was."
+  },
+  {
+    "term": "untrusted raw text",
+    "def": "File contents, web text, and dependency output an agent reads while doing a task — input data for that one task, not something to be copied verbatim into persistent memory.",
+    "source": "[^S5]",
+    "pitfall": "Assuming that anything the agent read itself and found useful can go straight into a memory file with no further review.",
+    "distractor_rationale": "\"The agent read it itself\" gets mistaken for \"it's trustworthy,\" missing that the real origin — a third-party dependency, say — may hide instructions designed specifically to get written into memory."
+  },
+  {
+    "term": "Stable, confirmed rules and facts",
+    "def": "Content from a clearly trustworthy source that a human has confirmed — code-style conventions, a root cause established by real investigation — the kind worth writing to persistent memory.",
+    "source": "[^S5]",
+    "pitfall": "Deciding what to store based only on whether the content looks useful, without asking whether its source is trustworthy and whether it has been confirmed.",
+    "distractor_rationale": "\"Useful\" and \"trustworthy\" are two separate judgments that collapse into one, missing the lesson's insistence that only confirmed, stable content deserves to be automatically trusted by every future session."
+  },
+  {
+    "term": "memory read/write tools",
+    "def": "The pair of tools (read_memory / write_memory) that let an agent write content worth keeping out beyond the window and retrieve what it stored earlier.",
+    "source": "[^S3]",
+    "pitfall": "Assuming that spelling out \"what to store\" in write_memory's description fully prevents the agent from writing untrusted content into memory.",
+    "distractor_rationale": "A description is prompt-level steering, but it gets mistaken for having the same reliability as a code-level block."
+  },
+  {
+    "term": "memory root",
+    "def": "The directory dedicated to memory files (MEMORY_ROOT in the code); every operation the memory read/write tools perform is confined to it.",
+    "source": "[^S3]",
+    "pitfall": "Assuming that as long as the memory tools are functionally correct, no separate path boundary check is needed and they'll naturally never touch files outside the directory.",
+    "distractor_rationale": "\"Reads and writes correctly\" and \"never reads or writes out of bounds\" are independent properties that get conflated, missing that only a dedicated boundary check guarantees the second."
+  },
+  {
+    "term": "write_memory",
+    "def": "The tool that writes text into a file under the memory root; its description spells out the \"what to store\" boundary that Lesson 5 established.",
+    "source": "[^S3]",
+    "pitfall": "Assuming write_memory's path boundary check also handles content risk, so nothing further is needed.",
+    "distractor_rationale": "The path check and content review solve two different problems — one guards against writing outside the memory directory, the other against writing untrusted content inside it, which is exactly what memory poisoning does without ever leaving the directory."
+  },
+  {
+    "term": "prompt-level guidance",
+    "def": "A rule expressed only in a tool's description, which steers the model's behavioral tendency but is not enforced by code the way a path check is.",
+    "source": "[^S5]",
+    "pitfall": "Mistaking \"the rule is written down in the description\" for \"the rule is enforced,\" and treating the risk as closed.",
+    "distractor_rationale": "A clearly worded description looks like a guarantee, missing that a sufficiently persuasive injected instruction can talk the model out of it — real enforcement takes content review or human confirmation."
+  },
+  {
+    "term": "cross-session memory backfill",
+    "def": "Logic that actively reads memory files when a new session starts and injects their contents as an initial message, so memory is in the window from the very first turn.",
+    "source": "[^S3]",
+    "pitfall": "Assuming that once a memory file has been written to disk, the agent will naturally see its contents when the next session begins.",
+    "distractor_rationale": "This is where Lessons 1 and 3 land concretely: a file sitting on disk does not appear in the next request's context window by itself, and only code that actively reads and injects it makes it visible."
+  },
+  {
+    "term": "hand-written compaction",
+    "def": "This course's simplified teaching implementation of compaction — trigger on a character budget, split history on complete round-trip boundaries, then make one model call to generate the summary.",
+    "source": "[^S2]",
+    "pitfall": "Assuming hand-written compaction is equivalent to the official compact_20260112 mechanism and can replace it in a real project.",
+    "distractor_rationale": "The hand-written version does mimic the official mechanism's approach, so it reads as functionally equivalent, missing the lesson's explicit reminder to prefer the native parameters in real projects rather than reinventing them."
+  },
+  {
+    "term": "compact_20260112",
+    "def": "The identifier for Anthropic's native compaction feature, triggering at 150K tokens by default — the mechanism the lesson's hand-written version merely imitates.",
+    "source": "[^S2]",
+    "pitfall": "Assuming that because you can hand-write compaction, there's no reason to reach for the native parameter when the SDK supports it.",
+    "distractor_rationale": "Writing it yourself feels more controllable and more instructive, missing that the native implementation handles thresholds and edge cases the simplified teaching version doesn't."
+  },
+  {
+    "term": "clear_tool_uses_20250919",
+    "def": "The identifier for Anthropic's native tool-result clearing feature, triggering at 100K tokens by default and keeping the last 3 calls' results.",
+    "source": "[^S2]",
+    "pitfall": "Assuming the lesson's hand-written clearing logic is an identical implementation of clear_tool_uses_20250919 and the two are interchangeable.",
+    "distractor_rationale": "The two look similar in effect, obscuring the lesson's explicit note that the hand-written version is a simplified teaching implementation, not the native beta feature itself."
+  },
+  {
+    "term": "character budget",
+    "def": "A crude teaching approximation that gauges token usage by character count to decide whether history needs compacting; it is not a precise token count.",
+    "source": "[^S2]",
+    "pitfall": "Assuming a character budget and a real token count are the same thing, so character counts can be used directly as token counts.",
+    "distractor_rationale": "Characters and tokens feel intuitively interchangeable as units, missing the lesson's explicit note that this is a teaching simplification and real projects need a dedicated counting endpoint."
+  },
+  {
+    "term": "splitKeepingToolPairs",
+    "def": "The helper that decides where to cut history for compaction, backing the cut point up until a tool_use / tool_result pair is no longer split across the summary and the kept portion.",
+    "source": "[^S7]",
+    "pitfall": "Replacing it with a straight slice by message count, which can leave a tool_result in the kept portion while its matching tool_use gets folded into the summary.",
+    "distractor_rationale": "A direct slice looks equivalent and simpler, and works fine until the cut point happens to land on a tool_result message — at which point the protocol structure breaks and the next request errors out."
+  },
+  {
+    "term": "summary message",
+    "def": "The single message a hand-written compaction produces to replace the earlier history, spliced in at the front of the messages array.",
+    "source": "[^S2]",
+    "pitfall": "Assuming the summary message contains every detail from the compacted history and can be relied on to reconstruct the original text.",
+    "distractor_rationale": "\"Summary\" gets casually treated as an equivalent compressed archive, missing that it is fundamentally lossy and the original detail is not coming back."
+  },
+  {
+    "term": "summarization call",
+    "def": "The extra model call a hand-written compaction makes to generate the summary — one of the concrete costs of compacting.",
+    "source": "[^S2]",
+    "pitfall": "Assuming summary generation is pure local string processing that needs no additional model call.",
+    "distractor_rationale": "\"Compressing history\" sounds like truncation or reformatting, missing that the summary's content has to be distilled by the model, which is why it costs another call."
+  },
+  {
+    "term": "placeholder content",
+    "def": "The stand-in text a hand-written clearing function swaps in for old tool_result content beyond the keep count, leaving the tool_use_id untouched.",
+    "source": "[^S2]",
+    "pitfall": "Assuming that once a tool result is cleared, the entire message including its tool_use_id disappears from history.",
+    "distractor_rationale": "\"Clearing\" reads as deleting the whole record, missing that the lesson's implementation deliberately preserves tool_use_id and replaces only the content field."
+  },
+  {
+    "term": "keep count",
+    "def": "The number of most recent tool calls whose full results are preserved by clearing; results beyond it get replaced with placeholder content, echoing the native default of 3.",
+    "source": "[^S2]",
+    "pitfall": "Assuming the hand-written clearing logic is fully equivalent to the native clear_tool_uses_20250919 and can substitute for it.",
+    "distractor_rationale": "The two are similar in effect, obscuring the lesson's note that the hand-written version is a simplified teaching implementation rather than the native beta feature."
+  },
+  {
+    "term": "history-trimming",
+    "def": "The capability this lesson adds to the execution loop so a long conversation doesn't balloon forever, covering both hand-written compaction and tool-result clearing.",
+    "source": "[^S2]",
+    "pitfall": "Assuming that implementing just one of the two mechanisms — compaction alone, or clearing alone — is enough to handle every kind of bloat.",
+    "distractor_rationale": "The lesson wires both into the same loop, and it's easy to overlook that they address two different bloat sources — an over-large window overall versus stale re-fetchable data — so neither alone covers every case."
+  },
+  {
+    "term": "TOOLS",
+    "def": "The single table registering each tool's schema alongside its implementation function; the loop derives toolSchemas and toolHandlers from it.",
+    "source": "[^S9]",
+    "pitfall": "Assuming that adding a tool to the TOOLS table only requires writing the handler function, with no matching schema needed.",
+    "distractor_rationale": "The handler and the schema answer \"how does it run\" and \"what does the model see\" respectively, and it's easy to attend only to the first, missing that both must be registered together before the model knows the tool exists or how to call it."
+  },
+  {
+    "term": "memory-augmented loop",
+    "def": "The finished loop this lesson builds — the execution loop from the tool-calling course with memory read/write, memory backfill, hand-written compaction, and tool-result clearing all fitted in.",
+    "source": "[^S9]",
+    "pitfall": "Assuming that once memory read/write tools are wired up the loop is complete, with no need for history trimming on top.",
+    "distractor_rationale": "\"It can read and write memory\" feels like the finish line, missing the lesson's point that the memory-augmented loop is the combined result of read/write, backfill, compaction, and clearing — none of which is optional."
+  }
+]

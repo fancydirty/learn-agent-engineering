@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Produce the English variant of the shipped Chinese course learn-agent-memory-state for learn.agentmentor.dev. Teaching rewrite in English (not a translation): same 6-lesson structure, same lesson slugs, same interactive-block ids and answer positions, source quotes restored to their verbatim English originals from sources.md, runnable code kept logic-identical with only comments and user-facing strings translated, cross-course references pointing at the live English course titles, natural desk-voice English prose with no AI-slop register.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "The owner ratified the multilingual plan explicitly: all six locales on learn.agentmentor.dev, English first, batches of 2-3 courses in path order with a commit per course. The zh course is the verified source of truth for scope, learner model, structure, and grounding, so no additional clarification was needed."
+  },
+  "learnerModel": {
+    "targetReader": "A developer who has finished the first four courses in this series, can write structured prompts, understands the tool-calling round-trip, and wants an agent to remember information across sessions",
+    "knownConcepts": [
+      "Writing structured prompts",
+      "The tool-calling round-trip protocol (tool_use / tool_result)",
+      "Basic JavaScript (variables, functions, async/await, array methods)",
+      "Running Node.js scripts locally",
+      "That an agent reads context, decides, and acts in a loop"
+    ],
+    "unknownConcepts": [
+      "Why 'the agent has memory' is an illusion",
+      "What the context window actually holds",
+      "That the Messages API is stateless",
+      "Append / truncate / summarize strategies for history",
+      "Compaction and tool-result clearing",
+      "File-based external memory (CLAUDE.md, Auto memory / MEMORY.md)",
+      "Structured task state and checkpoints",
+      "Memory poisoning attack paths (MemoryTrap / ASI06)"
+    ],
+    "assumedEnvironment": "A local environment that can run Node.js scripts, a text editor, and terminal access; no ML background required",
+    "firstIndependentAction": "Look at one of their own agent sessions and name what is actually in the context window versus what they imagined was 'remembered'",
+    "noviceRamp": [
+      "Lesson 1 dismantles the memory illusion first, grounding it in the stateless Messages API before any management technique",
+      "Lesson 2 builds append/truncate/summarize in order, tying truncation to the tool_use/tool_result pairing rule the reader already knows",
+      "Lesson 3 introduces file-based external memory (human-written CLAUDE.md vs Claude-written Auto memory) with concrete size and load rules",
+      "Lesson 4 adds structured task state so an agent resumes instead of restarting",
+      "Lesson 5 covers the security boundary (MemoryTrap) as a relatively independent unit, and lesson 6 assembles a runnable persistent memory layer"
+    ]
+  },
+  "learnerBrief": "The target reader has finished the first four courses and can write structured prompts and read JavaScript. They don't yet know that the context window is all an agent's memory, why history only grows, or how to persist and protect memory. The course gets them to explain the memory illusion, apply append/truncate/summarize, design file-based external memory, use structured state and checkpoints to resume tasks, recognize memory-poisoning attacks and defenses, and finally wire a runnable persistent memory layer onto an agent.",
+  "scope": "Covered: what the context window holds, the stateless Messages API, conversation-history growth, append/truncate/summarize, compaction and tool-result clearing (with real parameter names and thresholds), file-based external memory (CLAUDE.md and Auto memory / MEMORY.md), structured task state and checkpoints, memory-poisoning attack paths (MemoryTrap, ASI06) and defenses, and a runnable persistent memory layer. Not covered: building a vector database or RAG retrieval system, and memory training at the model level. Depth: from zero to wiring a readable, writable, compressible persistent memory layer onto an agent.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-memory-state/en/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Diagrams are kept exactly where the zh original uses them (the context-window composition and the memory-layer flow), with labels rewritten in English; none added or removed. Memory management is mostly about what enters and leaves a window, which a diagram captures well; the zh placement was already review-validated.",
+    "weakestPoints": [
+      "Lesson 2 names real beta parameters (compact_20260112, clear_tool_uses_20250919) with default thresholds; these can change, so the lesson frames them as current defaults with a pointer to the source rather than as permanent constants",
+      "Lesson 5's MemoryTrap case is a single disclosed vulnerability used as a teaching anchor; the defenses generalize but the specific fix (Claude Code v2.1.50) is version-bound and dated in the text",
+      "Lesson 6's capstone memory layer is teaching-grade; real projects should prefer native compact/clear parameters over the hand-written simplification, which the lesson states explicitly",
+      "As an English teaching rewrite of a verified zh course, idiomatic drift is the residual risk: source quotes were restored verbatim from English originals and runnable code kept logic-identical, but prose was re-taught rather than translated, so review must check meaning-equivalence against the zh lessons"
+    ],
+    "followUpChecks": [
+      "Render pass on learn.agentmentor.dev /en/agent-memory-state/... after deploy: all 6 lessons plus README, interactive cards hydrate",
+      "Verify every glossary term appears verbatim in the en lessons (attach check)",
+      "Verify every [^Sn] anchor in en lessons has a matching ## Sn block in en sources.md",
+      "Confirm the nine check-block ids and correct-answer positions are byte-identical to zh (b/b/a/b/a/b/b/b/b in lesson order)",
+      "Re-run the capstone JS (memory read/write tools + splitKeepingToolPairs + compaction) and confirm behavior matches the asserted outputs"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "The learner can take an agent, wire read/write memory tools and session-start backfill onto it, add truncation that never severs a tool_use/tool_result pair plus a compaction step, and defend the memory surface against a poisoning path — producing a runnable persistent memory layer that remembers across process restarts.",
+    "interactionCheck": "Nine agentmentor-check blocks across the six lessons (stateless check in L1; truncation trade-off and compaction-vs-clearing in L2; CLAUDE.md size and on-demand retrieval in L3; structured-vs-prose and checkpoint durability in L4; attack-surface scope in L5; write-tool-not-enough in L6), preserved from the zh variant with identical ids, modes, choice counts, and correct-answer positions; label, prompt, whyHere, choice text, and feedback are English teaching rewrites specific to each lesson's misconception. Exercises keep the zh Level structure with rubric, answer, and hints per Level.",
+    "learnerFitCheck": "The course assumes the prior four courses, structured-prompt skill, the tool-calling round-trip, and JavaScript reading. The memory illusion, history management, external memory, structured state, and the poisoning risk model are taught from zero in dependency order; the learner first builds a full memory layer in lesson 6, after every prerequisite. Lesson 1's first exercise asks only for inspection of the reader's own session.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "English variant of a shipped zh course: structure, grounding, and answer positions inherited from the verified original",
+      "All interactive blocks preserve id/mode/choice-count/correct-answer byte-parity with zh",
+      "All source quotes restored to verbatim English originals and checked byte-exact against sources.md",
+      "Cross-course references use the live English course titles; capstone code kept logic-identical"
+    ]
+  },
+  "nextSteps": [
+    "Run course-guard on the en variant and fix anything it flags",
+    "Deploy learn.agentmentor.dev and spot-check the /en pages render with hydrated interactive cards",
+    "Produce the remaining locale variants (ja/ko/es/pt-BR) using this en variant as the translation base",
+    "Encourage learners to add a persistent memory layer to a real agent in their own project as the post-course consolidation project"
+  ],
+  "memoryBoundary": "This agentmentor.json is a course-local state record, stored only in the course directory for quality checks and learning-path tracking. It is never written back to Claude Code or any host AI system's long-term memory and does not affect other courses or conversations."
+}
