@@ -1,0 +1,499 @@
+[
+  {
+    "term": "context pollution",
+    "def": "An error or irrelevant scrap picked up early in a task mixes into the one context that all later reasoning depends on, and later correct information has a hard time washing it out completely.",
+    "source": "[^S7]",
+    "pitfall": "Assuming that once the model finds the correct information later, its earlier wrong judgment gets corrected automatically.",
+    "distractor_rationale": "It feels intuitive that later correct information should override an earlier error, but once wrong information has been referenced a few times it sits in the same context window as the correct version, and the model may not cleanly work out which one to trust."
+  },
+  {
+    "term": "attention dilution",
+    "def": "The more content packed into one context window, the less attention the model can give to any single piece of it, so it slips up or leaves things out on tasks that need many details held precisely at once.",
+    "source": "[^S7]",
+    "pitfall": "Assuming that as long as the context window is not full, more content can only help and carries no downside.",
+    "distractor_rationale": "The common misread is 'the window is not full, so there is still room,' but attention dilution is not about running out of space — it is about the model's attention to each detail getting spread thinner, which happens well before anything overflows."
+  },
+  {
+    "term": "attention budget",
+    "def": "Anthropic's framing for the finite pool of attention a model draws on when parsing large volumes of context; every new token depletes some of it.",
+    "source": "[^S7]",
+    "pitfall": "Treating the attention budget as if it resets whenever the model starts a new reasoning step within the same conversation.",
+    "distractor_rationale": "Because each turn feels like a fresh start, it is tempting to think attention refills between steps, but the budget is drawn against the whole context being parsed — a long accumulated history keeps depleting it on every subsequent call."
+  },
+  {
+    "term": "performance gradient",
+    "def": "Anthropic's description of how context-driven degradation actually shows up: quality declines gradually as the context grows, rather than working perfectly until some threshold and then failing outright.",
+    "source": "[^S7]",
+    "pitfall": "Assuming there is a safe token count below which quality is unaffected, and that problems only start once you cross it.",
+    "distractor_rationale": "A hard limit is easier to reason about, so people look for a threshold number, but Anthropic explicitly calls this a gradient rather than a cliff — degradation is already underway at moderate context sizes, just not dramatic enough to notice."
+  },
+  {
+    "term": "multi-agent system",
+    "def": "Several agents — LLMs autonomously using tools in a loop — working together on one task, each with its own context.",
+    "source": "[^S1]",
+    "pitfall": "Reading 'multi-agent' as 'calling the same agent many times.'",
+    "distractor_rationale": "The word 'multiple' invites a count-of-calls reading, but the official definition is about multiple agents each independently using tools and working together, not one agent invoked repeatedly inside a single context."
+  },
+  {
+    "term": "coordination overhead",
+    "def": "The extra time and tokens spent getting several agents to divide work and collaborate: splitting the task, aggregating results, and reconciling contradictory output.",
+    "source": "[^S1]",
+    "pitfall": "Assuming coordination overhead only shows up when something goes wrong, and that a smooth run costs nothing extra.",
+    "distractor_rationale": "Overhead is a fixed cost baked into splitting, delegating, and aggregating themselves — even when every subtask succeeds on the first try, the split and the merge still take time and tokens."
+  },
+  {
+    "term": "parallelization",
+    "def": "Handing the genuinely separable parts of a task — the ones that do not depend on each other's intermediate results — to different agents to work on at the same time.",
+    "source": "[^S1]",
+    "pitfall": "Assuming that using multiple agents automatically means the task is being parallelized.",
+    "distractor_rationale": "Multiple agents is not the same as parallel work: if the pieces depend tightly on one another, the agents just queue up waiting for each other's output, and you pay coordination overhead without buying any speedup."
+  },
+  {
+    "term": "depth-first task",
+    "def": "A task whose answer lives in one chain of reasoning you have to work through step by step, with tightly coupled steps that resist being cut cleanly into pieces for different agents.",
+    "source": "[^S1]",
+    "pitfall": "Assuming that a task with many steps is therefore well suited to one agent per step.",
+    "distractor_rationale": "Step count looks like a natural split line, but what makes a task depth-first is the tight front-to-back dependency between steps; splitting it leaves each agent missing the context its reasoning needs, no matter how many steps there are."
+  },
+  {
+    "term": "breadth-first task",
+    "def": "A task whose answer spreads across a few relatively independent directions that can genuinely be chased separately, without depending on each other's intermediate results.",
+    "source": "[^S1]",
+    "pitfall": "Assuming that any task made of several parts is breadth-first and safe to split.",
+    "distractor_rationale": "'Several parts' gets treated as sufficient grounds for splitting, but the real test is whether those parts are independent of each other's intermediate results — otherwise you have a depth-first task wearing a breadth-first shape."
+  },
+  {
+    "term": "context window",
+    "def": "The span of information a model can hold in one inference pass; multi-agent systems ease pollution and dilution by giving each agent its own separate one.",
+    "source": "[^S1]",
+    "pitfall": "Treating the context window as purely a storage limit with no bearing on output quality.",
+    "distractor_rationale": "It is easy to read the window as a simple capacity question — does it fit or not — but the lesson's point is that the more you pack in, the more the model's attention to each detail and its reasoning quality erode, well before anything overflows."
+  },
+  {
+    "term": "single-agent system",
+    "def": "Getting the task done end to end with one agent, without splitting it or introducing multi-agent collaboration.",
+    "source": "[^S2]",
+    "pitfall": "Treating a single-agent system as a stripped-down multi-agent system that is necessarily worse.",
+    "distractor_rationale": "'Simpler' gets equated with 'weaker,' but the recommended stance is to get the task working with one agent first and watch where it actually gets stuck — for many tasks a single agent is the better deal once you count the token cost of splitting."
+  },
+  {
+    "term": "scaling rule",
+    "def": "Anthropic's rule of thumb for sizing agent count against task complexity: simple fact-finding needs 1 agent with 3 to 10 tool calls, a direct comparison 2 to 4 subagents with 10 to 15 calls each, and only research complex enough to divide responsibilities cleanly goes past 10 subagents.",
+    "source": "[^S1]",
+    "pitfall": "Assuming the more important a task is, the more subagents it deserves.",
+    "distractor_rationale": "Importance and separability are different things: the tiers are set by how complex the task is and whether it divides into clearly bounded responsibilities, not by how much the outcome matters to you."
+  },
+  {
+    "term": "economic viability",
+    "def": "The condition that a multi-agent system is only worth using when the task's own value is high enough to pay for the extra token cost that comes with the performance gain.",
+    "source": "[^S1]",
+    "pitfall": "Treating 'it performs better' as sufficient justification for going multi-agent.",
+    "distractor_rationale": "Better output looks like the only criterion that matters, but economic viability also requires that the improvement be worth roughly 15 times the token cost of a chat interaction — performing better does not automatically mean paying off."
+  },
+  {
+    "term": "separation of concerns",
+    "def": "Anthropic's term for what subagents buy you: distinct tools, prompts, and exploration paths per agent, which reduces path dependency so one agent's dead end does not steer the others.",
+    "source": "[^S1]",
+    "pitfall": "Reading separation of concerns as purely an organizational nicety, a tidy way to label who does what.",
+    "distractor_rationale": "The phrase sounds like ordinary software hygiene, but here it names a concrete quality effect: because each subagent explores on its own trajectory, a misleading source one of them hits never becomes part of the others' reasoning."
+  },
+  {
+    "term": "orchestrator-subagent",
+    "def": "An architecture where a central LLM dynamically breaks down tasks, delegates them to worker LLMs, and synthesizes their results.",
+    "source": "[^S2]",
+    "pitfall": "Assuming the orchestrator also handles the detailed contents of the subtasks itself.",
+    "distractor_rationale": "The word 'central' suggests hands-on involvement, but the orchestrator's job is exactly three actions — break down, delegate, synthesize — and the moment it goes and reads a full source itself, it is doing the subagent's work and the division of labor blurs."
+  },
+  {
+    "term": "orchestrator",
+    "def": "The central agent that decides how to divide the work, who gets which piece, and how to stitch several returned results into one coherent answer.",
+    "source": "[^S2]",
+    "pitfall": "Forgetting that the orchestrator has a context window of its own that can be polluted and diluted just like any agent's.",
+    "distractor_rationale": "The orchestrator is easy to picture as a neutral router that costs nothing, but every detailed result pushed back into it consumes its context — which is why 'return only the conclusion' exists as a rule at all."
+  },
+  {
+    "term": "subagent",
+    "def": "An agent dispatched by the orchestrator to complete one delegated task inside a fresh, isolated context window, returning its result when done.",
+    "source": "[^S3]",
+    "pitfall": "Assuming a subagent can see the conversation history, the skills already invoked, or the files already read.",
+    "distractor_rationale": "Because the subagent is launched from inside your session, it feels like a continuation of it, but the docs are explicit that it starts fresh and sees only the delegation message the orchestrator composed for it."
+  },
+  {
+    "term": "context isolation",
+    "def": "Confining each agent's working scope to its own context window, so context pollution inside one agent does not spread to another.",
+    "source": "[^S3]",
+    "pitfall": "Treating context isolation as a mere implementation detail, unrelated to the context pollution and attention dilution problems from Lesson 1.",
+    "distractor_rationale": "It reads like a plumbing decision about how sessions are wired, but it is the actual mechanism that eases both Lesson 1 problems — each subagent's pollution and dilution stay bounded inside its own window instead of infecting the others."
+  },
+  {
+    "term": "fan-out",
+    "def": "The orchestrator distributing the split-up subtasks in parallel to a matching number of subagents, so they all start working at once instead of queuing one after another.",
+    "source": "[^S2]",
+    "pitfall": "Thinking fan-out just means hacking the task into as many pieces as possible.",
+    "distractor_rationale": "The piece count looks like the whole story, but how you cut matters more than how finely: each chunk has to be genuinely handleable on its own, and a bad cut leaves subagents missing key context and reaching contradictory conclusions."
+  },
+  {
+    "term": "aggregate",
+    "def": "The step after fan-out where the orchestrator puts several independently produced results side by side, compares them, resolves duplication or contradiction, and reorganizes them into the final deliverable's shape.",
+    "source": "[^S3]",
+    "pitfall": "Thinking aggregation means pasting the subagents' raw replies end to end.",
+    "distractor_rationale": "Concatenation is the most obvious reading and the wrong one: the lesson is explicit that aggregation compares, resolves contradictions, and reorganizes into a document that reads as one whole rather than three seamed-together pieces."
+  },
+  {
+    "term": "return only the conclusion",
+    "def": "The principle that a subagent should hand back its final, defensible conclusion and the key evidence behind it, not the whole reasoning trail with its detours and self-corrections.",
+    "source": "[^S3]",
+    "pitfall": "Assuming that sending the orchestrator the subagent's full train of thought lets it make a better-informed judgment.",
+    "distractor_rationale": "'More information is better' is the natural instinct, but pushing several thousand words of full reasoning per subagent back into the orchestrator recreates context pollution and attention dilution at the orchestrator's own layer — exactly what splitting was supposed to avoid."
+  },
+  {
+    "term": "fork",
+    "def": "A subagent that inherits the entire conversation so far instead of starting fresh; its own tool calls still stay out of the main conversation and only its final result comes back.",
+    "source": "[^S3]",
+    "pitfall": "Assuming that because a fork starts with the full history, it also pushes its own reasoning process back into the main conversation.",
+    "distractor_rationale": "'Inherits the whole conversation' sounds symmetrical, as if information flows both ways, but inheritance only describes what the fork starts with — the return path is unchanged, and its intermediate tool calls never enter your context."
+  },
+  {
+    "term": "Manager pattern",
+    "def": "The OpenAI Agents SDK's name for the orchestrator-subagent structure: a central manager invokes specialized sub-agents as tools and retains control of the conversation.",
+    "source": "[^S4]",
+    "pitfall": "Treating the Manager pattern as a different, more advanced collaboration style than orchestrator-subagent.",
+    "distractor_rationale": "Different frameworks using different vocabulary makes the structures look distinct, but Manager and orchestrator-subagent describe the same division of labor — recognizing the shape matters more than memorizing either term."
+  },
+  {
+    "term": "break down",
+    "def": "The first of the orchestrator's three actions: look at one big task and work out which chunks it splits into.",
+    "source": "[^S2]",
+    "pitfall": "Assuming breaking down means slicing the task into roughly equal chunks by length or step count.",
+    "distractor_rationale": "Even slicing is the lowest-effort approach, but the real question is which chunks can be handled independently without depending on another chunk's intermediate results — that has nothing to do with dividing the work evenly."
+  },
+  {
+    "term": "delegate",
+    "def": "The second of the orchestrator's three actions: hand each chunk, along with the background it needs, to a subagent to carry out.",
+    "source": "[^S2]",
+    "pitfall": "Assuming it is enough to tell the subagent the task name and let it fill in the background on its own.",
+    "distractor_rationale": "A subagent cannot see the orchestrator's conversation history by default, so a bare task name leaves it guessing at scope, sources, and deliverable — which is precisely how misinterpreted tasks and duplicate searches happen."
+  },
+  {
+    "term": "synthesize",
+    "def": "The third of the orchestrator's three actions: once the subagents return their results, combine those results into the final answer.",
+    "source": "[^S2]",
+    "pitfall": "Assuming synthesis can only begin after every subagent has turned in its work.",
+    "distractor_rationale": "A single collect-then-merge step is the tidiest mental model, but the docs describe an earlier subagent's result feeding the next subagent's task brief, so the orchestrator often moves back and forth between fanning out and synthesizing."
+  },
+  {
+    "term": "game of telephone",
+    "def": "The fidelity loss that accumulates when a subagent's result gets paraphrased and compressed on its way through the orchestrator; writing subagent output straight to a filesystem is one way to avoid it.",
+    "source": "[^S1]",
+    "pitfall": "Assuming every result must route through the orchestrator on its way to the final output.",
+    "distractor_rationale": "The orchestrator's central role makes it look like a mandatory checkpoint, but Anthropic notes that direct subagent outputs can bypass the main coordinator for certain result types, improving both fidelity and performance."
+  },
+  {
+    "term": "self-contained",
+    "def": "A property of a delegation prompt: after reading it, the subagent needs no extra background to work out accurately what it should do.",
+    "source": "[^S3]",
+    "pitfall": "Assuming a prompt is self-contained as long as it is long enough and packed with information.",
+    "distractor_rationale": "Length gets used as a proxy for completeness, but the real test is pulling the prompt out on its own and reading it cold — a wordy brief that omits scope or source guidance still leaves the subagent guessing."
+  },
+  {
+    "term": "source guidance",
+    "def": "The part of a delegation prompt that tells the subagent where to look for the answer — the official pricing page, a third-party comparison site, or both with one taking precedence.",
+    "source": "[^S1]",
+    "pitfall": "Assuming source guidance can be dropped because the subagent will pick sensible sources on its own.",
+    "distractor_rationale": "Omitting it lets each subagent pick sources by its own reading, so different subagents end up citing sources of different authority and their conclusions cannot be compared directly — one of the concrete costs of an incomplete task description."
+  },
+  {
+    "term": "task boundaries",
+    "def": "The part of a delegation prompt that tells the subagent this run covers only this slice and not to reach beyond it.",
+    "source": "[^S1]",
+    "pitfall": "Treating task boundaries as a cost-saving measure that has nothing to do with output quality.",
+    "distractor_rationale": "Trimming scope looks like it only saves tokens, but boundaries also decide whether the subagent misses information you wanted or fetches far more than you needed — unclear boundaries are the shared root of both duplicated work and gaps."
+  },
+  {
+    "term": "one problem domain, one agent",
+    "def": "The principle that each subagent should own only one class of clearly bounded problem, rather than juggling several unrelated things at once.",
+    "source": "[^S1]",
+    "pitfall": "Assuming several jobs can go to the same subagent as long as they all serve the same overall goal.",
+    "distractor_rationale": "Serving the same goal feels like sufficient grounds to merge, but the test is whether the jobs call for the same kind of judgment — verifying numbers and summarizing writing style need different modes of work even when both feed one report."
+  },
+  {
+    "term": "CitationAgent",
+    "def": "A dedicated subagent in Anthropic's production system that processes the documents and research report to identify specific locations for citations, ensuring claims are properly attributed to their sources.",
+    "source": "[^S1]",
+    "pitfall": "Assuming the CitationAgent could be merged into the subagent doing the research, since both serve the same report.",
+    "distractor_rationale": "Shared output makes merging look efficient, but finding citation locations is checking-and-locating work while research is searching-and-judging work — this split is the concrete demonstration of 'one problem domain, one agent,' not an accident of implementation."
+  },
+  {
+    "term": "delegation prompt",
+    "def": "The task brief the orchestrator hands a subagent; its quality ceiling sets the quality ceiling of what the subagent produces.",
+    "source": "[^S1]",
+    "pitfall": "Assuming a delegation prompt only has to say what to do, with no need to state scope, sources, or output format.",
+    "distractor_rationale": "'What to do' feels like the whole assignment, but a solid task description needs an objective, an output format, source guidance, and clear task boundaries — anything left out, the subagent guesses at, skips, or invents an assumption for and keeps going."
+  },
+  {
+    "term": "vague instruction",
+    "def": "A brief like 'research the semiconductor shortage' that pins down no time range, angle, source, or deliverable, leaving subagents to improvise.",
+    "source": "[^S1]",
+    "pitfall": "Assuming the trouble a vague instruction causes is a subagent capability problem that a stronger model would fix.",
+    "distractor_rationale": "Blaming the model is the easier diagnosis, but the official case shows the same batch of subagents misinterpreting the task and running duplicate searches purely because the instruction set no scope — capability has nothing to do with it."
+  },
+  {
+    "term": "output format",
+    "def": "The part of a delegation prompt that states what shape the subagent's deliverable should take, which decides whether the orchestrator can use the result directly.",
+    "source": "[^S1]",
+    "pitfall": "Treating output format as a presentation detail that does not affect whether the task gets done well.",
+    "distractor_rationale": "Formatting reads like cosmetics, but it determines whether the orchestrator can splice the result straight into the final deliverable — leaving it unspecified usually means an extra conversion step or a rerun."
+  },
+  {
+    "term": "misinterpreted the task",
+    "def": "The failure where a subagent, working from a task description that was not detailed enough, reads the requirement wrong and produces something off from what the orchestrator wanted.",
+    "source": "[^S1]",
+    "pitfall": "Treating a misinterpreted task as an occasional lapse in the subagent's comprehension.",
+    "distractor_rationale": "Pinning it on comprehension hides the fixable cause: the official counterexample shows the root is usually an instruction with no scope or boundaries, so 'the model misunderstood' sends you tuning the wrong thing."
+  },
+  {
+    "term": "pipeline",
+    "def": "A collaboration pattern that decomposes a task into a sequence of steps, where each LLM call processes the output of the previous one.",
+    "source": "[^S2]",
+    "pitfall": "Thinking a pipeline and producer-reviewer are the same pattern under two names.",
+    "distractor_rationale": "Both hand one step's output to the next, but a pipeline runs a fixed set of steps and stops — it never sends work back to an earlier step because the output was not good enough, which is exactly what the producer-reviewer loop does."
+  },
+  {
+    "term": "prompt chaining",
+    "def": "The official name for the pipeline pattern, emphasizing that the task is decomposed into a sequence of steps executed in order.",
+    "source": "[^S2]",
+    "pitfall": "Reading prompt chaining as a prompt-writing technique rather than a collaboration pattern.",
+    "distractor_rationale": "'Chaining' sounds like a trick for linking instructions inside one prompt, but it names the multi-call structure itself: a task split into ordered steps where each call processes the previous call's output."
+  },
+  {
+    "term": "producer-reviewer",
+    "def": "A collaboration pattern where one LLM call generates a response while another provides evaluation and feedback in a loop, repeating until it converges.",
+    "source": "[^S2]",
+    "pitfall": "Assuming the loop should simply run until the reviewer is satisfied, with no cap on rounds.",
+    "distractor_rationale": "'Until it is good enough' sounds like the right stopping condition, but the round count is unknown in advance, so a producer and reviewer stuck in a back-and-forth can run cost well past what you expected — hence the standard maximum round cap."
+  },
+  {
+    "term": "evaluator-optimizer",
+    "def": "The official name for the producer-reviewer pattern, emphasizing that one call generates while another evaluates and feeds back.",
+    "source": "[^S2]",
+    "pitfall": "Reading evaluator and optimizer as two extra roles beyond the producer and the reviewer.",
+    "distractor_rationale": "Two words in the name suggest two additional participants, but evaluator-optimizer is just the other name for producer-reviewer — the same two roles, not four."
+  },
+  {
+    "term": "multi-perspective voting",
+    "def": "A collaboration pattern where several agents each judge the same already-existing content independently and in parallel, and the content gets flagged as soon as any one of them finds a problem.",
+    "source": "[^S2]",
+    "pitfall": "Assuming voting, like producer-reviewer, is a draft-then-revise loop.",
+    "distractor_rationale": "Both involve repeated judgment, which blurs them together, but voting runs in parallel over content that already exists and never revises it — the goal is wider coverage against misses, not making the content better."
+  },
+  {
+    "term": "handoff",
+    "def": "A decentralized collaboration style where peer agents hand control off to a specialized agent that takes over the conversation.",
+    "source": "[^S4]",
+    "pitfall": "Assuming the receiving agent in a handoff, like a subagent, starts from a fresh, isolated context.",
+    "distractor_rationale": "The subagent mechanism gets treated as the universal default, but handoff is its opposite: the receiving agent sees the entire previous conversation history by default, because it genuinely takes over the conversation rather than being dispatched on an isolated task."
+  },
+  {
+    "term": "Peer agents",
+    "def": "Agents of equal standing in a handoff-style setup, with no fixed superior-subordinate relationship, passing control directly between themselves.",
+    "source": "[^S4]",
+    "pitfall": "Treating a handoff between peer agents as the same thing as an orchestrator dispatching a subagent.",
+    "distractor_rationale": "Both look like one agent giving work to another, but the orchestrator keeps control and gets a conclusion back, while a peer handoff transfers control and the full conversation outright — the receiving agent drives from then on."
+  },
+  {
+    "term": "decentralized",
+    "def": "The defining trait of handoff-style collaboration: control is not held throughout by one central node but passed directly between peer agents.",
+    "source": "[^S4]",
+    "pitfall": "Reading decentralized as meaning no agent is in charge and several agents run loose at once.",
+    "distractor_rationale": "'No center' gets heard as 'no one in charge,' but at any given moment exactly one agent has taken over the conversation and is steering it — decentralization is about control moving, not about control disappearing."
+  },
+  {
+    "term": "control of the conversation",
+    "def": "The authority to steer what happens next; the orchestrator retains it throughout in orchestrator-subagent, while a handoff transfers it to the receiving agent.",
+    "source": "[^S4]",
+    "pitfall": "Treating control as an abstract bookkeeping question that does not affect how much information each agent can actually see.",
+    "distractor_rationale": "Who is in charge sounds separate from who sees what, but the two are bound together here: the subagent that never gets control also never sees the history, while the handoff agent that takes control sees the entire conversation by default."
+  },
+  {
+    "term": "single run",
+    "def": "The boundary a handoff stays inside — the transfer of control holds for this run and does not carry over into a later, independent run.",
+    "source": "[^S5]",
+    "pitfall": "Assuming that once a handoff happens, the receiving agent permanently owns every future conversation.",
+    "distractor_rationale": "'Takes over the conversation' sounds permanent, but the docs state plainly that handoffs stay within a single run — the transfer is scoped to that run, not a standing reassignment."
+  },
+  {
+    "term": "trust-then-verify gap",
+    "def": "The named failure mode where a model produces a plausible-looking implementation that does not handle edge cases; the fix is to always provide verification, and if you cannot verify it, do not ship it.",
+    "source": "[^S6]",
+    "pitfall": "Assuming this only applies to code, and not to research or writing delegated to a subagent.",
+    "distractor_rationale": "The original wording is about implementations, so the lesson seems code-specific, but the same logic covers any delegation — smooth prose in the right format is still only 'plausible-looking,' which is not the same as correct."
+  },
+  {
+    "term": "checkable standard",
+    "def": "A concrete verification criterion defined for the specific task, which output can be measured against item by item, rather than scored on impression.",
+    "source": "[^S1]",
+    "pitfall": "Counting 'I read it and it seemed fine' as a valid, if subjective, form of verification.",
+    "distractor_rationale": "Calling it subjective makes it sound like a weaker version of the same thing, but 'reads fine' is the trust half of the trust-then-verify gap — impression-based judgment is not verification at all, however honestly it is applied."
+  },
+  {
+    "term": "LLM judge",
+    "def": "The role in Anthropic's production system that evaluates each subagent output against criteria in a rubric.",
+    "source": "[^S1]",
+    "pitfall": "Assuming the LLM judge only needs to return an overall pass or fail, without justifying each criterion.",
+    "distractor_rationale": "A single verdict is what a human reviewer would casually give, but the rubric is five concrete, checkable dimensions, and the judge's value lies precisely in reporting against each one rather than collapsing them into one word."
+  },
+  {
+    "term": "factual accuracy",
+    "def": "One of the LLM judge's rubric criteria: do the claims in the output match the sources it cites?",
+    "source": "[^S1]",
+    "pitfall": "Treating factual accuracy as satisfied whenever the subagent has not obviously fabricated a number.",
+    "distractor_rationale": "'Nothing obviously made up' is a very low bar: the criterion asks for a line-by-line check of claims against sources, and a plausible-looking number can still come from a misread source or the wrong source entirely."
+  },
+  {
+    "term": "citation accuracy",
+    "def": "One of the LLM judge's rubric criteria: do the cited sources actually match the claims they are attached to?",
+    "source": "[^S1]",
+    "pitfall": "Assuming that once the facts check out, the citations attached to them must be right too.",
+    "distractor_rationale": "Correct facts and correct attribution feel like one check, but they are separate: a true statement can sit under a citation that does not support it, which is exactly the misattribution the integration stage has to catch."
+  },
+  {
+    "term": "source quality",
+    "def": "One of the LLM judge's rubric criteria: did the subagent use primary sources rather than lower-quality secondary ones?",
+    "source": "[^S1]",
+    "pitfall": "Assuming that as long as the information itself is correct, it makes no difference whether it came from a primary or a secondary source.",
+    "distractor_rationale": "Surface correctness hides the risk: a secondary source may be a paraphrase or a stale snapshot, and when two subagents conflict, the authority of each side's source is often the only thing that settles which conclusion to trust."
+  },
+  {
+    "term": "duplicate work",
+    "def": "Several subagents covering the same ground, producing heavily overlapping output — usually surfacing only at the moment results are aggregated.",
+    "source": "[^S1]",
+    "pitfall": "Considering duplicate work handled once you delete the repeated content.",
+    "distractor_rationale": "Deleting the overlap treats the symptom; the duplication is a signal that some task boundaries were not drawn clearly, so the fix worth making is back at the dispatch step, in the task descriptions themselves."
+  },
+  {
+    "term": "result conflict",
+    "def": "Two subagents researching independently and returning conclusions that contradict each other, which cannot be settled by picking one at random or splitting the difference.",
+    "source": "[^S1]",
+    "pitfall": "Treating the average of two conflicting numbers as a safe compromise.",
+    "distractor_rationale": "Splitting the difference feels evenhanded, but it can serve up a number neither source supports; the right move is to compare the credibility of each side's basis, and when that cannot rank them, flag the contradiction for human review."
+  },
+  {
+    "term": "misattribution",
+    "def": "The integration-stage error of writing up data one subagent found as a conclusion about the slice a different subagent was responsible for.",
+    "source": "[^S1]",
+    "pitfall": "Assuming that if each subagent's own research is accurate, the integration stage cannot introduce errors.",
+    "distractor_rationale": "Individually accurate pieces do not guarantee accurate attribution once they are pooled: misattribution only becomes possible during merging, which is why checking source attribution is its own separate step."
+  },
+  {
+    "term": "integration stage",
+    "def": "The closing step where the orchestrator merges duplicate content, verifies or flags contradictory conclusions, and checks that every claim traces back to the right source.",
+    "source": "[^S1]",
+    "pitfall": "Thinking the integration stage means arranging the subagent outputs in order and stitching them into one document.",
+    "distractor_rationale": "Sequential arrangement is precisely what the lesson rules out: integration does dedup, conflict verification, and source-attribution checking all at once, not the simple concatenation Lesson 2 already warned against."
+  },
+  {
+    "term": "dedup",
+    "def": "The part of integration that merges overlapping content across several subagent outputs so the final result does not say the same thing twice.",
+    "source": "[^S1]",
+    "pitfall": "Assuming dedup only means deleting passages whose wording matches, with no judgment about substance.",
+    "distractor_rationale": "Duplicate work usually surfaces as the same finding in different words, so matching on wording misses it entirely — dedup has to judge whether two passages are making the same point, not whether they read the same."
+  },
+  {
+    "term": "structured review result",
+    "def": "A review returned in fixed fields like `{approved, issues}` rather than a blanket natural-language verdict, so downstream code can read and act on it.",
+    "source": "[^S1]",
+    "pitfall": "Assuming a natural-language reply that clearly states pass or fail works about as well as structured fields.",
+    "distractor_rationale": "A clear sentence is legible to you but not reliably parseable by code: the value of `approved` and `issues` is that a program can read them directly and drive the loop, which a prose verdict cannot support."
+  },
+  {
+    "term": "MAX_ROUNDS",
+    "def": "The ceiling on how many producer-reviewer rounds the pipeline will run, preventing the two agents from polishing back and forth forever.",
+    "source": "[^S2]",
+    "pitfall": "Treating MAX_ROUNDS as an optional performance tweak that could be removed without affecting correctness.",
+    "distractor_rationale": "It looks like a tuning knob, but the round count is genuinely unbounded in principle — without the cap the pipeline does not error out, it simply never terminates, so this is a safety mechanism rather than an optimization."
+  },
+  {
+    "term": "safety valve",
+    "def": "The mechanism that guarantees a loop terminates; in this lesson's pipeline, `MAX_ROUNDS` plays that role.",
+    "source": "[^S2]",
+    "pitfall": "Treating the safety valve as crash protection, unrelated to the fact that the round count is unpredictable.",
+    "distractor_rationale": "Safety mechanisms are usually associated with catching errors, but nothing here throws: without the valve the pipeline runs correctly and forever, so the valve exists to bound the round count at the source, not to catch a failure."
+  },
+  {
+    "term": "REVIEW_CRITERIA",
+    "def": "The explicit checklist handed to the reviewer in this lesson's code, listing the specific standards it must check the draft against one by one.",
+    "source": "[^S1]",
+    "pitfall": "Assuming review criteria are fixed once written into the code and cannot be adjusted per task.",
+    "distractor_rationale": "Criteria living in source looks like a hardcoded decision, but the list is spliced into the reviewer's prompt via a template string, so adding one array element is all it takes for the reviewer to start checking a new standard."
+  },
+  {
+    "term": "runProducer",
+    "def": "The function in this lesson's code that generates or revises the draft; on a rerun it carries the previous version plus the review notes so the producer edits rather than restarts.",
+    "source": "[^S8]",
+    "pitfall": "Assuming `runProducer` remembers the draft it generated last round, so the previous version need not be written into the prompt again.",
+    "distractor_rationale": "The function name suggests a stateful worker, but the Messages API is stateless and keeps nothing between requests — 'revise your previous version' only means something if that version is written into this call's prompt verbatim."
+  },
+  {
+    "term": "runReviewer",
+    "def": "The function in this lesson's code that checks the draft against `REVIEW_CRITERIA` item by item and returns the review result.",
+    "source": "[^S1]",
+    "pitfall": "Assuming it is enough for `runReviewer` to say how the draft feels overall, without going through the criteria one at a time.",
+    "distractor_rationale": "An overall impression is what a casual reviewer would give, but the prompt explicitly demands a per-criterion check and no vague verdict, because only concrete criteria give the producer something specific to revise against."
+  },
+  {
+    "term": "parseReview",
+    "def": "The function in this lesson's code that turns the reviewer's text reply into a structured object, returning a rejection whenever parsing fails or the field shapes are wrong.",
+    "source": "[^S6]",
+    "pitfall": "Assuming `parseReview` should default to approval on a parse failure so the pipeline keeps moving.",
+    "distractor_rationale": "Defaulting to pass keeps the run alive, which is why it is tempting, but it repackages 'the reviewer did not do its job' as 'review passed' — the correct fallback is rejection, since a parse failure means you could not verify anything."
+  },
+  {
+    "term": "extractJson",
+    "def": "The helper in this lesson's code that strips a markdown code fence off the model's reply, if present, so the JSON inside can be parsed.",
+    "source": "[^S9]",
+    "pitfall": "Assuming that any reply containing valid JSON can be handed straight to `JSON.parse` without preprocessing.",
+    "distractor_rationale": "The JSON inside the reply is well-formed, which makes preprocessing look unnecessary, but the surrounding backticks and explanatory lines are part of the string too, so parsing the raw text fails on content that is otherwise perfectly good."
+  },
+  {
+    "term": "approved",
+    "def": "The boolean field in the review result that says whether this draft passed the review criteria.",
+    "source": "[^S9]",
+    "pitfall": "Assuming that as long as `approved` is present in the returned JSON, its type does not need checking.",
+    "distractor_rationale": "Presence feels like enough of a check, but `parseReview` deliberately tests `typeof parsed.approved !== \"boolean\"` — a field that parses successfully but holds a string still counts as a parse failure, because the value cannot be trusted to drive the loop."
+  },
+  {
+    "term": "issues",
+    "def": "The array field in the review result listing each failed criterion and its specific problem; empty when everything passes.",
+    "source": "[^S9]",
+    "pitfall": "Assuming a non-empty `issues` array by itself means the review failed.",
+    "distractor_rationale": "The two fields usually agree in practice, so it is easy to read either one as the verdict, but the code branches on `approved` alone — `issues` is explanatory detail for the producer to revise against, not the control signal."
+  },
+  {
+    "term": "defensive parsing",
+    "def": "Writing your own checks around a model's reply — stripping fences, catching parse errors, validating field types — instead of trusting that it will match the agreed format.",
+    "source": "[^S9]",
+    "pitfall": "Assuming careful prompting alone is enough to guarantee the reply parses, so no defensive handling is needed.",
+    "distractor_rationale": "A prompt that says 'reply strictly in JSON' feels like a contract, but without a sampling-level constraint the model can still emit invalid syntax, drop fields, or wrap the JSON in prose — the instruction is a request, not a guarantee."
+  },
+  {
+    "term": "structured outputs",
+    "def": "The official feature that constrains a model's response to strictly match a schema at the sampling level, guaranteeing valid, parseable output.",
+    "source": "[^S9]",
+    "pitfall": "Assuming structured outputs and asking politely for JSON in the prompt amount to the same thing.",
+    "distractor_rationale": "Both aim at well-formed JSON, so they look interchangeable, but only structured outputs constrain generation itself — prompting leaves the door open to malformed syntax and missing fields, which is why hand-rolled parsing still needs a rejection path."
+  },
+  {
+    "term": "stateless",
+    "def": "The property of the Messages API that every request must carry the full conversation history it needs, because the API keeps no state between requests.",
+    "source": "[^S8]",
+    "pitfall": "Assuming the model retains what happened in the previous call within the same script run.",
+    "distractor_rationale": "The calls come from one program in one loop, which makes them feel like one continuous session, but nothing is preserved server-side — every round has to re-send the task, the previous draft, and last round's notes in full."
+  },
+  {
+    "term": "runPipeline",
+    "def": "The function in this lesson's code that wires producer, reviewer, and parser into a loop bounded by `MAX_ROUNDS`, and hands over the last draft with unresolved issues if the cap is hit.",
+    "source": "[^S2]",
+    "pitfall": "Assuming that hitting the round cap without approval should throw an error or force a pass verdict.",
+    "distractor_rationale": "Both extremes look like decisive handling, but the function returns normally with `approved: false` plus the last draft and remaining issues — when the automated step cannot judge, it escalates to a human rather than deciding for itself in code."
+  }
+]

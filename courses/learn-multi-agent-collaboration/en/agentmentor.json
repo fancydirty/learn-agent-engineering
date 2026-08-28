@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Produce the English variant of the shipped Chinese course learn-multi-agent-collaboration for learn.agentmentor.dev. Teaching rewrite in English (not a translation): same 6-lesson structure, same lesson slugs, same interactive-block ids and answer positions, source quotes restored to their verbatim English originals from sources.md, runnable code kept logic-identical with only comments and user-facing strings translated, cross-course references pointing at the live English course titles, natural desk-voice English prose with no AI-slop register.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "The owner ratified the multilingual plan explicitly: all six locales on learn.agentmentor.dev, English first, batches of 2-3 courses in path order with a commit per course. The zh course is the verified source of truth for scope, learner model, structure, and grounding, so no additional clarification was needed."
+  },
+  "learnerModel": {
+    "targetReader": "A developer who has finished the first five courses in this series, can write basic prompts, understands the tool-calling protocol, knows about agent memory and state, and can read basic JavaScript",
+    "knownConcepts": [
+      "Writing basic prompts",
+      "The tool-calling protocol (tool_use / tool_result)",
+      "Agent memory and state",
+      "Basic JavaScript (variables, functions, async/await, array methods)",
+      "Running Node.js scripts in a terminal",
+      "That an agent reads context, decides, calls tools, and loops"
+    ],
+    "unknownConcepts": [
+      "When a task is worth splitting across multiple agents",
+      "The orchestrator-subagent architecture and context isolation",
+      "Fan-out and aggregate",
+      "Writing self-contained delegation prompts",
+      "The pipeline, producer-reviewer, and voting patterns",
+      "Multi-agent failure modes (unverifiable 'done', duplicated work, conflicting results)",
+      "The trust-then-verify gap",
+      "Defensive parsing of a reviewer's JSON output"
+    ],
+    "assumedEnvironment": "A Node.js environment, terminal access, a text editor, and a working Claude API key for the lesson 6 exercise",
+    "firstIndependentAction": "Take a task they're considering handing to multiple agents and judge whether coordination overhead outweighs the benefit",
+    "noviceRamp": [
+      "Lesson 1 motivates multi-agent work from the limits of a single context (pollution, attention dilution) before any architecture",
+      "Lesson 2 introduces orchestrator-subagent with context isolation and why a subagent returns only its conclusion",
+      "Lesson 3 teaches self-contained delegation prompts (objective, output format, tools, boundaries)",
+      "Lesson 4 contrasts pipeline / producer-reviewer / voting patterns and where each fits",
+      "Lesson 5 covers failure and coordination (the trust-then-verify gap) as a relatively independent unit, and lesson 6 builds a runnable producer-reviewer pipeline"
+    ]
+  },
+  "learnerBrief": "The target reader has finished the first five courses, writes basic prompts, understands tool calling and agent memory, and reads JavaScript. They don't yet know when or how to split work across agents. The course gets them to judge when multi-agent is worth it, apply the orchestrator-subagent architecture with context isolation, write self-contained delegation prompts, distinguish pipeline/producer-reviewer/voting patterns, recognize multi-agent failure modes and defenses, and finally build a runnable producer-reviewer pipeline with the Claude API.",
+  "scope": "Covered: when splitting a task across agents is worth it and when coordination overhead wins, the orchestrator-subagent architecture and context isolation, fan-out and aggregate, self-contained delegation prompts, the pipeline / producer-reviewer / voting patterns, multi-agent failure modes (unverifiable 'done', duplicated work, conflicting results) and the trust-then-verify gap, result integration and citation attribution, token cost, and a runnable producer-reviewer pipeline. Not covered: the source code of multi-agent frameworks, distributed-systems consensus algorithms, or building a general-purpose orchestration platform from scratch. Depth: from zero to understanding the collaboration patterns and building a runnable two-agent pipeline.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-multi-agent-collaboration/en/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Diagrams are kept exactly where the zh original uses them (fan-out/aggregate and the collaboration-pattern shapes), with labels rewritten in English; none added or removed. Multi-agent topology is precisely the content a diagram conveys better than prose, and the zh placement was already review-validated.",
+    "weakestPoints": [
+      "Lesson 4's pattern taxonomy (pipeline / producer-reviewer / voting) is a simplification; real systems combine them, noted where it matters",
+      "Lesson 1's token-cost figures (4x, 15x) are Anthropic's reported data for a specific system and are framed as such, not as universal constants",
+      "Lesson 6's pipeline is teaching-grade and single-run; it is explicitly not a production orchestration framework, and the reviewer JSON is defensively parsed rather than assumed valid",
+      "As an English teaching rewrite of a verified zh course, idiomatic drift is the residual risk: source quotes were restored verbatim from English originals and runnable code kept logic-identical, but prose was re-taught rather than translated, so review must check meaning-equivalence against the zh lessons"
+    ],
+    "followUpChecks": [
+      "Render pass on learn.agentmentor.dev /en/multi-agent-collaboration/... after deploy: all 6 lessons plus README, interactive cards hydrate",
+      "Verify every glossary term appears verbatim in the en lessons (attach check)",
+      "Verify every [^Sn] anchor in en lessons has a matching ## Sn block in en sources.md",
+      "Confirm the six check-block ids and correct-answer positions are byte-identical to zh (c/b/b/a/b/c in lesson order)",
+      "Re-run the capstone producer-reviewer JS and confirm the loop, defensive JSON parsing, and stop conditions match the asserted outputs"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "The learner can decide whether a task warrants multiple agents, write a self-contained delegation prompt with scope and output format, choose the fitting collaboration pattern, and build a runnable producer-reviewer pipeline with the Claude API that defensively parses the reviewer's JSON, verifies subagent claims rather than trusting them, and stops on a bounded loop.",
+    "interactionCheck": "Six agentmentor-check blocks, one per lesson (when-to-split in L1, subagent-visibility in L2, vague-instruction in L3, pipeline-vs-reviewer in L4, trust-subagent in L5, invalid-review-JSON in L6), preserved from the zh variant with identical ids, modes, choice counts, and correct-answer positions; label, prompt, whyHere, choice text, and feedback are English teaching rewrites specific to each lesson's misconception. Exercises keep the zh Level structure with rubric, answer, and hints per Level.",
+    "learnerFitCheck": "The course assumes the prior five courses, basic prompting, the tool-calling protocol, agent memory/state, and JavaScript reading. When to split, orchestration, delegation prompts, collaboration patterns, and the failure model are taught from zero in dependency order; the learner first builds a full pipeline in lesson 6, after every prerequisite. Lesson 1's first exercise asks only for a worth-it judgment on the reader's own task.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "English variant of a shipped zh course: structure, grounding, and answer positions inherited from the verified original",
+      "All interactive blocks preserve id/mode/choice-count/correct-answer byte-parity with zh",
+      "All source quotes restored to verbatim English originals and checked byte-exact against sources.md",
+      "Cross-course references use the live English course titles; capstone code kept logic-identical"
+    ]
+  },
+  "nextSteps": [
+    "Run course-guard on the en variant and fix anything it flags",
+    "Deploy learn.agentmentor.dev and spot-check the /en pages render with hydrated interactive cards",
+    "Produce the remaining locale variants (ja/ko/es/pt-BR) using this en variant as the translation base",
+    "Encourage learners to build a producer-reviewer pipeline for a real task in their own project as the post-course consolidation project"
+  ],
+  "memoryBoundary": "This agentmentor.json is a course-local state record, stored only in the course directory for quality checks and learning-path tracking. It is never written back to Claude Code or any host AI system's long-term memory and does not affect other courses or conversations."
+}
