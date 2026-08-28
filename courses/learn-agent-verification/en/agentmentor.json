@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Produce the English variant of the shipped Chinese course learn-agent-verification for learn.agentmentor.dev. Teaching rewrite in English (not a translation): same 6-lesson structure, same lesson slugs, same interactive-block ids and answer positions, source quotes restored to their verbatim English originals from sources.md, runnable code kept logic-identical with only comments and user-facing strings translated, review-era invariants preserved (counts not percentages on small sets, execFile not exec, order-free regex assertions), cross-course references pointing at the live English course titles, natural desk-voice English prose with no AI-slop register.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "The owner ratified the multilingual plan explicitly: all six locales on learn.agentmentor.dev, English first, batches of 2-3 courses in path order with a commit per course. The zh course is the verified source of truth for scope, learner model, structure, and grounding, so no additional clarification was needed."
+  },
+  "learnerModel": {
+    "targetReader": "A developer who has finished the first nine courses in this series, runs a harness with checkpoints, and wants acceptance that separates 'looks done' from 'is done'",
+    "knownConcepts": [
+      "Hand-writing a stop_reason-driven harness loop and tool_use/tool_result pairing (course 7)",
+      "Checkpoints and the effects ledger (course 9)",
+      "Context management (course 8)",
+      "Basic JavaScript / Node.js reading and writing"
+    ],
+    "unknownConcepts": [
+      "Why agent non-determinism breaks path-based testing",
+      "Assertions vs evidence; the looks-done trap",
+      "End-state verification vs trajectory auditing; state checkpoints at key nodes",
+      "Deterministic verifiers and their ranking; over-strict verifier traps",
+      "LLM-as-judge design: rubrics, constrained formats, reason-then-score, judge identity",
+      "Eval-set construction from 20 real tasks; holdout discipline; effect size",
+      "An eval track: one harness loop per task, layered scoring, metrics beyond pass rate"
+    ],
+    "assumedEnvironment": "A Node.js environment, terminal access, a text editor, and the course-7 harness code available to reuse as the eval-track skeleton",
+    "firstIndependentAction": "Take one of their agent's recent 'done' reports and separate its assertions from its evidence",
+    "noviceRamp": [
+      "Lesson 1 names the trap — plausible isn't correct — before any tooling",
+      "Lesson 2 decides what to verify (end state first, checkpoints at key nodes, trajectory only as backstop)",
+      "Lesson 3 ranks verifiers and puts deterministic pass/fail checks first",
+      "Lesson 4 brings in the LLM judge only for free-form text, with rubric and identity discipline",
+      "Lesson 5 builds the eval set from 20 real tasks; lesson 6 assembles the full eval track and measures one prompt change"
+    ]
+  },
+  "learnerBrief": "The target reader has finished the first nine courses, runs a harness, and reads JavaScript. They can make an agent finish a run; they can't yet tell reliably whether it got things right. The course gets them to separate assertions from evidence, verify end states with deterministic checks first, design LLM judges for free-form output without self-grading, build a 20-task eval set with holdout discipline, and assemble a repeatable eval track that turns a prompt change into a score change.",
+  "scope": "Covered: the looks-done trap under non-determinism, end-state-first verification with state checkpoints, deterministic verifiers (exact match, script comparison, test suites) and their failure modes, LLM-as-judge design (rubrics, constrained output, reason-then-score, judge identity), eval sets from 20 real tasks with holdout and effect-size reasoning, and a hands-on eval track with layered scoring and metrics beyond pass rate. Not covered: general software-testing methodology, specific eval frameworks or platform APIs, model-training benchmarks; CI wiring mentioned only as common sense. Depth: from zero to measuring the real impact of one prompt change on your own agent.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-verification/en/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "No mermaid diagrams, matching the zh original: the course's content is checks, rubrics, schemas, and code — all better carried by real examples than by a diagram. The verifier-ranking and split-scheme material reads clearly as annotated lists and JSON, as the zh review already validated.",
+    "weakestPoints": [
+      "Small-set results are deliberately stated as counts (5/7), never percentages — a review-era invariant; anyone later 'improving' them into percentages would reintroduce the exact bug review removed",
+      "The eval-track code is teaching-grade and sequential; production tracks need concurrency and retry, which the lesson flags",
+      "The LLM-judge lesson teaches rubric discipline but cannot make a judge deterministic; the text is explicit that judge scores are themselves noisy",
+      "As an English teaching rewrite of a verified zh course, idiomatic drift is the residual risk: source quotes were restored verbatim and code kept logic-identical, but prose was re-taught rather than translated, so review must check meaning-equivalence against the zh lessons"
+    ],
+    "followUpChecks": [
+      "Render pass on learn.agentmentor.dev /en/agent-verification/... after deploy: all 6 lessons plus README, interactive cards hydrate",
+      "Verify every glossary term appears verbatim in the en lessons (attach check)",
+      "Verify every [^Sn] anchor in en lessons has a matching ## Sn block in en sources.md",
+      "Confirm the six check-block ids and correct-answer positions are byte-identical to zh (b/c/a/b/a/c in lesson order)",
+      "Re-run the capstone eval-track JS (runTask with MODEL const, execFile verifiers, layered scoring) and confirm outputs match the asserted logs"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "The learner can build a repeatable eval track for their own agent — one harness loop per task, deterministic verifiers first and an LLM judge for free-form output, results as counts with duration and call metrics — and use it to measure whether one prompt change actually helped.",
+    "interactionCheck": "Six agentmentor-check blocks, one per lesson (plausible-not-correct in L1, endstate-vs-steps in L2, strict-verifier in L3, self-grading in L4, wait-for-hundreds in L5, shared-session in L6), preserved from the zh variant with identical ids, modes, choice counts, and correct-answer positions; label, prompt, whyHere, choice text, and feedback are English teaching rewrites specific to each lesson's misconception. Exercises keep the zh Level structure with rubric, answer, and hints per Level.",
+    "learnerFitCheck": "The course assumes the prior nine courses: the harness loop, checkpoints, and JavaScript. The looks-done trap, verification targets, verifier ranking, judge discipline, and eval-set construction are taught from zero in dependency order; the learner first assembles the full track in lesson 6, after every prerequisite. Lesson 1's first exercise asks only for an assertions-vs-evidence read of the reader's own agent's report.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "English variant of a shipped zh course: structure, grounding, and answer positions inherited from the verified original",
+      "All interactive blocks preserve id/mode/choice-count/correct-answer byte-parity with zh",
+      "All source quotes restored to verbatim English originals and checked byte-exact against sources.md",
+      "Review-era invariants preserved: counts not percentages, execFile not exec, order-free assertions, 6/3/1 split, MODEL const, L5-to-L6 field-mapping paragraph"
+    ]
+  },
+  "nextSteps": [
+    "Run course-guard on the en variant and fix anything it flags",
+    "Deploy learn.agentmentor.dev and spot-check the /en pages render with hydrated interactive cards",
+    "Produce the remaining locale variants (ja/ko/es/pt-BR) using this en variant as the translation base",
+    "Encourage learners to build a 20-task eval set for their own agent as the post-course consolidation project"
+  ],
+  "memoryBoundary": "This agentmentor.json is a course-local state record, stored only in the course directory for quality checks and learning-path tracking. It is never written back to Claude Code or any host AI system's long-term memory and does not affect other courses or conversations."
+}

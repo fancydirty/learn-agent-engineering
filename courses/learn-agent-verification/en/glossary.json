@@ -1,0 +1,464 @@
+[
+  {
+    "term": "looks done",
+    "def": "Claude stops when the work looks done; without a check it can run, 'looks done' is the only signal available in the entire system.",
+    "source": "[^S4]",
+    "pitfall": "Treating it as the model cutting corners or lacking capability, then switching to a stronger model instead of adding a runnable check that produces an objective result.",
+    "distractor_rationale": "Often confused with 'is done'—both look identical in the conversation text, you can't tell the difference by reading the transcript."
+  },
+  {
+    "term": "verification loop",
+    "def": "The role that falls to you when there's no runnable check in the pipeline: every mistake waits for you to notice it.",
+    "source": "[^S4]",
+    "pitfall": "Thinking you're just 'doing a quick review,' not realizing the agent hasn't actually saved you attention, just deferred verification.",
+    "distractor_rationale": "Easily confused with 'code review'—review checks whether code is written correctly; the verification loop answers what happens when this output meets real-world input."
+  },
+  {
+    "term": "trust-then-verify gap",
+    "def": "The official name for this phenomenon: Claude produces a plausible-looking implementation that doesn't handle edge cases; you trust it first, and verification either doesn't happen or happens too late.",
+    "source": "[^S4]",
+    "pitfall": "Only remembering the first half of the fix ('provide verification'), missing the second half: if you can't verify it, don't ship it—some things you just can't verify, so narrow scope or hold off.",
+    "distractor_rationale": "Often interpreted as 'the model likes to lie'; actually the code it produces usually does run, what's missing is someone asking what happens with real-world input."
+  },
+  {
+    "term": "assertion",
+    "def": "Statements you can only choose to believe or not: 'logic is correct,' 'should be fine,' 'already optimized,' 'no errors during execution.'",
+    "source": "[^S4]",
+    "pitfall": "Getting fooled by confident tone—'changes didn't affect existing behavior' is a verifiable claim presented as an assertion, slips through more easily than pure fluff.",
+    "distractor_rationale": "'No errors' most resembles evidence but is actually an assertion: it says tools didn't throw exceptions, not that output is correct; all tools succeeding and result being completely wrong can both be true."
+  },
+  {
+    "term": "evidence",
+    "def": "Something a second person can re-run exactly the same way: a command plus its raw output, an exit code, a list of failed test names, a screenshot, a before/after numeric comparison.",
+    "source": "[^S4]",
+    "pitfall": "Only pasting the after number, not the before—a single number can't show what it changed from.",
+    "distractor_rationale": "Easy to assume 'longer paste = more like evidence'; the criterion is singular—can I confirm this without reading code, using only what's shown here?"
+  },
+  {
+    "term": "deterministic system",
+    "def": "In computing, systems that produce the same output every time given identical inputs; this course's verifiers are this kind of 'predictably dumb' thing, using a deterministic thing to gate a non-deterministic thing.",
+    "source": "[^S3]",
+    "pitfall": "Interpreting 'reliable' as 'smart,' then trying to add flexibility to the verifier; code-based grading ranks first precisely because it won't pass you today and fail you tomorrow over phrasing.",
+    "distractor_rationale": "Confused with 'correct': a deterministic verifier can stably produce the same wrong conclusion; stable doesn't equal judging correctly."
+  },
+  {
+    "term": "non-deterministic",
+    "def": "Agent systems can generate varied responses even with identical starting conditions; even if the prompt hasn't changed a single character, decisions across runs aren't guaranteed to match.",
+    "source": "[^S3]",
+    "pitfall": "Treating it as 'has bugs so it's unstable' and trying to fix stability; this is how it works, what needs changing is the evaluation method.",
+    "distractor_rationale": "Often treated as random noise; the real consequence is traditional evaluation's 'given input X, follow path Y, produce output Z' premise collapses entirely."
+  },
+  {
+    "term": "compounding errors",
+    "def": "In agent systems errors snowball: one step failing causes agents to explore entirely different trajectories, and they make new decisions based on bad results, outcomes become unpredictable.",
+    "source": "[^S2]",
+    "pitfall": "Looking for the bug at the final output position—by the time you see output, the error has long since left its original spot and grown into something else.",
+    "distractor_rationale": "Easy to analogize to traditional programs where 'a function returns a bad value that propagates up,' but that's value propagation; here it's decisions being remade."
+  },
+  {
+    "term": "sandbox environment",
+    "def": "Where Anthropic recommends agents be thoroughly tested: autonomy means higher costs and potential for compounding errors, so test in sandboxes with appropriate guardrails.",
+    "source": "[^S1]",
+    "pitfall": "Making the sandbox overly simple or superficial, unable to stress-test tools with sufficient complexity—strong eval tasks may need multiple or even dozens of tool calls.",
+    "distractor_rationale": "Often understood as just 'don't touch production data'; it simultaneously carries the burden of stress testing—too-clean sandboxes can't reveal what happens on the seventh call."
+  },
+  {
+    "term": "ground truth",
+    "def": "Real feedback agents get from the environment during execution, like tool call results or code execution results, used to assess their own progress.",
+    "source": "[^S1]",
+    "pitfall": "Having agents pull progress signals from their own reasoning—reasoning is self-generated, environment return values aren't.",
+    "distractor_rationale": "Easily confused with 'golden answer' in evals: here it refers to environmental returns at each step during execution, not a correct answer prepared beforehand."
+  },
+  {
+    "term": "demonstrably improves outcomes",
+    "def": "The admission condition for adding complexity: you should consider adding complexity only when it demonstrably improves outcomes.",
+    "source": "[^S1]",
+    "pitfall": "Using it backwards as 'verify a bit more can't hurt,' building a full acceptance suite for a one-off script where writing the verifier takes longer than eyeballing the output.",
+    "distractor_rationale": "Often read as 'don't do verification'; actually it governs both directions—blocks over-engineering and explains why repeatedly-run tasks must have checks."
+  },
+  {
+    "term": "stop_reason",
+    "def": "The field in model responses that drives the harness loop: when the value is tool_use, continue executing tools and feeding back; when it becomes end_turn, the loop exits.",
+    "source": "[^S6]",
+    "pitfall": "Treating loop exit as task completion—nothing in the exit condition relates to output quality.",
+    "distractor_rationale": "Often treated as a 'done marker'; it only describes whether the model wants to call more tools this turn; changing exit condition to a piece of deterministic code returning 0 is verification."
+  },
+  {
+    "term": "end_turn",
+    "def": "One value of stop_reason, meaning the model doesn't plan to call more tools this turn, nothing more.",
+    "source": "[^S6]",
+    "pitfall": "Declaring the job done here instead of adding a gate after loop exit to run a check yourself.",
+    "distractor_rationale": "It doesn't represent work done correctly or even work completed, yet gets treated as the finish line because the loop truly stops here."
+  },
+  {
+    "term": "tool_result",
+    "def": "The message block that feeds tool execution results back to the model, paired with the corresponding tool_use via tool_use_id; verifier output flows back into the conversation through this.",
+    "source": "[^S6]",
+    "pitfall": "Compressing exit code and stdout here to a single 'failed' sentence; after the model receives it, it can only blindly guess what to fix.",
+    "distractor_rationale": "Easily treated as just a pipe; actually it's where the requirement 'signal must be readable by Claude in the conversation' lands—write vaguely and evidence is vague."
+  },
+  {
+    "term": "run_check",
+    "def": "Wrapping a verification script as a tool the model can call, letting it run the check itself within the loop and read results, with exit code and stdout passed through as-is.",
+    "source": "[^S4]",
+    "pitfall": "Only placing checks at loop terminus, forgetting they can equally be made into tools for agents to self-retrieve mid-process.",
+    "distractor_rationale": "Often treated as mutually exclusive with the external gate; actually both positions work, serving different purposes—one lets it iterate itself, one doesn't trust its self-report."
+  },
+  {
+    "term": "exit code",
+    "def": "How verification scripts express conclusions: 0 means pass, non-zero means fail; CI and shell && can use it directly.",
+    "source": "[^S4]",
+    "pitfall": "Only using exit code without details; failure messages lacking 'which item, expected what, got what' make the same pass/fail differ by an order of magnitude in information.",
+    "distractor_rationale": "Easily confused with 'tools didn't error': all tools returning success and checks returning 0 are two completely different things."
+  },
+  {
+    "term": "pass/fail",
+    "def": "The objective binary result a check can produce; with it the loop closes on its own—Claude does work, runs check, reads result, iterates until check passes.",
+    "source": "[^S4]",
+    "pitfall": "Writing a check that almost always passes, equivalent to returning to the no-check state where 'looks done' becomes the only signal again.",
+    "distractor_rationale": "Often treated as synonymous with 'tests'; actually build exit codes, linters, scripts that diff against fixtures, screenshot comparisons all count."
+  },
+  {
+    "term": "fixture",
+    "def": "A golden-answer file saved beforehand; after running, compare output to it; the script in the official check menu that 'diffs output against it' uses this.",
+    "source": "[^S4]",
+    "pitfall": "Using it in scenarios where input data will change—swap a batch of data and the fixture file becomes invalid, plus false alarms from line endings and number formats.",
+    "distractor_rationale": "'Byte-by-byte diff against baseline' often treated as the universal answer; more robust approaches often compute a property from output and assert that."
+  },
+  {
+    "term": "end state",
+    "def": "The default judgment method: don't judge whether the agent followed a specific process, judge whether it achieved the correct final state.",
+    "source": "[^S2]",
+    "pitfall": "Only writing 'expected changes happened,' forgetting 'unexpected changes didn't'—two files renamed to the same name overwriting each other looks perfect from 'all filenames are compliant.'",
+    "distractor_rationale": "Easily interpreted as 'completely ignore process,' but the very next sentence offers an out: for complex workflows, break into discrete checkpoints."
+  },
+  {
+    "term": "turn-by-turn analysis",
+    "def": "The approach end-state evaluation replaces: checking agent actions turn by turn, attempting to validate every intermediate step.",
+    "source": "[^S2]",
+    "pitfall": "The 'verify more is safer' intuition most easily breaks this rule—finer assertions mean more legitimate differences get penalized, evals get noisier, until you start ignoring red.",
+    "distractor_rationale": "Looks more rigorous than end state; actually both types of misjudgment are fatal: different path with correct result gets misjudged as failure, same path with wrong result gets missed as passing."
+  },
+  {
+    "term": "verification checkpoint",
+    "def": "A few discrete observation positions in complex workflows, where you verify 'specific state changes should have occurred' rather than validating every intermediate step.",
+    "source": "[^S2]",
+    "pitfall": "Adding after every tool call instead of at positions where state undergoes substantive change, sliding back into step-by-step validation.",
+    "distractor_rationale": "Shares the name with Course 9's checkpoint that saves state for crash recovery—one's purpose is judgment, the other's is recovery."
+  },
+  {
+    "term": "recovery checkpoint",
+    "def": "The Course 9 meaning: writing the agent's running state to disk so it can resume from there after a crash; purpose is recovery, not judgment.",
+    "source": "[^S2]",
+    "pitfall": "Mixing it with verification checkpoint in discussion—positions often overlap (saving state while verifying is natural), but problems being solved aren't the same thing.",
+    "distractor_rationale": "The overlapping positions are exactly where the term collision most easily happens."
+  },
+  {
+    "term": "success criteria",
+    "def": "The set of requirements that turn 'correct end state' into concrete numbers or clear judgments; if you can't write it no matter what, this task shouldn't have been handed entirely to the agent to run alone.",
+    "source": "[^S5]",
+    "pitfall": "Setting thresholds after the run—looking at 0.82 and saying '0.8 should be enough' and looking at 0.86 and saying 'needs to be 0.85' are the same self-deception.",
+    "distractor_rationale": "Easy to stop at adjectives like 'output must be good'; one adjective often hides three or four non-overlapping checks, can't set specific numbers without unpacking."
+  },
+  {
+    "term": "measurable",
+    "def": "The first hard requirement for success criteria: use quantitative metrics or well-defined qualitative scales; numbers provide clarity and scalability.",
+    "source": "[^S5]",
+    "pitfall": "Rejecting all qualitative measures as unqualified; as long as they're consistently applied and paired with quantitative measures, they still have value.",
+    "distractor_rationale": "Often simplified to 'must be a number,' ignoring that 'well-defined qualitative scales' also satisfy this requirement."
+  },
+  {
+    "term": "achievable",
+    "def": "The second hard requirement for success criteria: base targets on industry benchmarks, prior experiments, AI research, or expert knowledge; shouldn't be unrealistic to current frontier model capabilities.",
+    "source": "[^S5]",
+    "pitfall": "Setting everything to 100%—any dimension set that high must explain why it's purely mechanically checkable and can just be rerun if it fails.",
+    "distractor_rationale": "Easily confused with 'set lower'; it requires anchoring to current state and moving forward a small step, like 5% improvement over current baseline."
+  },
+  {
+    "term": "multidimensional evaluation",
+    "def": "Most use cases need evaluation along several success criteria—dimensions undermine each other, leaving less room for shortcuts.",
+    "source": "[^S5]",
+    "pitfall": "Dimensions substantially overlap; looks like four dimensions but actually only catches one failure mode.",
+    "distractor_rationale": "Often treated as 'write more assertions'; the key is each dimension must individually catch a different way things can go wrong."
+  },
+  {
+    "term": "trajectory assertion",
+    "def": "An optional addition: for a set of prompts and responses, additionally specify which tools you expect the agent to call, to measure whether it grasps each tool's purpose.",
+    "source": "[^S3]",
+    "pitfall": "Writing it by default until the tenth one where you're already substantively prescribing strategy, only formally still calling it 'assertion.'",
+    "distractor_rationale": "The boundary with record-replay is thin: only asserting set-contains, not order or count, counts as assertion; copying the entire sequence in retreats to replay."
+  },
+  {
+    "term": "expectedTools",
+    "def": "The optional field in eval cases that carries trajectory assertion: expects it touched at least these tools, regardless of order or call count.",
+    "source": "[^S3]",
+    "pitfall": "Trajectory assertion fails so you judge the whole thing as failure; correct approach is to log an observation, end state remains the default criterion.",
+    "distractor_rationale": "Adding it is so cheap you can casually write another, so you unknowingly overfit to one particular solution."
+  },
+  {
+    "term": "redundant tool calls",
+    "def": "One diagnostic metric: call count is noticeably high, usually suggests pagination or token limit parameters need rightsizing.",
+    "source": "[^S3]",
+    "pitfall": "Seeing high counts and going to change the prompt—these problems point at tool design, prompt changes can't move it.",
+    "distractor_rationale": "Often blamed on the model being dumb; actually often it can only fetch twenty items at a time so must paginate through ten pages, or the query interface doesn't return the fields it needs."
+  },
+  {
+    "term": "tool errors",
+    "def": "One diagnostic metric: lots of errors due to invalid parameters usually suggests these tools need clearer descriptions or better examples.",
+    "source": "[^S3]",
+    "pitfall": "Treating this column as lower-is-better—some errors are intentionally tested behavior in eval tasks; error count becoming 0 means the test didn't hit its target.",
+    "distractor_rationale": "Two classes of errors often get stirred into one number: invalid-parameter errors should be fixed, 'queried object itself doesn't exist' errors are expected."
+  },
+  {
+    "term": "code-based grading",
+    "def": "First place in the grading method ranking: fastest, most reliable, extremely scalable; the weakness is it lacks nuance for complex judgments requiring less rule-based rigidity.",
+    "source": "[^S5]",
+    "pitfall": "Adding flexibility to accommodate complex judgments, losing both reliability and gaining no judgment power.",
+    "distractor_rationale": "Ranks first not because it's smart, precisely because it's dumb—same input gives same conclusion every time."
+  },
+  {
+    "term": "LLM-based grading",
+    "def": "Second place in the ranking: fast, flexible, scalable, suitable for complex judgment; prerequisite is test to ensure reliability first, then scale.",
+    "source": "[^S5]",
+    "pitfall": "Treating 'test reliability first then scale' as a disclaimer rather than a hard condition; judge hasn't been validated yet it's deployed to all cases.",
+    "distractor_rationale": "Often treated as a 'smarter check'; actually it's a model call—can make mistakes, costs money, same input might score differently on successive runs."
+  },
+  {
+    "term": "human grading",
+    "def": "Third place in the ranking: most flexible, highest quality, but slow and expensive; avoid if possible.",
+    "source": "[^S5]",
+    "pitfall": "Because self-grading was rejected, jumping all the way to 'can only use human grading'; what should be done is switching to a different instance with clean context to be judge.",
+    "distractor_rationale": "'Avoid if possible' often read as 'don't need people'; but edge cases missed by automated evals are still only caught by people."
+  },
+  {
+    "term": "exact match",
+    "def": "The leftmost form on the verifier spectrum: measures whether model output matches a predefined correct answer, typically after normalizing whitespace and case.",
+    "source": "[^S5]",
+    "pitfall": "Skipping normalization and directly comparing byte-by-byte; a trailing newline can fail a completely correct output.",
+    "distractor_rationale": "Narrower applicability than imagined: only suitable for tasks with clear-cut, categorical answers, like three-class sentiment labels."
+  },
+  {
+    "term": "output == golden_answer",
+    "def": "The minimal form of exact match, just an equality check; simple, unambiguous, suitable for tasks with clear-cut categorical answers.",
+    "source": "[^S5]",
+    "pitfall": "Looking for golden_answer on free text—given the same material, two well-written summaries can use completely different wording.",
+    "distractor_rationale": "The form is so simple people assume it's primitive; for tasks like 'output format must be stable' it's the most hassle-free and most reliable check."
+  },
+  {
+    "term": "normalization",
+    "def": "Before comparing, erase differences that don't carry meaning: fold consecutive whitespace, trim leading/trailing, unify case; for amounts, also wash away currency symbols, thousand separators, units.",
+    "source": "[^S5]",
+    "pitfall": "The harsher the better—stripping punctuation too, then real errors like total: 48 vs total: 4.8 also get smoothed away.",
+    "distractor_rationale": "How far to normalize can't be outsourced to a library, only you can judge: does this difference carry meaning? If it carries meaning, be strict; if not, normalize."
+  },
+  {
+    "term": "deterministic verifier",
+    "def": "This course's core technique: using code that gives the same conclusion every time to gate a non-deterministic system's output, returning pass/fail and readable failure reasons.",
+    "source": "[^S3]",
+    "pitfall": "Only reporting 'validation failed,' not reporting 'which item, expected what, got what'—it's the producer of evidence; write vaguely and evidence is vague.",
+    "distractor_rationale": "Sounds like a specialized framework; actually the bar is low—test suites, build exit codes, linters, diff scripts, screenshot comparison all count."
+  },
+  {
+    "term": "spectrum",
+    "def": "Verifiers aren't a few mutually exclusive options but a continuous band: one end is exact string comparison against baseline, the other end is asking Claude to judge.",
+    "source": "[^S3]",
+    "pitfall": "Treating the two ends as either-or, forgetting the same case can first pass deterministic hard checks, then be handed to a judge for soft scoring.",
+    "distractor_rationale": "Easy to assume further right is more advanced; the actual rule is anything judgeable by code never goes to a judge—judges only go where deterministic checks can't reach."
+  },
+  {
+    "term": "strict: true",
+    "def": "A line added to tool definitions, ensuring Claude's tool calls strictly conform to your declared schema, moving one class of structure validation forward as a platform-level guarantee.",
+    "source": "[^S6]",
+    "pitfall": "Assuming it can guarantee semantics—whether total actually equals the sum of counts, schema can't say a word about it.",
+    "distractor_rationale": "Handles 'field name typo' and 'count passed as string,' doesn't handle miscalculated values; these two problem classes easily get lumped together as 'parameter validation.'"
+  },
+  {
+    "term": "false negative",
+    "def": "The verifier judges correct output as failure: it doesn't let errors through, it wrongly accuses correct ones.",
+    "source": "[^S3]",
+    "pitfall": "Assuming false alarms are free; just have humans double-check; they pollute pass rate, making a real improvement look like it had no effect.",
+    "distractor_rationale": "The more insidious cost is downstream: when this result feeds back to the agent, it'll spend several turns 'fixing' something that was never broken."
+  },
+  {
+    "term": "overly strict verifier",
+    "def": "The most common way deterministic checks fail: due to spurious differences like formatting, punctuation, or valid alternative phrasings, they judge correct responses as failures.",
+    "source": "[^S3]",
+    "pitfall": "Score drops so you change the agent to accommodate the verifier—score changed but the system under test didn't; the blame lies with the judging side.",
+    "distractor_rationale": "Loose vs strict isn't a single slider: should be strict on semantics, loose on irrelevant format; 'stricter is safer' and 'as long as non-empty it passes' are both wrong."
+  },
+  {
+    "term": "free text",
+    "def": "Outputs like research and summaries: free-form, rarely have a single correct answer, difficult to evaluate programmatically; LLMs are a natural fit for scoring this output.",
+    "source": "[^S2]",
+    "pitfall": "Because programs can't judge it, not judging at all; deterministic checks can still hold the floor—length, required entities must appear, no numbers appearing from outside the source.",
+    "distractor_rationale": "Often treated as 'all text output'; actually fixed-format text with enumerable values (like sentiment labels) is exactly exact match's home turf."
+  },
+  {
+    "term": "human review",
+    "def": "A step still indispensable beyond automated testing: automated tests verify functionality is correct, but ensuring solutions align with broader system requirements still needs human eyes.",
+    "source": "[^S1]",
+    "pitfall": "All green so merge—a patch can pass all tests while being a terrible design that makes the entire module unmaintainable.",
+    "distractor_rationale": "Easily confused with 'human grading': here it's about whether the solution fits the system, not scoring output."
+  },
+  {
+    "term": "LLM judge",
+    "def": "Using a model call to score free-form text output, positioned where deterministic checks can't reach, not as their replacement.",
+    "source": "[^S2]",
+    "pitfall": "Sending even format-invalid output to the judge to spend money—that kind of problem the first layer of deterministic checks catches in milliseconds.",
+    "distractor_rationale": "Often treated as a more advanced verifier; it has cost and noise; in official ranking, code-based grading beats it on fast, reliable, and scalable."
+  },
+  {
+    "term": "rubric",
+    "def": "Breaking down vague 'is it good' into several concrete questions, answering and scoring each separately; for research tasks the ready-made breakdown is five dimensions.",
+    "source": "[^S2]",
+    "pitfall": "Writing dimensions as three slogans without clarifying 'what counts as deduction, what doesn't'; judge can't score stably.",
+    "distractor_rationale": "Don't expect one rubric to handle everything: one use case, even one specific success criterion under it, may need several rubrics to evaluate fully."
+  },
+  {
+    "term": "reason first then score",
+    "def": "A key technique for judge prompts: have it write reasoning first then produce a score, discard reasoning afterward; improves grading performance, especially noticeable for complex judgments.",
+    "source": "[^S5]",
+    "pitfall": "Interpreting 'discard' as deleting without looking—reasoning should be persisted and archived, for reviewing later when scores look suspicious, just doesn't go into downstream stats.",
+    "distractor_rationale": "Sequence easily gets written backwards: score first then backfill reasoning, then reasoning becomes a footnote for the score, no longer scaffolding for judgment."
+  },
+  {
+    "term": "fresh context",
+    "def": "Where the reviewer should sit: only sees output and the criteria you gave, can't see the reasoning process that produced this change, so judges the result on its own terms.",
+    "source": "[^S4]",
+    "pitfall": "Thinking adding a line in the prompt 'please score honestly, don't cover up' can substitute for it—the problem is shared context, not attitude.",
+    "distractor_rationale": "The key difference isn't model capability but context; this also explains why the judge prompt must fully paste task requirements and rubric to it."
+  },
+  {
+    "term": "self-report",
+    "def": "The agent's description of its own process ('I searched three authoritative sources, cross-checked and confirmed the percentage'); doesn't count as evidence by itself.",
+    "source": "[^S3]",
+    "pitfall": "Taking the shortcut of only tossing this summary to the judge; judge reads it, thinks the process looks proper, gives a high score.",
+    "distractor_rationale": "What's omitted is often more important than what's written—LLMs don't always say what they mean; that failed retry they didn't mention is what you most need to see."
+  },
+  {
+    "term": "raw transcript",
+    "def": "The execution log including tool calls and tool responses, used to catch behaviors not explicitly stated in the agent's chain-of-thought.",
+    "source": "[^S3]",
+    "pitfall": "Judge input only has output and self-report, no transcript, so the 'tool efficiency' dimension is actually unjudgeable.",
+    "distractor_rationale": "Easily lumped with logs; its role here is required input for the judge, not material for post-hoc troubleshooting."
+  },
+  {
+    "term": "find problems",
+    "def": "The judge's first failure mode: a reviewer prompted to find gaps will usually report some, even when the work is sound—because that's what you asked it to do.",
+    "source": "[^S4]",
+    "pitfall": "Chasing every finding to fix it; agent enters a self-escalation loop: review raises three items, fix them, re-review raises three more, actual problem never gets solved.",
+    "distractor_rationale": "These suggestions individually aren't wrong, mixed into a review report they look identical to real issues, so extremely hard to distinguish on the spot."
+  },
+  {
+    "term": "over-engineering",
+    "def": "The consequence of chasing every review finding: extra abstraction layers, defensive code, and tests for cases that can't possibly happen.",
+    "source": "[^S4]",
+    "pitfall": "Treating increasingly thick code as quality improvement without asking back 'does skipping this affect correctness or stated requirements?'",
+    "distractor_rationale": "It looks like being diligent; mitigation is to have reviewers only flag issues affecting correctness or stated requirements, treating the rest as optional suggestions."
+  },
+  {
+    "term": "effect size",
+    "def": "How big the gap is from one change—is it from 71.2% to 72.4%, or from 30% to 80%; larger gaps need fewer samples.",
+    "source": "[^S2]",
+    "pitfall": "Treating it as permanent license; when agent reaches 80%+ and changes only move one or two percentage points, still drawing conclusions from six cases.",
+    "distractor_rationale": "Often treated as a stats term and skipped; actually it's just common sense—'30-degree difference you feel immediately, 0.5-degree difference needs a thermometer.'"
+  },
+  {
+    "term": "eval set",
+    "def": "A batch of tasks paired with verifiable results; official starting scale is about 20 queries representing real usage; don't wait to hoard hundreds.",
+    "source": "[^S2]",
+    "pitfall": "Building 5 cases and leaving them idle—paying the cost of building evals without getting the benefit; idle cases don't even serve as reminders.",
+    "distractor_rationale": "20 isn't a magic threshold, it's just 'can finish in an afternoon and start using that day' scale."
+  },
+  {
+    "term": "verifiable result",
+    "def": "What every eval prompt should be paired with: a judgeable end state, string, state change, or rubric; without it the prompt isn't an eval task, it's a demo.",
+    "source": "[^S3]",
+    "pitfall": "Writing 'what order the agent should think' into expectations, which hard-codes the path and retreats to record-replay.",
+    "distractor_rationale": "'A pile of prompts' often treated as an eval set; the distinction lies in whether it has this—without it you can only manually eyeball output, get tired after two reads."
+  },
+  {
+    "term": "edge case",
+    "def": "Low-frequency but actually-occurring situations (missing info, mixed demands, tool errors); the insurance in eval sets, not the main body.",
+    "source": "[^S5]",
+    "pitfall": "Entire eval set is all edge cases, so you spend a month fixing an issue that appears twice a month.",
+    "distractor_rationale": "Easily confused with 'adversarial cases': purely fabricated extreme inputs don't count; it must be from the small portion that does appear in real distribution."
+  },
+  {
+    "term": "volume over quality",
+    "def": "An eval set design principle: more questions with slightly lower signal automated grading beats fewer questions with high-quality human hand-grading.",
+    "source": "[^S5]",
+    "pitfall": "Spending time polishing one case's grading criteria to perfection instead of writing ten more.",
+    "distractor_rationale": "The most counterintuitive one, because it contradicts the 'better less than mediocre' engineering aesthetic, but it saves your own life."
+  },
+  {
+    "term": "real distribution",
+    "def": "What evals should stick to: your eval tasks should be grounded in real-world usage, able to point to any prompt and say 'three users asked this way last week.'",
+    "source": "[^S5]",
+    "pitfall": "Imagining at your desk how users might ask, writing a batch of cases that look good only on clean samples, collapse when real input arrives.",
+    "distractor_rationale": "Often confused with 'comprehensive coverage': comprehensive often means tilting toward edges, while real distribution demands the body remain what actually happens daily."
+  },
+  {
+    "term": "held-out set",
+    "def": "A batch of cases separated from the start, not looked at or run or touched during daily tuning, relies on it to ensure no overfitting to the 'training' evals.",
+    "source": "[^S3]",
+    "pitfall": "Changing prompt to fix a specific held-out case—that case from this moment has become the tuning set.",
+    "distractor_rationale": "It's consumable not an heirloom: if truly worn out, merge into tuning set and supplement with new ones; keeping it by force only makes you think you still have a clean ruler."
+  },
+  {
+    "term": "dev set",
+    "def": "The batch of cases run repeatedly when changing prompts daily, the more frequently the better; its scores are navigation, not conclusion.",
+    "source": "[^S3]",
+    "pitfall": "Taking its score as the conclusion for external reporting without validating once with held-out set at stage milestones.",
+    "distractor_rationale": "Diverging score trends between the two sets (tuning set rises, held-out set flat or drops) is overfitting's most observable signal."
+  },
+  {
+    "term": "overfitting",
+    "def": "The entire set of prompt plus tool configuration learned features of the eval materials rather than patterns of the task itself—like hardcoding a sentence in system prompt for one persistently failing case.",
+    "source": "[^S3]",
+    "pitfall": "Only looking for signals at the score level; another more direct check is reading through the system prompt, asking sentence by sentence 'if removed would only one specific eval case break?'",
+    "distractor_rationale": "The process feels identical: scores rising, each step looks like improvement; difference is only whether what's rising is capability or scores on these few questions."
+  },
+  {
+    "term": "not guaranteed",
+    "def": "Official docs' wording for certain ideal behaviors (like the model will proactively ask for missing required parameters); especially so for more ambiguous prompts and less capable models.",
+    "source": "[^S6]",
+    "pitfall": "Having product logic depend on a behavior with only probabilistic description, without a few cases routinely watching it.",
+    "distractor_rationale": "'Much more likely' reads like certainty; precisely these not-guaranteed behaviors should go into eval sets—guaranteed things don't need testing."
+  },
+  {
+    "term": "eval track",
+    "def": "The runnable program that welds eval sets, layered grading, and harness loops together: type one command, scores tell you which got better, which didn't move, whether anything that was right got broken.",
+    "source": "[^S3]",
+    "pitfall": "Following reports to change prompts for several rounds, scores will definitely rise, but the rise might just be scores on this batch of tasks.",
+    "distractor_rationale": "It manages 'one agent, one batch of tasks, run once on your machine, produce a report'; hooking into CI and blocking merges is separate orchestration."
+  },
+  {
+    "term": "stub client",
+    "def": "A fake messages.create that spits responses in a fixed queue order, turning model behavior into a controlled variable, making the whole track reproducible.",
+    "source": "[^S3]",
+    "pitfall": "Giving it a fallback response—when queue is exhausted it should throw immediately, otherwise the loop spins one extra time and gets a fake end_turn that slips through.",
+    "distractor_rationale": "With a stub you're verifying the control logic you wrote, not the model's daily performance; swap to real client and track structure doesn't change, what changes is scores start jittering."
+  },
+  {
+    "term": "response queue",
+    "def": "The pre-written response sequence behind the stub client; the difference between two prompt versions is pinned by two sets of queues, 'assuming new prompt takes effect and model answers this way' is encoded as data.",
+    "source": "[^S3]",
+    "pitfall": "Sharing one cursor across tasks, so responses consumed by the previous task get misaligned into the next one.",
+    "distractor_rationale": "It simulates model output, not model capability; use spread syntax to inherit from old version, only list the changed entries so code readers see diff scope at a glance."
+  },
+  {
+    "term": "task isolation",
+    "def": "One eval task one independent loop, one independent messages; finished then discarded; implementation is just don't hoist messages outside the function.",
+    "source": "[^S3]",
+    "pitfall": "To save tokens, stringing several tasks into one long session—with shared sessions, input tokens actually accumulate linearly, can't save.",
+    "distractor_rationale": "Looks like duplicate work, actually it's the precondition for results to be comparable: contamination overestimates capability and makes tasks order-dependent."
+  },
+  {
+    "term": "is_error",
+    "def": "The marker attached to tool_result when feeding back tool exceptions: catch the exception, wrap it into a result with this marker to return to the model, simultaneously incrementing the error counter.",
+    "source": "[^S6]",
+    "pitfall": "Letting tool exceptions directly crash the loop, so tasks like 'will the agent report truthfully after tool errors' can't even reach the judgment step.",
+    "distractor_rationale": "Tool errors aren't crashes: they're a normal signal meant to flow back into conversation, be read by the model, and elicit a reaction."
+  }
+]
