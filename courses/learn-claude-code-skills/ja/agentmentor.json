@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Produce the Japanese variant of the shipped course learn-claude-code-skills for learn.agentmentor.dev. Translation with teaching polish FROM the verified English variant (not the zh): same 6-lesson structure, same lesson slugs, same interactive-block ids and answer positions, source quotes kept as verbatim English originals, runnable code kept logic-identical with only comments and user-facing strings translated, natural desu/masu-form Japanese technical prose with no machine-translation stiffness.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "The owner ratified the multilingual plan: all six locales on learn.agentmentor.dev, English first (now complete, 12/12), then the other locales as translation-grade waves from the English base, Japanese first. The English variant is the verified, grounding-corrected source of truth, so no additional clarification was needed."
+  },
+  "learnerModel": {
+    "targetReader": "Claude Code の基本機能をすでに使っていて、基本的な Markdown とコマンドライン操作が分かり、Skill でワークフローをカスタマイズしたい開発者",
+    "knownConcepts": [
+      "Claude Code の基本的な使い方",
+      "Markdown の基本文法",
+      "基本的なターミナルコマンド（cd, ls, mkdir, テキストエディタの使用）",
+      "ファイルとディレクトリ",
+      "いずれかのプログラミング言語の基礎",
+      "コードレビューの一般的な考え方"
+    ],
+    "unknownConcepts": [
+      "Skill の仕組み",
+      "YAML frontmatter の文法",
+      "SKILL.md ファイルの構造",
+      "description フィールドがどう Skill をトリガーするか",
+      "progressive disclosure の原則",
+      "supporting files の整理の仕方",
+      "Skill のデバッグ方法"
+    ],
+    "assumedEnvironment": "Claude Code がインストール済みで、.claude/skills ディレクトリにアクセスでき、テキストエディタ（VS Code など）とターミナルがある環境",
+    "firstIndependentAction": "自分のプロジェクトの中で、Skill で自動化できそうな繰り返し作業を一つ見つける",
+    "noviceRamp": [
+      "レッスン1 は具体的な痛み（同じワークフローを毎回説明し直す）から始め、議事録の例で Skill が要る理由の直感を作る",
+      "レッスン2 は実物の SKILL.md を部分ごと（frontmatter, instructions）に分解し、概念を一度に投げない",
+      "レッスン3 は完結した簡単な Skill（タスク整理）をゼロから作り、各ステップを丁寧にコピー可能な形で示す",
+      "テストとデバッグはレッスン4 に切り出し、書く段階にデバッグの複雑さが混ざらないようにする"
+    ]
+  },
+  "learnerBrief": "対象読者は、すでに Claude Code を使っていて Skill でワークフローをカスタマイズしたい開発者です。基本的な Markdown とコマンドラインは分かり、プログラミング経験もありますが、Skill とは何か、YAML frontmatter がどう動くか、どう書くかは知りません。このコースは、最初の実用的な Skill を独力で作れるところまで導きます。Skill がなぜ重要かを理解し、SKILL.md の構造を身につけ、テストとデバッグを学び、コードレビューのケーススタディで実践的なパターンを学びます。",
+  "scope": "扱う範囲: Skill の概念と適用場面、SKILL.md の構造（YAML frontmatter + Markdown instructions）、name と description フィールドの書き方、自動トリガーの仕組み、実行可能な指示の書き方、supporting files の整理、テストとデバッグ（直接呼び出し、反復改善）、コードレビュー Skill のケーススタディ、personal と project skills の違い。扱わない範囲: Claude Code のインストール、YAML 文法の深掘り、複雑なスクリプト、特定言語の高度な知識、Skill の配布、MCP 連携の詳細。深さ: ゼロから本番で使える Skill を独力で出荷できるところまで。",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-claude-code-skills/ja/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "mermaid 図は使いません（英語版・中国語版と同じ判断）。Skill 学習の中心はテキスト構造（YAML frontmatter + Markdown instructions）の理解と具体的で実行可能な手順を書くことであり、実物の SKILL.md コード例のほうが抽象的な図より教えられます。図が候補になりうる唯一の箇所（レッスン4 のテスト・修正・テストのループ）も、注釈付きリストで十分明確です。",
+    "weakestPoints": [
+      "レッスン1 の『最初の Skill 候補を見つける』演習は自由度が高く、初学者は選んだ作業が適切か迷いやすい。判断基準（繰り返し・手順が固定・検証可能）と段階的ヒントで緩和",
+      "レッスン5 のコードレビュー Skill は複数ファイルにまたがりコース最長で、重く感じうるが、実プロジェクトの完全さを示すためで、モジュール分割された手順で複雑さを下げている",
+      "高度な frontmatter フィールド（model, allowed-tools）はレッスン6 で軽く触れるのみ（progressive disclosure）で、必要な読者は公式ドキュメントの参照が要る",
+      "検証済み英語版からの翻訳であり、残存リスクは訳のぎこちなさ: ソース引用は英語原文のまま byte-exact に保ち、実行コードはロジック同一に保ったが、本文は逐語ではなく自然な日本語に訳したため、レビューは英語版との意味の等価性を確認すべき"
+    ],
+    "followUpChecks": [
+      "デプロイ後 learn.agentmentor.dev /ja/claude-code-skills/... のレンダーパス: 全6レッスンと README、インタラクティブカードがハイドレートする",
+      "全 glossary 用語が ja レッスン本文に逐語で現れる（attach チェック）",
+      "ja レッスンの各 [^Sn] アンカーが sources.md の ## Sn ブロックに一致する",
+      "チェックブロックの id と正解位置が英語版と byte 一致（レッスン 1/2/4/5 は b/b/b/b）"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "学習者は、自分の仕事の繰り返し作業一つについて、完全な SKILL.md（正しい frontmatter と、具体的で実行可能な instructions）を独力で書き、呼び出して成功させ、テストして反復改善でき、personal skill と project skill のどちらが適切かを判断できる。",
+    "interactionCheck": "4つのレッスンに agentmentor-check ブロックが1つずつ（レッスン1 は場面適合の判断、レッスン2 は description の質、レッスン4 は読み込み失敗の診断、レッスン5 はファイル構成）。英語版から id・mode・選択肢数・正解位置を byte 一致で保持し、label・prompt・whyHere・選択肢テキスト・feedback は各レッスンの誤解に即した日本語訳。演習は英語版のレベル構成（レベルごとに rubric・answer・ヒント）を保つ。",
+    "learnerFitCheck": "このコースは YAML の知識を前提しない（レッスン2 が必須の2フィールドをゼロから教える）、複雑なプログラミングも前提しない（例はテキスト処理とチェックリスト監査）、特定の言語やフレームワークの専門知識も前提しない。レッスン1 の最初の演習は自分の仕事の振り返りだけで、unknownConcepts のどれにも依存しない。未知の概念は段階的に導入し、学習者はすべての前提を学んだ後のレッスン3 で初めて Skill を作る。",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "検証済み英語版の日本語訳: 構造・グラウンディング・正解位置は検証済みの原版から継承",
+      "全インタラクティブブロックが id/mode/選択肢数/正解を英語版と byte 一致で保持",
+      "全ソース引用は英語原文のまま維持（owner 承認の引用ポリシー）",
+      "glossary 用語は ja レッスン本文に逐語で現れることを確認"
+    ]
+  },
+  "nextSteps": [
+    "ja 版に course-guard を実行し、指摘があれば修正する",
+    "learn.agentmentor.dev をデプロイし、/ja ページがインタラクティブカードのハイドレート込みでレンダーされることを確認する",
+    "残りのロケール（ko/es/pt-BR）を、この英語版を翻訳ベースとして展開する",
+    "学習者にはコース後、自分のプロジェクトで実際の Skill を 2〜3 個作って定着させることを勧める"
+  ],
+  "memoryBoundary": "この agentmentor.json はこのコース変種のローカルな状態記録（course-local state record）で、品質チェックと学習経路の追跡のためコースディレクトリ内にのみ保存されます。Claude Code やホスト AI システムの長期記憶に書き戻されることはなく、他のコースや会話に影響しません。"
+}
