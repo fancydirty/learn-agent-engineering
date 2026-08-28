@@ -1,0 +1,534 @@
+[
+  {
+    "term": "tool",
+    "def": "In an Agent context, a tool is a concrete capability the model can request during the conversation; the host program registers it and executes it, turning the model from something that only talks into something that can act.",
+    "source": "[^S3]",
+    "pitfall": "Assuming a tool is some built-in ability of the model itself, requiring no registration work from the developer.",
+    "distractor_rationale": "Learners tend to equate 'things the model can do' with 'the model's built-in abilities,' and overlook that a tool is really an external manifest the host program registers into the request, not a native model feature."
+  },
+  {
+    "term": "host program",
+    "def": "The host program is the code that actually receives the model's tool-call request, executes the operation, and passes the result back to the model — for example Claude Code, or an Agent script you write yourself.",
+    "source": "[^S4]",
+    "pitfall": "Assuming that once the model returns a tool_use, the model itself went online or touched the file system to complete the operation.",
+    "distractor_rationale": "'What the model says it wants to do equals what the model did' is the most intuitive but wrong reading, easily confused with the core boundary that the model only proposes and the host executes."
+  },
+  {
+    "term": "search_files",
+    "def": "An example tool name used throughout the course, standing in for the class of concrete tool definitions that 'search project files by some condition.'",
+    "source": "[^S3]",
+    "pitfall": "Assuming a tool name can be arbitrary and the model will infer its purpose without a matching description.",
+    "distractor_rationale": "Learners transfer the 'self-explanatory naming' habit from ordinary programming and forget that all the model actually sees are the name/description/input_schema fields themselves."
+  },
+  {
+    "term": "name",
+    "def": "A required field in a tool definition; it is the identifier the model writes when it picks a tool, and it must match the name given at call time exactly.",
+    "source": "[^S3]",
+    "pitfall": "Assuming name is just a human-facing label, so writing it loosely won't affect whether the model's call succeeds.",
+    "distractor_rationale": "It gets confused with the 'readability first' habit of ordinary variable naming, missing that name is also the exact matching key between the model and the host program."
+  },
+  {
+    "term": "description",
+    "def": "A required field in a tool definition; it states in plain text what the tool does, when to use it, and how it behaves, and is the only readable basis the model has when choosing a tool.",
+    "source": "[^S3]",
+    "pitfall": "Assuming description is mainly a comment for whoever maintains the code, which the model just happens to read along the way.",
+    "distractor_rationale": "This is the misconception Lesson 4 explicitly corrects, but on first contact with these three fields in Lesson 1 it is easy to prematurely treat description like an ordinary code comment."
+  },
+  {
+    "term": "input_schema",
+    "def": "A required field in a tool definition; it is a JSON Schema that specifies the shape the parameters must take when the tool is called.",
+    "source": "[^S3]",
+    "pitfall": "Assuming input_schema is just documentation, so it doesn't matter if the model gives parameters that don't follow the declared format.",
+    "distractor_rationale": "Learners conflate it with description and miss that the types and structure in the schema are themselves the constraints the model's generated parameters must align with."
+  },
+  {
+    "term": "client tools",
+    "def": "Tools the host application is responsible for executing itself; the model only generates the call request, while the real execution code runs on the host side.",
+    "source": "[^S2]",
+    "pitfall": "Assuming all tools are executed uniformly by Anthropic's servers, so the host application needs to write no execution logic of its own.",
+    "distractor_rationale": "It's easy to misread 'the model provides the tool-calling ability' as 'the provider also runs the tools for you,' confusing which side actually executes client tools versus server tools."
+  },
+  {
+    "term": "server tools",
+    "def": "Tools that Anthropic's servers execute on your behalf, as opposed to client tools whose execution logic the host application must implement itself.",
+    "source": "[^S2]",
+    "pitfall": "Assuming server tools and client tools differ in whether the model itself is capable of executing them.",
+    "distractor_rationale": "The only difference is who runs this step, not the model's capability boundary, but learners tend to read 'server tools' literally as some stronger kind the model runs on its own."
+  },
+  {
+    "term": "structured data",
+    "def": "The model's tool-call request comes back as a chunk of structured data (not a natural-language instruction), carrying the tool name and parameters for the host program to parse and execute.",
+    "source": "[^S4]",
+    "pitfall": "Assuming the model's call request is a natural-language description that needs manual parsing, rather than an object whose fields code can read directly.",
+    "distractor_rationale": "Learners' default image of 'model output' is text, so they overlook that the tool-call part of that output has a strict field structure code can consume directly."
+  },
+  {
+    "term": "required",
+    "def": "A field in JSON Schema that lists the parameter names a tool call must supply; a call missing those parameters is treated as invalid input.",
+    "source": "[^S3]",
+    "pitfall": "Assuming required is only a suggestion for the model to try to fill those parameters, and that the tool can still run without them.",
+    "distractor_rationale": "It's easily lumped in with descriptive fields like description, missing that required, like enum, is a constraint that real validation can reject on."
+  },
+  {
+    "term": "Claude Code",
+    "def": "The course's concrete example of the 'host program' concept — itself an Agent product that requests calls to many tools (read files, search code, run commands, and so on).",
+    "source": "[^S6]",
+    "pitfall": "Assuming Claude Code is just a chat interface with no tool calls or file-system operations behind it.",
+    "distractor_rationale": "Learners' existing image of an 'AI chat tool' makes them underestimate how much Claude Code actually reads and writes files and runs commands."
+  },
+  {
+    "term": "tools",
+    "def": "A field carried in the request sent to the model; it is a manifest of tools listing which ones the model may request in this conversation and what parameters each needs.",
+    "source": "[^S3]",
+    "pitfall": "Assuming the tool manifest only needs to be sent on the first turn and the model will remember it on later turns.",
+    "distractor_rationale": "Learners transfer the 'set the system prompt once' habit and miss that the tools field, like messages, has to be re-sent with every single request."
+  },
+  {
+    "term": "stop_reason",
+    "def": "A field in the model's response explaining why the model stopped talking this time — values include tool_use, end_turn, and others — and it is only a signal, not a record of execution.",
+    "source": "[^S2]",
+    "pitfall": "Assuming that seeing stop_reason as tool_use means the corresponding tool has already finished running.",
+    "distractor_rationale": "This is the most common beginner misreading, because 'stopped to use a tool' is easily read as 'the tool was already used' rather than 'the model is requesting to use a tool.'"
+  },
+  {
+    "term": "tool_result",
+    "def": "A content-block type in the message sent back to the model; it carries the finished result of a tool execution and matches its corresponding tool_use block via tool_use_id.",
+    "source": "[^S5]",
+    "pitfall": "Assuming you can split several tools' results across several separate requests and send them back one at a time.",
+    "distractor_rationale": "Learners transfer the 'handle one thing at a time' intuition and miss that the protocol requires every tool_use block from one turn to be claimed together in the same new message."
+  },
+  {
+    "term": "tool_use_id",
+    "def": "A field on a tool_result block that must match the id of its corresponding tool_use block exactly; the model uses it to pair each result with its request.",
+    "source": "[^S5]",
+    "pitfall": "Assuming tool_use_id can be filled with the tool's name, as long as it roughly indicates which tool it was.",
+    "distractor_rationale": "Beginners confuse 'identify this call' with 'identify this tool,' wrongly assuming the tool name achieves the same matching effect."
+  },
+  {
+    "term": "is_error",
+    "def": "An optional field on a tool_result block marking whether this tool execution itself failed; set to true, it tells the model this call ran into a problem.",
+    "source": "[^S5]",
+    "pitfall": "Assuming is_error is a security-review switch that flags whether the content is a trustworthy instruction.",
+    "distractor_rationale": "The field name evokes content moderation, but its actual role is limited to flagging execution failure and has nothing to do with content trust — a misconception Lesson 5 explicitly corrects."
+  },
+  {
+    "term": "finish_reason",
+    "def": "The field name that corresponds to stop_reason in OpenAI-compatible APIs; the value tool_calls means the model is requesting a tool call.",
+    "source": "[^S7]",
+    "pitfall": "Assuming different vendors' APIs are entirely incompatible in field naming and round-trip structure, requiring a completely different mental model.",
+    "distractor_rationale": "Seeing different field names, learners assume the underlying mechanism differs, when the skeleton — model only requests, host executes, result comes back with an identifier — is universal, just repackaged."
+  },
+  {
+    "term": "messages",
+    "def": "The array field in the request that carries conversation history; every turn's response must be appended to it verbatim, including the model's tool_use reply and the following tool_result.",
+    "source": "[^S4]",
+    "pitfall": "Assuming you only need to send the tool_result back, without also appending the model's full tool_use reply from the previous turn into messages.",
+    "distractor_rationale": "This is the step most easily dropped in a round-trip implementation, because 'I just want to send the result back' makes it easy to forget the model needs to see its own request on record to keep context coherent."
+  },
+  {
+    "term": "end_turn",
+    "def": "A value of stop_reason meaning the model has finished talking for this turn, needs no more tool calls, and its content can be handed to the user.",
+    "source": "[^S2]",
+    "pitfall": "Assuming that as long as the model returned some text content, stop_reason must be end_turn.",
+    "distractor_rationale": "Learners overlook that one response's content can hold both text blocks and tool_use blocks, and that the real test of 'is the task done' is stop_reason, not whether there is text in content."
+  },
+  {
+    "term": "tool_use block",
+    "def": "The content-block type in the model's response content array that represents one tool-call request; it is complete only when it carries all three fields id, name, and input.",
+    "source": "[^S5]",
+    "pitfall": "Assuming one response holds at most one tool_use block, so there's no need to iterate over multiple parallel calls.",
+    "distractor_rationale": "Most intro examples show only a single tool call, making it easy to miss that the model can request several tools in parallel in one response; and since these three fields are everything the model can express, control logic like retry counts isn't built into the protocol and must be implemented in host code."
+  },
+  {
+    "term": "round-trip",
+    "def": "The complete cycle of a tool call: the model emits a request, the host executes it, the result is sent back, and the model produces its next response.",
+    "source": "[^S4]",
+    "pitfall": "Assuming one user request triggers only one round-trip, with exactly one turn between the tool call and the final answer.",
+    "distractor_rationale": "Intro examples usually show a scenario that ends after a single round-trip, making it easy to miss that real tasks often need several consecutive round-trips to gather enough information."
+  },
+  {
+    "term": "loop",
+    "def": "The host-side way of handling multi-turn tool calls: while stop_reason is still tool_use, keep executing tools, sending results back, and requesting again, until it turns into end_turn.",
+    "source": "[^S4]",
+    "pitfall": "Assuming this loop has a protocol-imposed fixed iteration cap, so you don't need to set your own termination condition in code.",
+    "distractor_rationale": "The course only says the loop has no fixed iteration cap, which is easily inverted into 'the protocol manages turns automatically,' when in fact avoiding an infinite loop is the host code's own responsibility (Lesson 6 covers the MAX_TURNS safety valve)."
+  },
+  {
+    "term": "data dependency",
+    "def": "Within one batch of parallel tool calls, when one call's parameter should in theory equal another call's return value — a value that doesn't yet exist at the moment the batch is generated.",
+    "source": "[^S21]",
+    "pitfall": "Assuming two tools are always safe to run in parallel in one response as long as they are different functions with different names.",
+    "distractor_rationale": "Learners judge parallelizability by 'are the tools the same,' when the real test is whether one call's input depends on a result the same batch hasn't produced yet."
+  },
+  {
+    "term": "disable_parallel_tool_use",
+    "def": "A setting on the request's tool_choice object; set to true, the model calls at most one tool per response, used to tighten behavior when parallel-call dependencies aren't yet worked out.",
+    "source": "[^S21]",
+    "pitfall": "Assuming this switch is for performance optimization, and that turning it on makes tools execute faster.",
+    "distractor_rationale": "It turns off the model's ability to issue multiple calls in one response, which actually increases the number of round-trips; its value is in safety — forcing one-at-a-time avoids unsafe parallelism like a write depending on a same-batch read."
+  },
+  {
+    "term": "blast radius",
+    "def": "The range of damage one tool call can cause when it goes wrong; it is the core criterion for ranking the five tool categories.",
+    "source": "[^S16]",
+    "pitfall": "Assuming blast radius is a subjective sense of whether a tool 'sounds dangerous,' rather than a matter of whether its input is bounded by a schema.",
+    "distractor_rationale": "Learners judge danger by intuition (feeling reading files and running commands both 'touch the system'), missing that the real difference is whether the parameters are structurally constrained in what they can do."
+  },
+  {
+    "term": "read_file",
+    "def": "The course's example name for the read category of tool; its typical parameter is a file path, and it returns the file's contents.",
+    "source": "[^S6]",
+    "pitfall": "Assuming a read-file tool carries no risk at all, because it changes no state.",
+    "distractor_rationale": "The course stresses 'safest doesn't mean zero risk,' which is easily simplified into 'read-only equals no risk,' overlooking that reading a file it shouldn't (a secrets file) is itself a leak."
+  },
+  {
+    "term": "write_file",
+    "def": "The course's example name for the write category of tool; its typical parameters are a path and content, and once it runs it overwrites the original file and usually can't be undone.",
+    "source": "[^S6]",
+    "pitfall": "Assuming a write-file tool carries about the same call risk as a read-file tool, since their parameter shapes are nearly identical.",
+    "distractor_rationale": "The two signatures really are similar (both path plus parameters), and that surface similarity hides the core difference of 'can it be safely retried' — the consequence asymmetry the course emphasizes."
+  },
+  {
+    "term": "bash",
+    "def": "The course's example name for the execute category of tool; its parameter is an open-ended command string that can run any shell command.",
+    "source": "[^S16]",
+    "pitfall": "Assuming a command-execution tool is just a 'slightly riskier' read/write tool that can be constrained with the same permission rules.",
+    "distractor_rationale": "Learners read the risk difference as a gradual increase rather than the order-of-magnitude jump the course stresses — a command parameter isn't bounded by schema structure, so its capability boundary equals the whole operating system's."
+  },
+  {
+    "term": "search_code",
+    "def": "The course's example name for the search category of tool; its typical parameters include pattern and max_results, and it returns a list of match locations rather than whole file contents.",
+    "source": "[^S9]",
+    "pitfall": "Assuming a search tool should return content as complete and exhaustive as possible, since that is more 'useful' to the model.",
+    "distractor_rationale": "Intuitively more information seems better, missing that returning too much blows out the context; a search tool is meant to narrow the range, not dump everything possibly relevant at once."
+  },
+  {
+    "term": "send_slack_message",
+    "def": "The course's example name for the call-external-API category of tool; its typical parameters are a channel and text, and calling it crosses the network to a service you don't control.",
+    "source": "[^S19]",
+    "pitfall": "Assuming external-API failures are exceptional situations that a tool design need not handle specially.",
+    "distractor_rationale": "The course states plainly that 'failure is the norm, not the exception'; learners imagine external APIs like local function calls and miss that rate limits, timeouts, and permission rejections are everyday occurrences for this category."
+  },
+  {
+    "term": "command",
+    "def": "The core parameter field of an execute-category tool (like bash); it is essentially an open-ended shell script whose capability isn't bounded by schema structure.",
+    "source": "[^S16]",
+    "pitfall": "Assuming that adding a detailed description to the command parameter saying 'what kind of commands should run' will constrain the model away from dangerous operations.",
+    "distractor_rationale": "A description is only explanatory text with no enforcing power, easily mistaken for having the constraining effect of enum or required."
+  },
+  {
+    "term": "max_results",
+    "def": "A common parameter on search-category tools; it caps how many matches come back in one call, avoiding an overload of results that blows out the context.",
+    "source": "[^S9]",
+    "pitfall": "Assuming that setting no cap and letting the search return every match helps the model grasp more complete information.",
+    "distractor_rationale": "Learners overlook that context space is a finite resource; more matches doesn't mean the model uses them better, and they instead crowd out its reasoning room."
+  },
+  {
+    "term": "asymmetry between read tools and write tools",
+    "def": "Read and write tools have similar call shapes, but a wrong read can just be read again while a wrong write often can't be undone — their risk consequences are not equivalent.",
+    "source": "[^S6]",
+    "pitfall": "Assuming read and write tools should carry the same risk level, since their parameter structures (a path plus content) are almost identical.",
+    "distractor_rationale": "This is exactly the core misconception the course corrects — similar signatures make it easy to overlook 'can it be safely retried,' the real criterion that decides the risk level."
+  },
+  {
+    "term": "retry_after",
+    "def": "A field an external-API tool can return on failure, telling the model how long to wait before retrying — a concrete example of 'failure info should carry actionable clues.'",
+    "source": "[^S11]",
+    "pitfall": "Assuming an external-API failure only needs to return 'call failed,' leaving the retry strategy entirely to the model.",
+    "distractor_rationale": "The course stresses that failure return values must give the model actionable clues, easily misread as error detail being optional garnish rather than the information the model actually decides on."
+  },
+  {
+    "term": "total_matches",
+    "def": "A field in the search_code tool's returned result giving the total number of hits, letting the model judge whether the results are complete or the search should be narrowed.",
+    "source": "[^S9]",
+    "pitfall": "Assuming a search tool only needs to return the list of matches, without telling the model how many total matches there were.",
+    "distractor_rationale": "Learners overlook that 'are these returned results all of them' is itself key information the model uses to decide whether to keep searching."
+  },
+  {
+    "term": "code_search_grep",
+    "def": "The rewritten search-tool name in the course's comparison example; its description states clearly that it searches by content and names code_search_glob as the tool to use for finding files by name.",
+    "source": "[^S8]",
+    "pitfall": "Assuming that as long as a tool name looks like plausible English, the model can infer its search mode (by content or by file name) on its own.",
+    "distractor_rationale": "Learners overestimate how much the name itself conveys, when the course uses this example precisely to show that what works is the 'when to use, when not to' guidance in the description, not the name."
+  },
+  {
+    "term": "code_search_glob",
+    "def": "The file-name lookup tool paired with code_search_grep; the course uses it to show that naming the alternative tool in a description markedly lowers the model's odds of picking the wrong tool.",
+    "source": "[^S8]",
+    "pitfall": "Assuming two similar tools are fine as long as each description clearly states what that tool does, without naming the other as an alternative.",
+    "distractor_rationale": "The course's example shows that describing each tool's own function isn't enough; what really steers the model right is explicitly saying in the description 'for this case, use the other tool instead.'"
+  },
+  {
+    "term": "enum",
+    "def": "A JSON Schema keyword that narrows a parameter's value to one of a listed set of options; it is a real constraint that rejects invalid input, not just a note.",
+    "source": "[^S14]",
+    "pitfall": "Assuming that writing a detailed description saying 'which values to pass' has the same effect as constraining with enum.",
+    "distractor_rationale": "This is the core misconception the lesson corrects: a description only expresses intent and rejects nothing, whereas only fields like enum and required carry enforcing power."
+  },
+  {
+    "term": "additionalProperties: false",
+    "def": "A top-level input_schema setting requiring the input object to carry only keys declared in properties, closing the gap where the model invents extra fields that slip into downstream code.",
+    "source": "[^S20]",
+    "pitfall": "Assuming the model won't pass fields the schema didn't declare, so it's the same whether or not you add additionalProperties: false.",
+    "distractor_rationale": "Standard JSON Schema's default behavior is precisely to allow undeclared extra keys, so a model-hallucinated field (like skip_review: true) passes straight through into the tool implementation — the very example the course uses to show why this setting is needed."
+  },
+  {
+    "term": "strict mode",
+    "def": "With strict: true set on a tool definition, the platform constrains the model's sampling so the generated input strictly matches input_schema, and invalid parameters are never generated in the first place.",
+    "source": "[^S20]",
+    "pitfall": "Assuming that just writing enum and required in the schema makes the platform intercept schema-violating calls in the default mode.",
+    "distractor_rationale": "In default mode the API doesn't validate the model's produced parameters, so type mismatches or dropped required fields can still happen; only with strict mode on does 'invalid values are ruled out before the request is sent' truly hold."
+  },
+  {
+    "term": "namespacing",
+    "def": "The practice of prefixing tool names with the service (like github_, slack_), so that as tools grow the model can first rule out irrelevant options by prefix.",
+    "source": "[^S10]",
+    "pitfall": "Assuming that once tools span multiple external services, a detailed enough description on each tool removes any need to distinguish them by name.",
+    "distractor_rationale": "Learners reduce 'picking the right tool' entirely to the description, missing that a name prefix can narrow the field before the model compares descriptions one by one."
+  },
+  {
+    "term": "github_list_prs",
+    "def": "The course's example of a namespaced tool name; the github_ prefix marks the tool as belonging to the GitHub service, helping the model tell it apart from same-named operations on other services.",
+    "source": "[^S10]",
+    "pitfall": "Assuming a terse name like list_prs is already clear enough, with no need for a prefix stating which service it belongs to.",
+    "distractor_rationale": "With only one service connected such a name really is enough, but learners miss that once the toolbox spans multiple services, prefix-less names collide with each other."
+  },
+  {
+    "term": "slack_send_message",
+    "def": "Another of the course's namespaced tool-name examples; the slack_ prefix marks it as belonging to the Slack service, distinguishing it from other message-sending tools.",
+    "source": "[^S10]",
+    "pitfall": "Assuming all 'send' operations can share the name send_message, relying on the description alone to distinguish which platform it sends to.",
+    "distractor_rationale": "Learners underestimate the selection cost of name collisions as tool count grows, when a namespace prefix rules out most irrelevant options before the model even reads the descriptions."
+  },
+  {
+    "term": "title",
+    "def": "A descriptive field in JSON Schema used to give a parameter a readable title; like description, it only explains and imposes no enforcing constraint.",
+    "source": "[^S14]",
+    "pitfall": "Assuming title, like enum and required, is a constraining field that actually validates a parameter's value.",
+    "distractor_rationale": "title appears in the same schema alongside description, enum, and required, making it easy to lump them all together as constraints and miss that only the latter two enforce anything."
+  },
+  {
+    "term": "MCP",
+    "def": "A protocol defining how clients and tool services interact; the course cites its explicit requirement that error messages be surfaced to the model so it can self-correct.",
+    "source": "[^S11]",
+    "pitfall": "Assuming MCP is merely a tool-transport protocol, unrelated to a design-level question like how error messages should be written.",
+    "distractor_rationale": "Learners tend to read a protocol as a purely technical format spec, missing that the MCP spec itself sets explicit requirements for interaction quality like error feedback."
+  },
+  {
+    "term": "55K tokens",
+    "def": "An example figure from Anthropic's engineering team: the definitions of 58 tools can occupy roughly 55K tokens of context, illustrating tool count's real impact on context overhead.",
+    "source": "[^S9]",
+    "pitfall": "Assuming the context taken up by tool definitions is negligible and only the length of the conversation body is worth worrying about.",
+    "distractor_rationale": "Tool definitions usually don't appear in the visible conversation, so learners treat them as an invisible cost that need not be counted, when they consume large amounts of context before the conversation even begins."
+  },
+  {
+    "term": "134K tokens",
+    "def": "A more extreme example the course cites, showing that as tool count keeps growing, the context consumed by tool definitions alone can balloon to a very significant scale.",
+    "source": "[^S9]",
+    "pitfall": "Assuming that endlessly adding more tools to an Agent lets it handle more kinds of tasks with no trade-off to weigh.",
+    "distractor_rationale": "'More tools means more capability' is intuitive additive thinking, easily overlooking the two real costs — tool definitions consume context, and more similar tools raise the odds of the model picking wrong."
+  },
+  {
+    "term": "file_type",
+    "def": "An example parameter field the course uses to show that a description isn't a constraint; with only a description the model may fill it arbitrarily, and only enum actually narrows it.",
+    "source": "[^S14]",
+    "pitfall": "Assuming that a clear description like 'limits the search to a file type, e.g. typescript' makes the model pass a consistently formatted value.",
+    "distractor_rationale": "The course explicitly demonstrates that with only a description the model may pass typescript, ts, or a whole sentence, easily misleading learners into thinking detailed text alone constrains anything."
+  },
+  {
+    "term": "granularity",
+    "def": "How finely a tool's responsibilities are divided; the course stresses granularity is neither best coarse nor best fine — split by function first, then control wrong-pick odds with namespacing and descriptions.",
+    "source": "[^S8]",
+    "pitfall": "Assuming that merging several related operations into one do-everything tool, distinguishing behavior by an action parameter, is a good way to control tool count.",
+    "distractor_rationale": "It looks like it reduces tool count and token overhead, but the course notes the model must first guess the right action value and then the parameters, making it more error-prone than splitting into single-responsibility tools."
+  },
+  {
+    "term": "prompt injection",
+    "def": "An attack where instructions are hidden in content the Agent will eventually read (an issue, a web page), so the Agent mistakes that text for a new instruction it must obey.",
+    "source": "[^S19]",
+    "pitfall": "Assuming prompt injection requires the attacker to talk to the Agent directly, and doesn't involve third-party content the Agent reads.",
+    "distractor_rationale": "Learners liken 'injection' to an attack needing direct interaction, missing the course's key point — reading content and receiving instructions travel down the same channel, so the attacker never has to talk to the Agent."
+  },
+  {
+    "term": "allow",
+    "def": "One of the three permission-rule tiers; it applies to read-only, side-effect-free operations that can be repeated without leaving a trace, and is auto-approved without human confirmation.",
+    "source": "[^S15]",
+    "pitfall": "Assuming a tool should be put in the allow tier just because its name sounds 'gentle' (say, starting with read).",
+    "distractor_rationale": "The course stresses the tiering criterion is the action's actual consequence (reversibility, blast radius), not the tool's name or surface impression; a gently named tool may still need extra limits for reading sensitive files."
+  },
+  {
+    "term": "ask",
+    "def": "One of the three permission-rule tiers; it applies to operations with side effects that are reversible and whose blast radius stays inside the local repo, and it requires human confirmation before running.",
+    "source": "[^S15]",
+    "pitfall": "Assuming every 'write' operation should be denied outright, without distinguishing whether it is reversible or local in scope.",
+    "distractor_rationale": "Learners equate 'has side effects' with 'high risk, must forbid,' missing the course's grading standard that reversible local operations use ask rather than a blanket ban."
+  },
+  {
+    "term": "deny",
+    "def": "One of the three permission-rule tiers; it applies to irreversible operations or ones whose blast radius reaches beyond local, refusing execution, and it is evaluated ahead of ask and allow.",
+    "source": "[^S15]",
+    "pitfall": "Assuming that when deny, ask, and allow conflict, the more specifically written rule wins regardless of its tier.",
+    "distractor_rationale": "The course states the evaluation order is fixed as deny, then ask, then allow — the first match wins, unaffected by how specific a rule is — which learners with a programming background easily mis-generalize as 'more specific rules take precedence.'"
+  },
+  {
+    "term": "Read(./.env)",
+    "def": "A concrete permission-rule example from the course, putting the operation of reading the .env file directly on the deny list to keep secret contents from entering the conversation context.",
+    "source": "[^S15]",
+    "pitfall": "Assuming sensitive-file protection should rely on the Agent judging after reading whether to paste it, rather than blocking the read at the permission layer.",
+    "distractor_rationale": "The course states plainly that this path should be cut at the permission layer rather than left to the model's post-execution self-restraint, which learners tend to overtrust."
+  },
+  {
+    "term": "Bash(git push:*)",
+    "def": "A permission-rule example from the course; the Tool(specifier) form maps directly onto the exact tool name and call scope the host exposes to the model.",
+    "source": "[^S15]",
+    "pitfall": "Assuming the strings in a permission rule are arbitrary custom labels with no direct correspondence to the tool names actually exposed to the model.",
+    "distractor_rationale": "Learners treat permission config as a separate abstraction layer, missing the course's point that the Read, Write, and Bash in these rules are the exact tool names the host application exposes to the model."
+  },
+  {
+    "term": "excessive agency",
+    "def": "OWASP's risk category for a damaging action being triggered by an unexpected, ambiguous, or manipulated model output that should never have happened.",
+    "source": "[^S18]",
+    "pitfall": "Assuming excessive agency refers only to 'the Agent's permissions being set too loosely,' rather than a category made of several distinct root causes.",
+    "distractor_rationale": "The name invites reading it literally as just 'too many permissions,' overlooking that the three distinct root causes the course lays out also include excessive functionality and excessive autonomy."
+  },
+  {
+    "term": "Excessive functionality",
+    "def": "One root cause of excessive agency: a single tool wears many hats (say, it can both read the inbox and send mail out), so one bad call has its blast radius magnified.",
+    "source": "[^S18]",
+    "pitfall": "Assuming that setting a strict permission tier on a powerful tool is enough to offset the risk of that tool doing many jobs.",
+    "distractor_rationale": "The course notes this is one of three independent root causes; even with the right permission tier, a tool with too many responsibilities still magnifies the damage of a single misjudgment, and the two must be handled separately."
+  },
+  {
+    "term": "Excessive permissions",
+    "def": "One root cause of excessive agency: the tool itself does one thing, but the access it's granted goes past what the task actually needs.",
+    "source": "[^S18]",
+    "pitfall": "Assuming that a tool with a single, clear function design carries no permission-related risk.",
+    "distractor_rationale": "The course uses send_email to show that even a single-responsibility tool (just sending one confirmation) still poses risk if granted the ability to read the whole inbox and mail any address — an independent root cause from excessive functionality."
+  },
+  {
+    "term": "Excessive autonomy",
+    "def": "One root cause of excessive agency: an Agent runs many steps in a row with no human check in the middle, so by the time a problem is noticed an irreversible action may already have run.",
+    "source": "[^S18]",
+    "pitfall": "Assuming that as long as each tool is safe in isolation, chaining them into a long autonomous run carries no extra risk.",
+    "distractor_rationale": "Learners assess risk only at the single-call level, missing that this root cause specifically targets the cumulative risk of 'many steps in a row with no one looking,' independent of whether any single tool is safe."
+  },
+  {
+    "term": "lethal trifecta",
+    "def": "The risk combination formed when access to private data, exposure to untrusted content, and the ability to communicate externally are all present at once, giving prompt injection a path to carry data out.",
+    "source": "[^S19]",
+    "pitfall": "Assuming that as long as the Agent doesn't touch untrusted content (say, doesn't read external issues or web pages), this risk combination is avoided.",
+    "distractor_rationale": "All three conditions together form the complete attack path; learners tend to fixate on one link, or wrongly assume 'no direct send action means no leak' — the defense is to not let all three capabilities hang off one Agent, or to add a human check on external communication."
+  },
+  {
+    "term": "human-in-the-loop",
+    "def": "One of OWASP's mitigations for excessive agency: high-impact actions must be approved by a human before they are taken.",
+    "source": "[^S18]",
+    "pitfall": "Assuming the human-in-the-loop check should sit after the action has run, for after-the-fact review and remediation.",
+    "distractor_rationale": "The course states the pause must come before the action becomes irreversible, not after; learners liken it to a common after-the-fact audit process and miss the timing requirement the course stresses."
+  },
+  {
+    "term": "sandbox",
+    "def": "An OS-level isolation mechanism that enforces filesystem and network isolation independently of the model's judgment, so damage stays contained even if prompt injection succeeds.",
+    "source": "[^S16]",
+    "pitfall": "Assuming that setting all dangerous commands to deny at the permission-rule layer removes any need for an OS-level sandbox.",
+    "distractor_rationale": "The course notes permission rules judge before execution based on the command string, and that judgment can be talked around; the sandbox is the last line that still holds after execution, not depending on whether the model or the rules judged correctly."
+  },
+  {
+    "term": "TOOLS",
+    "def": "The single object in the course's example where each tool's schema fields and its actual execution handler live in one table, preventing the two sides from drifting apart.",
+    "source": "[^S3]",
+    "pitfall": "Assuming it's fine to maintain the tool's schema list and the execution-time handler lookup as two separate copies, as long as you remember to keep them in sync.",
+    "distractor_rationale": "The course flags this as an easy trap — a rename or parameter change easily forgets to update the other copy — and deriving two views from one table is what keeps both sides forever consistent."
+  },
+  {
+    "term": "toolSchemas",
+    "def": "The tools parameter list derived from the TOOLS table and sent to the model; it holds only name/description/input_schema, not the handler.",
+    "source": "[^S3]",
+    "pitfall": "Assuming toolSchemas must be maintained by hand as a separate copy independent of the TOOLS table.",
+    "distractor_rationale": "The course stresses toolSchemas and toolHandlers are two views computed from the same TOOLS data, not two hand-written copies, easily misread as needing separate manual syncing."
+  },
+  {
+    "term": "toolHandlers",
+    "def": "The execution-time lookup table derived from the TOOLS table, mapping each tool name to the function that actually runs it.",
+    "source": "[^S4]",
+    "pitfall": "Assuming the handler lookup should be keyed by the id field in the model's returned tool_use block, rather than the name field.",
+    "distractor_rationale": "Learners confuse the roles of 'the id used for claiming' and 'the name used for tool selection'; execution looks up by name, and id is only used to match the tool_result."
+  },
+  {
+    "term": "github_repo_info",
+    "def": "The third example tool the course implements; it queries basic info about a public GitHub repository and is the only tool that sends data outside the project.",
+    "source": "[^S10]",
+    "pitfall": "Assuming this tool carries about the same risk level as read_file and search_files, since all three are just 'query' operations with no writes.",
+    "distractor_rationale": "All three look read-only on the surface, making it easy to miss that github_repo_info sends local information to the public internet — exactly where 'read private data' and 'communicate externally' meet."
+  },
+  {
+    "term": "SAFE_NAME",
+    "def": "The regular expression in the course code used to validate the format of the owner/repo parameters, preventing an arbitrary string from being sent to the external network.",
+    "source": "[^S18]",
+    "pitfall": "Assuming that once input_schema defines owner and repo as string types, there's no need to validate their format again inside the tool implementation.",
+    "distractor_rationale": "Learners assume the schema-level type constraint is enough, missing that the schema only guarantees the type is a string, not that the string's content is a safe repository-name format."
+  },
+  {
+    "term": "MAX_TURNS",
+    "def": "The cap on iterations set in the course's execution loop, preventing the model from endlessly requesting tool calls so the loop never terminates.",
+    "source": "[^S18]",
+    "pitfall": "Assuming that if MAX_TURNS is set high enough, the model's repeated calling of the same tool will eventually stop on its own.",
+    "distractor_rationale": "The course uses a concrete diagnosis case to show that raising MAX_TURNS only lets the loop spin a few more turns before hitting the wall, without addressing why the model keeps retrying (usually an unclear return signal)."
+  },
+  {
+    "term": "PROJECT_ROOT",
+    "def": "The constant in the course code for the project root directory; read_file and search_files both use it for a path-boundary check to prevent access to files outside the project.",
+    "source": "[^S16]",
+    "pitfall": "Assuming that stating 'path must be relative' in input_schema keeps the model from passing a path that tries to escape the project directory.",
+    "distractor_rationale": "The description is only intent with no enforcing power; what actually blocks an out-of-bounds path is the code's prefix check against PROJECT_ROOT with path.sep appended — echoing Lesson 4's constraint-versus-note distinction."
+  },
+  {
+    "term": "recentCalls",
+    "def": "The array in the course code that records the signatures of the last few tool calls, used to detect the pattern of 'the same tool with the same arguments called three times in a row.'",
+    "source": "[^S18]",
+    "pitfall": "Assuming that detecting repeat calls only needs to check whether the model called the same tool name, without comparing the arguments too.",
+    "distractor_rationale": "The signature in the course code is the tool name and arguments joined together; learners miss that 'different arguments' is normal multi-step querying, and only identical name-plus-arguments should be judged as stuck."
+  },
+  {
+    "term": "GITHUB_TOKEN",
+    "def": "An optional credential read from an environment variable, used to raise the rate limit when calling the GitHub API; the call also works anonymously without it.",
+    "source": "[^S15]",
+    "pitfall": "Assuming GITHUB_TOKEN is required to call the github_repo_info tool, and the tool can't run without it.",
+    "distractor_rationale": "The course code explicitly makes it optional (it runs without one, just with stricter rate limits), easily misread as a run prerequisite like the other required input parameters."
+  },
+  {
+    "term": "safety valve",
+    "def": "The course's collective term for the set of guards added to the execution loop — MAX_TURNS, repeat-call detection, and the tools' internal path and format checks — each stopping a different runaway scenario.",
+    "source": "[^S18]",
+    "pitfall": "Assuming that adding just one of the safety valves (say MAX_TURNS) removes any risk of the loop running away or overstepping.",
+    "distractor_rationale": "The course states plainly that the three layers have distinct jobs and none can be dropped; learners tend to assume the most visible one (the turn cap) already covers every runaway scenario."
+  },
+  {
+    "term": "function walk(dir)",
+    "def": "The directory-walking function the course code implements itself, used inside searchFiles to recursively list files rather than shelling out to grep.",
+    "source": "[^S16]",
+    "pitfall": "Assuming searchFiles should just splice user input into a system grep command, since that's simpler to implement.",
+    "distractor_rationale": "The course states plainly that doing so splices user input into the command line and can trigger command injection, which is why it writes its own directory walk — a design trade-off shortcut-minded learners easily overlook."
+  },
+  {
+    "term": "JSON Schema",
+    "def": "The specification used to define a tool's input_schema; its title/description state intent and add no constraints, while keywords like enum and required actually validate values.",
+    "source": "[^S14]",
+    "pitfall": "Assuming every field written in a JSON Schema constrains the parameter, when some fields only describe it.",
+    "distractor_rationale": "Learners see all schema fields as a uniform set of rules, missing that in JSON Schema title and description are only notes while type, enum, and required are the real validation constraints."
+  },
+  {
+    "term": "grammar-constrained sampling",
+    "def": "The technique behind strict mode: the platform constrains the model's token sampling to schema-valid outputs, so the generated tool inputs always match the JSON Schema.",
+    "source": "[^S20]",
+    "pitfall": "Assuming strict mode validates and rejects the model's parameters after generation, the way ordinary server-side validation works.",
+    "distractor_rationale": "Learners picture a post-hoc validation gate, missing that strict mode works during sampling — invalid parameters are never generated in the first place, rather than generated and then rejected."
+  },
+  {
+    "term": "tool_choice",
+    "def": "The request object that controls how the model selects tools; setting disable_parallel_tool_use: true on it (when type is auto) makes the model call at most one tool per response.",
+    "source": "[^S21]",
+    "pitfall": "Assuming tool_choice only picks which single tool to force, without realizing it also governs whether parallel calls are allowed.",
+    "distractor_rationale": "Learners treat tool_choice purely as a forced-selection knob, missing that its disable_parallel_tool_use option is the switch for tightening behavior to one tool per response to avoid unsafe parallelism."
+  }
+]

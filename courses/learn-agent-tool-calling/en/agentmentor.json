@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Produce the English variant of the shipped Chinese course learn-agent-tool-calling for learn.agentmentor.dev. Teaching rewrite in English (not a translation): same 6-lesson structure, same lesson slugs, same interactive-block ids and answer positions, source quotes restored to their verbatim English originals from sources.md, runnable code kept logic-identical with only comments and user-facing strings translated, cross-course references pointing at the live English course titles, natural desk-voice English prose with no AI-slop register.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "The owner ratified the multilingual plan explicitly: all six locales on learn.agentmentor.dev, English first, batches of 2-3 courses in path order with a commit per course. The zh course is the verified source of truth for scope, learner model, structure, and grounding, so no additional clarification was needed."
+  },
+  "learnerModel": {
+    "targetReader": "A developer who can write basic prompts and has used Claude Code or a similar AI coding tool, but has not yet studied the underlying tool-calling protocol systematically",
+    "knownConcepts": [
+      "Writing basic prompts and the basic shape of an LLM conversation",
+      "Using Claude Code or a similar tool that can read/write files and run commands",
+      "Reading basic JavaScript / Node.js code",
+      "Files, directories, and running commands in a terminal",
+      "The general idea that an agent reads context, decides, and acts"
+    ],
+    "unknownConcepts": [
+      "The 'model proposes, host executes' boundary in tool calling",
+      "The tool_use / tool_result round-trip and its fields",
+      "stop_reason as the driver of the tool-use loop",
+      "The five tool types and their blast radius",
+      "Writing tool descriptions and JSON Schema the model fills correctly",
+      "strict mode and additionalProperties: false",
+      "allow / ask / deny permission tiers",
+      "Excessive agency and the lethal trifecta",
+      "Batched return of parallel tool calls"
+    ],
+    "assumedEnvironment": "Can run JavaScript/Node.js code, has terminal access and a text editor, and can follow along with code examples; no ML background required",
+    "firstIndependentAction": "Given a small task, decide whether it needs a tool at all, applying the 'model proposes, host executes' line",
+    "noviceRamp": [
+      "Lesson 1 draws the propose-vs-execute boundary from a concrete failure (an agent that can only talk) before any protocol detail",
+      "Lesson 2 hand-walks one full tool_use / tool_result round-trip field by field, including the batched parallel return",
+      "Lesson 3 classifies the five tool types by blast radius so risk intuition is built before interface design",
+      "Lessons 4 and 5 go deep on interface design and permissions as relatively independent units",
+      "Lesson 6 assembles a runnable tool-calling agent (loop + registry + safety valve) using everything prior"
+    ]
+  },
+  "learnerBrief": "The target reader can write basic prompts and has used an AI coding tool, but hasn't studied tool calling's underlying protocol. They can read JavaScript. The course gets them to read and hand-write a full tool_use/tool_result round-trip, classify tools by blast radius, design descriptions and schemas the model fills correctly, apply allow/ask/deny permissions and recognize the lethal trifecta, and finally build a runnable tool-calling agent with an execution loop, a registry, and a safety valve.",
+  "scope": "Covered: the propose-vs-execute boundary, the tool_use/tool_result round-trip and its exact fields, stop_reason-driven loops, batched parallel-call returns, the five tool types (read/write/execute/search/call external API) and their blast radius, tool interface design (name, description, JSON Schema, return value), strict mode, allow/ask/deny permission tiers, excessive agency and the lethal trifecta, and a runnable capstone agent. Not covered: specific agent frameworks (LangChain, AutoGPT), model training or fine-tuning. Depth: from zero to building a safe, runnable tool-calling agent.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-tool-calling/en/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Diagrams are kept exactly where the zh original uses them (the round-trip and the permission-evaluation flow), with labels rewritten in English; none added or removed. The protocol round-trip is the one place a diagram earns its keep, and the zh placement was already review-validated.",
+    "weakestPoints": [
+      "Lesson 5 carries the densest security content (permission tiers, excessive agency, lethal trifecta); a reader skimming may conflate the OS-enforced sandbox boundary with permission-rule evaluation — the two-layer distinction is stated explicitly to counter this",
+      "Lesson 6's capstone code is a teaching-grade loop, not a production framework; readers shipping real agents must add their own persistence and observability",
+      "The five-tool taxonomy is a pedagogical simplification; real tools can straddle categories, noted where it matters",
+      "As an English teaching rewrite of a verified zh course, idiomatic drift is the residual risk: source quotes were restored verbatim from English originals and runnable code kept logic-identical, but prose was re-taught rather than translated, so review must check meaning-equivalence against the zh lessons"
+    ],
+    "followUpChecks": [
+      "Render pass on learn.agentmentor.dev /en/agent-tool-calling/... after deploy: all 6 lessons plus README, interactive cards hydrate",
+      "Verify every glossary term appears verbatim in the en lessons (attach check)",
+      "Verify every [^Sn] anchor in en lessons has a matching ## Sn block in en sources.md",
+      "Confirm check-block ids and correct-answer positions are byte-identical to zh (all correct = b across the 7 checks)",
+      "Re-run the capstone JS and confirm the loop, registry, and safety-valve behavior match the asserted outputs"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "The learner can take a real task, decide which tools it needs, write each tool's description and JSON Schema so the model selects and fills it correctly, assign allow/ask/deny tiers that block over-authorization, and wire the tools into a runnable agent with an execution loop and a safety valve that stops runaway loops.",
+    "interactionCheck": "Seven agentmentor-check blocks across the six lessons (who-runs-it in L1; stop-reason meaning and batched tool_result in L2; blast radius in L3; description audience in L4; injection mechanism in L5; loop diagnosis in L6), preserved from the zh variant with identical ids, modes, choice counts, and correct-answer positions; label, prompt, whyHere, choice text, and feedback are English teaching rewrites specific to each lesson's misconception. Exercises keep the zh Level structure with rubric, answer, and hints per Level.",
+    "learnerFitCheck": "The course assumes only prompt-writing, prior tool use, and JavaScript reading. The tool-calling protocol, tool taxonomy, interface design, permissions, and the injection risk model are all taught from zero in dependency order; the learner first builds a full agent in lesson 6, after every prerequisite. Lesson 1's first exercise asks only for a needs-a-tool judgment on the reader's own examples.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "English variant of a shipped zh course: structure, grounding, and answer positions inherited from the verified original",
+      "All interactive blocks preserve id/mode/choice-count/correct-answer byte-parity with zh",
+      "All source quotes restored to verbatim English originals and checked byte-exact against sources.md",
+      "Cross-course references use the live English course titles; capstone code kept logic-identical"
+    ]
+  },
+  "nextSteps": [
+    "Run course-guard on the en variant and fix anything it flags",
+    "Deploy learn.agentmentor.dev and spot-check the /en pages render with hydrated interactive cards",
+    "Produce the remaining locale variants (ja/ko/es/pt-BR) using this en variant as the translation base",
+    "Encourage learners to wire a real tool onto an agent in their own project as the post-course consolidation project"
+  ],
+  "memoryBoundary": "This agentmentor.json is a course-local state record, stored only in the course directory for quality checks and learning-path tracking. It is never written back to Claude Code or any host AI system's long-term memory and does not affect other courses or conversations."
+}
