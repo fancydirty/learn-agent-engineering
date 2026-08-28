@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Produce the English variant of the shipped Chinese course learn-agent-state-persistence for learn.agentmentor.dev. Teaching rewrite in English (not a translation): same 6-lesson structure, same lesson slugs, same interactive-block ids and answer positions, source quotes restored to their verbatim English originals from sources.md, runnable code kept logic-identical with only comments and user-facing strings translated, cross-course references pointing at the live English course titles, natural desk-voice English prose with no AI-slop register.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "The owner ratified the multilingual plan explicitly: all six locales on learn.agentmentor.dev, English first, batches of 2-3 courses in path order with a commit per course. The zh course is the verified source of truth for scope, learner model, structure, and grounding, so no additional clarification was needed."
+  },
+  "learnerModel": {
+    "targetReader": "A developer who has finished the first eight courses in this series, can hand-write the harness loop, and wants long agent tasks to survive interruption",
+    "knownConcepts": [
+      "Hand-writing a stop_reason-driven harness loop (course 7)",
+      "The tool_use/tool_result one-to-one pairing rule",
+      "Context-window management and compaction, incl. the tokensUsed counter (course 8)",
+      "Agent memory vs the context window (course 5)",
+      "Basic JavaScript / Node.js reading and writing"
+    ],
+    "unknownConcepts": [
+      "Execution state as distinct from memory",
+      "Why agents are stateful and errors compound",
+      "Checkpoint anatomy: which fields enter the snapshot, when to write, atomic writes",
+      "Resume: rebuilding messages and counters, re-entering the loop",
+      "Dangling tool calls when a crash lands between execution and ledger write",
+      "Side effects and idempotency; idempotency keys for high-impact tools",
+      "Rewind and fork as the second value of checkpoints",
+      "The division of labor between checkpoints and version control"
+    ],
+    "assumedEnvironment": "A Node.js environment, terminal access, a text editor, and the course-7 harness code available to extend",
+    "firstIndependentAction": "Kill one of their own agent runs mid-task and list exactly which state was lost that a checkpoint would have saved",
+    "noviceRamp": [
+      "Lesson 1 separates memory from execution state before any persistence machinery",
+      "Lesson 2 designs the checkpoint snapshot (fields, timing, atomic write)",
+      "Lesson 3 implements resume, incl. the dangling-call case the pairing rule creates",
+      "Lesson 4 adds idempotency so re-runs are safe, with keys on high-impact tools",
+      "Lesson 5 turns checkpoints into rewind and fork, and lesson 6 wires the full mechanism onto the course-7 harness with a demonstrated interrupt-and-resume run"
+    ]
+  },
+  "learnerBrief": "The target reader has finished the first eight courses, writes the harness loop, and reads JavaScript. They don't yet know how to persist and restore the harness's own running state. The course gets them to separate state from memory, design safe checkpoint snapshots, implement resume including dangling-call reconciliation, protect re-runs with idempotency, use rewind and fork, and finally wire per-turn persistence with --resume recovery onto the course-7 harness and demonstrate an interrupted long task carried to completion.",
+  "scope": "Covered: execution state vs memory, why errors compound for stateful agents, checkpoint anatomy (fields, timing, atomic writes), resume (rebuilding messages/counters, dangling-call reconciliation), side effects and idempotency with keys for high-impact tools, rewind and fork, checkpoints-vs-version-control, and a hands-on full checkpoint+resume mechanism on the course-7 harness. Not covered: memory/context management (courses 5 and 8), external workflow engines (Temporal), multi-process concurrency or distributed consistency; Claude Code checkpointing appears only as a product reference. Depth: from zero to demonstrating an interrupted long task resumed to completion.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-state-persistence/en/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Diagrams are kept exactly where the zh original uses them (the state-vs-memory split and the crash-window timeline), with labels rewritten in English; none added or removed. Where-exactly-the-crash-landed is timeline content a diagram states better than prose, and the zh placement was already review-validated.",
+    "weakestPoints": [
+      "The capstone's execute-then-record ledger design was deliberately hardened in zh review (two try/catch blocks so a ledger-write failure after a real side effect never triggers an un-dedupable model retry) — the en variant preserves that exact structure, and reviewers must not 'simplify' it back into one block",
+      "Idempotency keys are taught with file-level examples; networked side effects (payments, emails) need stronger guarantees, which the lesson flags but does not implement",
+      "Claude Code checkpointing details (bash changes untracked, /rewind semantics) are product-version-bound and dated in the text",
+      "As an English teaching rewrite of a verified zh course, idiomatic drift is the residual risk: source quotes were restored verbatim from English originals and runnable code kept logic-identical, but prose was re-taught rather than translated, so review must check meaning-equivalence against the zh lessons"
+    ],
+    "followUpChecks": [
+      "Render pass on learn.agentmentor.dev /en/agent-state-persistence/... after deploy: all 6 lessons plus README, interactive cards hydrate",
+      "Verify every glossary term appears verbatim in the en lessons (attach check)",
+      "Verify every [^Sn] anchor in en lessons has a matching ## Sn block in en sources.md",
+      "Confirm the six check-block ids and correct-answer positions are byte-identical to zh (c/b/a/c/b/a in lesson order)",
+      "Re-run the capstone JS (checkpoint write, --resume, dangling-call reconciliation, idempotency guard) and confirm the interrupt-and-resume demonstration matches the asserted outputs"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "The learner can wire a harness with per-turn checkpointing, --resume recovery that rebuilds messages and counters, dangling-call reconciliation that satisfies the tool_use/tool_result pairing rule, and idempotency protection on high-impact tools — then kill the process mid-task and carry the run to completion from the checkpoint.",
+    "interactionCheck": "Six agentmentor-check blocks, one per lesson (restart illusion in L1, direct-overwrite risk in L2, dangling tool_use in L3, blind retry in L4, checkpoint-vs-git in L5, A-point necessity in L6), preserved from the zh variant with identical ids, modes, choice counts, and correct-answer positions; label, prompt, whyHere, choice text, and feedback are English teaching rewrites specific to each lesson's misconception. Exercises keep the zh Level structure with rubric, answer, and hints per Level.",
+    "learnerFitCheck": "The course assumes the prior eight courses: the harness loop, the pairing rule, and compaction. State-vs-memory, checkpoint anatomy, resume, idempotency, and rewind/fork are taught from zero in dependency order; the learner first builds the full mechanism in lesson 6, after every prerequisite. Lesson 1's first exercise asks only for a what-was-lost audit of the reader's own killed run.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "English variant of a shipped zh course: structure, grounding, and answer positions inherited from the verified original",
+      "All interactive blocks preserve id/mode/choice-count/correct-answer byte-parity with zh",
+      "All source quotes restored to verbatim English originals and checked byte-exact against sources.md",
+      "Cross-course references use the live English course titles; capstone code kept logic-identical incl. the two-try/catch ledger hardening"
+    ]
+  },
+  "nextSteps": [
+    "Run course-guard on the en variant and fix anything it flags",
+    "Deploy learn.agentmentor.dev and spot-check the /en pages render with hydrated interactive cards",
+    "Produce the remaining locale variants (ja/ko/es/pt-BR) using this en variant as the translation base",
+    "Encourage learners to retrofit checkpoint+resume onto a real long-running agent in their own project as the post-course consolidation project"
+  ],
+  "memoryBoundary": "This agentmentor.json is a course-local state record, stored only in the course directory for quality checks and learning-path tracking. It is never written back to Claude Code or any host AI system's long-term memory and does not affect other courses or conversations."
+}

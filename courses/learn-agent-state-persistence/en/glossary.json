@@ -1,0 +1,422 @@
+[
+  {
+    "term": "memory",
+    "def": "The context you feed the model — answers \"what has the model seen?\" Can be persisted to disk (like NOTES.md) or still in process memory.",
+    "source": "[^S1]",
+    "pitfall": "Mistaking memory for \"already on disk,\" ignoring that model-generated content not yet written to NOTES.md is also memory but can be lost.",
+    "distractor_rationale": "Because the NOTES.md example in Lesson 1 is already persisted, readers may conflate \"memory\" with \"disk output\" and miss that memory can also live in process memory."
+  },
+  {
+    "term": "execution state",
+    "def": "The running scene the harness process is holding — messages array, turn counters, tokensUsed, the tool call not yet recorded. Lives in process memory by default and is lost when the process exits.",
+    "source": "[^S1]",
+    "pitfall": "Assuming that if disk output files and memory are intact, execution state must also be safe, ignoring that they physically live in different places.",
+    "distractor_rationale": "Disk output and execution state often coexist in the same task, making it easy to mistake them as one unified thing rather than recognizing execution state defaults to process memory only."
+  },
+  {
+    "term": "messages",
+    "def": "The full conversation history array the harness holds in memory; the only source for restoring context to the model and the largest field in the checkpoint.",
+    "source": "[^S1]",
+    "pitfall": "Believing you can reconstruct messages from disk output files after a crash, ignoring that output files don't record what the model said each turn.",
+    "distractor_rationale": "Output files and messages both relate to the same task, tempting readers to believe one can substitute for the other, but output files are results, not process records."
+  },
+  {
+    "term": "turns",
+    "def": "Counter tracking how many turns have run, used to judge stopping conditions like maximum-turn caps; must continue from checkpoint value on resume, not restart at zero.",
+    "source": "[^S1]",
+    "pitfall": "Resetting turns to zero on resume, causing turn-limit checks to fire incorrectly or allowing a crashing task to bypass turn caps.",
+    "distractor_rationale": "The word \"restart\" suggests \"begin from zero,\" making it easy to assume related counters should also reset, ignoring that turns tracks task-total, not process-session."
+  },
+  {
+    "term": "tokensUsed",
+    "def": "Cumulative token usage counter; on resume must be carried forward from the checkpoint to support context compaction threshold decisions.",
+    "source": "[^S1]",
+    "pitfall": "Trying to re-estimate usage from historical messages instead of using the checkpointed value, causing compaction timing to drift.",
+    "distractor_rationale": "Most scenarios don't provide historical usage data, making re-estimation seem like the only option, while ignoring the checkpoint should store this value for direct reuse."
+  },
+  {
+    "term": "pendingToolUse",
+    "def": "Checkpoint field marking a dangling tool call (model named it, result not yet recorded); null or an object like {id, name, input}.",
+    "source": "[^S1]",
+    "pitfall": "Treating it as optional and omitting it from the checkpoint, losing the ability to distinguish \"turn complete\" from \"turn half-finished.\"",
+    "distractor_rationale": "It's the only checkpoint field not directly corresponding to a loop counter variable, making it seem like supplementary metadata rather than essential state."
+  },
+  {
+    "term": "dangling call",
+    "def": "A tool_use block the model named but whose result hasn't been pushed back into messages when the process crashes, leaving no paired tool_result.",
+    "source": "[^S1]",
+    "pitfall": "Assuming dangling calls are rare edge cases rather than a guaranteed outcome whenever a crash lands between tool naming and result recording.",
+    "distractor_rationale": "The window is narrow, making dangling calls feel unlikely, but it's actually one of the regular states crash-recovery must handle."
+  },
+  {
+    "term": "checkpoint",
+    "def": "Serializing execution state (messages, turns, tokensUsed, pendingToolUse) to disk so the process can resume after a crash; one of the deterministic safeguards paired with model adaptability.",
+    "source": "[^S1]",
+    "pitfall": "Thinking checkpoints mean dumping all memory contents indiscriminately, rather than recording only the fields resume actually needs.",
+    "distractor_rationale": "\"Saving state\" intuitively suggests \"save everything,\" making selective field-saving seem incomplete rather than correct by design."
+  },
+  {
+    "term": "checkpoint.json",
+    "def": "The checkpoint file holding version, task, turns, tokensUsed, messages, pendingToolUse — a complete snapshot of the execution scene.",
+    "source": "[^S1]",
+    "pitfall": "Storing only messages, assuming conversation history alone is sufficient, while omitting version, task, and counters needed for correct resume.",
+    "distractor_rationale": "messages is the largest and most information-rich field, tempting readers to treat other fields as optional metadata."
+  },
+  {
+    "term": "version",
+    "def": "Protocol version number in checkpoint.json; lets loadCheckpoint confirm format compatibility and refuse to load mismatched versions.",
+    "source": "[^S1]",
+    "pitfall": "Treating version as decoration and parsing old checkpoints with new code (or vice versa) without checking compatibility.",
+    "distractor_rationale": "A checkpoint file won't actively report \"my format changed,\" so it's easy to ignore this field until a format upgrade causes mysterious state corruption."
+  },
+  {
+    "term": "task",
+    "def": "Original user task string stored in checkpoint.json so the restarted harness knows which task this scene belongs to and can report progress.",
+    "source": "[^S1]",
+    "pitfall": "Assuming the harness inherently remembers what task it's running, omitting this field, leaving multi-task scenarios unable to confirm which task resumed.",
+    "distractor_rationale": "Task descriptions usually come as caller parameters, making them feel like \"external input\" rather than \"state requiring persistence.\""
+  },
+  {
+    "term": "saveCheckpoint",
+    "def": "Function writing current state to disk; correct implementations write to a temp file first, then atomically rename, avoiding half-written corruption.",
+    "source": "[^S1]",
+    "pitfall": "Directly overwriting checkpoint.json with fs.writeFileSync, leaving a half-written JSON file if the process is killed mid-write.",
+    "distractor_rationale": "\"Keep only the latest\" and \"how to write the new content safely\" are separate concerns, but the former's correctness can be mistaken as justification for unsafe direct overwrites."
+  },
+  {
+    "term": "save point A",
+    "def": "First checkpoint within a turn, saved after the model names a tool but before it executes; records pendingToolUse with this turn's tool_use block.",
+    "source": "[^S1]",
+    "pitfall": "Believing save point B alone suffices, omitting A, rendering the window between tool naming and result recording invisible in the checkpoint.",
+    "distractor_rationale": "Save point B's state looks \"more complete\" (tool result already recorded), tempting readers to assume it can cover A's information, ignoring that they record different moments."
+  },
+  {
+    "term": "save point B",
+    "def": "Second checkpoint within a turn, saved after tool results are pushed into messages; clears pendingToolUse back to null.",
+    "source": "[^S1]",
+    "pitfall": "Treating B as the only necessary save point per turn, ignoring that it can't cover the tool-execution window without A.",
+    "distractor_rationale": "\"Save once at turn's end\" is the most intuitive cadence, masking the fact that a turn's middle state also needs recording."
+  },
+  {
+    "term": "temp file",
+    "def": "Intermediate file (e.g., checkpoint.json.tmp) written first during atomic checkpoint writes; fully written before being renamed to replace the real file.",
+    "source": "[^S1]",
+    "pitfall": "Thinking the temp file step can be skipped as long as rename is atomic, missing that the temp file ensures the write itself is complete before replacement.",
+    "distractor_rationale": "Focus tends to land entirely on \"rename is atomic,\" obscuring that rename only matters if the temp file is already complete."
+  },
+  {
+    "term": "fs.renameSync",
+    "def": "Atomic rename operation on the same filesystem; directory entry either points fully to the new file or stays at the old one, with no half-renamed intermediate state.",
+    "source": "[^S1]",
+    "pitfall": "Assuming rename is atomic across filesystems or network drives, applying this pattern where atomicity isn't guaranteed.",
+    "distractor_rationale": "The lesson emphasizes \"rename is atomic\" as the conclusion, making it easy to overlook the same-filesystem precondition."
+  },
+  {
+    "term": "overwrite in place",
+    "def": "Directly overwriting the checkpoint file with fs.writeFileSync; not atomic, can leave truncated JSON if the process is killed mid-write.",
+    "source": "[^S1]",
+    "pitfall": "Thinking overwrite risk is \"file grows too large\" or \"no history,\" missing the real risk: interrupted writes leave unreadable half-files.",
+    "distractor_rationale": "Overwrite works fine when processes exit normally, masking its true risk in unexpected kill scenarios."
+  },
+  {
+    "term": "resume",
+    "def": "Restarting the loop from a checkpoint after a crash, reading state back, rebuilding messages, and continuing from where the error occurred instead of restarting from turn 1.",
+    "source": "[^S1]",
+    "pitfall": "Thinking resume means reconstructing an initial messages array and replaying history, rather than directly taking the checkpoint's complete messages.",
+    "distractor_rationale": "\"Resume\" suggests \"rebuild,\" tempting readers to re-assemble conversation history instead of recognizing the checkpoint already holds a usable complete messages."
+  },
+  {
+    "term": "loadCheckpoint",
+    "def": "Function reading and parsing the checkpoint file; should validate version field and throw loudly on version mismatch or parse failure, not silently fall back to empty state.",
+    "source": "[^S1]",
+    "pitfall": "Returning an empty state on parse failure to \"keep the program running,\" silently losing task progress when a corrupt checkpoint should be an explicit error.",
+    "distractor_rationale": "\"Let the program continue\" seems friendlier than \"throw an error,\" but silently accepting a corrupt checkpoint is where tasks actually get lost."
+  },
+  {
+    "term": "reconcile",
+    "def": "Function handling a dangling pendingToolUse on resume; decides by tool nature (read-only vs. high-impact) and ledger state whether to re-run, reuse, or return is_error.",
+    "source": "[^S4]",
+    "pitfall": "Simplifying reconcile to \"just re-run everything,\" ignoring that high-impact tools re-run risks duplicate side effects.",
+    "distractor_rationale": "Read-only tool re-running is safe, and that safety can be over-generalized to \"all dangling calls can be re-run.\""
+  },
+  {
+    "term": "READ_ONLY_TOOLS",
+    "def": "Set of tool names (read_file, grep, list_dir, web_search) judged side-effect-free; reconcile safely re-runs tools in this set on resume.",
+    "source": "[^S4]",
+    "pitfall": "Adding tools whose names sound read-only but whose implementations have side effects (e.g., caching or logging), causing unexpected duplicate actions.",
+    "distractor_rationale": "Some tool names suggest query-only operations, making them easy to intuitively classify as read-only without checking implementation details."
+  },
+  {
+    "term": "read-only tool",
+    "def": "Tool with zero side effects (e.g., reading files, searching); safe to re-run multiple times as the external world remains unchanged.",
+    "source": "[^S4]",
+    "pitfall": "Confusing \"sounds read-only\" with \"truly read-only,\" judging by name rather than implementation details.",
+    "distractor_rationale": "Read-only and idempotent criteria overlap, making them easy to conflate, though \"read-only\" is a specific case of \"idempotent.\""
+  },
+  {
+    "term": "high-impact tool",
+    "def": "Tool that changes external state (send_email, create_ticket, delete_file); must confirm execution before re-running to avoid duplicate side effects.",
+    "source": "[^S4]",
+    "pitfall": "Believing retry logic alone makes high-impact tools safe, ignoring that retry itself is the dangerous operation for such tools.",
+    "distractor_rationale": "\"Retry\" is a default reliability pattern in many systems, making it easy to apply uncritically to high-impact tools where retry equals duplicate side effects."
+  },
+  {
+    "term": "is_error",
+    "def": "Optional tool_result field set to true to indicate tool execution failed or status is unknown, letting the model know and adapt instead of assuming success.",
+    "source": "[^S4]",
+    "pitfall": "Using is_error as a universal fallback for all uncertain situations, rather than distinguishing cases where read-only tools can simply re-run.",
+    "distractor_rationale": "is_error feels \"safe\" and easy to use, making it tempting to overuse as a default handling for all dangling calls instead of differentiating by tool nature."
+  },
+  {
+    "term": "tool_result",
+    "def": "Content block returned to the model for each tool_use; protocol requires every tool_use have a paired tool_result, matched by tool_use_id, all in the next user message.",
+    "source": "[^S4]",
+    "pitfall": "Deleting the dangling tool_use from messages on resume instead of supplying a paired tool_result, violating the pairing protocol.",
+    "distractor_rationale": "\"Delete to make it look clean\" has intuitive appeal, making readers miss that the protocol requires pairing, not erasure."
+  },
+  {
+    "term": "tool_use",
+    "def": "Content block in a model response naming a tool to call; contains id, name, input fields. A dangling tool_use has no paired tool_result when the process crashes.",
+    "source": "[^S4]",
+    "pitfall": "Assuming any messages entry with a tool_use means the tool already executed, ignoring that tool_use only represents the model's \"request,\" not actual execution.",
+    "distractor_rationale": "tool_use appears in assistant messages, easily conflating \"model said to do it\" with \"it was done.\""
+  },
+  {
+    "term": "idempotent",
+    "def": "An operation producing the same final effect whether run once or many times; judgment is based on effect (final external state), not return value.",
+    "source": "[^S1]",
+    "pitfall": "Defining idempotent as \"returns the same value every call,\" rather than \"leaves the external world in the same final state regardless of call count.\"",
+    "distractor_rationale": "The word \"idempotent\" literally suggests \"same output,\" making it easy to focus on return values instead of external state effects."
+  },
+  {
+    "term": "effects ledger",
+    "def": "Separate disk record keyed by tool_use_id tracking which side effects actually happened, written the instant a tool succeeds, enabling resume to distinguish \"ran\" from \"didn't run.\"",
+    "source": "[^S1]",
+    "pitfall": "Combining effects ledger with checkpoint into one file, missing that they answer different questions: \"which step?\" vs. \"did this step's side effect happen?\"",
+    "distractor_rationale": "Both involve recording state and both require atomic writes, making them superficially similar and tempting to merge, obscuring their distinct recording moments and purposes."
+  },
+  {
+    "term": "effects.json",
+    "def": "Effects ledger file, keyed by tool_use_id, recording tool name, result, and timestamp; written immediately on tool success, before save point B.",
+    "source": "[^S1]",
+    "pitfall": "Delaying ledger write until save point B, instead of writing immediately on tool success, leaving an unresolvable window between tool finish and ledger write.",
+    "distractor_rationale": "Writing ledger \"alongside\" save point B seems tidier, obscuring that the two must be written at different times to cover the window between them."
+  },
+  {
+    "term": "tool_use_id",
+    "def": "Unique identifier the model assigns to each tool_use block; doesn't change on replay, making it a natural idempotency key for the effects ledger.",
+    "source": "[^S4]",
+    "pitfall": "Thinking you need to invent a custom deduplication scheme to recognize \"same call,\" missing that tool_use_id already serves this purpose.",
+    "distractor_rationale": "Idempotency keys often require custom generation rules in other systems, making it easy to assume the same here, overlooking that the protocol already provides a unique identifier."
+  },
+  {
+    "term": "at-least-once",
+    "def": "Execution semantics inherent to checkpoint-based resume: a tool may finish but the result not be recorded before a crash, making it impossible to distinguish \"didn't run\" from \"ran but not recorded.\"",
+    "source": "[^S1]",
+    "pitfall": "Treating resume as \"exactly-once\" semantics and designing code that assumes each action happens exactly once, ignoring the checkpoint can't distinguish the two states.",
+    "distractor_rationale": "\"Resume from checkpoint\" sounds like precise continuation, making it easy to assume each action executes exactly once, obscuring the narrow window that creates uncertainty."
+  },
+  {
+    "term": "loadEffects",
+    "def": "Function reading the effects ledger; returns an empty object on missing or parse-failed files, treating it as \"no records yet\" rather than blocking resume.",
+    "source": "[^S1]",
+    "pitfall": "Applying the same lenient \"return empty on failure\" handling to loadCheckpoint, when checkpoints require stricter error handling as the task's sole scene record.",
+    "distractor_rationale": "The two functions have similar names and roles, making it tempting to apply uniform error handling, but checkpoint is the unique authoritative record requiring strict validation."
+  },
+  {
+    "term": "saveEffect",
+    "def": "Function writing the effects ledger back to disk using temp-file-then-rename atomic write; must be called only after tool execution succeeds with a real result.",
+    "source": "[^S1]",
+    "pitfall": "Placing saveEffect call before actual tool execution, recording a placeholder \"done\" status for something that never ran, destroying the ledger's \"already happened\" guarantee.",
+    "distractor_rationale": "\"Record first to prevent forgetting\" sounds precautionary, obscuring that pre-recording turns the ledger's completion promise into fiction."
+  },
+  {
+    "term": "approval gate",
+    "def": "Pre-execution check for high-impact tools requiring human confirmation; asks \"should this be done?\" (distinct from effects ledger's \"did this already happen?\").",
+    "source": "[^S1]",
+    "pitfall": "Thinking approval gate obviates the effects ledger, assuming \"human confirmed once\" prevents re-execution, ignoring crashes can still cause repeats.",
+    "distractor_rationale": "Both gates sit before execution, making them seem like two names for the same defense, when they actually guard against different risks."
+  },
+  {
+    "term": "ensureTicket",
+    "def": "Example of redesigning \"create\" as \"ensure exists\": checks by title, returns existing if found, creates only if missing; idempotent by design.",
+    "source": "[^S1]",
+    "pitfall": "Assuming any function named \"ensure\" is automatically idempotent, without verifying that its lookup logic is actually reliable.",
+    "distractor_rationale": "Idempotency depends on sound deduplication; if the title contains varying content each time, lookup fails and idempotency becomes nominal only, easily obscured by the reassuring function name."
+  },
+  {
+    "term": "append",
+    "def": "Cumulative write style (e.g., array.push, log file append); each call genuinely adds one more item, making the final state vary with call count — typically not idempotent.",
+    "source": "[^S1]",
+    "pitfall": "Treating all appends as equally high-risk, ignoring that different append operations have vastly different consequence severity (log line vs. duplicate email).",
+    "distractor_rationale": "\"Not idempotent\" is easily simplified to \"all high risk,\" obscuring that appending a log and sending duplicate emails differ drastically in real impact."
+  },
+  {
+    "term": "overwrite",
+    "def": "Replacement write style (e.g., setting a line to a fixed value, whole-file write_file); calling once or ten times leaves the same end state — usually idempotent.",
+    "source": "[^S1]",
+    "pitfall": "Assuming overwrite writes are always idempotent, ignoring cases where the overwrite target itself depends on call-time external state, making results non-deterministic.",
+    "distractor_rationale": "\"Overwrite\" intuitively suggests \"deterministic result,\" making it easy to miss that overwrite idempotency has preconditions: the content being written must itself be deterministic."
+  },
+  {
+    "term": "runToolUses",
+    "def": "Function executing all tool_use blocks in a turn; after integrating effects ledger and approval gate, order becomes: check ledger, then approval, then execute, then record ledger.",
+    "source": "[^S1]",
+    "pitfall": "Reversing the order of ledger check and approval gate, or placing ledger check after approval, causing already-completed operations to be re-confirmed unnecessarily.",
+    "distractor_rationale": "Both are pre-execution checks, making their order seem arbitrary, but the ledger check must come first to avoid asking \"should we?\" for something already done."
+  },
+  {
+    "term": "rewind",
+    "def": "Rolling the decision scene back to an earlier turn to retry when the task went off course (not a crash); rolls back the checkpoint, not external side effects already committed.",
+    "source": "[^S2]",
+    "pitfall": "Believing rewind can undo external side effects that already happened, like pulling back a sent email, when it only restores in-memory decision state.",
+    "distractor_rationale": "\"Rewind\" in version control often means \"undo,\" making it easy to over-generalize checkpoint rewind to external world actions, when checkpoints never aimed to reverse committed effects."
+  },
+  {
+    "term": "fork",
+    "def": "Copying two independent timelines off the same checkpoint to explore different routes; each timeline gets its own checkpoint sequence and blank effects ledger.",
+    "source": "[^S2]",
+    "pitfall": "Letting both forked timelines call the same external high-impact tool unchecked, resulting in doubled side effects from what was meant as parallel exploration.",
+    "distractor_rationale": "Fork attention naturally focuses on \"will the two decision paths differ,\" obscuring that if both touch the same external action, duplicating checkpoints doesn't prevent duplicate effects."
+  },
+  {
+    "term": "rewindTo",
+    "def": "Function retrieving a specific turn's checkpoint from the per-turn retained sequence; defaults to the last save point written in that turn.",
+    "source": "[^S2]",
+    "pitfall": "Calling rewindTo-like logic on a single-file overwriting checkpoint implementation, finding early turns already overwritten and unrecoverable.",
+    "distractor_rationale": "rewindTo sounds like \"just read a checkpoint file,\" obscuring that it presumes checkpoints are stored as a per-turn sequence, not overwritten into one file."
+  },
+  {
+    "term": "forkFrom",
+    "def": "Function copying an independent timeline from a specific turn's checkpoint; new timeline brings its own checkpoint sequence and a blank effects ledger, isolated from the main line.",
+    "source": "[^S2]",
+    "pitfall": "Assuming forked timelines share the main line's effects ledger, causing cross-timeline pollution of \"what side effects happened\" judgments.",
+    "distractor_rationale": "\"Fork from the same starting point\" intuitively suggests shared initial state, making it easy to default to shared records, when the lesson explicitly requires independent blank ledgers."
+  },
+  {
+    "term": "turn-014-A.json",
+    "def": "Per-turn checkpoint sequence naming example, embedding turn number and save point letter in the filename for precise turn and moment identification.",
+    "source": "[^S2]",
+    "pitfall": "Naming by turn only without save point letter, causing same-turn A and B checkpoints to overwrite each other, losing the distinction between \"before tool\" and \"after result.\"",
+    "distractor_rationale": "Turn number seems sufficient to locate \"which turn,\" obscuring that a single turn contains two distinct save moments requiring separate identification."
+  },
+  {
+    "term": "pickLatestPoint",
+    "def": "Function finding the last-written save point within a turn; relies on A/B lexicographic sort naturally aligning with \"before tool → after result\" time order.",
+    "source": "[^S2]",
+    "pitfall": "Thinking timestamps are needed to judge \"which save point is later,\" missing that A/B naming already encodes time order by design.",
+    "distractor_rationale": "Determining \"which is later\" intuitively calls for timestamp comparison, obscuring that the naming scheme itself carries the ordering information."
+  },
+  {
+    "term": "decision scene",
+    "def": "What checkpoints actually rewind: messages, turns, pendingToolUse and other fields defined into the snapshot — not external-world actions already committed.",
+    "source": "[^S2]",
+    "pitfall": "Conflating \"rewind decision scene\" with \"undo things that happened,\" when they map to internal state vs. external world — entirely different domains.",
+    "distractor_rationale": "Rewind does change the model's reasoning path, making it easy to assume external-world effects also \"reset,\" when only the decision basis changed, not committed external actions."
+  },
+  {
+    "term": "dry-run mode",
+    "def": "Mode during fork where external actions aren't actually executed, preventing both timelines from triggering the same high-impact tool and causing doubled side effects.",
+    "source": "[^S1]",
+    "pitfall": "Forking with real high-impact tools attached to both timelines, not realizing that without isolation both will touch the same external action, duplicating effects.",
+    "distractor_rationale": "Fork focus tends toward \"will decisions differ,\" obscuring that if both timelines hit the same real external tool, checkpoint duplication doesn't prevent effect duplication."
+  },
+  {
+    "term": "checkpoint sequence",
+    "def": "Per-turn retained series of checkpoint files rather than overwriting to keep only the latest; prerequisite for rewind and fork; forked timelines each carry their own independent copy.",
+    "source": "[^S2]",
+    "pitfall": "Continuing with single-file overwriting checkpoints while expecting rewind-to-arbitrary-turn to work, finding early turns long since overwritten.",
+    "distractor_rationale": "\"Checkpoint\" alone doesn't imply \"sequence\" or \"single-file,\" making it easy to miss that rewind support requires changing storage from overwrite to retention."
+  },
+  {
+    "term": "Git",
+    "def": "Version control system managing code's permanent, collaborative history; distinct from checkpoints (minute-scale session recovery) and effects ledger (external side effects record).",
+    "source": "[^S2]",
+    "pitfall": "Thinking checkpoint rewind resembles Git commit history so closely that checkpoints can replace Git for code change management.",
+    "distractor_rationale": "Both checkpoint and Git offer \"go back to a previous state,\" making their capabilities seem equivalent, but checkpoints don't even track bash-modified files and lack Git's commit/merge/collaboration mechanisms."
+  },
+  {
+    "term": "CRASH_AFTER",
+    "def": "Environment variable controlling simulated crash timing (e.g., CRASH_AFTER=after-effect-write:3 triggers crash after the 3rd ledger write).",
+    "source": "[^S1]",
+    "pitfall": "Treating this variable as mere debugging configuration, missing that it's the key method making crash timing reproducible and assertions verifiable.",
+    "distractor_rationale": "Environment variables are often seen as minor runtime config, obscuring that here it plays a core role in turning nondeterministic crash timing into a precisely specifiable integer."
+  },
+  {
+    "term": "SimulatedCrash",
+    "def": "Dedicated exception type for simulating process kill; main() catches only this, prints a log, and exits with code 137, making demos read like real kills rather than stack traces.",
+    "source": "[^S1]",
+    "pitfall": "Mixing SimulatedCrash handling with real runtime errors, causing actual bugs to be mistaken for expected simulated crashes.",
+    "distractor_rationale": "Both are thrown exceptions caught somewhere, making it easy to treat them uniformly, but SimulatedCrash must be strictly distinguished from genuine errors to avoid masking bugs."
+  },
+  {
+    "term": "crashPoint",
+    "def": "Environment-variable-controlled simulated crash trigger function; compares current operation label against CRASH_AFTER, throwing SimulatedCrash on match.",
+    "source": "[^S1]",
+    "pitfall": "Placing crashPoint in code locations misaligned with the actual window you want to test, yielding \"crash timing\" that doesn't match your intended test scenario.",
+    "distractor_rationale": "Crash points sound like simple on/off switches, obscuring that their precise insertion position directly determines which recovery window is actually being tested."
+  },
+  {
+    "term": "--resume",
+    "def": "Command-line flag indicating this startup should loadCheckpoint and take the recovery path instead of fresh-starting; without it, main() explicitly cleans old checkpoint/ledger files.",
+    "source": "[^S1]",
+    "pitfall": "Assuming that without --resume old checkpoint files are automatically ignored, missing that main() must explicitly clean them or they'll pollute the new run.",
+    "distractor_rationale": "\"Not using --resume means fresh start\" intuitively suggests old files won't be read, but without explicit cleanup logic, leftover checkpoint.json can still be mistakenly loaded."
+  },
+  {
+    "term": "response queue",
+    "def": "Verification stub replacing the real model client, returning pre-written responses in fixed order to make task execution deterministic and crash timing reproducible.",
+    "source": "[^S1]",
+    "pitfall": "After verifying recovery with a response queue, assuming real model client behavior will be identical, ignoring that real models have nondeterministic response content and timing.",
+    "distractor_rationale": "Response queue and real model produce identically formatted logs, obscuring that the queue only makes verification repeatable, not that it represents real-world behavior."
+  },
+  {
+    "term": "makeStubClient",
+    "def": "Factory function constructing a stub model client from a response queue, used in verification to replace real client.messages.create calls.",
+    "source": "[^S1]",
+    "pitfall": "Treating stub and real client as interchangeable in any scenario, directly moving verification code to production without real client integration.",
+    "distractor_rationale": "Stub and real clients share the same interface, tempting interchangeability assumptions, but stubs exist solely to make responses predictable, not as production replacements."
+  },
+  {
+    "term": "main()",
+    "def": "Program entry function making a single judgment: whether --resume is present, then routing to recovery or clean-start paths, and uniformly catching SimulatedCrash to print and exit.",
+    "source": "[^S1]",
+    "pitfall": "Scattering --resume checks and exception handling across multiple locations, fragmenting recovery entry logic and making consistency harder to guarantee.",
+    "distractor_rationale": "main() looks like a simple dispatcher, making it easy to undervalue its \"single entry point\" role and spread recovery logic elsewhere."
+  },
+  {
+    "term": "three-way split",
+    "def": "reconcile's three branches for dangling calls: ledger hit (reuse), ledger miss + read-only (re-run), ledger miss + side effects (is_error to model).",
+    "source": "[^S4]",
+    "pitfall": "Simplifying to two branches (hit/miss), missing that miss itself must further split by read-only vs. high-impact for correct handling.",
+    "distractor_rationale": "\"Ledger hit\" and \"ledger miss\" seem like complete binary logic, obscuring that miss cases require one more read-only check to decide safe re-run vs. conservative fallback."
+  },
+  {
+    "term": "execute first, record after",
+    "def": "Effects ledger discipline: must obtain the tool's real execution result before writing it to the ledger; reversing this order records \"done\" for things never run.",
+    "source": "[^S1]",
+    "pitfall": "Pre-recording to the ledger before execution to \"prevent forgetting,\" creating false-positive \"already done\" records that enable duplicate-skip errors on resume.",
+    "distractor_rationale": "Pre-recording sounds precautionary, like reserving a slot, obscuring that it manufactures \"record exists but tool never ran\" false positives — the more dangerous outcome."
+  },
+  {
+    "term": "137",
+    "def": "Conventional exit code for process killed by SIGKILL; verification demos use it to make simulated crashes read like real kills instead of exceptions.",
+    "source": "[^S1]",
+    "pitfall": "Interpreting exit code 137 as a custom business error code, missing that it's an OS-level convention for force-killed processes.",
+    "distractor_rationale": "Exit codes are typically application-defined error markers, making it easy to miss that 137 has a conventional system-level meaning, not course-specific."
+  },
+  {
+    "term": "Verification Harness",
+    "def": "Testing method using fixed response queue plus controlled crash points to pin down nondeterministic elements (model responses, crash timing), enabling line-by-line assertions on recovery behavior.",
+    "source": "[^S1]",
+    "pitfall": "Thinking one real process kill observation equals verification rigor of a controlled stub+crash-point setup, missing that uncontrolled timing can't target specific recovery branches.",
+    "distractor_rationale": "Real process kills feel \"closer to production,\" obscuring that they produce uncontrollable, unrepeatable timing, preventing targeted per-branch recovery validation."
+  },
+  {
+    "term": "proportion",
+    "def": "Principle that checkpoint machinery should be added only when complexity demonstrably improves outcomes; not every short task needs full checkpointing.",
+    "source": "[^S3]",
+    "pitfall": "Treating checkpoints and effects ledgers as default must-haves for any agent, rather than evaluating whether the specific task is long/important enough to warrant the mechanism.",
+    "distractor_rationale": "These mechanisms genuinely improve long-task reliability, making \"useful\" easily conflate with \"should always include,\" obscuring the course's repeated emphasis on judging by actual task scale."
+  }
+]
