@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Produce the English variant of the shipped Chinese course learn-agent-harness for learn.agentmentor.dev. Teaching rewrite in English (not a translation): same 6-lesson structure, same lesson slugs, same interactive-block ids and answer positions, source quotes restored to their verbatim English originals from sources.md, runnable code kept logic-identical with only comments and user-facing strings translated, cross-course references pointing at the live English course titles, natural desk-voice English prose with no AI-slop register.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "The owner ratified the multilingual plan explicitly: all six locales on learn.agentmentor.dev, English first, batches of 2-3 courses in path order with a commit per course. The zh course is the verified source of truth for scope, learner model, structure, and grounding, so no additional clarification was needed."
+  },
+  "learnerModel": {
+    "targetReader": "A developer who has finished the first six courses in this series, understands a tool-call round-trip and the finite context window, and wants to control the loop that makes an agent run",
+    "knownConcepts": [
+      "One full tool-call round-trip (stop_reason: tool_use, tool_result)",
+      "The context window as a finite, accumulating resource",
+      "Basic multi-agent division of labor",
+      "Basic JavaScript / Node.js reading",
+      "Writing structured prompts"
+    ],
+    "unknownConcepts": [
+      "The harness/model boundary and why the harness determines reliability",
+      "The stop_reason-driven core loop as a while-loop",
+      "Explicit stop conditions vs trusting the model's self-stop",
+      "Dead loops vs idle spinning vs budget burnout",
+      "Compounding errors over many turns",
+      "Where a human checkpoint belongs in the loop",
+      "The approval valve for high-impact operations"
+    ],
+    "assumedEnvironment": "A Node.js environment, terminal access, and a text editor; no ML background required",
+    "firstIndependentAction": "Point at a real agent session and name which layer (model or harness) made each control decision",
+    "noviceRamp": [
+      "Lesson 1 draws the harness/model boundary first, anchored on 'same model, different harness, completely different result'",
+      "Lesson 2 turns the familiar single round-trip into a while-loop, showing stop_reason as the loop condition",
+      "Lesson 3 replaces trust-the-model-to-stop with an explicit stop-condition set",
+      "Lesson 4 names the three runaway modes and fits a fallback to each",
+      "Lesson 5 covers intervention (interrupt, redirect, human-in-the-loop) as a relatively independent unit, and lesson 6 assembles the minimal harness with all four valves"
+    ]
+  },
+  "learnerBrief": "The target reader has finished the first six courses, understands the tool-call round-trip and the finite context window, and reads JavaScript. They don't yet know what the harness layer is or how to keep an agent's loop under control. The course gets them to draw the harness/model line, hand-write the stop_reason-driven loop, design explicit stop conditions, recognize and catch the runaway modes, place human checkpoints before irreversible operations, and finally build a minimal harness with stop conditions, a max-turn cap, a budget cap, idle-spin detection, and an approval valve.",
+  "scope": "Covered: the harness/model boundary, the stop_reason-driven core loop, explicit stop conditions, runaway modes (dead loops, idle spinning, budget burnout, compounding errors) and their fallbacks, intervention and steering (interrupt, redirect, human-in-the-loop, the approval valve before irreversible operations), and a runnable minimal harness. Not covered: framework API tutorials (Claude Agent SDK, LangChain), multi-agent orchestration (a separate course), and evaluation/regression (the verification course). Depth: from zero to hand-writing a controlled agent harness.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-harness/en/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Diagrams are kept exactly where the zh original uses them (the loop shape and the control-valve placement), with labels rewritten in English; none added or removed. A loop with valves is the kind of structure a diagram states better than prose, and the zh placement was already review-validated.",
+    "weakestPoints": [
+      "S5 (the community agent-engineering roadmap) is AI-assisted and blog-authority; the course uses only its framing claims and says so in sources.md, but readers should treat its specifics with care",
+      "The three-way runaway taxonomy (dead loop / idle spin / budget burnout) is pedagogical; real failures often blend modes, which lesson 4 notes",
+      "Lesson 6's harness is teaching-grade and single-process; production harnesses need persistence and observability, deferred to later courses in the series",
+      "As an English teaching rewrite of a verified zh course, idiomatic drift is the residual risk: source quotes were restored verbatim from English originals and runnable code kept logic-identical, but prose was re-taught rather than translated, so review must check meaning-equivalence against the zh lessons"
+    ],
+    "followUpChecks": [
+      "Render pass on learn.agentmentor.dev /en/agent-harness/... after deploy: all 6 lessons plus README, interactive cards hydrate",
+      "Verify every glossary term appears verbatim in the en lessons (attach check)",
+      "Verify every [^Sn] anchor in en lessons has a matching ## Sn block in en sources.md",
+      "Confirm the six check-block ids and correct-answer positions are byte-identical to zh (c/b/b/a/b/a in lesson order)",
+      "Re-run the capstone harness JS and confirm stop conditions, budget counters, idle-spin detection, and the HIGH_IMPACT approval valve match the asserted outputs"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "The learner can hand-write a minimal agent harness — a stop_reason-driven loop with explicit stop conditions, a max-turn cap, a budget cap, idle-spin detection, and a human approval valve in front of high-impact operations — and explain which failure mode each valve exists to catch.",
+    "interactionCheck": "Six agentmentor-check blocks, one per lesson (model-vs-harness swap in L1, tool_use-not-executed in L2, self-stop insufficiency in L3, runaway-search diagnosis in L4, approve-before-not-after in L5, approval-before-exec in L6), preserved from the zh variant with identical ids, modes, choice counts, and correct-answer positions; label, prompt, whyHere, choice text, and feedback are English teaching rewrites specific to each lesson's misconception. Exercises keep the zh Level structure with rubric, answer, and hints per Level.",
+    "learnerFitCheck": "The course assumes the prior six courses: the round-trip protocol, the finite context window, and JavaScript reading. The harness boundary, loop semantics, stop conditions, runaway taxonomy, and intervention points are taught from zero in dependency order; the learner first assembles the full harness in lesson 6, after every prerequisite. Lesson 1's first exercise asks only for a which-layer-decided-this judgment on a real session.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "English variant of a shipped zh course: structure, grounding, and answer positions inherited from the verified original",
+      "All interactive blocks preserve id/mode/choice-count/correct-answer byte-parity with zh",
+      "All source quotes restored to verbatim English originals and checked byte-exact against sources.md",
+      "Cross-course references use the live English course titles; capstone harness code kept logic-identical"
+    ]
+  },
+  "nextSteps": [
+    "Run course-guard on the en variant and fix anything it flags",
+    "Deploy learn.agentmentor.dev and spot-check the /en pages render with hydrated interactive cards",
+    "Produce the remaining locale variants (ja/ko/es/pt-BR) using this en variant as the translation base",
+    "Encourage learners to retrofit stop conditions and an approval valve onto a real agent loop in their own project as the post-course consolidation project"
+  ],
+  "memoryBoundary": "This agentmentor.json is a course-local state record, stored only in the course directory for quality checks and learning-path tracking. It is never written back to Claude Code or any host AI system's long-term memory and does not affect other courses or conversations."
+}

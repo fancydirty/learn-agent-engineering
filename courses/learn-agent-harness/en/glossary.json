@@ -1,0 +1,464 @@
+[
+  {
+    "term": "harness",
+    "def": "The collective name for the control code wrapped around the model — running tools, driving the loop, deciding when to stop and when to wait for a person. The model only proposes actions; the harness rules on whether they execute and whether the loop continues.",
+    "source": "[^S2]",
+    "pitfall": "Thinking the harness is only the while loop itself, excluding tool dispatch, context management, and stop conditions.",
+    "distractor_rationale": "Someone who has only seen minimal skeleton code will equate 'loop' with 'harness,' missing that it's actually a union of several cooperating components."
+  },
+  {
+    "term": "Agent",
+    "def": "An LLM using tools based on environmental feedback in a loop. The model dynamically directs its own process and decides which tools to use inside the loop, rather than following predefined code paths.",
+    "source": "[^S1]",
+    "pitfall": "Calling any system that calls a tool once an 'agent,' ignoring that the loop and autonomous control-flow decisions are required.",
+    "distractor_rationale": "Beginners judge by 'uses tools' intuition, mistakenly labeling single-step tool calls or hard-coded workflows as agents."
+  },
+  {
+    "term": "workflow",
+    "def": "A system where LLMs and tools are orchestrated through predefined code paths — what to do first, which branch to take are all settled in advance by a person.",
+    "source": "[^S1]",
+    "pitfall": "Believing workflows are inferior to agents and every task should be upgraded to an autonomous agent, ignoring that fixed-path tasks are more stable and cheaper with workflows.",
+    "distractor_rationale": "People chasing novelty think 'autonomous loop' is always better than 'predefined path,' so they force a loop onto tasks that would work better with fixed orchestration."
+  },
+  {
+    "term": "loop",
+    "def": "The repeated process of model proposes → execute tools → feed result back to model. A single tool-call round-trip is just the special case where the loop turned once.",
+    "source": "[^S1]",
+    "pitfall": "Thinking the loop is an internal capability of the model, rather than the host code repeatedly driving request-execute-request cycles.",
+    "distractor_rationale": "Someone who doesn't separate 'model proposes' from 'host executes' will think the model loops in its own head, not that the outer code is sending requests over and over."
+  },
+  {
+    "term": "control-flow decisions",
+    "def": "Judgments about 'which path to take next.' In workflows they're hard-coded; in agents the model makes them dynamically inside the loop — this is the boundary between the two.",
+    "source": "[^S5]",
+    "pitfall": "Treating model strength as the line between agents and workflows, rather than who makes control-flow decisions.",
+    "distractor_rationale": "People used to evaluating systems by model capability will think swapping in a stronger model makes it an agent, ignoring that the real boundary is where control-flow authority sits."
+  },
+  {
+    "term": "loop control",
+    "def": "The while loop driving model→tools→model, reading stop_reason to decide whether to turn another round or stop. It's the heart of the harness.",
+    "source": "[^S5]",
+    "pitfall": "Conflating loop control with tool dispatch, thinking 'executing tools' is the whole job of loop control.",
+    "distractor_rationale": "Someone focused only on tool execution details will miss that 'deciding whether the loop turns again' is loop control's core responsibility."
+  },
+  {
+    "term": "tool dispatch",
+    "def": "After the model proposes 'call this tool with these parameters,' the code that routes the request to the real function, runs it, and packs the output back into a tool_result.",
+    "source": "[^S5]",
+    "pitfall": "Thinking tool dispatch is only about executing the function, ignoring that it must also package the result as a tool_result for the loop to continue.",
+    "distractor_rationale": "People thinking only 'call the function' will miss packaging tool_result, claiming tool_use_id, and other steps that let the loop turn again."
+  },
+  {
+    "term": "context management",
+    "def": "The harness component managing loop-produced history — deciding where it goes, how much to keep, how to compress or summarize, preventing context from ballooning until attention budget is exhausted.",
+    "source": "[^S5]",
+    "pitfall": "Assuming you can carry the full history unchanged into every request with no governance.",
+    "distractor_rationale": "People believing 'more context is always better' will keep all history uncompressed until requests slow, cost climbs, and model recall degrades."
+  },
+  {
+    "term": "proposing an action",
+    "def": "The model's sole job on each turn — looking at the current conversation and emitting a structured request for 'what I want to do next,' without ever executing it.",
+    "source": "[^S2]",
+    "pitfall": "Treating 'the model proposed an action' as 'the action has been executed.'",
+    "distractor_rationale": "Someone who conflates proposal and execution will see a tool_use block and think the action already landed, misjudging which step the loop is on."
+  },
+  {
+    "term": "approval valve",
+    "def": "A pause inserted before executing a tool marked high-impact, showing a human 'here's what I'm about to do' and executing only on a nod, returning is_error on refusal.",
+    "source": "[^S4]",
+    "pitfall": "Placing the approval valve after tool execution, turning it into a post-action record rather than a pre-action gate.",
+    "distractor_rationale": "Someone conflating 'traceable' with 'interceptable' will use after-the-fact logging or notifications as approval, which can't stop an irreversible action that already executed."
+  },
+  {
+    "term": "round-trip",
+    "def": "One complete tool-call cycle: model returns tool_use, host executes the tool, packages tool_result, appends to conversation, and sends another request. The loop is just repeating round-trips.",
+    "source": "[^S2]",
+    "pitfall": "Thinking real agents always finish in one round-trip, ignoring that most tasks need many loops.",
+    "distractor_rationale": "Someone who has only seen single-step tool-call examples will underestimate multi-turn nature and write code that can't handle consecutive tool calls."
+  },
+  {
+    "term": "environmental feedback",
+    "def": "The tool execution result fed back to the model as input. The model decides its next step based on this feedback — it's the fuel that drives the loop forward.",
+    "source": "[^S1]",
+    "pitfall": "Thinking the model somehow knows tool execution results without tool_result being sent back.",
+    "distractor_rationale": "Someone ignoring 'results must flow back' will forget to append tool_result to history, so the model never sees tool output."
+  },
+  {
+    "term": "autonomy",
+    "def": "The agent's property of dynamically deciding its own next step and which tool to use. It's why agents are useful, and it also means higher costs and compounding-error risk.",
+    "source": "[^S1]",
+    "pitfall": "Seeing autonomy only as an advantage, ignoring that it also brings rising costs and error accumulation.",
+    "distractor_rationale": "People focused on 'can work by itself' benefits will let the loop run unbounded until bills and errors both spiral out of control."
+  },
+  {
+    "term": "while loop",
+    "def": "A while structure with stop_reason as its condition, turning a single round-trip into code: while stop_reason is still tool_use, turn another round.",
+    "source": "[^S5]",
+    "pitfall": "Forgetting to reassign response at the end of the loop body, so stop_reason stays frozen at the old value and the loop never exits.",
+    "distractor_rationale": "Someone converting from single round-trip to multi-turn will forget that last callModel, writing a loop whose stop_reason is constant and becomes an infinite loop."
+  },
+  {
+    "term": "four steps",
+    "def": "The fixed sequence connecting round-trips into a loop: send request → read stop_reason and tool_use blocks → execute tools and package tool_result → append history and send again.",
+    "source": "[^S2]",
+    "pitfall": "Thinking multi-turn loops need a new invention, rather than just repeating the same four steps.",
+    "distractor_rationale": "People who think 'continuous operation' is mysterious will search for complex frameworks, missing that it's just the same moves repeated."
+  },
+  {
+    "term": "stop_reason",
+    "def": "The field in the model's response indicating why it stopped: tool_use means it wants a tool and the loop continues, end_turn means it's wrapping up and the loop ends.",
+    "source": "[^S2]",
+    "pitfall": "Reading stop_reason: tool_use as 'the tool has finished running' receipt.",
+    "distractor_rationale": "Someone treating the signal as an execution result will think receiving tool_use means this turn's tool already ran, misjudging the loop's current state."
+  },
+  {
+    "term": "tool_use",
+    "def": "A content block the model emits to request a tool call, carrying id / name / input. It means the model wants to use a tool, not that one has been used.",
+    "source": "[^S2]",
+    "pitfall": "Thinking a tool_use block appearing means the action already happened.",
+    "distractor_rationale": "Someone conflating request with execution will skip the 'host actually executes' step, thinking the tool_use block itself means the database already changed."
+  },
+  {
+    "term": "tool_result",
+    "def": "A content block packaging tool execution output back to the model, carrying tool_use_id to claim which call it answers, content for the output, and is_error when it failed.",
+    "source": "[^S6]",
+    "pitfall": "Forgetting to return a tool_result for every tool_use, causing the next request to error due to a missing result.",
+    "distractor_rationale": "Someone handling only 'the successful one' will leave declined or failed calls dangling, breaking the one-to-one correspondence between tool_use and tool_result."
+  },
+  {
+    "term": "end_turn",
+    "def": "A stop_reason value meaning the model no longer wants tools and thinks it's finished talking. The loop ends naturally and returns final text to the user.",
+    "source": "[^S2]",
+    "pitfall": "Assuming the model will always return end_turn eventually, so no external stop condition is needed.",
+    "distractor_rationale": "Someone over-trusting the model will leave stop-or-continue entirely to end_turn, and once the model gets stuck the loop spins indefinitely."
+  },
+  {
+    "term": "tool_use_id",
+    "def": "The field in tool_result claiming 'this is the response to which tool_use call,' identified by matching the tool_use block's id. Multiple tools in one turn rely on this for one-to-one correspondence.",
+    "source": "[^S6]",
+    "pitfall": "Not using tool_use_id to align results when executing multiple tools in parallel, mixing up which result goes with which call.",
+    "distractor_rationale": "Someone handling only single tool calls will forget to claim by id when one turn has multiple tool_use blocks, leaving results mismatched."
+  },
+  {
+    "term": "is_error",
+    "def": "An optional field on tool_result, set to true when tool execution failed, so the model knows this call didn't succeed and can retry with different arguments or take another path.",
+    "source": "[^S6]",
+    "pitfall": "Letting tool errors throw exceptions that crash the process, instead of returning an is_error tool_result.",
+    "distractor_rationale": "Someone used to letting exceptions bubble will let one tool failure kill the whole harness, rather than packaging the error as a tool_result the model can react to."
+  },
+  {
+    "term": "callModel",
+    "def": "The pseudocode call in skeleton loops representing 'send a request to the model.' Real implementations swap it for SDK's client.messages.create.",
+    "source": "[^S2]",
+    "pitfall": "Calling callModel once outside the loop but forgetting to call it again at the end of the loop body, so the loop never reads a new stop_reason.",
+    "distractor_rationale": "Someone copying the skeleton but missing that last callModel will write a loop whose stop_reason stays constant forever, becoming an infinite loop."
+  },
+  {
+    "term": "executeTool",
+    "def": "The call in skeleton loops representing 'the host actually goes and runs the tool the model named.' The action happens at this step, not when tool_use arrived.",
+    "source": "[^S2]",
+    "pitfall": "Thinking the action already happened the moment tool_use shows up, rather than at executeTool execution time.",
+    "distractor_rationale": "Someone conflating signal with execution will misplace approval or interception, missing executeTool as the moment the action lands."
+  },
+  {
+    "term": "attention budget",
+    "def": "The model's finite resource for parsing context. Every new token depletes it; the longer the context, the worse the model's ability to accurately recall information from it.",
+    "source": "[^S3]",
+    "pitfall": "Thinking context can grow unbounded as long as it stays under the limit, and the model will be equally accurate.",
+    "distractor_rationale": "People watching only 'did I exceed the window' will ignore that recall quality declines gradually with length, treating long context as cost-free."
+  },
+  {
+    "term": "stopping conditions",
+    "def": "Explicit rules the host enforces — like maximum number of iterations — that stop the loop independently of the model's own end_turn, keeping control on your side.",
+    "source": "[^S1]",
+    "pitfall": "Thinking the model's end_turn is enough, so no additional stopping condition is needed.",
+    "distractor_rationale": "Someone conflating 'trust' with 'leave unsupervised' will skip external stop conditions, and once the loop gets pulled off course there's no way out."
+  },
+  {
+    "term": "max turns",
+    "def": "The most basic hard stop condition: a ceiling on how many times the loop is allowed to go around, stopping at the mark regardless of what the model wants.",
+    "source": "[^S1]",
+    "pitfall": "Declaring the counter inside the loop body, so it resets to 0 every round and the check never triggers.",
+    "distractor_rationale": "Someone unfamiliar with variable scope will put the counter initialization in the while body, thinking the gate is installed but it never actually fires."
+  },
+  {
+    "term": "hard stop",
+    "def": "A stop condition that halts unconditionally at the boundary and ends the loop for good — nothing continues automatically. Max turns and budget exhaustion both fall here. It's a terminal state.",
+    "source": "[^S1]",
+    "pitfall": "Conflating hard stop with soft stop, expecting a loop that hit the ceiling to resume from where it stopped.",
+    "distractor_rationale": "Someone who doesn't distinguish terminal state from resumable pause will expect a hard-stopped loop to continue, which is impossible."
+  },
+  {
+    "term": "soft stop",
+    "def": "A resumable pause where the loop deliberately halts at a checkpoint, hands control to a person, and can pick up from that exact spot once they answer. It's not an ending.",
+    "source": "[^S1]",
+    "pitfall": "Treating soft stop as an ending and not saving state, so after a person responds there's no way to resume from where it paused.",
+    "distractor_rationale": "Someone used to writing only hard stops will return final results at soft stop too, discarding messages and pending actions so resuming becomes impossible."
+  },
+  {
+    "term": "counter",
+    "def": "A variable maintained outside the loop, accumulating across rounds, recording how many laps the loop has turned. It's what makes the max-turns gate able to judge.",
+    "source": "[^S1]",
+    "pitfall": "Putting the counter inside the loop body where it's scoped to the braces, so every round resets it.",
+    "distractor_rationale": "Someone whose understanding of let block scope is shaky will declare the counter in the wrong place, making it reset to zero every lap."
+  },
+  {
+    "term": "checkpoints",
+    "def": "Pause points set at nodes in the chain where 'if this is wrong, everything after is wasted,' letting the loop surface intermediate state for verification or await human feedback.",
+    "source": "[^S1]",
+    "pitfall": "Setting no checkpoints at all, letting a possibly-drifted loop run the entire long chain before exposing any problem.",
+    "distractor_rationale": "Someone trusting end-to-end automation will skip mid-run verification points, discovering errors only after they've snowballed into final results."
+  },
+  {
+    "term": "needsHumanApproval",
+    "def": "A predicate in soft-stop examples judging 'does the next action need a person's sign-off first?' When it matches, the loop suspends and hands over the scene awaiting human response.",
+    "source": "[^S1]",
+    "pitfall": "Thinking soft stop only needs the predicate check, forgetting you must also preserve a resumable snapshot of the scene when pausing.",
+    "distractor_rationale": "Someone focused only on 'should I stop' will forget 'how to resume,' writing a pause that stops but can't continue."
+  },
+  {
+    "term": "task is done",
+    "def": "The softest of the four stop conditions — the model judges it finished and returns end_turn. Decision authority sits with the model, but you still must confirm it really finished rather than gave up partway.",
+    "source": "[^S1]",
+    "pitfall": "Treating every end_turn as task success, without checking whether the model quit midway instead of completing.",
+    "distractor_rationale": "Someone watching only whether stop_reason is end_turn will misread the model's 'I'm not doing this' as 'I'm done.'"
+  },
+  {
+    "term": "snapshot",
+    "def": "The resumable state handed over at soft-stop pause — current messages plus the pending action that stalled, packaged together so a person can pick up from that exact spot after handling it.",
+    "source": "[^S1]",
+    "pitfall": "Pausing and reporting 'stopped' without saving messages and pending action, so resuming has no scene to continue from.",
+    "distractor_rationale": "Someone treating soft stop as hard stop will return without keeping state, mistakenly thinking the loop can magically resume later."
+  },
+  {
+    "term": "over-engineering",
+    "def": "Piling on mechanisms when complexity doesn't demonstrably improve outcomes. Should only add complexity when it clearly improves results — but stop conditions like max turns are low-cost high-return control, not this category.",
+    "source": "[^S1]",
+    "pitfall": "Lumping the few-line max-turns stop condition into over-engineering and skipping it.",
+    "distractor_rationale": "Someone mechanically applying 'don't add complexity' will cut even necessary brakes, mistaking verifiable safety net for decorative bloat."
+  },
+  {
+    "term": "compounding errors",
+    "def": "One wrong step followed by every subsequent turn continuing atop the mistake and amplifying the bias. No exceptions thrown, each step looks reasonable, but errors compound like interest down the chain.",
+    "source": "[^S1]",
+    "pitfall": "Thinking as long as every tool call succeeds without exceptions, the whole thing is error-free.",
+    "distractor_rationale": "Someone watching only 'did it throw' will miss chains built on a wrong foundation, delivering a complete-looking but entirely-wrong result as success."
+  },
+  {
+    "term": "context bloat",
+    "def": "Every loop turn stuffs two messages into history, add-only never-subtract, so each request carries progressively longer context. Requests get slower and more expensive.",
+    "source": "[^S3]",
+    "pitfall": "Thinking bloat is only a cost problem, ignoring that it also drags down model recall quality.",
+    "distractor_rationale": "Someone counting only money and latency will miss that long context simultaneously erodes the model's grip on key information."
+  },
+  {
+    "term": "context rot",
+    "def": "As context lengthens, key information drowns in noise and the model 'can see it but can't grab it' — recall degrades on a gentle slope with length, not a sudden cliff.",
+    "source": "[^S3]",
+    "pitfall": "Reading it as 'past some length context suddenly becomes useless' cliff.",
+    "distractor_rationale": "People who think in hard thresholds will believe a safe length exists where nothing goes wrong until you cross it, missing that degradation is a continuous slope."
+  },
+  {
+    "term": "dead loop",
+    "def": "A mechanical fault where host code is wrong (like forgetting to reassign response at loop-body end), so stop_reason stays frozen at the old value, while is permanently true, and the process hangs.",
+    "source": "[^S2]",
+    "pitfall": "Trying to rescue a dead loop caused by a code bug by swapping models or rewriting prompts.",
+    "distractor_rationale": "Someone who suspects the model first when stuck will tune the prompt, missing that the root cause is the missing reassignment line in code."
+  },
+  {
+    "term": "idle spinning",
+    "def": "Code is entirely correct, loop legitimately sends requests and executes tools each turn, yet no new progress is made — like calling the same tool repeatedly getting near-identical empty results.",
+    "source": "[^S1]",
+    "pitfall": "Trying to fix idle spinning by patching bugs or swapping models, rather than adding a hard gate that doesn't depend on the model being self-aware.",
+    "distractor_rationale": "Someone conflating idle spinning with dead loop will fix code; someone blaming model strength will swap models — neither addresses spinning in place."
+  },
+  {
+    "term": "no-progress detection",
+    "def": "A hard gate built for idle spinning: host watches 'is anything new happening,' and if N consecutive turns call the same tool returning nearly-identical output, judge it no-progress and break out.",
+    "source": "[^S1]",
+    "pitfall": "Thinking max-turns alone is enough, skipping no-progress detection.",
+    "distractor_rationale": "Someone reasoning 'it runs at most N turns anyway' will let a loop stuck at turn 5 burn the remaining 45, missing that the two gates are complementary, not substitutes."
+  },
+  {
+    "term": "budget cap",
+    "def": "An explicit cost ceiling set for the loop, counted by turns or by tokens (money). Hit the ceiling and stop; lightweight by turns or closer to real cost by token.",
+    "source": "[^S1]",
+    "pitfall": "Using only turn count as budget, ignoring that each turn's context may be huge — tokens are a tighter measure of actual cost.",
+    "distractor_rationale": "Someone equating 'turn count' with 'spend' will get blindsided in low-turn high-token scenarios where the bill explodes unnoticed."
+  },
+  {
+    "term": "budget burnout",
+    "def": "Turn count times per-turn context multiply to drive cost out of control. An agent stuck spinning can burn serious API spend overnight while accomplishing nothing.",
+    "source": "[^S1]",
+    "pitfall": "Stopping at the ceiling but pretending full results were delivered, instead of honestly reporting 'stopped due to budget exhaustion, task incomplete.'",
+    "distractor_rationale": "Someone afraid to admit incompletion will let the agent mask the budget interruption and fake a complete delivery, turning a cost problem back into an error problem."
+  },
+  {
+    "term": "context governance",
+    "def": "Actively managing loop-produced history as a fallback — compressing old turns, summarizing early results, dropping irrelevant intermediate artifacts, putting a brake on per-turn cost.",
+    "source": "[^S3]",
+    "pitfall": "Blindly pushing to history and assuming it can grow unbounded.",
+    "distractor_rationale": "Someone avoiding the work will keep all history uncompressed until requests slow, bills climb, and recall degrades — forcing remediation too late."
+  },
+  {
+    "term": "early stopping",
+    "def": "Stopping an already-drifted loop the moment something looks off, rather than letting it burn through the full budget. Works with checkpoints to cut error off while still small.",
+    "source": "[^S1]",
+    "pitfall": "Knowingly letting a loop that already drifted run the full turn count, wasting budget and amplifying error.",
+    "distractor_rationale": "Someone relying only on max-turns will miss the chance to intervene earlier, letting small drift snowball into major incidents across remaining turns."
+  },
+  {
+    "term": "diminishing marginal returns",
+    "def": "The property of context as a finite resource — each additional piece of history brings progressively less value. So every chunk of history should justify 'is this still worth it.'",
+    "source": "[^S3]",
+    "pitfall": "Assuming 'more context is always better,' ignoring that new history's marginal value declines.",
+    "distractor_rationale": "Someone believing 'information is always good' will pile history without curation, diluting key information and consuming attention budget."
+  },
+  {
+    "term": "excessive agency",
+    "def": "The vulnerability where damaging actions get performed in response to unexpected, ambiguous, or manipulated LLM outputs — regardless of what caused the malfunction. When the model is wired to real authority, bad output can trigger destruction.",
+    "source": "[^S4]",
+    "pitfall": "Thinking only model errors cause excessive agency, ignoring that manipulated or ambiguous inputs can also trigger it.",
+    "distractor_rationale": "Someone attributing risk only to 'will the model mess up' will miss malicious injection and other external causes, still granting the loop oversized un-gated authority."
+  },
+  {
+    "term": "interrupt",
+    "def": "The bluntest of the three human interventions — regardless of what the model wants to do this turn, the entire loop terminates and no further request goes out. After interrupt there's no 'then what.'",
+    "source": "[^S1]",
+    "pitfall": "Conflating interrupt with steer, thinking calling off the loop means it will continue with a new instruction.",
+    "distractor_rationale": "Someone missing that 'interrupt acts on the loop's survival' will think 'stop' means 'redirect then resume.'"
+  },
+  {
+    "term": "steer",
+    "def": "Pushing a fresh human message into the conversation, changing what the model leans into next, while the loop keeps running with the new instruction. Steer changes direction, not whether the loop lives.",
+    "source": "[^S1]",
+    "pitfall": "Thinking you must restart the process to change goals, rather than injecting a new instruction without stopping.",
+    "distractor_rationale": "Someone unaware you can inject messages mid-loop will kill and reopen to change direction, discarding accumulated context."
+  },
+  {
+    "term": "approve",
+    "def": "Intervention on one specific high-impact action — the loop reaches it, stops, shows 'here's what I'm about to do,' and executes only if a person says yes; skipping or canceling on no. After approval the loop resumes its rhythm.",
+    "source": "[^S4]",
+    "pitfall": "Making approval an on-off switch for the entire loop, instead of a release-or-decline for a single action.",
+    "distractor_rationale": "Someone conflating approval with interrupt will mistakenly stop the whole loop when only one step needed a nod, or require human approval on every single step and make the agent unusably slow."
+  },
+  {
+    "term": "human-in-the-loop",
+    "def": "Control where a human gets the chance to say 'hold on' at a few critical points before irreversible actions land, rather than only seeing logs afterward.",
+    "source": "[^S4]",
+    "pitfall": "Treating 'can see logs afterward' as already having a human in the loop.",
+    "distractor_rationale": "Someone conflating traceable with interceptable will use after-the-fact notifications or audits as human-in-the-loop, which can't stop a destructive action that already executed."
+  },
+  {
+    "term": "human gate",
+    "def": "A manual checkpoint beyond the harness's own automatic gates, guarding the few 'if done wrong, can't take back' spots where automation's trust needs a person's live judgment.",
+    "source": "[^S4]",
+    "pitfall": "Thinking automatic stop conditions and fallbacks are enough, so no human gate is needed for irreversible actions.",
+    "distractor_rationale": "Someone believing in full automation will assume automatic stops are sufficient, missing that irreversible actions still need a human's on-the-spot release."
+  },
+  {
+    "term": "irreversible",
+    "def": "Actions that can't be undone in one step, or can only be undone at enormous cost (drop database, transfer money, publish externally, change production config). Approval gates must come before these.",
+    "source": "[^S4]",
+    "pitfall": "Using counterfactual test carelessly and treating actually-irreversible actions as easily recoverable.",
+    "distractor_rationale": "Someone overestimating 'undo options' will assume dropped tables can always restore from backup, placing approval after execution or skipping it entirely."
+  },
+  {
+    "term": "blast radius",
+    "def": "A measure of an operation's impact-range and irreversibility when it goes wrong. Larger blast radius means gate the confirmation point earlier.",
+    "source": "[^S4]",
+    "pitfall": "Giving all operations the same confirmation strength, not differentiating by blast radius.",
+    "distractor_rationale": "Someone applying one-size-fits-all will either require multi-layer approval on read_file (slowing everything) or greenlight drop_database with no gate (risking disaster)."
+  },
+  {
+    "term": "counterfactual test",
+    "def": "A self-check to judge reversibility: if this action ran and was wrong, can I undo it in one step at low cost? If not, the gate must go early.",
+    "source": "[^S4]",
+    "pitfall": "Not running counterfactual test, deciding 'dangerous or not' by gut feel from the action's name.",
+    "distractor_rationale": "Someone relying on intuition will miss operations with plain names but irreversible effects, or over-protect easily-rolled-back actions."
+  },
+  {
+    "term": "askHuman",
+    "def": "The call inside approval valve that requests a release decision from a person. In a terminal it means 'print the pending action, read one line of input.' Must complete before executeTool.",
+    "source": "[^S4]",
+    "pitfall": "Placing askHuman after executeTool, so the action already landed before asking.",
+    "distractor_rationale": "Someone thinking only 'record human's opinion' will move the question after execution, turning approval into a voided post-action receipt."
+  },
+  {
+    "term": "@anthropic-ai/sdk",
+    "def": "The official Node SDK. Use it to replace skeleton pseudocode callModel with real client.messages.create, driving the same stop_reason loop.",
+    "source": "[^S2]",
+    "pitfall": "Thinking switching to the real SDK changes loop structure, when it only swaps the request call.",
+    "distractor_rationale": "Someone missing that skeleton and real implementation are isomorphic will think production requires rewriting loop logic, when only the request line changes."
+  },
+  {
+    "term": "client.messages.create",
+    "def": "The SDK method that sends a model request, taking model / max_tokens / tools / messages. It's the real-world replacement for callModel in the loop.",
+    "source": "[^S2]",
+    "pitfall": "Forgetting to pass tools on every request, thinking the tool manifest only needs to go on the first one.",
+    "distractor_rationale": "Someone assuming tool definitions are remembered server-side will omit tools on subsequent turns, making the model unable to call tools again."
+  },
+  {
+    "term": "runToolUses",
+    "def": "A function that takes this turn's tool_use blocks, actually runs each one, and packages each into a tool_result. Approval valve and try/catch both live inside it.",
+    "source": "[^S6]",
+    "pitfall": "Executing only the first tool_use block, rather than every one in the turn, each with its own tool_result.",
+    "distractor_rationale": "Someone using find to grab a single block will miss the rest when one turn has multiple tools, violating the one-to-one correspondence rule."
+  },
+  {
+    "term": "runAgent",
+    "def": "The entry function carrying the whole harness loop, wiring messages, four control valves, request sending, and tool execution together until stop_reason is no longer tool_use.",
+    "source": "[^S2]",
+    "pitfall": "Leaving stop-or-continue entirely to the model's stop_reason, putting no explicit hard boundaries inside runAgent.",
+    "distractor_rationale": "Someone copying a bare loop will write a runAgent that only relies on model end_turn to finish, with no fallback."
+  },
+  {
+    "term": "signatureOf",
+    "def": "A no-progress-detection signature function — concatenates this turn's tool_use names and parameters into one string, used to compare against the previous turn and detect spinning.",
+    "source": "[^S1]",
+    "pitfall": "Computing signature by tool name alone, ignoring parameters, so changing arguments still looks like spinning or vice versa.",
+    "distractor_rationale": "Someone cutting corners will skip input, wrongly killing 'same-name different-params' legitimate progress or missing true repetition."
+  },
+  {
+    "term": "response.usage",
+    "def": "The field in model responses reporting token consumption this turn (input_tokens + output_tokens). Basis for budget caps counted in tokens.",
+    "source": "[^S1]",
+    "pitfall": "Counting budget only by turns, not reading usage to accumulate tokens — can't stop spending in few-turn giant-context scenarios.",
+    "distractor_rationale": "Someone thinking 'few turns means cheap' will ignore per-turn token as the real cost driver, blindsided when the bill exceeds expectations."
+  },
+  {
+    "term": "input_schema",
+    "def": "The JSON schema in a tool definition describing input structure. The model constructs tool_use input to match, making parameters conform to tool requirements.",
+    "source": "[^S6]",
+    "pitfall": "Writing imprecise input_schema or omitting required, so the model constructs wrong parameters and tools fail repeatedly.",
+    "distractor_rationale": "Someone writing schema carelessly will forget to mark required fields or types, causing the model to pass bad parameters and tools to throw errors."
+  },
+  {
+    "term": "try/catch",
+    "def": "The error-tolerance wrapper around tool execution — when it throws, don't crash the harness, package the error as an is_error tool_result and pass it back, giving the model a chance to retry or pivot.",
+    "source": "[^S6]",
+    "pitfall": "Letting tool exceptions bubble up and terminate the process, instead of converting to is_error result for the model.",
+    "distractor_rationale": "Someone used to letting exceptions propagate will let one tool failure kill the whole loop, rather than packaging failure as a tool_result the model can self-heal from."
+  },
+  {
+    "term": "control valves",
+    "def": "The collective name for control mechanisms welded into the loop, each guarding one spot — max turns, budget cap, no-progress detection, and high-impact-action approval. Positions aren't arbitrary.",
+    "source": "[^S5]",
+    "pitfall": "Thinking the four valves can go anywhere, or that every agent must install all four.",
+    "distractor_rationale": "Someone not understanding what each valve guards will misplace approval after execution or the counter check after increment, or over-instrument a toy loop."
+  },
+  {
+    "term": "policy valve",
+    "def": "A generalization of approval valve — routing tools by name into allow (straight through), ask (confirm before execution), deny (always refused) tiers, judged before executeTool.",
+    "source": "[^S4]",
+    "pitfall": "Defaulting unlisted tools to allow, or letting deny leave the call dangling without returning a tool_result.",
+    "distractor_rationale": "Someone taking shortcuts will default-allow unknown tools (opening the door to anything), or forget to return is_error for denied calls (breaking next request)."
+  },
+  {
+    "term": "high-impact",
+    "def": "Actions producing externally-visible or irreversible consequences (write_file, http_post, delete_file). Only gate approval on these; harmless reads and queries go straight through.",
+    "source": "[^S4]",
+    "pitfall": "Either requiring approval on every single step, or greenlighting delete and send operations with no gate.",
+    "distractor_rationale": "Someone not tiering by impact will make the agent an expensive manual tool (approve everything), or let genuinely dangerous operations run un-gated."
+  }
+]
