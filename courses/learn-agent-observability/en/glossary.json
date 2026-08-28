@@ -1,0 +1,548 @@
+[
+  {
+    "term": "non-deterministic",
+    "def": "A system property where identical inputs can produce different responses; agents are this kind of system, breaking the traditional 'reproduce and set a breakpoint' debugging intuition.",
+    "source": "[^S3]",
+    "pitfall": "Thinking you can run it a few more times and eventually hit the same path—you'll hit a different but equally valid path instead, burning tokens.",
+    "distractor_rationale": "Often conflated with intermittent concurrency bugs—but those at least run on the same deterministic code; agents make decisions at every step."
+  },
+  {
+    "term": "trajectory divergence",
+    "def": "When one step fails and causes the agent to explore an entirely different trajectory, with all subsequent turns growing on the wrong branch, leading to unpredictable outcomes.",
+    "source": "[^S1]",
+    "pitfall": "Only looking at the terminal output for problems—the actual lesion is often dozens of turns back at a timeout or error.",
+    "distractor_rationale": "Often treated as 'model hallucination' when the starting point is usually a small glitch that would only be worth one retry log entry in a traditional service."
+  },
+  {
+    "term": "cross-turn compounding",
+    "def": "Agents are stateful and errors compound; agents can run for long periods maintaining state across many tool calls, so errors accumulate turn by turn.",
+    "source": "[^S1]",
+    "pitfall": "Restarting from the beginning when errors occur—expensive and frustrating for users, and if state at failure time wasn't recorded, there's no way to resume.",
+    "distractor_rationale": "Easily confused with 'context grows longer': that's just a cost problem, compounding is the error itself amplifying."
+  },
+  {
+    "term": "emergent behavior",
+    "def": "Behaviors in multi-agent systems that arise without specific programming—for instance, small changes to the lead agent unpredictably changing subagent behavior.",
+    "source": "[^S1]",
+    "pitfall": "Only testing individual agent behavior and thinking you've covered it—what you really need to understand is interaction patterns.",
+    "distractor_rationale": "Sounds mystical, but refers to specific observable phenomena—spawning 50 subagents for simple queries, distracting each other with excessive updates."
+  },
+  {
+    "term": "evaluation track",
+    "def": "The terminal-state scoring, validators, and evaluation sets built in the previous course—answers only 'did it break,' not 'why.'",
+    "source": "[^S1]",
+    "pitfall": "Using a single fail line as diagnostic conclusion; the scorer stands at the finish line holding up a scorecard, it has no ability to care about the middle segment.",
+    "distractor_rationale": "Often treated as a substitute for observability when they're actually two ends of one pole: evaluation judges good or bad, observation investigates cause."
+  },
+  {
+    "term": "think like your agents",
+    "def": "Building simulations using the exact same prompts and tools from your system, then watching agents work step-by-step.",
+    "source": "[^S1]",
+    "pitfall": "Smoothing out prompts 'to make it clearer' so you can observe better—then you're observing a different system.",
+    "distractor_rationale": "Often misread as 'reproduce the same run' when the real point is 'see each step.'"
+  },
+  {
+    "term": "abstraction layers",
+    "def": "The middle layers frameworks add to simplify calling LLMs, defining tools, and chaining calls—they obscure underlying prompts and responses.",
+    "source": "[^S2]",
+    "pitfall": "Incorrect assumptions about what's under the hood are a common source of customer error; using frameworks requires understanding the underlying code.",
+    "distractor_rationale": "Looks similar to 'no records' but the causes are opposite: one is obscured, one was never retained—both hurt equally when you need evidence after the fact."
+  },
+  {
+    "term": "sandbox",
+    "def": "An isolated environment where agents that can take action undergo extensive testing, used with appropriate guardrails.",
+    "source": "[^S2]",
+    "pitfall": "Thinking 'it's just a small script' and skipping it—the autonomous nature of agents means higher costs and potential for compounding errors.",
+    "distractor_rationale": "Often treated as only for security incidents when it's equally a means to control costs and error compounding."
+  },
+  {
+    "term": "tool boundary",
+    "def": "The contract surface between deterministic systems and non-deterministic agents; the only position that leaves traces in records.",
+    "source": "[^S2]",
+    "pitfall": "Wanting something to be auditable but not pushing it to the tool boundary—the model comparing two datasets in its head leaves no trace; calling a diff tool does.",
+    "distractor_rationale": "Easily understood as API signature when this is really about 'the boundary of observability.'"
+  },
+  {
+    "term": "ground truth",
+    "def": "The real feedback the agent gains from the environment at each step during execution, such as tool call results and code execution results.",
+    "source": "[^S2]",
+    "pitfall": "Errors are also ground truth—if you give a cryptic error code, the agent can only guess its way forward.",
+    "distractor_rationale": "Often confused with 'standard answer' when this refers to facts returned by the environment, not evaluation labels."
+  },
+  {
+    "term": "raw transcript",
+    "def": "The complete tool name and parameters for each tool call in a run, plus the complete return value or error for each tool response—first-hand evidence.",
+    "source": "[^S3]",
+    "pitfall": "Using the agent's summary instead of the transcript—the summary quietly erases errors and calls that never happened.",
+    "distractor_rationale": "Easily treated as 'logs' when logs are actually its structured storage format; the transcript itself is the round-trip original text."
+  },
+  {
+    "term": "self-report",
+    "def": "What the agent writes about itself: wrap-up summaries, reasoning segments, self-assessments after tool execution—secondary material.",
+    "source": "[^S3]",
+    "pitfall": "What it omits is often more important than what it includes, and missing pieces don't raise their hands.",
+    "distractor_rationale": "Reads professionally and measured, making it easiest to treat as process evidence; the actual method is to trace each number in the self-report back to the transcript."
+  },
+  {
+    "term": "chain of thought",
+    "def": "The reasoning process the model writes before giving an answer, abbreviated CoT.",
+    "source": "[^S3]",
+    "pitfall": "Treating CoT as evidence—it's a clue; to catch behavior not mentioned in CoT you must return to the raw transcript.",
+    "distractor_rationale": "Often treated as 'the model's real internal process' when it's also generated text that can omit things."
+  },
+  {
+    "term": "four questions",
+    "def": "A reading checklist for transcripts: called wrong tool, called right tool but wrong parameters, called too few tools, processed tool response incorrectly.",
+    "source": "[^S3]",
+    "pitfall": "Evidence for 'too few calls' is absence and won't jump out on its own—you have to use task requirements as a template and count.",
+    "distractor_rationale": "Originally a tool design taxonomy, easily treated as a bug classification—its real use is pointing each question to a specific location in the transcript for verification."
+  },
+  {
+    "term": "tool_use",
+    "def": "A content block where the model names which tool to call, containing the tool name and a complete parameter object the model generated.",
+    "source": "[^S3]",
+    "pitfall": "Only looking at it and drawing conclusions—it only shows what the model 'wanted' to do; whether it succeeded requires checking the paired tool_result.",
+    "distractor_rationale": "Parameters are long and look plausible, making them easy to skim; bugs like adding four extra characters to query terms live here."
+  },
+  {
+    "term": "tool_result",
+    "def": "The block the harness sends back after actually running the tool—on success the complete return value, on failure the error content plus an error flag.",
+    "source": "[^S3]",
+    "pitfall": "Just noting 'it errored' and moving on—the real information is in the immediately following assistant message.",
+    "distractor_rationale": "Easily treated as 'the tool's logs' when it's simultaneously input fed back into the model's context, determining the next step."
+  },
+  {
+    "term": "is_error",
+    "def": "An error flag on tool results, used to distinguish 'tool returned content' from 'tool threw an error.'",
+    "source": "[^S3]",
+    "pitfall": "The harness swallowing exceptions and only stuffing an empty string back—the model will continue fabricating based on its previous assumption.",
+    "distractor_rationale": "Flagging true doesn't mean execution halts—errors are typically wrapped back into context and the loop continues."
+  },
+  {
+    "term": "content farms",
+    "def": "SEO-optimized, high-ranking sources with poor authority; manual testing found early agents consistently preferred them over academic PDFs and personal blogs.",
+    "source": "[^S1]",
+    "pitfall": "This source selection bias is nearly invisible in evals—the answers aren't necessarily wrong and scores keep looking good.",
+    "distractor_rationale": "Often treated as a content quality issue when it's actually written in that string of URLs actually picked in the transcript."
+  },
+  {
+    "term": "transcript",
+    "def": "Conversation messages persisted to disk, like Claude Code's JSONL session records written to disk.",
+    "source": "[^S4]",
+    "pitfall": "Other people's transcript formats are their internal implementation that changes between versions; pipelines relying on them can break on any release.",
+    "distractor_rationale": "Looks like ready-made structured raw records, but it's also asynchronously written—at the moment a hook fires it may not contain recent messages."
+  },
+  {
+    "term": "structured logs",
+    "def": "Turning each step into JSON records with fields, so evidence can be not only read by humans but also filtered, aggregated, and analyzed for distributions.",
+    "source": "[^S3]",
+    "pitfall": "Don't compress a whole loop iteration into one record—you'll never be able to calculate the split between model time and tool time; don't write only one summary record when the task finishes either.",
+    "distractor_rationale": "Doesn't conflict with raw transcripts—it's just storing the same batch of evidence in a different format, moving from 'one run' to 'two hundred runs.'"
+  },
+  {
+    "term": "prose logs",
+    "def": "Log writing that encodes structure into natural language; reads smoothly but can only be decoded by humans.",
+    "source": "[^S3]",
+    "pitfall": "Relying on regex to extract numbers—when someone changes 'took' to 'elapsed,' the regex silently starts returning zero.",
+    "distractor_rationale": "Better human reading experience, so often considered 'friendlier,' but the cost is complete inability to aggregate."
+  },
+  {
+    "term": "JSON Lines",
+    "def": "One file where each line is a complete JSON object, no commas between lines and no outer array wrapper—commonly written JSONL.",
+    "source": "[^S3]",
+    "pitfall": "When the process gets killed the last line might be half-written—parsers need to report bad lines without halting the entire batch.",
+    "distractor_rationale": "Often mistaken as a 'lazy shortcut format' when its real advantages are append-only writes, stream processing, and each line being self-contained."
+  },
+  {
+    "term": "session_id",
+    "def": "An identifier for one conversation session, constant across multiple turns, used to answer 'how much did this session cost total, did it switch permission modes.'",
+    "source": "[^S4]",
+    "pitfall": "Using it as the grouping key to judge 'whether there was follow-up after an error'—the next prompt in the same session will mask the previous stall.",
+    "distractor_rationale": "Different granularity from prompt_id but often mixed up: session is one entire conversation, prompt is one trigger within it."
+  },
+  {
+    "term": "prompt_id",
+    "def": "An identifier for one user prompt; all model requests and tool calls it triggers share this value.",
+    "source": "[^S4]",
+    "pitfall": "Building the logger with the wrong lifecycle—creating it inside each turn makes session_id a duplicate of prompt_id.",
+    "distractor_rationale": "The least conspicuous field when writing logs, but its real value shows only when threading scattered records into a tree."
+  },
+  {
+    "term": "correlation ID",
+    "def": "An ID number given to 'one trigger event,' and every event that trigger spawned copies it—no infrastructure needed, just a field.",
+    "source": "[^S4]",
+    "pitfall": "It provides a boundary but not structure—after filtering you still have parallel rows; who is whose child requires parent-child fields.",
+    "distractor_rationale": "Often treated as the entirety of tracing when it's just the first step in adding relationships."
+  },
+  {
+    "term": "duration_ms",
+    "def": "Milliseconds a step took, used to find performance bottlenecks and also to check 'is it stuck.'",
+    "source": "[^S3]",
+    "pitfall": "Where the timer starts and stops determines what this number means—whether it includes the tool's own retries and backoff must be defined and written down.",
+    "distractor_rationale": "The execution milliseconds in hook payloads exclude permission wait and PreToolUse time—using it to answer 'how long did the user wait' will be systematically low."
+  },
+  {
+    "term": "tool_input",
+    "def": "Parameters sent to the tool, directly provided in PostToolUse payloads as half of the complete call record.",
+    "source": "[^S5]",
+    "pitfall": "By default don't write full text in production logs, only record shape and length; turn on full text only for specific troubleshooting after confirming the log destination is approved to store this data type.",
+    "distractor_rationale": "Often thought to require manual reconstruction from transcripts when it's actually right there in the payload, and more reliable than asynchronously-written transcripts."
+  },
+  {
+    "term": "tool_response",
+    "def": "The result returned by the tool, part of the complete round-trip record that tool_input and tool_response together form in one trigger.",
+    "source": "[^S5]",
+    "pitfall": "To get 'fuller context,' reading the transcript path given in the payload—that will yield intermittently incomplete data that doesn't error.",
+    "distractor_rationale": "Only present after successful tool execution—to cover 'parameters generated but didn't execute,' pair PreToolUse with it and diff."
+  },
+  {
+    "term": "error",
+    "def": "The error field on records, only present when it fails; the first field to filter when locating.",
+    "source": "[^S3]",
+    "pitfall": "Missing fields not caught become NaN, contaminating the entire aggregate column without erroring.",
+    "distractor_rationale": "'Not in the record' doesn't mean 'didn't happen': retry semantics can make a day's worth of jitter not land on disk at all."
+  },
+  {
+    "term": "metrics",
+    "def": "A set of numbers: runtime for individual tool calls and whole tasks, total tool call count, total token consumption, tool errors.",
+    "source": "[^S3]",
+    "pitfall": "Average duration almost always lies—99 calls at 80ms plus 1 at 30 seconds averages to a number that looks okay, but reality is 99 fast and one completely stalled.",
+    "distractor_rationale": "Same set used in evaluation, only difference is what you compare them to: before-vs-after, or today-vs-past-seven-days."
+  },
+  {
+    "term": "redundant calls",
+    "def": "Lots of repeated tool calls, often suggesting pagination size or token limit parameters need tuning.",
+    "source": "[^S3]",
+    "pitfall": "These calls are each legal and each succeeds, metrics show no 'error,' but they're all waste.",
+    "distractor_rationale": "Don't just look at 'highest call count'—high count itself isn't the problem; the same tool with only offset advancing is."
+  },
+  {
+    "term": "invalid-parameter errors",
+    "def": "Lots of errors for invalid parameters, pointing to tool descriptions needing clearer writing or better examples.",
+    "source": "[^S3]",
+    "pitfall": "When errors cluster on the same parameter the signal is extremely strong, but one isolated case doesn't constitute a pattern; don't change descriptions based on it.",
+    "distractor_rationale": "Investigation direction is the tool description, not the model; execution timeouts and similar errors don't belong to this category."
+  },
+  {
+    "term": "error rate",
+    "def": "A proportion metric of error count divided by call count, used instead of absolute numbers to see health.",
+    "source": "[^S3]",
+    "pitfall": "Changing the denominator when the numerator hasn't changed—if the count itself didn't cover retries, dividing by anything still gives you zero.",
+    "distractor_rationale": "Often treated as a universal fix when actually if semantics don't cover something, no formula can rescue it."
+  },
+  {
+    "term": "terminal signal",
+    "def": "The error event emitted only after internal retries completely give up, representing 'this request ultimately failed.'",
+    "source": "[^S4]",
+    "pitfall": "Reading 'three errors today' as 'three network hiccups'—underneath hides however many successful retries; this signal says not a word about them.",
+    "distractor_rationale": "This design is correct, otherwise the error curve would be flooded by transient hiccups that auto-recovery handled; the cost is you must write down the semantics."
+  },
+  {
+    "term": "suspected stall",
+    "def": "A state where the last record for a prompt has an error and no subsequent records follow—versus 'recovered from error.'",
+    "source": "[^S4]",
+    "pitfall": "The condition must be 'last record has error'; writing 'exists error' will mislabel runs that errored then recovered and continued.",
+    "distractor_rationale": "Choosing the wrong grouping key causes missed detection: the next prompt in the same session will be treated as 'follow-up action' after the previous error."
+  },
+  {
+    "term": "threshold",
+    "def": "The line that judges 'how much counts as abnormal'; no numbers in first-hand materials—wrong error budget and SLO alike.",
+    "source": "[^S4]",
+    "pitfall": "Writing 'after 3 consecutive errors send email' into the harness—that logic gets deployed with the agent, restarted with the agent, and breaks with the agent.",
+    "distractor_rationale": "The docs mention alerting should be done, easily read as 'the docs gave recommended values.'"
+  },
+  {
+    "term": "SIEM",
+    "def": "Security Information and Event Management system; anomaly detection, baselining, cross-session correlation, and alerting are all responsibilities on its side.",
+    "source": "[^S4]",
+    "pitfall": "Having the observed system make its own judgments—it has no historical data to compare against and it breaks along with the main flow.",
+    "distractor_rationale": "Often treated as purely a security product when here it bears 'all processing beyond the raw event stream.'"
+  },
+  {
+    "term": "audit trail",
+    "def": "After attaching end-user identity attributes, tool decisions, tool results, MCP connections, and permission mode changes form a per-user record.",
+    "source": "[^S6]",
+    "pitfall": "Thinking you need to build a separate collection system—it's the same batch of events used for debugging, just sliced differently.",
+    "distractor_rationale": "Debugging slices horizontally by prompt, auditing slices vertically by user; the same batch of data read two ways is often treated as two separate things."
+  },
+  {
+    "term": "span",
+    "def": "A record of a piece of work with a beginning and end: has a name, start time, end time, several attributes, and can identify its parent span.",
+    "source": "[^S4]",
+    "pitfall": "Tool spans must separate 'waiting for permission' and 'executing' into two segments—the same 40 seconds split reveals whether to fix config or fix implementation.",
+    "distractor_rationale": "Easily equated with one log line when the difference is it carries a time range and parent-child relationships."
+  },
+  {
+    "term": "trace",
+    "def": "An entire tree of spans connected by parent-child relationships; everything that happened in one complete request from start to finish, read as a tree.",
+    "source": "[^S4]",
+    "pitfall": "It's the most expensive and most detailed; adoption order should place it after metrics and log events.",
+    "distractor_rationale": "Often treated as 'more detailed logs' when what it really gives you beyond logs is belonging relationships and time nesting."
+  },
+  {
+    "term": "claude_code.interaction",
+    "def": "The root span name corresponding to each user prompt in first-party traces.",
+    "source": "[^S4]",
+    "pitfall": "Hook executions are also recorded under it—the observability mechanism itself is an observed object.",
+    "distractor_rationale": "Name sounds like 'one interaction' but its boundary is one prompt, not an entire conversation."
+  },
+  {
+    "term": "subagent",
+    "def": "A lower-level agent dispatched through the Agent tool; its model requests and tool spans nest under the parent agent's tool span.",
+    "source": "[^S6]",
+    "pitfall": "Tallying by 'only count model requests issued by the main loop'—one prompt's cost can be under-reported by more than half.",
+    "distractor_rationale": "Records from concurrent runs interleave with the main loop on the timeline; splitting by time window is nearly impossible."
+  },
+  {
+    "term": "exporter",
+    "def": "The code in the process responsible for packaging spans and sending them out.",
+    "source": "[^S6]",
+    "pitfall": "When running through the SDK don't set console as the exporter value.",
+    "distractor_rationale": "The three signals each have their own exporter; metrics working doesn't mean traces work."
+  },
+  {
+    "term": "collector",
+    "def": "The relay station or backend service that receives spans; the exporter sends data to it, you see the tree on its dashboard.",
+    "source": "[^S6]",
+    "pitfall": "When it responds slowly, the flush before process exit gets cut off by a short timeout, and tail-end spans still drop.",
+    "distractor_rationale": "Self-hosted collectors are also OTLP backends; you don't need to select a commercial product before starting."
+  },
+  {
+    "term": "fail silently",
+    "def": "The default behavior where when the endpoint is unreachable or the backend rejects data, the agent runs normally, telemetry is dropped, and no error surfaces in your application.",
+    "source": "[^S6]",
+    "pitfall": "A broken pipeline and everything-working look identical on your end; zero data can't be read as 'no problems.'",
+    "distractor_rationale": "The design itself is correct—the observability pipeline shouldn't bring down the main flow—but the cost is you must verify the probe first when troubleshooting."
+  },
+  {
+    "term": "batch export",
+    "def": "The mechanism of accumulating telemetry into batches and sending them out on intervals—by default metrics every 60 seconds, traces and logs every 5 seconds.",
+    "source": "[^S6]",
+    "pitfall": "If the process is killed before the CLI shuts down, whatever's in the batch buffer is lost; short-lived runs need intervals significantly shorter than run duration.",
+    "distractor_rationale": "When encountering missing tails, easily think 'enlarge the batch'—the direction is exactly backwards; the bigger the batch, the worse the loss when the last batch drops."
+  },
+  {
+    "term": "service.name",
+    "def": "A resource attribute identifying which service data came from; the CLI defaults to reporting it as claude-code.",
+    "source": "[^S6]",
+    "pitfall": "Multiple agents exporting to the same collector without overriding it results in seeing soup.",
+    "distractor_rationale": "'Seeing no data' can also mean data arrived but is mixed under someone else's service name—this suspicion ranks after the pipeline."
+  },
+  {
+    "term": "claude_code.session.count",
+    "def": "A counting metric emitted as soon as a session starts; the cheapest probe for verifying export config worked.",
+    "source": "[^S4]",
+    "pitfall": "Being able to query it only means the data path is live; next come suspicions about query expressions and panel config.",
+    "distractor_rationale": "Its value isn't in the metric itself but in splitting 'does the agent have a problem' and 'is the pipeline working' into two separately answerable questions."
+  },
+  {
+    "term": "TRACEPARENT",
+    "def": "A standard-format environment variable carrying trace id and current span id; Bash and PowerShell subprocesses automatically inherit it.",
+    "source": "[^S4]",
+    "pitfall": "Hook subprocesses don't get OTEL_* export config; don't expect to piggyback on the harness's telemetry pipeline by inheriting environment variables in hooks.",
+    "distractor_rationale": "It solves 'who should I attach to,' not 'where does data go'—these two things are often conflated."
+  },
+  {
+    "term": "W3C trace context",
+    "def": "A standard-format string containing trace id and current span id; whoever receives it knows where to attach themselves.",
+    "source": "[^S6]",
+    "pitfall": "When rebuilding trees it's hidden in a field different from others; after splitting by dash, the third segment is the parent span id.",
+    "distractor_rationale": "Looks like an auth header when it actually only carries belonging information, no content."
+  },
+  {
+    "term": "CLAUDE_CODE_ENHANCED_TELEMETRY_BETA",
+    "def": "The switch that when turned on makes each step of the agent loop become an inspectable span in the tracing backend.",
+    "source": "[^S6]",
+    "pitfall": "Without the switch you'll see a thin or completely empty trace view, easily misjudged as the pipeline not working.",
+    "distractor_rationale": "It's different from 'the trace signal itself's enable switch'—both must be confirmed."
+  },
+  {
+    "term": "hooks",
+    "def": "User-defined shell commands, HTTP endpoints, or LLM prompts that execute automatically at specific points in Claude Code's lifecycle.",
+    "source": "[^S5]",
+    "pitfall": "Command hooks execute with your full user permissions; review and test before adding them to config.",
+    "distractor_rationale": "For observability, its value isn't 'can change behavior' but 'can see without changing behavior.'"
+  },
+  {
+    "term": "matcher",
+    "def": "The matching rule that determines when a hook fires; omitted or set to wildcard means one-hook-records-all.",
+    "source": "[^S5]",
+    "pitfall": "When the log is empty, first check the debug log for match records—if written wrong it won't error, just won't fire.",
+    "distractor_rationale": "In observability scenarios don't narrow it: you don't know in advance which tool will break."
+  },
+  {
+    "term": "PreToolUse",
+    "def": "An event that runs after the model creates tool parameters and before processing the tool call.",
+    "source": "[^S5]",
+    "pitfall": "Time it spends isn't counted in the execution milliseconds in the payload; don't add them together as one step's duration.",
+    "distractor_rationale": "The value of this gap is parameters are finalized but the tool hasn't run—bugs like adding a year to query terms live in these parameters."
+  },
+  {
+    "term": "PostToolUse",
+    "def": "An event that fires after successful tool execution; the input carries both tool_input and tool_response.",
+    "source": "[^S5]",
+    "pitfall": "The trigger condition is 'successful execution'—to cover cases where parameters were generated but execution didn't succeed, pair it with PreToolUse and diff.",
+    "distractor_rationale": "One firing is one complete round-trip; often thought to require pairing request and response yourself."
+  },
+  {
+    "term": "SessionStart",
+    "def": "A once-per-session event; fires when a new session opens and also when an existing session resumes.",
+    "source": "[^S5]",
+    "pitfall": "Writing a handler that 'initializes a new log when session starts' will overwrite the previous segment the first time it hits resume.",
+    "distractor_rationale": "From the loop's perspective resume isn't 'starting fresh,' but it still rings this event."
+  },
+  {
+    "term": "Stop",
+    "def": "An end-of-turn event in the once-per-turn cadence; paired with UserPromptSubmit can calculate one turn's duration.",
+    "source": "[^S5]",
+    "pitfall": "Only hooking it without hooking the exception exit means abnormally ended turns never get an end time, and start records hang forever.",
+    "distractor_rationale": "Choosing the wrong cadence yields numbers hard to explain: wanting to count 'how many tools did one task use' but hooking the per-turn gate only gets you zero."
+  },
+  {
+    "term": "payload",
+    "def": "The JSON context handed to your handler when an event fires and the matcher matches.",
+    "source": "[^S5]",
+    "pitfall": "To get 'fuller context,' switching to read the transcript file path it provides—that file is written asynchronously and may not contain the current turn's recent messages.",
+    "distractor_rationale": "Command hooks receive it from stdin and respond via exit code, stdout/stderr—no magic involved."
+  },
+  {
+    "term": "OTEL_*",
+    "def": "A set of environment variables related to telemetry export; Claude Code removes them from every subprocess it spawns, including hooks.",
+    "source": "[^S5]",
+    "pitfall": "To emit telemetry in hooks you must carry your own complete export config, or just have it write structured logs and align with telemetry using prompt id.",
+    "distractor_rationale": "Failure is silent—data won't export but won't error either, so you'll think it's waiting in the backend."
+  },
+  {
+    "term": "debug log",
+    "def": "A log file that records which hooks matched, their exit codes, and full stdout and stderr.",
+    "source": "[^S5]",
+    "pitfall": "To see finer-grained lines like matcher counts, you need to set log level to verbose.",
+    "distractor_rationale": "When hooks don't work, it's the only place that can separate 'didn't fire,' 'didn't match,' and 'script crashed.'"
+  },
+  {
+    "term": "five-step workflow",
+    "def": "This course's arranged debugging approach: narrow by prompt id, find first divergence, replay observation, repeatedly stress the same component, recover from failure point after fixing.",
+    "source": "[^S1]",
+    "pitfall": "Walking all five steps has a cost; low-frequency harmless jitter is cheaper to log and accumulate first, investigate when patterns emerge.",
+    "distractor_rationale": "It's this course's own arrangement, not official methodology—only each step's foundation has sources."
+  },
+  {
+    "term": "narrow",
+    "def": "Step one: filter by prompt id to shrink the range from 'agent broke' to 'these ten-plus events under this id.'",
+    "source": "[^S4]",
+    "pitfall": "Without this step, every subsequent question can't start—you can't even circle which lines belong to this run.",
+    "distractor_rationale": "This step's significance isn't technical, it's psychological—turning an undebuggable proposition into a debuggable one."
+  },
+  {
+    "term": "first divergence",
+    "def": "The step where behavior starts deviating from expectations; the absurdities at the end are mostly downstream noise.",
+    "source": "[^S1]",
+    "pitfall": "Fixing the last step is usually cleaning up after an upstream error; swap the failure method and new ones will grow.",
+    "distractor_rationale": "The hardest kind of divergence to recognize is 'processed the tool response incorrectly'—that step shows green in logs."
+  },
+  {
+    "term": "contagion",
+    "def": "Steps after the divergence point that look equally absurd but are just continuing forward on the wrong premise.",
+    "source": "[^S1]",
+    "pitfall": "Only getting the final output, people usually go change the prompt to add 'no fabricating'—that hits contagion, doesn't hit the lesion.",
+    "distractor_rationale": "Contagion steps are genuinely wrong themselves, so extremely easy to treat as independent bugs and fix one by one."
+  },
+  {
+    "term": "replay",
+    "def": "Building simulations using identical prompts and tools, watching step-by-step to immediately force failure modes out.",
+    "source": "[^S1]",
+    "pitfall": "Two constraints can't be loosened: input copied as-is, observation must be step-by-step—run once to completion and only check final output makes this pointless.",
+    "distractor_rationale": "Same bugs invisible in aggregate metrics (success rate is high) and require line-by-line reading in after-the-fact logs, but when watching step-by-step the human eye spots them in seconds."
+  },
+  {
+    "term": "stub client",
+    "def": "A stand-in that doesn't send network requests, returning preset response objects from a fixed array in sequence, making the model side reproducible.",
+    "source": "[^S1]",
+    "pitfall": "It locks down the environment side; model behavior is still non-deterministic in real runs—this is noise reduction, not a reproduction guarantee.",
+    "distractor_rationale": "Often said to 'make agents deterministic' when it actually just changes two moving variables to one."
+  },
+  {
+    "term": "response queue",
+    "def": "The array the stub client draws from in sequence, each element carrying complete stop_reason, content blocks, and usage.",
+    "source": "[^S1]",
+    "pitfall": "When the queue is exhausted, explicitly throw an error and record one; otherwise the last turn has no corresponding record and turn count won't match model call count.",
+    "distractor_rationale": "The harness loop doesn't change a single word—what it receives is shape-identical to what a real client returns."
+  },
+  {
+    "term": "tool-testing agent",
+    "def": "An agent that, given a flawed tool, repeatedly tries using it then rewrites the tool description to avoid failures; testing dozens of times finds key nuances and bugs.",
+    "source": "[^S1]",
+    "pitfall": "'Dozens of times' is the point—running three to five times, bugs like 'sometimes fabricates' might not appear once.",
+    "distractor_rationale": "Stressing a component's behavior at boundary inputs, not vaguely 'running a few more times.'"
+  },
+  {
+    "term": "trace_id",
+    "def": "One id per run, threading scattered records in the same stream back to the same run.",
+    "source": "[^S4]",
+    "pitfall": "Whether it's called this or prompt_id doesn't matter; what matters is this id exists and every record carries it.",
+    "distractor_rationale": "It only circles the range; rebuilding records into a tree still requires parent-child fields."
+  },
+  {
+    "term": "span_id",
+    "def": "This record's own id; other records point to it to declare 'I'm under you.'",
+    "source": "[^S4]",
+    "pitfall": "Logs are written in end-time order, so children often appear before parents—don't let file order mislead you when reconstructing.",
+    "distractor_rationale": "Different granularity from trace_id: one trace_id per run, one span_id per step."
+  },
+  {
+    "term": "parent_id",
+    "def": "A field pointing to the parent record's id; trees are reconstructed from on-disk JSONL using this.",
+    "source": "[^S4]",
+    "pitfall": "If something is missing from the tree, that's not a printing-code problem, it's a recording-code problem—what wasn't recorded won't appear in the tree.",
+    "distractor_rationale": "Parent-child relationships don't rely on in-memory call stacks but on persisted fields; this point makes them work across processes."
+  },
+  {
+    "term": "MAX_ROUNDS",
+    "def": "A hard gate on loop iteration count; exceeding it throws an error, records an interrupt, and exits non-zero.",
+    "source": "[^S2]",
+    "pitfall": "Loops without stopping conditions mean surrendering control; maximum iteration count is the cheapest gate.",
+    "distractor_rationale": "It governs 'did it run away,' not 'is the output correct'—the latter is the validator's job."
+  },
+  {
+    "term": "stop_reason",
+    "def": "The field in model responses that drives the harness loop to continue or finish.",
+    "source": "[^S2]",
+    "pitfall": "When finishing, it being end_turn doesn't mean the task succeeded—the agent might think it smoothly completed while missing a piece of data.",
+    "distractor_rationale": "It's a control-flow signal, not a quality signal; easily treated as evidence of 'success.'"
+  },
+  {
+    "term": "HEAD_CHARS",
+    "def": "The line defining how many characters maximum each content snippet in logs keeps; set to 0 and not a single word hits disk.",
+    "source": "[^S6]",
+    "pitfall": "Before adjusting it to record full text, the prerequisite is your observability pipeline is approved to store the data type your agent handles—pass approval before changing code.",
+    "distractor_rationale": "'Disk is cheap, record everything can't hurt' only holds on the disk dimension; compliance and searchability both take hits."
+  },
+  {
+    "term": "shape",
+    "def": "A field in records describing a value's type and scale: is it string or object, how long, what keys.",
+    "source": "[^S6]",
+    "pitfall": "Only counting call count without even recording shape means you can't answer 'which path did that errored read pass.'",
+    "distractor_rationale": "The dividing line isn't 'record or not' but 'record structure or record content': shape can locate, full text defaults to not landing on disk."
+  },
+  {
+    "term": "metrics summary",
+    "def": "One line outputting total rounds, tool call count, tokens, error count, and total duration—one piece of the observability three-part kit.",
+    "source": "[^S3]",
+    "pitfall": "The round count, call count, and tokens for the failing run might be nearly identical to normal runs; the only thing that changed is error count.",
+    "distractor_rationale": "It answers 'does this run look normal,' not 'is the output correct'—the latter needs separate verification."
+  },
+  {
+    "term": "compare-runs.mjs",
+    "def": "A comparison script that reads two run logs, compares side-by-side by record type and tool name, and exits non-zero if errors exist.",
+    "source": "[^S3]",
+    "pitfall": "Newly installed gates must first be run comparing a clean run with itself to confirm it genuinely lets through when 'should pass'—otherwise every exit code is untrustworthy.",
+    "distractor_rationale": "Gates ask 'does this run still have tool errors,' not 'is the final output correct.'"
+  },
+  {
+    "term": "gate",
+    "def": "A judgment wired to exit codes; non-zero can be caught by CI, cron, or any 'non-zero means alert' place.",
+    "source": "[^S3]",
+    "pitfall": "A check script that always returns 0 is the same as no check script—must construct a counter-example to verify it can distinguish.",
+    "distractor_rationale": "It only sends the signal out; anomaly detection and alerting are still the backend's responsibilities."
+  }
+]

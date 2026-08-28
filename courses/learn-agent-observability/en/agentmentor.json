@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Produce the English variant of the shipped Chinese course learn-agent-observability for learn.agentmentor.dev. Teaching rewrite in English (not a translation): same 6-lesson structure, same lesson slugs, same interactive-block ids and answer positions, source quotes restored to their verbatim English originals from sources.md, runnable code kept logic-identical with only comments and user-facing strings translated, cross-course references pointing at the live English course titles, natural desk-voice English prose with no AI-slop register.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "The owner ratified the multilingual plan explicitly: all six locales on learn.agentmentor.dev, English first, batches of 2-3 courses in path order with a commit per course. The zh course is the verified source of truth for scope, learner model, structure, and grounding, so no additional clarification was needed."
+  },
+  "learnerModel": {
+    "targetReader": "A developer who has finished the first ten courses in this series, runs an eval track, and wants to trace an agent failure to the exact step instead of guessing",
+    "knownConcepts": [
+      "Hand-writing a stop_reason-driven harness loop and tool_use/tool_result pairing (course 7)",
+      "The eval track and metrics beyond pass rate (course 10)",
+      "Checkpoints and resume (course 9)",
+      "Basic JavaScript / Node.js reading and writing"
+    ],
+    "unknownConcepts": [
+      "Why non-determinism breaks reproduce-then-debug",
+      "Raw transcripts as first-hand evidence vs the agent's self-report",
+      "Structured logging and metrics design for a harness",
+      "Trace trees, correlation IDs, and subagent nesting",
+      "How the telemetry pipeline itself lies (silent failures, batch loss)",
+      "Hooks as probes at loop lifecycle gates",
+      "A debugging workflow built for non-deterministic runs"
+    ],
+    "assumedEnvironment": "A Node.js environment, terminal access, a text editor, and the course-7 harness code available to extend",
+    "firstIndependentAction": "Take one failed run of their own agent and list which questions they cannot currently answer from the artifacts they have",
+    "noviceRamp": [
+      "Lesson 1 names the problem — one symptom over several externally indistinguishable causes — before any tooling",
+      "Lesson 2 establishes the evidence hierarchy: raw transcript first, self-report never",
+      "Lesson 3 adds structured logs and metrics; lesson 4 threads them into a trace tree with correlation IDs",
+      "Lesson 5 places hook probes at the loop's gates and walks the non-determinism-aware localization workflow",
+      "Lesson 6 wires the full observability layer onto the course-7 harness and runs one symptom-to-fix drill"
+    ]
+  },
+  "learnerBrief": "The target reader has finished the first ten courses, runs an eval track, and reads JavaScript. Evals tell them pass/fail but not why. The course gets them to treat raw transcripts as first-hand evidence, design structured logs and metrics, thread records into trace trees with correlation IDs, place hook probes at the loop's gates, and finally wire a complete observability layer onto the course-7 harness and walk one full symptom-to-fix debugging drill.",
+  "scope": "Covered: why non-determinism breaks reproduce-then-debug, raw transcripts as evidence, structured logging and metrics for a harness, trace trees with correlation IDs and subagent nesting, telemetry-pipeline failure modes, hooks as lifecycle probes, a localization workflow (filter by prompt id, find first divergence, replay stepwise), and a hands-on observability layer (JSONL logs + trace-tree printing + metrics rollup). Not covered: specific observability platforms (named only where citations name them), alert thresholds and SLO design (no first-party numbers exist), and course 10's eval methodology (the same metrics score there and diagnose here). Depth: from zero to tracing one real symptom to the step that caused it.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-observability/en/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Diagrams are kept exactly where the zh original uses them (the trace-tree structure), with labels rewritten in English; none added or removed. A span tree is the diagram-shaped content of this course, and the zh placement was already review-validated.",
+    "weakestPoints": [
+      "The sources.md writing-discipline rules are strict here — the five-step debugging workflow is the course's own arrangement and repro techniques carry no citations by design; readers wanting authority for those sections must treat them as engineering practice, which the text says explicitly",
+      "Telemetry pipeline failure modes are taught against one CLI's documented behavior; other stacks fail differently",
+      "The OTEL_* env-stripping negative result is version-bound product behavior and dated in the text",
+      "As an English teaching rewrite of a verified zh course, idiomatic drift is the residual risk: source quotes were restored verbatim and code kept logic-identical, but prose was re-taught rather than translated, so review must check meaning-equivalence against the zh lessons"
+    ],
+    "followUpChecks": [
+      "Render pass on learn.agentmentor.dev /en/agent-observability/... after deploy: all 6 lessons plus README, interactive cards hydrate",
+      "Verify every glossary term appears verbatim in the en lessons (attach check)",
+      "Verify every [^Sn] anchor in en lessons has a matching ## Sn block in en sources.md",
+      "Confirm the six check-block ids and correct-answer positions are byte-identical to zh (c/a/b/c/a/b in lesson order)",
+      "Re-run the capstone JS (JSONL logging, trace-tree print, metrics rollup, HEAD_CHARS=0 privacy tier) and confirm outputs match the asserted logs"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "The learner can wire a harness with an observability layer — one structured record per model request and tool call, a trace tree threaded by correlation IDs, a metrics rollup — then take one 'can't say why' symptom, filter by prompt id, find the first divergence, replay with identical inputs, fix, and show the re-run comparison.",
+    "interactionCheck": "Six agentmentor-check blocks, one per lesson (rerun-to-reproduce in L1, summary-vs-transcript in L2, error-count-lies in L3, silent-telemetry in L4, hook-otel-shortcut in L5, log-everything in L6), preserved from the zh variant with identical ids, modes, choice counts, and correct-answer positions; label, prompt, whyHere, choice text, and feedback are English teaching rewrites specific to each lesson's misconception. Exercises keep the zh Level structure with rubric, answer, and hints per Level.",
+    "learnerFitCheck": "The course assumes the prior ten courses: the harness loop, the eval track, and JavaScript. Evidence hierarchy, logging design, tracing, hooks, and the localization workflow are taught from zero in dependency order; the learner first assembles the full layer in lesson 6, after every prerequisite. Lesson 1's first exercise asks only for an unanswerable-questions audit of the reader's own failed run.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "English variant of a shipped zh course: structure, grounding, and answer positions inherited from the verified original",
+      "All interactive blocks preserve id/mode/choice-count/correct-answer byte-parity with zh",
+      "All source quotes restored to verbatim English originals and checked byte-exact against sources.md",
+      "The review-resolved L5/L6 seam declarations (step mapping, stub-vs-real reconciliation, tool-span nesting difference, field-vocabulary table) preserved in English"
+    ]
+  },
+  "nextSteps": [
+    "Run course-guard on the en variant and fix anything it flags",
+    "Deploy learn.agentmentor.dev and spot-check the /en pages render with hydrated interactive cards",
+    "Produce the remaining locale variants (ja/ko/es/pt-BR) using this en variant as the translation base",
+    "Encourage learners to run the symptom-to-fix drill on a real failure from their own agent as the post-course consolidation project"
+  ],
+  "memoryBoundary": "This agentmentor.json is a course-local state record, stored only in the course directory for quality checks and learning-path tracking. It is never written back to Claude Code or any host AI system's long-term memory and does not affect other courses or conversations."
+}
