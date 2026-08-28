@@ -1,0 +1,485 @@
+[
+  {
+    "term": "prompt engineering",
+    "def": "Methods for writing and organizing LLM instructions for optimal outcomes, focusing on how the instruction itself is written and arranged.",
+    "source": "[^S1]",
+    "pitfall": "Treating prompt engineering and context engineering as interchangeable names for the same practice.",
+    "distractor_rationale": "Learners encountering both terms may default to 'new replaces old' logic, missing the course's emphasis on natural progression rather than replacement."
+  },
+  {
+    "term": "context engineering",
+    "def": "The set of strategies for curating and maintaining the optimal set of tokens in the window during LLM inference, a tradeoff re-answered on every turn of the loop.",
+    "source": "[^S1]",
+    "pitfall": "Equating context engineering with 'writing a better system prompt' and treating it as a one-time setup task.",
+    "distractor_rationale": "Learners transitioning from prompt engineering habitually frame optimization as a one-time writing task, missing that context engineering is a dynamic process executed every turn."
+  },
+  {
+    "term": "attention budget",
+    "def": "A finite budget that LLMs draw on when parsing large volumes of context, depleted by every new token introduced.",
+    "source": "[^S1]",
+    "pitfall": "Believing that as long as the window isn't full, extra information sits unused and costs nothing.",
+    "distractor_rationale": "Learners thinking in terms of window capacity rather than budget consumption conflate 'it fits' with 'it costs nothing,' missing the distinction between capacity and attention."
+  },
+  {
+    "term": "context rot",
+    "def": "The phenomenon where the model's ability to accurately recall information from context decreases as the number of tokens in the window increases.",
+    "source": "[^S1]",
+    "pitfall": "Assuming context rot only appears in a few models and can be avoided entirely by switching to a stronger model.",
+    "distractor_rationale": "Learners focused on model capability differences may generalize 'degradation speed varies by model' into 'some models are immune,' ignoring the course's statement that this emerges across all models."
+  },
+  {
+    "term": "performance gradient",
+    "def": "The gradual downward performance curve that context rot follows as tokens increase, rather than a sudden failure at some token threshold.",
+    "source": "[^S1]",
+    "pitfall": "Expecting a clear token-count threshold where context rot triggers an error or complete failure.",
+    "distractor_rationale": "Learners accustomed to software's 'exceed threshold, get error' mental model may misread the gradual slope as a hard cliff with explicit warnings, missing that silent degradation is harder to diagnose than errors."
+  },
+  {
+    "term": "diminishing marginal returns",
+    "def": "Viewing context as a finite resource where the thousandth token and the hundred-thousandth occupy equal space but contribute vastly different value.",
+    "source": "[^S1]",
+    "pitfall": "Assuming that with sufficient window capacity, adding more information always brings proportional benefit.",
+    "distractor_rationale": "Learners with linear 'more is better' thinking assume information and benefit scale proportionally, missing the nonlinear phenomenon where later tokens have declining marginal value compared to earlier ones."
+  },
+  {
+    "term": "harness",
+    "def": "The entire engineering shell that carries an agent loop; the same model with different harnesses produces completely different results.",
+    "source": "[^S5]",
+    "pitfall": "Believing that as long as the underlying model is strong enough, harness implementation details don't matter much.",
+    "distractor_rationale": "Learners equating model capability with overall system performance tend to undervalue the engineering shell's role, missing that the same model in different harnesses yields drastically different outcomes."
+  },
+  {
+    "term": "natural progression",
+    "def": "Anthropic's positioning of context engineering as the natural evolution of prompt engineering, not a replacement; writing good system prompts remains necessary, just as one of many context components to manage.",
+    "source": "[^S1]",
+    "pitfall": "Interpreting 'natural progression' to mean prompt engineering is obsolete once context engineering arrives.",
+    "distractor_rationale": "Learners framing technical evolution as 'new replaces old' may misread 'progression' as 'obsolescence,' missing the course's explicit statement that system prompts remain a context component requiring management."
+  },
+  {
+    "term": "long-horizon tasks",
+    "def": "Agent tasks spanning multiple turns of inference and extended time, the scenario that compaction, structured notes, and multi-agent architectures collectively address.",
+    "source": "[^S1]",
+    "pitfall": "Assuming any task that runs for hours of wall-clock time necessarily requires the full suite of compaction, notes, and subagents.",
+    "distractor_rationale": "Learners equating 'long-horizon' with 'long runtime' may miss the course's repeated emphasis on proportion—these mechanisms are needed when the window genuinely approaches limits, not based on elapsed time."
+  },
+  {
+    "term": "altitude",
+    "def": "The abstraction level of a system prompt, describing whether instructions are too concrete with brittle hardcoded logic at one extreme, or too vague with no behavioral signal at the other.",
+    "source": "[^S1]",
+    "pitfall": "Believing the more specific and scenario-covering a system prompt is, the better its altitude automatically becomes.",
+    "distractor_rationale": "Learners equating 'specific' with 'high quality' may miss the course's identification of another failure extreme—hardcoding complex brittle logic into the prompt is also wrong altitude, not specificity done right."
+  },
+  {
+    "term": "Flying too low",
+    "def": "A system prompt failure mode: using numerous 'if...then...' rules to hardcode logic into the prompt, where uncovered cases fall into a catch-all branch.",
+    "source": "[^S1]",
+    "pitfall": "When the catch-all branch is frequently hit, thinking the solution is to keep adding more special-case conditions to the rule list.",
+    "distractor_rationale": "Engineers accustomed to patching bugs may treat this symptom as insufficient rule count and keep adding clauses, missing that the root problem is altitude—it needs principles, not more enumeration."
+  },
+  {
+    "term": "Floating too high",
+    "def": "A system prompt failure mode: only providing vague slogans with no concrete guidance, leaving the model with no actionable signal and unpredictable behavior drift.",
+    "source": "[^S1]",
+    "pitfall": "Believing that a sufficiently short, token-saving system prompt is automatically better than a verbose rule list.",
+    "distractor_rationale": "Learners treating 'save tokens' as the sole optimization goal may miss that saving tokens has a precondition—the prompt must still contain behavior-guiding heuristics; cutting to vague slogans loses control."
+  },
+  {
+    "term": "right altitude",
+    "def": "The recommended system prompt form: specific enough to guide behavior effectively, yet flexible enough to provide the model with strong heuristics.",
+    "source": "[^S1]",
+    "pitfall": "Thinking right altitude means never writing any specific rules, leaving everything to the model's interpretation of 'principles.'",
+    "distractor_rationale": "Learners remembering only half the conclusion 'principles over rules' may miss the course's emphasis on a two-layer structure of principles plus hard limits, assuming correct form means abandoning all concrete constraints."
+  },
+  {
+    "term": "principles plus hard limits",
+    "def": "The practical structure for right-altitude system prompts: a few judgment principles covering general scenarios, plus a small number of must-obey hard limits locking non-negotiable compliance boundaries.",
+    "source": "[^S1]",
+    "pitfall": "Writing the hard limits as an enumerated rule list sorted by specific scenarios, turning the boundaries themselves into low-altitude flying.",
+    "distractor_rationale": "Learners unclear on the boundary between 'principles' and 'limits' may conflate the two, treating hard limits as clauses that can be endlessly added like rule lists, falling back into hardcoding."
+  },
+  {
+    "term": "CLAUDE.md",
+    "def": "In Claude Code, a project-level configuration file loaded into context at the start of every conversation; should contain only broadly applicable, every-session content.",
+    "source": "[^S4]",
+    "pitfall": "Thinking the more comprehensive and detailed CLAUDE.md is, the better; stuffing rarely-used special conventions and build commands into it.",
+    "distractor_rationale": "Learners treating 'thorough documentation' as best practice may miss that CLAUDE.md is a resident layer loaded every session, costing attention budget every time; bloat drowns truly important instructions."
+  },
+  {
+    "term": "deletion test",
+    "def": "A method for auditing resident file content line by line: ask 'would removing this cause mistakes?' If the answer is no, delete it.",
+    "source": "[^S4]",
+    "pitfall": "Interpreting the deletion test as 'if a line looks useful, keep it' rather than genuinely judging whether removal causes errors.",
+    "distractor_rationale": "Learners with a conservative 'more information helps' mindset may quietly shift the test's standard from 'removal causes errors' to 'removal feels wasteful,' allowing resident files to keep bloating."
+  },
+  {
+    "term": "skills",
+    "def": "In Claude Code, packaged specialist capabilities loaded on demand rather than resident in every conversation like CLAUDE.md, preventing every session from becoming bloated.",
+    "source": "[^S4]",
+    "pitfall": "Treating skills like CLAUDE.md, assuming they're also preloaded into context at the start of every conversation as resident content.",
+    "distractor_rationale": "Learners not distinguishing between 'resident preload' and 'on-demand load' context management may conflate skills with CLAUDE.md loading timing, missing that skills are designed on-demand precisely to avoid carrying them every turn."
+  },
+  {
+    "term": "minimal overlap in functionality",
+    "def": "A tool design requirement: multiple tools should have clear functional boundaries, avoiding zones where both can do the same job.",
+    "source": "[^S1]",
+    "pitfall": "Believing that providing several functionally similar tools gives the model more choice and is a more flexible, friendly design.",
+    "distractor_rationale": "Learners equating 'more options' with 'higher flexibility' may miss that overlapping tools throw the 'which one to use' decision back at the model on every turn, adding unnecessary reasoning burden."
+  },
+  {
+    "term": "token efficient",
+    "def": "A design standard for tool return values: by default return only key fields, avoiding flooding the message history with large volumes of low-value information that repeatedly consume attention budget.",
+    "source": "[^S1]",
+    "pitfall": "Assuming tool returns should be as complete as possible for safety, defaulting to returning all potentially useful fields in one shot.",
+    "distractor_rationale": "Learners pursuing 'complete information, no omissions' may miss that these returns permanently stay in message history and get billed on every subsequent turn, mistaking 'full return' for prudence rather than treating it as an exceptional case needing on-demand fetch (like a detail parameter)."
+  },
+  {
+    "term": "canonical",
+    "def": "A standard for selecting few-shot examples: one example should represent an entire class of expected behavior, not an isolated specific situation.",
+    "source": "[^S1]",
+    "pitfall": "Thinking the more examples covering more specific scenarios, the better the model learns correct behavior.",
+    "distractor_rationale": "Learners accustomed to exhaustive-case teaching may treat canonical example count as a quality metric, missing the course's emphasis on few, diverse examples representing behavioral classes, not lengthening lists."
+  },
+  {
+    "term": "laundry list",
+    "def": "Adding a line to the example or rule list for every special case that appears in production, eventually accumulating into a long, tedious list—an anti-pattern to avoid.",
+    "source": "[^S1]",
+    "pitfall": "Adding every production badcase to the example list on the spot, believing this steadily increases coverage.",
+    "distractor_rationale": "Learners with a 'fix bugs one by one' maintenance mindset may treat adding edge cases as natural iteration, missing that most edge cases should be promoted to general principles in the system prompt, not elongating the list."
+  },
+  {
+    "term": "preloading",
+    "def": "The strategy of putting all potentially needed material into the initial context before inference begins, making everything visible to the model on turn one without retrieval.",
+    "source": "[^S1]",
+    "pitfall": "Believing that as long as the window fits it, preloading all possibly relevant material is the safest insurance with no downside.",
+    "distractor_rationale": "Learners extending the 'more information is safer' intuition may miss that preloading dilutes attention budget, conflating 'it fits' with 'it belongs,' while the course clearly states this requires filtering by 'stable and used every turn.'"
+  },
+  {
+    "term": "just-in-time retrieval",
+    "def": "The strategy of maintaining lightweight identifiers in the initial context and having the agent load content through tools at runtime, as needed.",
+    "source": "[^S1]",
+    "pitfall": "Treating just-in-time retrieval as a cost-free optimal solution, advocating all information should become runtime retrieval with nothing preloaded.",
+    "distractor_rationale": "Learners seeing only the initial window savings from just-in-time may miss that every retrieval is a full tool-call round trip costing latency and turn budget; the course explicitly states it's not free—pure just-in-time becomes expensive from retrieval detours."
+  },
+  {
+    "term": "lightweight identifiers",
+    "def": "Pointers to content rather than the content itself—file paths, stored queries, web links—for agents to expand on demand into full content at runtime.",
+    "source": "[^S1]",
+    "pitfall": "Thinking identifiers themselves carry too little information to have real value, believing only expanding them into full content counts as useful context.",
+    "distractor_rationale": "Learners focused only on 'content itself' may miss the course's emphasis that 'identifier metadata is itself signal'—file names, directory structure already hint at relevance without needing expansion to perform filtering."
+  },
+  {
+    "term": "metadata",
+    "def": "Information attached to identifiers like file names, directory structure, timestamps that hints at relevance and purpose without opening the content itself.",
+    "source": "[^S1]",
+    "pitfall": "Treating metadata as decorative auxiliary information, believing the model judges relevance primarily by opening files and reading full content.",
+    "distractor_rationale": "Learners with a 'seeing is believing' mindset may undervalue metadata, missing the course's example—a legacy directory untouched for two years, by name and timestamp alone, signals it probably doesn't need reading first; metadata completes a round of filtering."
+  },
+  {
+    "term": "incrementally discover",
+    "def": "The way agents rely on identifiers and retrieval tools to find truly relevant content step by step during exploration, rather than having everything presented at once.",
+    "source": "[^S1]",
+    "pitfall": "Assuming incremental discovery means the model must exhaustively flip through all candidate files to find truly relevant content.",
+    "distractor_rationale": "Learners not understanding 'metadata completes a round of filtering first' may imagine incremental discovery as inefficient carpet search, missing that file names, directory structure let the agent quickly narrow scope, reading only a few truly relevant files."
+  },
+  {
+    "term": "hybrid strategy",
+    "def": "The combined approach of preloading some data for speed and leaving the rest as identifiers for the model to explore autonomously at runtime—the common form in real systems.",
+    "source": "[^S1]",
+    "pitfall": "Treating preloading and just-in-time retrieval as mutually exclusive routes where an agent design must pick one, not both.",
+    "distractor_rationale": "Learners treating the course's contrasting discussion as a binary choice may miss the explicit statement that real systems rarely sit at either extreme; the common form is precisely combining the two."
+  },
+  {
+    "term": "trade-off framework",
+    "def": "A practical method for judging whether to preload or just-in-time retrieve each candidate material: ask 'is it stable' and 'is it used every turn' in sequence.",
+    "source": "[^S1]",
+    "pitfall": "Deciding to preload based solely on whether material is stable, ignoring the second equally necessary condition of 'used every turn.'",
+    "distractor_rationale": "Learners simplifying rules may remember only 'stable things get preloaded,' missing that the framework requires both questions answered 'yes' to preload, incorrectly preloading stable but infrequent large materials into initial context."
+  },
+  {
+    "term": "list_files",
+    "def": "An example retrieval tool in the course for listing files and subdirectories under a repo directory, the first step in just-in-time retrieval helping agents narrow scope.",
+    "source": "[^S1]",
+    "pitfall": "Thinking list_files should directly return complete file contents from the directory, not just file name lists.",
+    "distractor_rationale": "Learners unclear on the distinction between 'list' and 'read' actions may conflate list_files and read_file responsibilities, assuming one call should bring content too, missing the design principle of clear tool responsibilities with minimal overlap."
+  },
+  {
+    "term": "grep",
+    "def": "An example retrieval tool in the course for recursively searching text in a directory, returning matching lines with line counts capped to control token consumption.",
+    "source": "[^S1]",
+    "pitfall": "Believing grep should return all matched lines without limit to ensure no relevant information is missed.",
+    "distractor_rationale": "Learners worried about information loss may miss the course's emphasis on token efficiency principle, assuming truncation loses important information without noticing the tool description states excess is marked 'truncated,' letting the model decide whether to narrow the query further."
+  },
+  {
+    "term": "read_file",
+    "def": "An example retrieval tool in the course for reading a single file's content, stipulated for use only after list_files or grep has confirmed the file is relevant.",
+    "source": "[^S1]",
+    "pitfall": "Thinking you can skip list_files or grep filtering steps and just use read_file from the start to read candidate files one by one to find answers.",
+    "distractor_rationale": "Learners impatient with pre-filtering may take shortcuts and batch-read files directly, missing the tool description's explicit requirement 'use only after confirming relevance,' where skipping filtering degrades just-in-time retrieval into disguised full preloading."
+  },
+  {
+    "term": "The essence of search is compression",
+    "def": "Anthropic's summary of the search process: every retrieval narrows vast corpora and distills truly useful insights; just-in-time retrieval's every step performs this compression.",
+    "source": "[^S3]",
+    "pitfall": "Interpreting this statement to mean 'search tool implementation is a text compression algorithm' rather than describing the cognitive nature of the retrieval process.",
+    "distractor_rationale": "Learners making literal technical associations with 'compression' may misread this statement as discussing some data compression technology, missing the course context—it describes the cognitive analogy of 'narrowing possibly-relevant swaths down to definitely-needed pieces.'"
+  },
+  {
+    "term": "REPO_ROOT",
+    "def": "A constant in the course example code for specifying repo root directory path, with all three retrieval tools' file operations based on it to locate actual paths.",
+    "source": "[^S1]",
+    "pitfall": "Treating REPO_ROOT as a fixed API constant provided by some official SDK or framework, not a variable the course example defines that needs replacement with your own repo path.",
+    "distractor_rationale": "Learners memorizing code example identifiers as standard library members may miss the practice exercise's explicit hint 'change REPO_ROOT to connect to your harness,' assuming the name itself has special framework meaning."
+  },
+  {
+    "term": "compaction",
+    "def": "When a conversation nears the context window limit, passing message history to the model for summarization, then reinitiating a new context window from that summary.",
+    "source": "[^S1]",
+    "pitfall": "Thinking compaction means appending the generated summary to the end of old conversation history, keeping old and new content squeezed in the same window.",
+    "distractor_rationale": "Learners interpreting 'compaction' literally as 'making things smaller but staying in place' may miss the course's repeated emphasis on the key distinction—compaction 'reinitiates' a new window with old messages abandoned wholesale, not appended."
+  },
+  {
+    "term": "reinitiate",
+    "def": "The core action of compaction: opening an entirely new context window with the summary, abandoning the old message history wholesale rather than continuing to accumulate on the original conversation.",
+    "source": "[^S1]",
+    "pitfall": "Interpreting reinitiate as clearing everything to start from scratch, believing all work progress beyond the summary is lost.",
+    "distractor_rationale": "Learners conflating 'reinitiate' with 'reset to zero' may miss that reinitiation targets the messages data structure, while task progress continues precisely through that handoff summary (and notes), not starting from nothing."
+  },
+  {
+    "term": "handoff summary",
+    "def": "The summary text generated during compaction for the new window to read at startup, needing to preserve architectural decisions, unresolved problems, and key implementation details for the agent to continue working.",
+    "source": "[^S1]",
+    "pitfall": "Thinking handoff summaries should be as brief as possible, trimming aggressively to save tokens, with details recoverable later if needed.",
+    "distractor_rationale": "Learners over-pursuing brevity may miss compaction's lossy nature—once an unresolved bug or architectural decision is omitted from the summary, the new window can never spontaneously recover that information; over-simplification causes task disconnect."
+  },
+  {
+    "term": "COMPACT_INSTRUCTION",
+    "def": "A constant in the course example code defining compaction summarization instructions, explicitly requiring preservation of architectural decisions, unresolved problems, key implementation details, and discarding redundant tool output.",
+    "source": "[^S1]",
+    "pitfall": "Thinking this instruction just needs a line like 'briefly summarize conversation content,' with specific preservation left to the model's own judgment.",
+    "distractor_rationale": "Learners underestimating summarization instruction importance may write overly generic compaction instructions, while the course explicitly illustrates—a vague 'brief summary' may let the model drop unfinished bugs as completed, causing task derailment."
+  },
+  {
+    "term": "compact()",
+    "def": "The function implementing compaction in the course example: sending message history with summarization instruction to the model, then replacing the entire messages array with the returned summary to reinitiate a new window.",
+    "source": "[^S1]",
+    "pitfall": "Thinking the compact() function should modify in-place and return a 'longer messages array with summary appended' rather than returning a brand-new minimal array containing only the summary.",
+    "distractor_rationale": "Learners accustomed to 'accumulation' thinking for data processing may design compact()'s return value as old messages plus summary concatenation, missing the course code where its return is precisely the only new array meant to wholesale replace messages."
+  },
+  {
+    "term": "structured note-taking",
+    "def": "Having the agent proactively write key state to a persistent location outside the context window at the moment of making decisions or discovering problems, complementing passive, after-the-fact compaction.",
+    "source": "[^S1]",
+    "pitfall": "Treating structured notes and compaction as functionally redundant mechanisms where having compaction means notes are unnecessary extra maintenance.",
+    "distractor_rationale": "Learners not clarifying the division of labor may see notes and compaction as alternative options, while the course explicitly states they're complementary—proactive versus passive, lossless versus lossy; the more diligent the notes, the lighter compaction's loss."
+  },
+  {
+    "term": "NOTES.md",
+    "def": "The structured notes file maintained by the agent in the course example, recording finalized decisions, unresolved problems, and next-step plans, existing independently of conversation history in the filesystem.",
+    "source": "[^S1]",
+    "pitfall": "Thinking NOTES.md should preserve the agent's complete thinking process from every decision moment verbatim, the more detailed the better.",
+    "distractor_rationale": "Learners equating notes with 'complete logs' may write NOTES.md as verbose chronologies, while the course example shows a refined 'decided/unresolved/next' structure meant to help new windows quickly restore state, not replay full reasoning."
+  },
+  {
+    "term": "to-do list",
+    "def": "Claude Code's mechanism for maintaining task lists, like custom agents maintaining NOTES.md, both belonging to structured notes practices that externalize key state outside the window.",
+    "source": "[^S1]",
+    "pitfall": "Treating the to-do list as merely a progress display UI for users, not part of 'structured note-taking' context management techniques the course teaches.",
+    "distractor_rationale": "Learners interpreting to-do lists as pure UI features may miss the course's parallel with NOTES.md—both let key state live outside the context window for the agent to read back later as persistent memory."
+  },
+  {
+    "term": "/clear",
+    "def": "A Claude Code command for fully resetting context when switching to an unrelated new task, neither summarizing nor preserving old content.",
+    "source": "[^S4]",
+    "pitfall": "Treating /clear and automatic compaction as doing the same thing with different commands, usable interchangeably when the window nears limits.",
+    "distractor_rationale": "Learners not distinguishing 'same task continuing' from 'switching tasks' scenarios may conflate /clear and compaction, while the course clearly states compaction serves unfinished-task scenarios and /clear serves switching-to-unrelated-task scenarios with different tradeoff logic."
+  },
+  {
+    "term": "Auto-Compaction",
+    "def": "Claude Code's productized compaction mechanism: automatically triggering when conversation nears context limits, preserving important code and decisions without manual intervention.",
+    "source": "[^S4]",
+    "pitfall": "Thinking auto-compaction is a completely different technology from the hand-written compact() taught in the course, unrelated in principle.",
+    "distractor_rationale": "Learners separating 'product features' from 'course principles' may miss the course's explicit statement that auto-compaction and hand-written compact() are 'the same mechanism productized,' just with trigger timing and triage rules preconfigured."
+  },
+  {
+    "term": "Claude playing Pokémon",
+    "def": "A case Anthropic mentions to illustrate how memory mechanisms can transform agent capabilities in non-coding domains, not exclusive to coding tasks.",
+    "source": "[^S1]",
+    "pitfall": "Believing structured notes are only applicable to coding agent tasks, with no reference value for non-coding agents.",
+    "distractor_rationale": "Learners treating course example scenarios (bug fixing) as mechanism boundaries may miss this deliberate non-coding case showing notes mechanisms' universality, not limited to software debugging."
+  },
+  {
+    "term": "three moves",
+    "def": "The three classes of context management techniques for long-horizon tasks—compaction, structured note-taking, and multi-agent architectures—jointly aimed at keeping agents coherent and goal-directed over long action sequences.",
+    "source": "[^S1]",
+    "pitfall": "Thinking all three moves must be used together to qualify as a proper long-task solution, none optional.",
+    "distractor_rationale": "Learners interpreting 'three-piece set' as 'must use all three' may miss the course's repeated proportion principle—add only when extra complexity demonstrably improves outcomes; tasks finishing in ten-plus turns may need none of these."
+  },
+  {
+    "term": "subagent",
+    "def": "A mechanism handling focused tasks in clean context windows, returning only compressed summaries to the main agent, valuable not just for multi-agent collaboration but for context isolation itself.",
+    "source": "[^S1]",
+    "pitfall": "Thinking the subagent mechanism's core value is multi-agent division of labor and speed improvement, not context isolation.",
+    "distractor_rationale": "Learners conflating subagents with 'course 6 multi-agent collaboration intro' may miss this course's perspective shift—even with a single lead agent needing no team coordination, subagents are still worth using for clean-window isolation benefits."
+  },
+  {
+    "term": "clean window",
+    "def": "The brand-new context window subagents use at startup, carrying none of the main agent's message history, ensuring the attention budget is fully spent on the focused task itself.",
+    "source": "[^S1]",
+    "pitfall": "Thinking passing the main agent's complete history to the subagent gives it better big-picture understanding for better work.",
+    "distractor_rationale": "Learners believing 'more information is better' may miss clean window value comes precisely from isolation—sharing full history makes both windows hold the same pile, zeroing isolation benefits."
+  },
+  {
+    "term": "intelligent filters",
+    "def": "Anthropic's metaphor for the subagent role: replacing the main agent in condensing the most important tokens from the exploration process, corpus goes in, key points come out.",
+    "source": "[^S3]",
+    "pitfall": "Interpreting 'filters' as subagents mechanically screening out some content, not proactively summarizing and refining like intelligent processing.",
+    "distractor_rationale": "Learners taking 'filtering' literally as simple trimming may miss the course's emphasis that subagents produce compressed, refined summaries, not excerpts picked from original exploration content—fundamentally different information processing."
+  },
+  {
+    "term": "process-to-conclusion ratio",
+    "def": "One criterion for judging whether a task is worth dispatching to a subagent: the volume ratio between intermediate exploration content and final conclusion; the more lopsided, the greater the isolation payoff.",
+    "source": "[^S1]",
+    "pitfall": "Thinking the more lopsided the process-to-conclusion ratio, the simpler the task and less worth dispatching to a subagent.",
+    "distractor_rationale": "Learners intuitively equating 'lopsided ratio' with 'small workload' may reverse judgment direction—the course states tasks where process far exceeds conclusion (like flipping dozens of files for a few-line conclusion) are most worth isolating, keeping massive process inside the subagent."
+  },
+  {
+    "term": "runSubagent",
+    "def": "The function in the course example code for starting the subagent loop: opening with an isolated task description as a brand-new message array, returning only the model's final text conclusion.",
+    "source": "[^S1]",
+    "pitfall": "Thinking runSubagent should return the subagent's complete message history (including all tool round trips) to the caller so the main agent can archive references.",
+    "distractor_rationale": "Learners worried about information loss wanting to 'keep records' may have runSubagent return full history, missing the practice exercise's specific diagnosis of this 'fake isolation' error—once full history is spliced back into the main window, isolation benefits vanish."
+  },
+  {
+    "term": "dispatch_research",
+    "def": "The tool on the main agent side in the course example for dispatching research tasks to subagents, returning the subagent's summary conclusion after hooking into the stop_reason loop.",
+    "source": "[^S1]",
+    "pitfall": "Thinking when calling dispatch_research you can omit clarifying the task since the subagent can see part of the main conversation's context anyway.",
+    "distractor_rationale": "Learners not fully grasping 'clean window' may underestimate task-description self-containment requirements, while the tool description explicitly states 'subagent cannot see this conversation's history,' task description must be written for a completely amnesiac new window."
+  },
+  {
+    "term": "SUBAGENT_SYSTEM",
+    "def": "A constant in the course example code for the subagent's dedicated system prompt, requiring the subagent to output conclusions under 1500 tokens and not repeat read original text.",
+    "source": "[^S1]",
+    "pitfall": "Thinking subagents should reuse the main agent's system prompt without writing a separate one.",
+    "distractor_rationale": "Learners assuming 'system prompts should be globally unified' may miss subagents and main agents have completely different responsibilities—subagents need special constraints (like no original text repetition, conclusion length control) to ensure summary compression quality, not usually in main agent prompts."
+  },
+  {
+    "term": "handoff",
+    "def": "When starting a new clean-window subagent to continue a previous subagent's work in long tasks, the action of maintaining task continuity by passing key points.",
+    "source": "[^S3]",
+    "pitfall": "Thinking handoff documents just need a line 'continue what the previous subagent didn't finish,' with specifics left for the new subagent to explore.",
+    "distractor_rationale": "Learners underestimating handoff document importance may treat handoff as one-sentence relay, while the course explicitly requires handoff documents follow 'preserve architectural decisions, unresolved problems, key implementation details' triage standards, same craft as writing compaction summaries."
+  },
+  {
+    "term": "multi-agent architectures",
+    "def": "An architectural pattern of dispatching exploration work to independent subagents, recovering only compressed summaries—one of the three moves for long-horizon tasks.",
+    "source": "[^S1]",
+    "pitfall": "Thinking the main purpose of multi-agent architectures is to save overall token spending.",
+    "distractor_rationale": "Learners defaulting 'architecture upgrades' to 'cost reduction' may miss the course's explicit cost truth—multi-agent architectures aren't money-savers; total tokens only increase; it buys windows not degrading, a trade of more total tokens for attention density."
+  },
+  {
+    "term": "4× (agent versus chat token usage)",
+    "def": "Based on Anthropic's measurements of its multi-agent research system, a single agent's token usage is about 4× that of ordinary chat interaction—this system's empirical measurement, not a universal law.",
+    "source": "[^S3]",
+    "pitfall": "Treating this 4× number as a universal rule applicable to all agent systems for budgeting any scenario's costs.",
+    "distractor_rationale": "Learners accustomed to using specific case data as universal formulas may miss the course's repeated reminder this is Anthropic's own multi-agent research system's measured result, with wording 'about' and explicitly noted as not a universal law."
+  },
+  {
+    "term": "15× (multi-agent versus chat token usage)",
+    "def": "Based on Anthropic's measurements of its multi-agent research system, the entire multi-agent system's token usage is about 15× that of ordinary chat interaction—also this system's empirical measurement, not a universal law.",
+    "source": "[^S3]",
+    "pitfall": "Thinking this number means any design introducing subagents must inevitably pay 15× cost, concluding subagents are generally uneconomical.",
+    "distractor_rationale": "Learners treating single-system measurements as universal cost coefficients may miss the course's explicit statement that whether it's worth it depends on process-to-conclusion ratio and the task itself, not applying a fixed multiplier for one-size-fits-all conclusions."
+  },
+  {
+    "term": "80% (token usage explaining performance variance)",
+    "def": "Based on Anthropic's measurements of its multi-agent research system, token usage alone explains 80% of that system's performance variance—important reference data for judging whether isolation is worthwhile.",
+    "source": "[^S3]",
+    "pitfall": "Thinking this number means continuously increasing token usage brings proportionally better task performance.",
+    "distractor_rationale": "Learners misreading 'explains variance' as 'positive causal leverage' may conclude 'more tokens spent equals better results,' while this is just statistical attribution of performance difference sources in that system, not meaning unlimited token investment linearly improves performance."
+  },
+  {
+    "term": "CONTEXT_WINDOW",
+    "def": "A constant in the course example code representing the context window capacity limit, set in engineering judgment according to the actual model used.",
+    "source": "[^S1]",
+    "pitfall": "Thinking CONTEXT_WINDOW can be set to any arbitrarily large safe value without aligning with the actual model's window size.",
+    "distractor_rationale": "Learners insensitive to model specs may treat this constant as a pure engineering placeholder to fill arbitrarily, while course code comments explicitly prompt 'set according to your actual model's real limit in real projects,' wrong setting directly affects compaction trigger timing accuracy."
+  },
+  {
+    "term": "COMPACT_RATIO",
+    "def": "A constant in the course example code defining the compaction trigger threshold ratio; usage exceeding window capacity times this ratio triggers compaction.",
+    "source": "[^S1]",
+    "pitfall": "Believing COMPACT_RATIO has an industry-standard value that should be looked up and applied when writing code.",
+    "distractor_rationale": "Learners seeking 'standard configuration' may miss the course's explicit statement this ratio 'has no standard answer, is an engineering judgment not a spec clause,' needing adjustment based on model window size and single-turn tool output volume."
+  },
+  {
+    "term": "shouldCompact",
+    "def": "The judgment function in the course example code: checking whether current cumulative token usage has reached or exceeded the compaction threshold, deciding whether to trigger compaction.",
+    "source": "[^S1]",
+    "pitfall": "Thinking shouldCompact needs to know which compaction this is, how many times compaction has historically occurred, to correctly judge this time.",
+    "distractor_rationale": "Learners imagining compaction logic needs complex state machines may overestimate shouldCompact's responsibilities, while the course explicitly states it 'doesn't care which window this is, only looks at current window usage,' judgment logic is actually quite simple."
+  },
+  {
+    "term": "tokensUsed",
+    "def": "The counter variable in the course example code tracking current window's cumulative token usage; must reset to zero after compaction triggers and completes, representing 'how much this window has used' not historical totals.",
+    "source": "[^S1]",
+    "pitfall": "Thinking tokensUsed should continuously accumulate representing total tokens spent from task start to now, no reset needed after compaction.",
+    "distractor_rationale": "Learners defaulting 'cumulative usage' to 'historical total' may miss the post-compaction reset step, precisely the root of the 'compaction storm' bug the course exercise specifically diagnoses—not resetting makes shouldCompact permanently true from first trigger onward."
+  },
+  {
+    "term": "trackUsage",
+    "def": "The utility function in the course example code: accumulating each model response's input_tokens and output_tokens into the tokensUsed counter.",
+    "source": "[^S1]",
+    "pitfall": "Thinking trackUsage only needs to count output_tokens since that's what the model 'actually newly wrote' this turn.",
+    "distractor_rationale": "Learners focusing only on model output, ignoring input costs, may miss input_tokens, while the course code explicitly accumulates both response.usage.input_tokens and output_tokens into the counter, because both actually consume window capacity and budget."
+  },
+  {
+    "term": "update_notes",
+    "def": "The tool in the course example code for the agent to write to NOTES.md, with semantics of each write being complete content wholesale overwrite, no incremental merging needed.",
+    "source": "[^S1]",
+    "pitfall": "Thinking update_notes input should be this round's newly added incremental content, with the tool implementation automatically appending it after existing notes.",
+    "distractor_rationale": "Learners accustomed to 'incremental update' common data operation patterns may misjudge update_notes semantics, while the course explicitly states it's 'complete content to save this time, overwrite write'—simplest 'this is the current state' semantics, no merge logic needed."
+  },
+  {
+    "term": "runAgent",
+    "def": "The main function in the course example code combining usage tracking, threshold-triggered compaction, and note reading/writing into the same loop for running tasks exceeding single-window capacity.",
+    "source": "[^S1]",
+    "pitfall": "Thinking whenever you write an agent loop, you should default to this full runAgent version, treating usage tracking, threshold compaction, structured notes as standard package.",
+    "distractor_rationale": "Learners seeing complete implementation examples may develop 'this is the right way' illusions, missing the course ending 'proportion' section reminder—add only when extra complexity demonstrably improves outcomes; tasks finishing in ten-plus turns need none of these parts."
+  },
+  {
+    "term": "Compaction Storm",
+    "def": "A bug phenomenon where forgetting to reset tokensUsed after compaction causes nearly every subsequent turn to incorrectly trigger compaction, making the task loop in place repeatedly summarizing and restarting.",
+    "source": "[^S1]",
+    "pitfall": "When seeing frequent compaction triggers, attributing cause to COMPACT_RATIO set too low, thinking raising the threshold solves it.",
+    "distractor_rationale": "Learners directly adjusting parameters upon seeing surface symptoms may attribute root cause to threshold settings without checking whether post-compaction tokensUsed was reset—the course exercise explicitly identifies the root as counter semantics confusion, threshold adjustment treats symptoms not root."
+  },
+  {
+    "term": "threshold-triggered compaction",
+    "def": "The mechanism hooking compaction into the loop: proactively triggering compaction and continuing work when usage accumulation reaches the set threshold ratio, not waiting until the window actually blows up.",
+    "source": "[^S1]",
+    "pitfall": "Conflating threshold-triggered compaction with course 7's budget valve (stop when usage tops out), thinking post-trigger actions are both stopping agent work.",
+    "distractor_rationale": "Learners analogizing two 'triggered by reaching volume' mechanisms may miss the course's explicit distinction—both use the same accumulator data, but budget valve topping out is braking (stop), threshold-triggered compaction reaching threshold is breathing (compact and keep working), completely different actions."
+  },
+  {
+    "term": "readNotes",
+    "def": "The function in the course example code: reading current note content from NOTES.md, returning a placeholder prompt text on read failure (file doesn't exist yet).",
+    "source": "[^S1]",
+    "pitfall": "Thinking readNotes should be called once every loop iteration, carrying note content into each request to ensure information is always visible.",
+    "distractor_rationale": "Learners pursuing 'information always visible' may advocate frequent readNotes calls, while the course's in-lesson check specifically discussed this proposal—notes should be read once at critical moments like window restart, not stuffed into every turn's request repeatedly consuming attention budget."
+  },
+  {
+    "term": "writeNotes",
+    "def": "The function in the course example code: writing passed-in complete note content to the NOTES.md file, for the update_notes tool to use when called.",
+    "source": "[^S1]",
+    "pitfall": "Thinking writeNotes needs to judge old-new content differences, writing only changed parts to improve write efficiency.",
+    "distractor_rationale": "Learners not fully grasping 'wholesale overwrite write' simplified semantics may imagine complex incremental comparison responsibilities for writeNotes, while the course implementation just wholesales complete content, complexity deliberately minimized."
+  },
+  {
+    "term": "compaction call",
+    "def": "The extra model call triggered during compaction for generating the handoff summary; this call's output is directly used to restart the message array, not entering the main loop for continued reasoning.",
+    "source": "[^S1]",
+    "pitfall": "Treating the compaction call like main loop's normal calls, also needing to check its stop_reason to judge whether the loop should continue.",
+    "distractor_rationale": "Learners mechanically applying main loop judgment logic may miss the course's reminder—compaction call 'stop_reason no longer matters because this response never enters the main loop,' its output is just directly taken to restart messages, not participating in continuation judgment."
+  }
+]
