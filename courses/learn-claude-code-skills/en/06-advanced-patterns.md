@@ -536,5 +536,3 @@ You can now:
 **Remember:** a good Skill isn't written once and finished — it gets shaped by being used. [^S8][^S10]
 
 Now go build the workflows you keep re-explaining.
-</content>
-</invoke>

@@ -1514,4 +1514,3 @@ These six things are six facets of one thing: **In code you wrote, you're contro
 
 Final step lands on concrete action: swap `orchestrate.mjs`'s `makeStubClient(queue)` to `new Anthropic()`, delete `SCRIPTS` table, install back Course 7's three unmoved valves, then dump your work's real piled batch of tasks—real tickets, real logs, real todos—into `inbox/`, run first time. It'll likely have a few landing in `needs_human`, that's exactly what this graph should look like.
 
-<!-- PART_13_END_MARKER -->

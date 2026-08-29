@@ -1514,4 +1514,3 @@ T-1006   other     vote:plain        0           gate_pass       pass
 
 最後の一歩は具体的な行動に着地します。`orchestrate.mjs` の `makeStubClient(queue)` を `new Anthropic()` に差し替え、`SCRIPTS` の表を削除し、コース7の移っていない3つのバルブを戻し、そして自分の仕事で実際に積み上がっている一群のタスク——本物のチケット、本物のログ、本物の todo——を `inbox/` に放り込んで、初回を走らせてください。おそらく何件かが `needs_human` に落ちるはずです。それこそが、このグラフのあるべき姿です。
 
-<!-- PART_13_END_MARKER -->
