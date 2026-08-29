@@ -121,12 +121,12 @@ Onde ele não se encaixa:
 ❌ **Escrita criativa**: poemas, histórias — as etapas de raciocínio quebram o fluxo criativo
 ❌ **Conversão de formato**: JSON → CSV — é uma operação mecânica, não exige raciocínio
 
-Regra prática: se você pegaria papel e caneta para listar as etapas ao fazer a tarefa por conta própria, ela combina com CoT.
+Regra prática: se você pega papel e caneta para listar as etapas ao fazer a tarefa por conta própria, ela combina com CoT.
 
 ```agentmentor-check
 {
   "id": "prompt-engineering-cot-task-fit",
-  "label": "Adequação de CoT",
+  "label": "Adequação de uma tarefa ao CoT",
   "prompt": "Qual destas tarefas é a que mais combina com chain-of-thought prompting?\n\nA: Traduzir este texto em inglês para o português\nB: Analisar a complexidade de tempo deste código e explicar por quê\nC: Gerar 10 nomes criativos de produto\nD: Reescrever este texto em um tom formal",
   "whyHere": "Verifica se você percebe que o CoT combina com tarefas de raciocínio de várias etapas, e não com conversões simples ou geração criativa — exatamente a armadilha que leva as pessoas a acoplar CoT em tudo",
   "mode": "single",
@@ -334,7 +334,7 @@ Algumas tarefas (escrita criativa, avaliação de arte) se apoiam numa impressã
 
 ## Recapitulação
 
-O chain-of-thought prompting faz a IA mostrar as etapas do seu raciocínio em vez de pular direto para uma resposta. Acrescentando “vamos pensar passo a passo” ao prompt, ou fornecendo exemplos que incluem o raciocínio, você aumenta bastante a acurácia em tarefas de raciocínio de várias etapas.
+O chain-of-thought prompting faz a IA mostrar as etapas do seu raciocínio em vez de pular direto para uma resposta. Acrescentando “vamos pensar passo a passo” ao prompt, ou fornecendo exemplos que incluem o raciocínio, você consegue aumentar bastante a acurácia em tarefas de raciocínio de várias etapas.
 
 O CoT combina com raciocínio matemático, análise lógica, inferência de causas, decisões complexas — qualquer coisa que exija várias etapas de pensamento. Ele torna o raciocínio visível e conferível. Ele de fato aumenta o tamanho da saída, mas, em tarefas complexas, o retorno supera de longe o custo.
 

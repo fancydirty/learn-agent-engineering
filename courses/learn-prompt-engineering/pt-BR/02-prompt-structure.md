@@ -26,7 +26,7 @@ Você não precisa dos quatro toda vez, mas quanto mais complexa a tarefa, mais 
 
 ### 1. Papel: a partir de que identidade a IA deve responder
 
-O **papel** diz à IA com que perspectiva e nível de especialidade responder[^S3]. A mesma pergunta recebe uma resposta completamente diferente de um especialista técnico e de uma professora do ensino fundamental.
+O **papel** diz à IA com que perspectiva e nível de especialidade responder[^S3]. A mesma pergunta recebe uma resposta completamente diferente se quem responde é um especialista técnico ou uma professora do ensino fundamental.
 
 Compare estes dois prompts:
 
@@ -140,7 +140,7 @@ Recomende alguns recursos para aprender Python.
 A IA pode te dar:
 - Uma dúzia de livros, cursos e sites
 - Coisas de iniciante a avançado
-- Uma mistura de pago e gratuito, em inglês e em outras línguas
+- Uma mistura de pago e gratuito, em português e em outros idiomas
 
 Com restrições:
 ```
@@ -190,8 +190,8 @@ Os quatro elementos:
 - Itens de ação (responsável + prazo)
 
 [Restrições]
-- Registre apenas discussões que chegaram a uma conclusão clara; pule as
-  conversas paralelas
+- Registre apenas discussões que chegaram a uma conclusão clara; pule o
+  bate-papo informal
 - Todo item de ação precisa ser acionável (um verbo + uma entrega
   verificável)
 - Mantenha o texto todo abaixo de 500 palavras

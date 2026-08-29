@@ -93,7 +93,7 @@ Anote a mudança que funcionou para reutilizá-la na próxima vez que esbarrar n
 ```agentmentor-check
 {
   "id": "prompt-engineering-debugging-identify-fix",
-  "label": "Diagnóstico do problema",
+  "label": "Diagnóstico do problema no prompt",
   "prompt": "Seu prompt é: “Escreva código Python que ordene uma lista.” A IA devolve um bubble sort, mas você queria que ela usasse a função embutida sorted(). Como você deve mudar o prompt?\n\nA: “Escreva código Python que ordene uma lista da forma mais simples possível”\nB: “Escreva código Python que ordene uma lista usando a função embutida sorted() do Python; não implemente um algoritmo de ordenação por conta própria”\nC: “Escreva código Python que ordene uma lista de forma rápida e eficiente”\nD: “Escreva código Python de alta qualidade que ordene uma lista”",
   "whyHere": "Isto verifica se você pegou o cerne da depuração: dizer o que você quer e o que você não quer, em vez de se apoiar em adjetivos vagos.",
   "mode": "single",
@@ -140,7 +140,7 @@ Anote a mudança que funcionou para reutilizá-la na próxima vez que esbarrar n
 
 ### Problema 2: informação faltando
 
-**Sintoma**: a saída traz só parte dos dados e sempre derruba certos campos.
+**Sintoma**: a saída traz só parte dos dados e sempre omite certos campos.
 
 **Diagnóstico**: você nunca listou a informação de que precisa.
 
@@ -251,7 +251,7 @@ Agora você sabe o que cada mudança rendeu e, se uma versão nova sair pior, d�
 
 ### Prática 3: faça teste A/B nas mudanças em que você tem dúvida
 
-Não tem certeza se uma mudança ajuda de verdade? Mantenha as duas versões, rode cada uma 10 vezes e compare a taxa de acerto. Isso é um teste A/B: muda-se um fator por vez e deixa-se os dados decidirem.
+Não tem certeza se uma mudança ajuda de verdade? Mantenha as duas versões, rode cada uma 10 vezes e compare a taxa de acerto. Isso é um teste A/B: mude um fator por vez e deixe os dados decidirem.
 
 **Exemplo**: você não tem certeza se acrescentar “vamos pensar passo a passo” ajuda mesmo.
 

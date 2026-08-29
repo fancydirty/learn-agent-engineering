@@ -1,6 +1,6 @@
 # Fontes
 
-Todos os fatos e definições centrais deste curso vêm dos materiais a seguir. As citações permanecem no idioma original.
+Todos os fatos e definições centrais deste curso vêm dos materiais a seguir. As citações permanecem no idioma original, o inglês.
 
 <!-- registry: A11 -->
 

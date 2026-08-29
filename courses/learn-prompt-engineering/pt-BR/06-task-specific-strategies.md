@@ -9,7 +9,7 @@
 
 ## Tarefas diferentes exigem estratégias de prompt diferentes
 
-Você já aprendeu a estrutura básica de um prompt, few-shot, CoT e como depurar — essas são habilidades gerais. Mas tipos diferentes de tarefa têm suas próprias manias e armadilhas, e pedem estratégias direcionadas.
+Você já aprendeu a estrutura básica de um prompt, few-shot, CoT e como depurar — essas são habilidades gerais. Mas tipos diferentes de tarefa têm suas próprias peculiaridades e armadilhas, e pedem estratégias direcionadas.
 
 Geração de código precisa de entradas, saídas e casos-limite claros; escrita de documentos precisa de um público e um tom definidos; extração de dados precisa lidar com valores ausentes e manter o formato consistente. Esta lição percorre técnicas concretas para três tipos comuns de tarefa.[^S12]
 
@@ -53,8 +53,8 @@ Requisitos:
 
 Exemplo:
 Entrada: [{"name": "Alice", "age": 20, "email": "a@example.com"},
-        {"name": "Bob", "age": 15, "email": "b@example.com"},
-        {"name": "Charlie", "age": 25, "email": "a@example.com"}]
+          {"name": "Bob", "age": 15, "email": "b@example.com"},
+          {"name": "Charlie", "age": 25, "email": "a@example.com"}]
 Saída: ["a@example.com"]
 ```
 
@@ -141,7 +141,7 @@ Resuma este documento técnico
 
 ✅ **Prompt claro**:
 ```
-Você é um technical writer, bom em transformar documentação técnica
+Você é um redator técnico, bom em transformar documentação técnica
 complexa em resumos que qualquer pessoa acompanha.
 
 Tarefa: resuma a documentação de API abaixo como um guia de início rápido
@@ -171,7 +171,7 @@ Esse prompt amarra o público (pessoas de engenharia frontend), o objetivo (iní
 
 ```
 Público:
-- Papel: pessoa de product management
+- Papel: gerente de produto
 - Nível técnico: não programa, mas entende conceitos básicos de arquitetura de software
 - Objetivo de leitura: decidir se adota esta abordagem
 ```
@@ -208,7 +208,7 @@ Nível de detalhe:
 ### Prompts de anotações de reunião
 
 ```
-Você é uma pessoa assistente de projeto, boa em extrair os pontos
+Você é um assistente de projeto, bom em extrair os pontos
 principais de gravações ou transcrições de reunião.
 
 Tarefa: escreva as anotações da reunião a partir da transcrição abaixo.
@@ -232,7 +232,7 @@ Estrutura de saída:
    - Prazo
 
 Restrições:
-- Registre apenas discussões com conclusão clara, pule as conversas paralelas
+- Registre apenas discussões com conclusão clara, pule o bate-papo informal
 - Todo item de ação precisa ser verificável (tem uma entrega clara)
 - Tamanho total de no máximo 500 palavras
 
@@ -362,13 +362,13 @@ em vez dos dados inválidos.
       "id": "c",
       "text": "C - Explicar as definições de prós e contras",
       "correct": false,
-      "feedback": "❌ Uma explicação escrita não é tão clara quanto um exemplo. Você pode escrever um parágrafo dizendo “um pró é algo que a pessoa usuária considera bom”, mas um exemplo concreto (“ótima qualidade” → pró) torna muito mais fácil para a IA entender."
+      "feedback": "❌ Uma explicação escrita não é tão clara quanto um exemplo. Você pode escrever um parágrafo dizendo “um pró é algo que o usuário considera bom”, mas um exemplo concreto (“ótima qualidade” → pró) torna muito mais fácil para a IA entender."
     },
     {
       "id": "d",
       "text": "D - Definir o papel da IA como analista de produto",
       "correct": false,
-      "feedback": "❌ Um papel pouco acrescenta numa tarefa de extração. A dificuldade aqui não é um ponto de vista especialista, e sim reconhecimento e formatação precisos. Uma pessoa analista de produto e uma pessoa comum julgam “ótima qualidade” como um pró do mesmo jeito."
+      "feedback": "❌ Um papel pouco acrescenta numa tarefa de extração. A dificuldade aqui não é um ponto de vista especialista, e sim reconhecimento e formatação precisos. Um analista de produto e uma pessoa comum julgam “ótima qualidade” como um pró do mesmo jeito."
     }
   ]
 }
@@ -447,7 +447,7 @@ Para cada tarefa, responda:
 
 3. **Por que isso importa**:
    - Busca binária tem várias implementações (recursiva vs. iterativa, intervalo semiaberto vs. fechado); sem especificidade você não sabe qual vai receber
-   - Casos-limite são onde a busca binária mais gera bug (erro de um a mais), então precisam ser declarados
+   - Casos-limite são onde a busca binária mais gera bug (off-by-one), então precisam ser declarados
    - Código de algoritmo deve se explicar sozinho; comentar demais na verdade atrapalha a legibilidade
 
 ---
@@ -529,7 +529,7 @@ Seu prompt precisa:
 
 ````
 [Papel] Você é uma pessoa sênior de engenharia especializada em code review
-de Python, focada em otimização de desempenho e endurecimento de segurança.
+de Python, focada em otimização de desempenho e reforço de segurança.
 
 [Tarefa] Revise o código Python abaixo em busca de possíveis problemas de
 desempenho e falhas de segurança.

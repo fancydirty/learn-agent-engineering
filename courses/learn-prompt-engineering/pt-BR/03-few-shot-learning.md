@@ -56,7 +56,7 @@ Classificação: positiva
 Avaliação: Completamente inutilizável, dinheiro jogado fora.
 Classificação: negativa
 
-Avaliação: As funcionalidades são boas, mas o suporte é lento.
+Avaliação: As funcionalidades são razoáveis, mas o suporte é lento.
 Classificação: neutra
 
 Agora classifique esta avaliação:
@@ -338,15 +338,15 @@ Quando ele não se encaixa:
 - **Cada entrada é única**: escrita criativa, brainstorming — os exemplos só te encaixotam
 - **É preciso conhecimento externo**: “quem ganhou a Copa do Mundo de 2024” — exemplos não ajudam
 
-Uma regra prática: se você poderia mostrar 2 ou 3 exemplos a um colega humano e ele entenderia o que fazer, o few-shot é uma boa escolha.
+Uma regra prática: se você pudesse mostrar 2 ou 3 exemplos a um colega humano e ele entendesse o que fazer, o few-shot é uma boa escolha.
 
 ## Recapitulação
 
-O few-shot learning usa de 2 a 5 exemplos para fazer a IA captar o padrão que você quer, o que é mais claro do que descrevê-lo com palavras. Exemplos de alta qualidade são: moderados em número (2 a 5), representativos e diversos, idênticos em formato e inclusivos de casos-limite.
+O few-shot learning usa de 2 a 5 exemplos para fazer a IA captar o padrão que você quer, o que é mais claro do que descrevê-lo com palavras. Exemplos de alta qualidade são: moderados em número (2 a 5), representativos e diversos, idênticos em formato e com casos-limite incluídos.
 
 O few-shot se encaixa melhor em conversão de formato, classificação e imitação de estilo. Ao projetar exemplos, comece com 2, garanta que cubram tipos diferentes de entrada e use o mesmo formato em todos eles.
 
-A próxima lição cobre chain-of-thought — como fazer a IA mostrar seus passos de raciocínio e melhorar a precisão em tarefas complexas.
+A próxima lição cobre chain-of-thought — como fazer a IA mostrar suas etapas de raciocínio e melhorar a precisão em tarefas complexas.
 
 **Próxima lição** [Chain-of-Thought: fazendo a IA mostrar seu raciocínio >>](./04-chain-of-thought.md)
 

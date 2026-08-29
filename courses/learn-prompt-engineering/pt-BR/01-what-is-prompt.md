@@ -66,7 +66,7 @@ A IA fica adivinhando:
 ✅ **Prompt claro:**
 ```
 Escreva uma função Python que recebe uma lista de avaliações de usuários
-(1-5), filtra qualquer nota abaixo de 3 e retorna a média do que sobrou,
+(1-5), descarta qualquer nota abaixo de 3 e retorna a média do que sobrou,
 arredondada para uma casa decimal. Inclua type hints e uma docstring.
 ```
 
@@ -115,9 +115,9 @@ O retorno de um prompt claro aparece de imediato: menos tentativa e erro, uma ta
 
 ## Engenharia de prompt é uma habilidade
 
-Engenharia de prompt é a prática sistemática de projetar e refinar prompts[^S13]. Não se trata de encontrar uma fórmula mágica. Trata-se de entender como a IA funciona e aprender a expressar o que você precisa em termos sobre os quais ela consegue agir.
+Engenharia de prompt é a prática sistemática de projetar e refinar prompts[^S13]. Não se trata de encontrar uma fórmula mágica. Trata-se de entender como a IA funciona e aprender a expressar o que você precisa em termos que ela consiga executar.
 
-Em 2026, os modelos seguem instruções bem — eles dão conta de orientações complexas, documentos longos e tarefas de múltiplas etapas[^S6]. Mas eles ainda dependem do seu prompt para definir os limites da tarefa. Um modelo não consegue ler sua mente. O que você não diz, ele não sabe.
+Em 2026, os modelos seguem bem as instruções — eles dão conta de orientações complexas, documentos longos e tarefas de múltiplas etapas[^S6]. Mas eles ainda dependem do seu prompt para definir os limites da tarefa. Um modelo não consegue ler sua mente. O que você não diz, ele não sabe.
 
 A engenharia de prompt abrange:
 - escrever a estrutura básica de uma instrução clara (Lição 2)
@@ -126,7 +126,7 @@ A engenharia de prompt abrange:
 - depurar e melhorar prompts de forma sistemática (Lição 5)
 - escolher uma estratégia à altura da tarefa (Lição 6)
 
-Este curso ensina métodos reutilizáveis, não truques pontuais. Uma vez que você os tenha, consegue trabalhar com mais eficiência com qualquer ferramenta de LLM.
+Este curso ensina métodos reutilizáveis, não truques pontuais. Uma vez que você os tenha, consegue trabalhar de forma mais eficiente com qualquer ferramenta de LLM.
 
 ## Recapitulação
 
