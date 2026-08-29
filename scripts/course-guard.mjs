@@ -892,7 +892,7 @@ function isProseLine(line) {
   if (/^(?:```|#{1,6}\s|[-*+]\s|\d+\.\s|>|!\[|\[|<\/?|---|\|)/.test(s)) return false;
   if (/^[\s:|.\-_=]+$/.test(s)) return false;
   const cleaned = s.replace(/[`*_#[\]()>-]/g, "").trim();
-  return cleaned.length >= 10 && /[\p{Script=Han}A-Za-z0-9]/u.test(cleaned);
+  return cleaned.length >= 10 && /[\p{Script=Han}\p{Script=Hangul}A-Za-z0-9]/u.test(cleaned);
 }
 
 function hasNearbyProse(text, start, end) {
