@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "검증이 끝난 영어판을 기준으로 learn.agentmentor.dev용 learn-agent-tool-calling 코스의 한국어 변형을 제작한다. 중국어판이 아니라 검증된 en 변형에서 번역하고 교육적으로 다듬는다: 동일한 6개 레슨 구조, 동일한 레슨 슬러그, 동일한 인터랙티브 블록 id와 정답 위치, 출처 인용문은 영어 원문 그대로 유지, 실행 가능한 코드는 로직을 그대로 두고 주석과 사용자 노출 문자열만 번역, 다른 코스를 가리키는 상호 참조는 해당 로케일에서 실제로 쓰이는 코스 제목을 사용, 기계 번역 티가 나지 않는 자연스러운 합니다체 기술 문체.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "오너가 다국어 계획을 명시적으로 승인했습니다. learn.agentmentor.dev에 여섯 개 로케일을 모두 싣고, 영어판을 먼저 완성한 뒤 나머지 로케일을 영어판 기반의 번역 웨이브로 전개합니다. 영어판은 검증과 근거 교정이 끝난 단일 기준이므로 추가 확인이 필요하지 않았습니다."
+  },
+  "learnerModel": {
+    "targetReader": "기본적인 프롬프트를 쓸 수 있고 Claude Code나 비슷한 AI 코딩 도구를 써 봤지만, 그 밑에 깔린 도구 호출 프로토콜은 아직 체계적으로 공부하지 않은 개발자",
+    "knownConcepts": [
+      "기본적인 프롬프트 작성과 LLM 대화의 기본 형태",
+      "파일을 읽고 쓰고 명령을 실행할 수 있는 Claude Code 같은 도구의 사용 경험",
+      "기본적인 JavaScript / Node.js 코드 읽기",
+      "파일과 디렉터리, 터미널에서 명령 실행하기",
+      "에이전트가 컨텍스트를 읽고 판단하고 행동한다는 대략적인 개념"
+    ],
+    "unknownConcepts": [
+      "도구 호출에서 '모델은 제안하고 호스트가 실행한다'는 경계",
+      "tool_use / tool_result 왕복과 그 필드들",
+      "도구 사용 루프를 이끄는 stop_reason",
+      "다섯 가지 도구 유형과 각각의 영향 반경",
+      "모델이 제대로 채우는 도구 description과 JSON Schema 쓰기",
+      "strict 모드와 additionalProperties: false",
+      "allow / ask / deny 권한 등급",
+      "과도한 자율성(excessive agency)과 lethal trifecta",
+      "병렬 도구 호출의 일괄 반환"
+    ],
+    "assumedEnvironment": "JavaScript/Node.js 코드를 실행할 수 있고, 터미널과 텍스트 에디터를 쓸 수 있으며, 코드 예제를 따라갈 수 있는 환경. 머신러닝 배경 지식은 필요하지 않습니다",
+    "firstIndependentAction": "작은 작업 하나를 놓고 '모델은 제안하고 호스트가 실행한다'는 기준을 적용해 도구가 정말 필요한지 판단하기",
+    "noviceRamp": [
+      "레슨1은 프로토콜 세부에 들어가기 전에 구체적인 실패(말만 할 수 있는 에이전트)에서 제안과 실행의 경계를 끌어냄",
+      "레슨2는 병렬 호출의 일괄 반환을 포함해 완전한 tool_use / tool_result 왕복 한 번을 필드 단위로 손으로 짚어 나감",
+      "레슨3은 인터페이스 설계에 앞서 위험 직관이 먼저 서도록 다섯 가지 도구 유형을 영향 반경으로 분류",
+      "레슨4와 레슨5는 인터페이스 설계와 권한을 비교적 독립적인 단위로 깊게 다룸",
+      "레슨6은 앞의 모든 내용을 사용해 실행 가능한 도구 호출 에이전트(루프 + 레지스트리 + 안전장치)를 조립"
+    ]
+  },
+  "learnerBrief": "대상 독자는 기본적인 프롬프트를 쓸 수 있고 AI 코딩 도구를 써 봤지만 도구 호출의 밑단 프로토콜은 공부하지 않은 개발자입니다. JavaScript를 읽을 수 있습니다. 이 코스는 독자가 완전한 tool_use/tool_result 왕복을 읽고 직접 쓸 수 있고, 도구를 영향 반경으로 분류하고, 모델이 제대로 채우는 description과 스키마를 설계하고, allow/ask/deny 권한을 적용하며 lethal trifecta를 알아보고, 마지막으로 실행 루프와 레지스트리와 안전장치를 갖춘 실행 가능한 도구 호출 에이전트를 만드는 지점까지 데려갑니다.",
+  "scope": "다루는 범위: 제안과 실행의 경계, tool_use/tool_result 왕복과 정확한 필드들, stop_reason이 이끄는 루프, 병렬 호출의 일괄 반환, 다섯 가지 도구 유형(읽기/쓰기/실행/검색/외부 API 호출)과 각각의 영향 반경, 도구 인터페이스 설계(name, description, JSON Schema, 반환값), strict 모드, allow/ask/deny 권한 등급, 과도한 자율성과 lethal trifecta, 그리고 실행 가능한 캡스톤 에이전트. 다루지 않는 범위: 특정 에이전트 프레임워크(LangChain, AutoGPT), 모델 학습이나 파인튜닝. 깊이: 제로에서 안전하고 실행 가능한 도구 호출 에이전트를 만드는 수준까지.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-tool-calling/ko/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "mermaid diagram은 영어판이 배치한 자리에 하나만 그대로 둡니다(레슨2의 도구 호출 왕복). 라벨만 한국어로 옮기고 diagram을 새로 추가하거나 빼지 않으며, 레슨5의 권한 평가 흐름은 영어판과 같이 텍스트 형태를 유지합니다. 프로토콜 왕복은 diagram이 제 값을 하는 유일한 자리이고, 영어판의 배치는 이미 리뷰를 통과했습니다.",
+    "weakestPoints": [
+      "레슨5는 보안 내용(권한 등급, 과도한 자율성, lethal trifecta)이 가장 빽빽해서, 훑어 읽는 독자는 OS가 강제하는 샌드박스 경계와 권한 규칙 평가를 뒤섞기 쉬움. 두 계층의 구분을 명시해 이를 막음",
+      "레슨6의 캡스톤 코드는 프로덕션 프레임워크가 아니라 교육용 루프이므로, 실제 에이전트를 출시하는 독자는 영속화와 관측 가능성을 스스로 덧붙여야 함",
+      "다섯 가지 도구 분류는 교육을 위한 단순화이며 실제 도구는 범주를 걸칠 수 있음. 문제가 되는 지점에는 그 점을 명시",
+      "검증된 영어판의 번역이므로 잔여 리스크는 번역투: 출처 인용문은 영어 원문 그대로 byte 일치로 유지하고 실행 코드는 로직을 동일하게 두었으나, 본문은 축자 번역이 아니라 자연스러운 한국어로 옮겼으므로 리뷰는 문장 단위 정렬이 아니라 영어판과의 의미 등가성을 확인해야 함"
+    ],
+    "followUpChecks": [
+      "배포 후 learn.agentmentor.dev /ko/agent-tool-calling/... 렌더 패스: 6개 레슨 전체와 README, 인터랙티브 카드 하이드레이션 확인",
+      "ko 레슨의 모든 [^Sn] 앵커가 ko sources.md의 ## Sn 블록과 일치하는지 확인",
+      "체크 블록 id와 정답 위치가 영어판과 byte 일치하는지 확인(일곱 개 체크 모두 정답 b, 레슨2에만 두 개)",
+      "캡스톤 JS를 다시 돌려 루프·레지스트리·안전장치의 동작이 문서에 적힌 출력과 일치하는지 확인",
+      "별도 에이전트가 glossary.json을 작성한 뒤, 모든 glossary 용어가 ko 레슨 본문에 축자로 등장하는지 attach 체크 실행",
+      "ko 디렉터리에 course-guard를 실행하고 그 결과로 guardStatus를 갱신"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "학습자는 실제 작업 하나를 놓고 어떤 도구가 필요한지 정하고, 모델이 올바르게 고르고 올바르게 채우도록 각 도구의 description과 JSON Schema를 쓰고, 과도한 권한 부여를 막는 allow/ask/deny 등급을 배정하며, 실행 루프와 폭주를 멈추는 안전장치를 갖춘 실행 가능한 에이전트에 그 도구들을 연결할 수 있습니다.",
+    "interactionCheck": "여섯 개 레슨에 걸쳐 agentmentor-check 블록이 일곱 개 들어갑니다(레슨1은 누가 실행하는가, 레슨2는 stop_reason의 의미와 tool_result의 일괄 반환으로 두 개, 레슨3은 영향 반경, 레슨4는 description의 독자, 레슨5는 인젝션 메커니즘, 레슨6은 루프 진단). 영어판에서 id·mode·선택지 수·정답 위치를 byte 일치로 보존했고(일곱 개 모두 정답 b), label·prompt·whyHere·선택지 텍스트·feedback은 각 레슨의 오해에 맞춘 한국어 번역입니다. 연습 문제는 영어판의 레벨 구성(레벨마다 rubric·answer·힌트)을 유지합니다.",
+    "learnerFitCheck": "이 코스는 프롬프트 작성 경험, 도구 사용 경험, JavaScript 읽기만 전제합니다. 도구 호출 프로토콜, 도구 분류, 인터페이스 설계, 권한, 인젝션 위험 모델은 모두 의존 순서에 따라 제로에서 가르치며, 학습자는 모든 선행 내용을 배운 뒤 레슨6에서 처음으로 완결된 에이전트를 만듭니다. 레슨1의 첫 연습은 자기 예시에 대해 도구가 필요한지 판단하는 것만으로 충분합니다.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "검증된 영어판의 한국어 번역: 구조·근거·정답 위치는 검증된 원본에서 계승",
+      "모든 인터랙티브 블록이 id/mode/선택지 수/정답을 영어판과 byte 일치로 보존",
+      "모든 출처 인용문을 영어 원문 그대로 유지(오너 승인 인용 정책). ko sources.md의 '> ' 인용 행 23개가 en과 byte 일치함을 diff로 확인",
+      "캡스톤 JS 예제는 로직을 동일하게 두고 주석과 사용자 노출 문자열만 번역",
+      "glossary.json은 별도 에이전트가 이후에 작성하므로 이 변형에서는 아직 검증되지 않음"
+    ]
+  },
+  "nextSteps": [
+    "ko 변형에 course-guard를 실행하고 지적 사항이 있으면 수정한 뒤 guardStatus를 갱신",
+    "glossary 에이전트를 디스패치해 ko glossary.json을 작성하고 attach 체크를 통과시키기",
+    "learn.agentmentor.dev를 배포하고 /ko 페이지가 인터랙티브 카드 하이드레이션까지 포함해 렌더되는지 점검",
+    "남은 로케일(es/pt-BR)을 같은 영어판 번역 베이스로 전개",
+    "학습자에게 코스 이후 자기 프로젝트의 에이전트에 실제 도구 하나를 연결해 보도록 권장"
+  ],
+  "memoryBoundary": "이 agentmentor.json은 이 코스 변형의 로컬 상태 기록(course-local state record)으로, 품질 검사와 학습 경로 추적을 위해 코스 디렉터리 안에만 저장됩니다. Claude Code나 호스트 AI 시스템의 장기 기억에 다시 쓰이지 않으며, 다른 코스나 대화에 영향을 주지 않습니다."
+}
