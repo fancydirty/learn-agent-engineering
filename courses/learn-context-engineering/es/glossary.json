@@ -1,0 +1,485 @@
+[
+  {
+    "term": "ingeniería de prompts",
+    "def": "Métodos para escribir y organizar las instrucciones de un LLM con miras a resultados óptimos; el foco está en cómo se redacta y se ordena la instrucción en sí.",
+    "source": "[^S1]",
+    "pitfall": "Tratar la ingeniería de prompts y la ingeniería de contexto como dos nombres intercambiables de la misma práctica.",
+    "distractor_rationale": "Quien se topa con los dos términos tiende a caer en la lógica de «lo nuevo reemplaza a lo viejo», y se pierde el énfasis del curso en la progresión natural más que en el reemplazo."
+  },
+  {
+    "term": "ingeniería de contexto",
+    "def": "El conjunto de estrategias para curar y mantener el conjunto óptimo de tokens en la ventana durante la inferencia del LLM; una disyuntiva que hay que volver a responder en cada turno del bucle.",
+    "source": "[^S1]",
+    "pitfall": "Igualar la ingeniería de contexto con «escribir un mejor prompt del sistema» y tratarla como una tarea de configuración de una sola vez.",
+    "distractor_rationale": "Quien viene de la ingeniería de prompts encuadra por costumbre la optimización como un trabajo de redacción que se hace una vez, y se pierde que la ingeniería de contexto es un proceso dinámico que se ejecuta en cada turno."
+  },
+  {
+    "term": "presupuesto de atención",
+    "def": "El presupuesto finito del que echan mano los LLM al analizar grandes volúmenes de contexto; cada token nuevo que se introduce lo agota en cierta medida.",
+    "source": "[^S1]",
+    "pitfall": "Creer que mientras la ventana no esté llena, la información de más simplemente se queda ahí sin usarse y no cuesta nada.",
+    "distractor_rationale": "Quien piensa en términos de capacidad de la ventana y no de consumo de presupuesto confunde «que quepa» con «que no cueste», y se pierde la distinción entre capacidad y atención."
+  },
+  {
+    "term": "degradación de contexto",
+    "def": "El fenómeno por el cual la capacidad del modelo de recordar con precisión información del contexto disminuye a medida que aumenta el número de tokens en la ventana.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que la degradación de contexto solo aparece en unos pocos modelos y que se puede evitar por completo cambiando a un modelo más potente.",
+    "distractor_rationale": "Quien se concentra en las diferencias de capacidad entre modelos puede generalizar «la velocidad de degradación varía según el modelo» hasta «algunos modelos son inmunes», ignorando la afirmación del curso de que esta característica emerge en todos los modelos."
+  },
+  {
+    "term": "gradiente de rendimiento",
+    "def": "La curva de rendimiento que declina de forma gradual y que sigue la degradación de contexto a medida que crecen los tokens, en vez de un fallo súbito a partir de cierto umbral de tokens.",
+    "source": "[^S1]",
+    "pitfall": "Esperar un umbral claro de conteo de tokens donde la degradación de contexto dispare un error o un fallo total.",
+    "distractor_rationale": "Quien está acostumbrado al modelo mental de software de «si superas el umbral, recibes un error» puede leer mal la pendiente suave como un acantilado con avisos explícitos, y se pierde que una degradación silenciosa cuesta más de rastrear que un error."
+  },
+  {
+    "term": "rendimientos marginales decrecientes",
+    "def": "Mirar el contexto como un recurso finito donde el token número mil y el número cien mil ocupan el mismo espacio pero están a mundos de distancia en el valor que aportan.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que con capacidad de ventana suficiente, agregar más información siempre trae un beneficio proporcional.",
+    "distractor_rationale": "Quien piensa de forma lineal, con el «más es mejor», supone que información y beneficio escalan en proporción, y se pierde el fenómeno no lineal por el cual los tokens tardíos tienen un valor marginal menor que los tempranos."
+  },
+  {
+    "term": "arnés",
+    "def": "La envoltura de ingeniería completa que sostiene el bucle de un agente; el mismo modelo con arneses distintos produce resultados completamente distintos.",
+    "source": "[^S5]",
+    "pitfall": "Creer que mientras el modelo de base sea lo bastante potente, los detalles de implementación del arnés no importan demasiado.",
+    "distractor_rationale": "Quien iguala la capacidad del modelo con el rendimiento del sistema entero tiende a subestimar el papel de la envoltura de ingeniería, y se pierde que el mismo modelo en arneses distintos da resultados radicalmente distintos."
+  },
+  {
+    "term": "progresión natural",
+    "def": "El encuadre de Anthropic de la ingeniería de contexto como la evolución natural de la ingeniería de prompts, no como su reemplazo; el prompt del sistema sigue teniendo que estar bien escrito, solo que como uno de los muchos ingredientes de contexto que hay que gestionar.",
+    "source": "[^S1]",
+    "pitfall": "Interpretar «progresión natural» como que la ingeniería de prompts queda obsoleta en cuanto llega la ingeniería de contexto.",
+    "distractor_rationale": "Quien encuadra la evolución técnica como «lo nuevo reemplaza a lo viejo» puede leer «progresión» como «obsolescencia», y se pierde la afirmación explícita del curso de que el prompt del sistema sigue siendo un ingrediente de contexto que hay que gestionar."
+  },
+  {
+    "term": "tareas de horizonte largo",
+    "def": "Tareas de agente que se extienden a lo largo de muchos turnos de inferencia y de mucho tiempo; el escenario que la compactación, las notas estructuradas y las arquitecturas multiagente atacan en conjunto.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que cualquier tarea que corre durante horas de reloj necesita por fuerza el juego completo de compactación, notas y subagentes.",
+    "distractor_rationale": "Quien iguala «horizonte largo» con «tiempo de ejecución largo» puede perderse el énfasis repetido del curso en el sentido de la proporción: estos mecanismos hacen falta cuando la ventana se acerca de verdad a su límite, no en función del tiempo transcurrido."
+  },
+  {
+    "term": "altitud",
+    "def": "El nivel de abstracción en el que se ubica un prompt del sistema; describe si las instrucciones son demasiado concretas, con lógica cableada y frágil en un extremo, o demasiado vagas, sin ninguna señal de comportamiento en el otro.",
+    "source": "[^S1]",
+    "pitfall": "Creer que cuanto más específico sea un prompt del sistema y más escenarios cubra, mejor se vuelve su altitud de forma automática.",
+    "distractor_rationale": "Quien iguala «específico» con «de calidad» puede perderse que el curso identifica otro extremo de fallo: cablear lógica compleja y frágil en el prompt también es altitud equivocada, no especificidad bien hecha."
+  },
+  {
+    "term": "Volar demasiado bajo",
+    "def": "Un extremo de fallo del prompt del sistema: usar numerosas reglas del tipo «si… entonces…» para cablear la lógica en el prompt, de modo que los casos no cubiertos caen en una rama comodín.",
+    "source": "[^S1]",
+    "pitfall": "Cuando la rama comodín se activa seguido, pensar que la solución es seguir agregando condiciones de caso especial a la lista de reglas.",
+    "distractor_rationale": "Quien está acostumbrado a parchear bugs puede tratar el síntoma como falta de reglas y seguir sumando cláusulas, y se pierde que el problema de raíz es la altitud: hacen falta principios, no más enumeración."
+  },
+  {
+    "term": "Flotar demasiado alto",
+    "def": "Un extremo de fallo del prompt del sistema: dar solo consignas vagas sin orientación concreta, con lo que el modelo se queda sin ninguna señal accionable y su comportamiento se desvía de forma impredecible.",
+    "source": "[^S1]",
+    "pitfall": "Creer que un prompt del sistema lo bastante corto y ahorrador de tokens es automáticamente mejor que una lista de reglas verbosa.",
+    "distractor_rationale": "Quien toma «ahorrar tokens» como único objetivo de optimización puede perderse que ese ahorro tiene una precondición: el prompt todavía tiene que llevar heurísticas que guíen el comportamiento; recortarlo hasta la consigna vaga es perder el control."
+  },
+  {
+    "term": "la altitud correcta",
+    "def": "La forma recomendada del prompt del sistema: lo bastante específica para guiar el comportamiento de forma eficaz, y a la vez lo bastante flexible para darle al modelo heurísticas fuertes.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que la altitud correcta significa no escribir jamás ninguna regla específica y dejarlo todo a la interpretación que el modelo haga de los «principios».",
+    "distractor_rationale": "Quien recuerda solo la mitad de la conclusión, «principios antes que reglas», puede perderse el énfasis del curso en una estructura de dos capas —principios más límites infranqueables— y suponer que la forma correcta implica abandonar toda restricción concreta."
+  },
+  {
+    "term": "principios más límites infranqueables",
+    "def": "La estructura práctica para un prompt del sistema a la altitud correcta: unos pocos principios de juicio que cubren los escenarios generales, más un número pequeño de límites infranqueables que clavan las fronteras de cumplimiento no negociables.",
+    "source": "[^S1]",
+    "pitfall": "Escribir los límites infranqueables como una lista de reglas enumerada por escenarios específicos, con lo que las propias fronteras pasan a volar demasiado bajo.",
+    "distractor_rationale": "Quien no tiene clara la frontera entre «principios» y «límites» puede confundir los dos y tratar los límites infranqueables como cláusulas que se pueden agregar sin fin igual que una lista de reglas, recayendo en el cableado."
+  },
+  {
+    "term": "CLAUDE.md",
+    "def": "En Claude Code, un archivo de configuración a nivel de proyecto que se carga en el contexto al inicio de cada conversación; solo debería contener lo que aplica de forma amplia, en cada sesión.",
+    "source": "[^S4]",
+    "pitfall": "Pensar que cuanto más completo y detallado sea CLAUDE.md, mejor, y embutir ahí convenciones especiales de uso raro y comandos de compilación.",
+    "distractor_rationale": "Quien toma «documentar a fondo» como buena práctica puede perderse que CLAUDE.md es una capa siempre cargada que se lee en cada sesión y gasta presupuesto de atención cada vez; el inflado ahoga las instrucciones que de verdad importan."
+  },
+  {
+    "term": "prueba de eliminación",
+    "def": "Un método para auditar línea por línea el contenido de los archivos siempre cargados: preguntarse «¿quitar esto causaría errores?». Si la respuesta es no, córtala.",
+    "source": "[^S4]",
+    "pitfall": "Interpretar la prueba de eliminación como «si una línea parece útil, consérvala», en vez de juzgar de verdad si quitarla provoca errores.",
+    "distractor_rationale": "Quien tiene la mentalidad conservadora de «más información ayuda» puede correr en silencio la vara de la prueba, de «quitarlo causa errores» a «quitarlo da pena», dejando que los archivos siempre cargados sigan inflándose."
+  },
+  {
+    "term": "Skills",
+    "def": "En Claude Code, capacidades especializadas empaquetadas que se cargan bajo demanda en vez de quedar residentes en cada conversación como CLAUDE.md, para que ninguna sesión se infle.",
+    "source": "[^S4]",
+    "pitfall": "Tratar las Skills como CLAUDE.md y suponer que también se precargan en el contexto al inicio de cada conversación como contenido residente.",
+    "distractor_rationale": "Quien no distingue entre «precarga residente» y «carga bajo demanda» puede confundir el momento de carga de las Skills con el de CLAUDE.md, y se pierde que las Skills se diseñaron bajo demanda justamente para no cargarlas en cada turno."
+  },
+  {
+    "term": "superposición mínima de funcionalidad",
+    "def": "Un requisito de diseño de herramientas: varias herramientas deberían tener fronteras funcionales claras, evitando zonas donde las dos puedan hacer el mismo trabajo.",
+    "source": "[^S1]",
+    "pitfall": "Creer que ofrecer varias herramientas de funcionalidad parecida le da más opciones al modelo y es un diseño más flexible y amable.",
+    "distractor_rationale": "Quien iguala «más opciones» con «más flexibilidad» puede perderse que las herramientas superpuestas le devuelven al modelo la decisión de «¿cuál uso?» en cada turno, agregando una carga de razonamiento innecesaria."
+  },
+  {
+    "term": "eficiente en tokens",
+    "def": "Un estándar de diseño para el valor de retorno de una herramienta: devolver por defecto solo los campos clave, evitando inundar el historial de mensajes con grandes volúmenes de información de bajo valor que consumen presupuesto de atención una y otra vez.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que por seguridad los retornos de herramienta deberían ser lo más completos posible, y devolver por defecto todos los campos que pudieran servir de una sola vez.",
+    "distractor_rationale": "Quien persigue «información completa, sin omisiones» puede perderse que esos retornos se quedan de forma permanente en el historial de mensajes y se vuelven a facturar en cada turno siguiente, tomando el «retorno completo» por prudencia en vez de tratarlo como el caso excepcional que hay que traer bajo demanda (con un parámetro detail, por ejemplo)."
+  },
+  {
+    "term": "canónico",
+    "def": "Un criterio para elegir ejemplos few-shot: un ejemplo debería representar una clase entera de comportamiento esperado, no una situación específica aislada.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que cuantos más ejemplos haya y más escenarios específicos cubran, mejor aprende el modelo el comportamiento correcto.",
+    "distractor_rationale": "Quien está acostumbrado a enseñar enumerando casos puede tomar la cantidad de ejemplos canónicos como métrica de calidad, y se pierde el énfasis del curso en unos pocos ejemplos diversos que representan clases de comportamiento, en vez de alargar la lista."
+  },
+  {
+    "term": "lista interminable de casos límite",
+    "def": "Agregar una línea a la lista de ejemplos o de reglas por cada caso especial que aparece en producción, hasta acumular una lista larga y tediosa; un antipatrón que hay que evitar.",
+    "source": "[^S1]",
+    "pitfall": "Agregar en el momento cada caso fallido de producción a la lista de ejemplos, creyendo que así la cobertura crece de forma sostenida.",
+    "distractor_rationale": "Quien tiene la mentalidad de mantenimiento de «arreglar bugs uno por uno» puede tratar el agregado de casos límite como iteración natural, y se pierde que la mayoría de esos casos debería ascender a principios generales en el prompt del sistema, no alargar la lista."
+  },
+  {
+    "term": "precarga",
+    "def": "La estrategia de poner todo el material que pudiera necesitarse en el contexto inicial antes de que empiece la inferencia, para que el modelo lo vea todo en el turno uno sin tener que recuperar nada.",
+    "source": "[^S1]",
+    "pitfall": "Creer que mientras la ventana lo aguante, precargar todo el material posiblemente relevante es el seguro más barato y sin desventajas.",
+    "distractor_rationale": "Quien extiende la intuición de «más información es más seguro» puede perderse que la precarga diluye el presupuesto de atención, confundiendo «que quepa» con «que corresponda», mientras el curso afirma con claridad que hay que filtrar por «estable y usado en cada turno»."
+  },
+  {
+    "term": "recuperación justo a tiempo",
+    "def": "La estrategia de mantener identificadores ligeros en el contexto inicial y dejar que el agente cargue el contenido mediante herramientas en tiempo de ejecución, según se necesite.",
+    "source": "[^S1]",
+    "pitfall": "Tratar la recuperación justo a tiempo como una solución óptima y sin costo, defendiendo que toda la información debería recuperarse en tiempo de ejecución y que no hay que precargar nada.",
+    "distractor_rationale": "Quien ve solo el ahorro en la ventana inicial puede perderse que cada recuperación es una ida y vuelta completa de llamada a herramienta que cuesta latencia y presupuesto de turnos; el curso afirma explícitamente que no es gratis, y el justo a tiempo puro se encarece por los rodeos de la recuperación."
+  },
+  {
+    "term": "identificadores ligeros",
+    "def": "Punteros al contenido en vez del contenido mismo —rutas de archivo, consultas guardadas, enlaces web— para que el agente los expanda bajo demanda a contenido completo en tiempo de ejecución.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que los identificadores en sí llevan muy poca información para tener valor real, y creer que solo expandirlos a contenido completo cuenta como contexto útil.",
+    "distractor_rationale": "Quien se fija solo en «el contenido mismo» puede perderse el énfasis del curso en que «los metadatos del identificador son en sí mismos señal»: los nombres de archivo y la estructura de directorios ya anuncian relevancia y permiten filtrar sin necesidad de expandir nada."
+  },
+  {
+    "term": "metadatos",
+    "def": "La información adosada a los identificadores —nombres de archivo, estructura de directorios, marcas de tiempo— que anuncia relevancia y propósito sin necesidad de abrir el contenido.",
+    "source": "[^S1]",
+    "pitfall": "Tratar los metadatos como información auxiliar decorativa y creer que el modelo juzga la relevancia sobre todo abriendo archivos y leyendo su contenido completo.",
+    "distractor_rationale": "Quien tiene la mentalidad de «ver para creer» puede subestimar los metadatos, y se pierde el ejemplo del curso: un directorio legacy sin tocar hace dos años, solo por su nombre y su marca de tiempo, ya avisa que probablemente no sea el lugar por donde empezar; los metadatos completan una pasada de filtrado."
+  },
+  {
+    "term": "descubrimiento progresivo",
+    "def": "La manera en que el agente se apoya en identificadores y herramientas de recuperación para encontrar paso a paso, mediante la exploración, el contenido de verdad relevante, en vez de recibirlo todo servido de una vez.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que el descubrimiento progresivo implica que el modelo tiene que hojear de forma exhaustiva todos los archivos candidatos para encontrar el contenido de verdad relevante.",
+    "distractor_rationale": "Quien no entiende que «los metadatos completan primero una pasada de filtrado» puede imaginar el descubrimiento progresivo como una búsqueda de peinado ineficiente, y se pierde que los nombres de archivo y la estructura de directorios le permiten al agente estrechar rápido el alcance y leer solo unos pocos archivos de verdad relevantes."
+  },
+  {
+    "term": "estrategia híbrida",
+    "def": "El enfoque combinado de recuperar algunos datos por adelantado por velocidad y dejar el resto como identificadores para que el modelo explore por su cuenta en tiempo de ejecución; la forma común en los sistemas reales.",
+    "source": "[^S1]",
+    "pitfall": "Tratar la precarga y la recuperación justo a tiempo como rutas mutuamente excluyentes, donde el diseño de un agente tiene que elegir una y no las dos.",
+    "distractor_rationale": "Quien lee la exposición contrastada del curso como una elección binaria puede perderse la afirmación explícita de que los sistemas reales rara vez se sientan en alguno de los dos polos: la forma común es justamente combinar las dos."
+  },
+  {
+    "term": "marco de disyuntivas",
+    "def": "Un método práctico para juzgar si cada material candidato se precarga o se recupera justo a tiempo: preguntar en orden «¿es estable?» y «¿se usa en cada turno?».",
+    "source": "[^S1]",
+    "pitfall": "Decidir precargar basándose solo en si el material es estable, ignorando la segunda condición, igual de necesaria, de «se usa en cada turno».",
+    "distractor_rationale": "Quien simplifica las reglas puede recordar solo «lo estable se precarga», y se pierde que el marco exige un sí a las dos preguntas para precargar, con lo que termina metiendo en el contexto inicial materiales grandes, estables pero de uso poco frecuente."
+  },
+  {
+    "term": "list_files",
+    "def": "Una herramienta de recuperación de ejemplo del curso para listar los archivos y subdirectorios bajo un directorio del repo; el primer paso de la recuperación justo a tiempo, que ayuda al agente a estrechar el alcance.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que list_files debería devolver directamente el contenido completo de los archivos del directorio y no solo una lista de nombres.",
+    "distractor_rationale": "Quien no tiene clara la distinción entre las acciones «listar» y «leer» puede confundir las responsabilidades de list_files y read_file y suponer que una sola llamada debería traer también el contenido, perdiéndose el principio de diseño de responsabilidades claras con superposición mínima."
+  },
+  {
+    "term": "grep",
+    "def": "Una herramienta de recuperación de ejemplo del curso para buscar texto de forma recursiva bajo un directorio; devuelve las líneas coincidentes con un tope de cantidad de líneas para controlar el consumo de tokens.",
+    "source": "[^S1]",
+    "pitfall": "Creer que grep debería devolver todas las líneas coincidentes sin límite para asegurarse de no perder ninguna información relevante.",
+    "distractor_rationale": "Quien teme la pérdida de información puede perderse el énfasis del curso en el principio de eficiencia en tokens y suponer que el truncado se lleva algo importante, sin notar que la descripción de la herramienta avisa que lo que excede queda marcado como «truncado», dejando que el modelo decida si estrechar más la consulta."
+  },
+  {
+    "term": "read_file",
+    "def": "Una herramienta de recuperación de ejemplo del curso para leer el contenido de un solo archivo; se estipula usarla solo después de que list_files o grep hayan confirmado que el archivo es relevante.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que puedes saltarte los pasos de filtrado de list_files o grep y usar read_file desde el principio para leer archivos candidatos uno tras otro hasta dar con la respuesta.",
+    "distractor_rationale": "Quien se impacienta con el filtrado previo puede tomar atajos y leer archivos en tanda, y se pierde el requisito explícito de la descripción de la herramienta —«úsala solo después de confirmar la relevancia»—, donde saltarse el filtrado degrada la recuperación justo a tiempo a una precarga total disfrazada."
+  },
+  {
+    "term": "la esencia de la búsqueda es la compresión",
+    "def": "El resumen de Anthropic sobre el proceso de búsqueda: cada recuperación estrecha un corpus enorme y destila los hallazgos de verdad útiles; cada paso de la recuperación justo a tiempo ejecuta esa compresión.",
+    "source": "[^S3]",
+    "pitfall": "Interpretar la frase como «la implementación de la herramienta de búsqueda es un algoritmo de compresión de texto» en vez de como una descripción de la naturaleza cognitiva del proceso de recuperación.",
+    "distractor_rationale": "Quien hace la asociación técnica literal con «compresión» puede leer mal la frase como si hablara de alguna tecnología de compresión de datos, y se pierde el contexto del curso: describe la analogía cognitiva de estrechar «una franja ancha de tal vez relevante» hasta «el pedacito que de verdad hay que leer»."
+  },
+  {
+    "term": "REPO_ROOT",
+    "def": "Una constante del código de ejemplo del curso que indica la ruta raíz del repo; las operaciones de archivo de las tres herramientas de recuperación se apoyan en ella para ubicar las rutas reales.",
+    "source": "[^S1]",
+    "pitfall": "Tratar REPO_ROOT como una constante de API fija provista por algún SDK o framework oficial, y no como una variable que define el ejemplo del curso y que hay que reemplazar por la ruta de tu propio repo.",
+    "distractor_rationale": "Quien memoriza los identificadores de los ejemplos de código como miembros de una biblioteca estándar puede perderse la indicación explícita del ejercicio —«cambia REPO_ROOT para conectarlo a tu arnés»— y suponer que el nombre en sí tiene un significado especial de framework."
+  },
+  {
+    "term": "compactación",
+    "def": "Cuando una conversación se acerca al límite de la ventana de contexto, entregarle el historial de mensajes al modelo para que lo resuma y luego reiniciar una ventana de contexto nueva a partir de ese resumen.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que la compactación consiste en anexar el resumen generado al final del historial viejo, dejando lo viejo y lo nuevo apretujados en la misma ventana.",
+    "distractor_rationale": "Quien interpreta «compactación» de forma literal como «hacerlo más chico pero dejarlo en su lugar» puede perderse el énfasis repetido del curso en la distinción clave: la compactación reinicia una ventana nueva y los mensajes viejos se abandonan en bloque, no se anexan."
+  },
+  {
+    "term": "reiniciar",
+    "def": "La acción central de la compactación: abrir una ventana de contexto enteramente nueva con el resumen, abandonando en bloque el historial de mensajes viejo en vez de seguir acumulando sobre la conversación original.",
+    "source": "[^S1]",
+    "pitfall": "Interpretar el reinicio como borrarlo todo y empezar de cero, creyendo que se pierde todo el avance del trabajo que no esté en el resumen.",
+    "distractor_rationale": "Quien confunde «reiniciar» con «volver a cero» puede perderse que el reinicio apunta a la estructura de datos messages, mientras el avance de la tarea continúa justamente por ese resumen de traspaso (y por las notas), sin partir de la nada."
+  },
+  {
+    "term": "resumen de traspaso",
+    "def": "El texto de resumen que genera la compactación para que la ventana nueva lo lea al arrancar; tiene que conservar decisiones arquitectónicas, problemas sin resolver y detalles clave de implementación para que el agente siga trabajando.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que los resúmenes de traspaso deberían ser lo más breves posible, recortando de forma agresiva para ahorrar tokens, con la idea de recuperar los detalles después si hacen falta.",
+    "distractor_rationale": "Quien persigue la brevedad en exceso puede perderse que la compactación tiene pérdidas: una vez que un bug sin resolver o una decisión arquitectónica quedan fuera del resumen, la ventana nueva nunca puede recuperar esa información por su cuenta; simplificar de más descarrila la tarea."
+  },
+  {
+    "term": "COMPACT_INSTRUCTION",
+    "def": "Una constante del código de ejemplo del curso que define la instrucción de resumen de la compactación; exige explícitamente conservar decisiones arquitectónicas, problemas sin resolver y detalles clave de implementación, y descartar los resultados de herramientas redundantes.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que a esta instrucción le basta con una línea del tipo «resume brevemente el contenido de la conversación», dejando lo que se conserva al criterio del propio modelo.",
+    "distractor_rationale": "Quien subestima la importancia de la instrucción de resumen puede escribir instrucciones de compactación demasiado genéricas, mientras el curso ilustra explícitamente que un «resumen breve» vago puede llevar al modelo a dar por terminados bugs sin resolver y descarrilar la tarea."
+  },
+  {
+    "term": "compact()",
+    "def": "La función que implementa la compactación en el ejemplo del curso: le envía al modelo el historial de mensajes junto con la instrucción de resumen y luego reemplaza el arreglo messages entero con el resumen devuelto para reiniciar una ventana nueva.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que compact() debería modificar en el lugar y devolver «un arreglo messages más largo con el resumen anexado» en vez de devolver un arreglo nuevo y mínimo que contiene solo el resumen.",
+    "distractor_rationale": "Quien está acostumbrado a pensar el procesamiento de datos en clave de «acumulación» puede diseñar el retorno de compact() como los mensajes viejos más el resumen concatenados, y se pierde que en el código del curso el retorno es justamente el único arreglo nuevo, destinado a reemplazar messages en bloque."
+  },
+  {
+    "term": "notas estructuradas",
+    "def": "Hacer que el agente escriba de forma activa el estado clave en un lugar persistente fuera de la ventana de contexto en el momento en que toma decisiones o descubre problemas; complementa a la compactación, que es pasiva y a posteriori.",
+    "source": "[^S1]",
+    "pitfall": "Tratar las notas estructuradas y la compactación como mecanismos funcionalmente redundantes, de modo que teniendo compactación las notas serían mantenimiento extra e innecesario.",
+    "distractor_rationale": "Quien no tiene clara la división del trabajo puede ver las notas y la compactación como opciones alternativas, mientras el curso afirma explícitamente que se refuerzan —activa contra pasiva, sin pérdidas contra con pérdidas—: cuanto más diligentes las notas, más leve la pérdida de la compactación."
+  },
+  {
+    "term": "NOTES.md",
+    "def": "El archivo de notas estructuradas que el agente mantiene en el ejemplo del curso; registra decisiones tomadas, problemas sin resolver y planes de próximos pasos, y existe en el sistema de archivos de forma independiente del historial de conversación.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que NOTES.md debería conservar textualmente el proceso de pensamiento completo del agente en cada momento de decisión, y que cuanto más detallado, mejor.",
+    "distractor_rationale": "Quien iguala las notas con «registros completos» puede escribir NOTES.md como una crónica verbosa, mientras el ejemplo del curso muestra una estructura depurada de «decisiones tomadas / sin resolver / siguiente paso», pensada para que la ventana nueva recupere el estado rápido y no para repetir todo el razonamiento."
+  },
+  {
+    "term": "lista de pendientes",
+    "def": "El mecanismo de Claude Code para mantener listas de tareas; igual que un agente propio manteniendo NOTES.md, las dos son prácticas de notas estructuradas que externalizan el estado clave fuera de la ventana.",
+    "source": "[^S1]",
+    "pitfall": "Tratar la lista de pendientes como una simple interfaz de progreso para el usuario y no como parte de las técnicas de gestión de contexto de «notas estructuradas» que enseña el curso.",
+    "distractor_rationale": "Quien interpreta la lista de pendientes como una función de interfaz pura puede perderse el paralelo del curso con NOTES.md: las dos dejan el estado clave fuera de la ventana de contexto para que el agente lo lea de vuelta más tarde como memoria persistente."
+  },
+  {
+    "term": "/clear",
+    "def": "Un comando de Claude Code para reiniciar por completo la ventana de contexto al cambiar a una tarea nueva sin relación con la anterior; no resume ni preserva nada de lo viejo.",
+    "source": "[^S4]",
+    "pitfall": "Tratar /clear y la compactación automática como dos comandos que hacen lo mismo, usables de forma intercambiable cuando la ventana se acerca a su límite.",
+    "distractor_rationale": "Quien no distingue el escenario de «la misma tarea todavía no termina» del de «ahora estoy haciendo otra cosa» puede confundir /clear con la compactación, mientras el curso afirma con claridad que la compactación sirve a la tarea sin terminar y /clear al cambio a una tarea sin relación, con lógicas de disyuntiva distintas."
+  },
+  {
+    "term": "autocompactación",
+    "def": "El mecanismo de compactación productizado de Claude Code: se dispara de forma automática cuando la conversación se acerca a los límites de contexto y preserva el código y las decisiones importantes sin intervención manual.",
+    "source": "[^S4]",
+    "pitfall": "Pensar que la autocompactación es una tecnología completamente distinta del compact() escrito a mano que enseña el curso, sin relación de principio entre ambas.",
+    "distractor_rationale": "Quien separa las «funciones de producto» de los «principios del curso» puede perderse la afirmación explícita del curso de que la autocompactación y el compact() escrito a mano son la misma mecánica, solo que productizada, con el disparo y las reglas de conservar y descartar ya resueltos."
+  },
+  {
+    "term": "Claude jugando Pokémon",
+    "def": "Un caso que menciona Anthropic para ilustrar cómo los mecanismos de memoria pueden transformar las capacidades de un agente en dominios que no son de programación, sin ser exclusivos de las tareas de código.",
+    "source": "[^S1]",
+    "pitfall": "Creer que las notas estructuradas solo aplican a tareas de agentes de programación y no tienen valor de referencia para agentes de otros dominios.",
+    "distractor_rationale": "Quien toma los escenarios de ejemplo del curso (arreglar bugs) como la frontera del mecanismo puede perderse este caso deliberadamente ajeno a la programación, que muestra la universalidad del mecanismo de notas más allá de la depuración de software."
+  },
+  {
+    "term": "tres movimientos",
+    "def": "Las tres clases de técnicas de gestión de contexto para tareas de horizonte largo —compactación, notas estructuradas y arquitecturas multiagente—, orientadas en conjunto a que el agente mantenga coherencia, contexto y comportamiento dirigido a objetivos a lo largo de secuencias de acciones.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que hay que usar los tres movimientos juntos para que una solución de tarea larga cuente como correcta, sin que ninguno sea opcional.",
+    "distractor_rationale": "Quien interpreta el «juego de tres» como «hay que usar los tres» puede perderse el principio de proporción que el curso repite: agrega complejidad solo cuando mejora los resultados de forma demostrable; una tarea que termina en una docena de turnos puede no necesitar ninguno."
+  },
+  {
+    "term": "subagente",
+    "def": "Un mecanismo que maneja tareas acotadas en ventanas de contexto limpias y devuelve al agente principal solo un resumen comprimido; su valor no está solo en la colaboración multiagente, sino en el aislamiento de contexto en sí.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que el valor central del mecanismo de subagentes es la división del trabajo y la ganancia de velocidad, y no el aislamiento de contexto.",
+    "distractor_rationale": "Quien confunde los subagentes con la presentación de la colaboración multiagente del curso 6 puede perderse el cambio de perspectiva de esta lección: incluso con un solo agente principal que no necesita coordinar un equipo, los subagentes siguen valiendo la pena por el beneficio de aislamiento de la ventana limpia."
+  },
+  {
+    "term": "ventana limpia",
+    "def": "La ventana de contexto enteramente nueva con la que arranca un subagente, sin cargar nada del historial de mensajes del agente principal, de modo que el presupuesto de atención se gaste por completo en la tarea acotada.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que pasarle al subagente el historial completo del agente principal le da mejor comprensión del panorama general y le hace hacer mejor el trabajo.",
+    "distractor_rationale": "Quien cree que «más información es mejor» puede perderse que el valor de la ventana limpia viene justamente del aislamiento: compartir el historial completo hace que ambas ventanas sostengan el mismo montón, con lo que el beneficio cae a cero."
+  },
+  {
+    "term": "filtros inteligentes",
+    "def": "La metáfora de Anthropic para el papel del subagente: condensa, en lugar del agente principal, los tokens más importantes del proceso de exploración; entra el corpus, sale lo esencial.",
+    "source": "[^S3]",
+    "pitfall": "Interpretar «filtros» como que los subagentes descartan contenido de forma mecánica, y no como que resumen y destilan de forma activa, con procesamiento inteligente.",
+    "distractor_rationale": "Quien toma «filtrar» de forma literal como un recorte simple puede perderse el énfasis del curso en que los subagentes producen resúmenes comprimidos y destilados, no extractos elegidos del contenido de exploración original: es un procesamiento de información de naturaleza distinta."
+  },
+  {
+    "term": "proporción entre proceso y conclusión",
+    "def": "Un criterio para juzgar si vale la pena entregarle una tarea a un subagente: la proporción de volumen entre el contenido intermedio de la exploración y la conclusión final; cuanto más despareja, mayor el rédito del aislamiento.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que cuanto más despareja la proporción entre proceso y conclusión, más simple es la tarea y menos vale la pena entregarla a un subagente.",
+    "distractor_rationale": "Quien iguala de forma intuitiva «proporción despareja» con «poco trabajo» puede invertir la dirección del juicio: el curso afirma que las tareas donde el proceso supera con creces a la conclusión (hojear decenas de archivos para llegar a unas pocas líneas) son las que más vale la pena aislar, dejando el proceso enorme dentro del subagente."
+  },
+  {
+    "term": "runSubagent",
+    "def": "La función del código de ejemplo del curso que arranca el bucle del subagente: abre con una descripción de tarea aislada como arreglo de mensajes enteramente nuevo y devuelve solo la conclusión final en texto del modelo.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que runSubagent debería devolverle a quien la llama el historial de mensajes completo del subagente (con todas las idas y vueltas de herramientas) para que el agente principal lo archive como referencia.",
+    "distractor_rationale": "Quien teme la pérdida de información y quiere «dejar registro» puede hacer que runSubagent devuelva el historial completo, y se pierde el diagnóstico específico del ejercicio sobre ese error de «aislamiento falso»: en cuanto el historial completo vuelve a la ventana principal, el beneficio del aislamiento se desvanece."
+  },
+  {
+    "term": "dispatch_research",
+    "def": "La herramienta del lado del agente principal en el ejemplo del curso para entregarle tareas de investigación a un subagente; enchufada al bucle de stop_reason, devuelve la conclusión resumida del subagente.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que al llamar a dispatch_research puedes ahorrarte enunciar la tarea con claridad porque el subagente igual puede ver parte del contexto de la conversación principal.",
+    "distractor_rationale": "Quien no termina de asimilar la «ventana limpia» puede subestimar el requisito de que la descripción de la tarea sea autocontenida, mientras la descripción de la herramienta afirma explícitamente que «el subagente no puede ver el historial de esta conversación»: hay que escribirla para una ventana nueva y completamente amnésica."
+  },
+  {
+    "term": "SUBAGENT_SYSTEM",
+    "def": "Una constante del código de ejemplo del curso con el prompt del sistema propio del subagente; le exige entregar conclusiones de como máximo 1500 tokens y no repetir el texto crudo que leyó.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que los subagentes deberían reutilizar el prompt del sistema del agente principal en vez de tener uno propio.",
+    "distractor_rationale": "Quien supone que «los prompts del sistema deberían estar unificados globalmente» puede perderse que subagente y agente principal tienen responsabilidades completamente distintas: el subagente necesita restricciones especiales (no repetir el texto crudo, controlar el largo de la conclusión) que aseguran la calidad de compresión del resumen y que no suelen estar en el prompt del agente principal."
+  },
+  {
+    "term": "traspaso",
+    "def": "En tareas largas, la acción de mantener la continuidad pasando los puntos esenciales cuando se genera un subagente fresco con ventana limpia para continuar el trabajo de un subagente anterior.",
+    "source": "[^S3]",
+    "pitfall": "Pensar que a un documento de traspaso le basta con una línea del tipo «continúa lo que el subagente anterior no terminó», dejando lo específico para que el nuevo subagente lo explore.",
+    "distractor_rationale": "Quien subestima la importancia del documento de traspaso puede tratarlo como una posta de una sola frase, mientras el curso exige explícitamente que los traspasos sigan el mismo criterio de conservar y descartar —decisiones arquitectónicas, bugs sin resolver, detalles clave de implementación—: es el mismo oficio que escribir un resumen de compactación."
+  },
+  {
+    "term": "arquitecturas multiagente",
+    "def": "Un patrón arquitectónico que entrega el trabajo de exploración a subagentes independientes y recupera solo resúmenes comprimidos; uno de los tres movimientos para tareas de horizonte largo.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que el propósito principal de las arquitecturas multiagente es ahorrar gasto total de tokens.",
+    "distractor_rationale": "Quien da por hecho que «mejorar la arquitectura» significa «reducir costos» puede perderse la verdad del costo que el curso enuncia: las arquitecturas multiagente no ahorran costos, los tokens totales solo suben; lo que compran es que las ventanas no se degraden, cambiando más tokens totales por densidad de atención."
+  },
+  {
+    "term": "4× (uso de tokens de un agente frente al chat)",
+    "def": "Según las mediciones de Anthropic sobre su sistema de investigación multiagente, un agente solo usa unas 4× más tokens que una interacción de chat común; es la medición empírica de ese sistema, no una ley universal.",
+    "source": "[^S3]",
+    "pitfall": "Tratar ese número 4× como una regla universal aplicable a todos los sistemas de agentes, para presupuestar el costo de cualquier escenario.",
+    "distractor_rationale": "Quien está acostumbrado a usar datos de casos concretos como fórmulas universales puede perderse el recordatorio repetido del curso de que es el resultado medido del propio sistema de investigación multiagente de Anthropic, enunciado con un «unas» y señalado explícitamente como algo que no es ley universal."
+  },
+  {
+    "term": "15× (uso de tokens de un sistema multiagente frente al chat)",
+    "def": "Según las mediciones de Anthropic sobre su sistema de investigación multiagente, el sistema multiagente entero usa unas 15× más tokens que una interacción de chat común; también es la medición empírica de ese sistema, no una ley universal.",
+    "source": "[^S3]",
+    "pitfall": "Pensar que ese número implica que cualquier diseño que introduzca subagentes tiene que pagar por fuerza 15× de costo, y concluir que los subagentes son en general poco económicos.",
+    "distractor_rationale": "Quien toma la medición de un solo sistema como coeficiente de costo universal puede perderse la afirmación explícita del curso de que si vale la pena depende de la proporción entre proceso y conclusión y de la tarea misma, y no de aplicar un multiplicador fijo para sacar una conclusión de talle único."
+  },
+  {
+    "term": "80 % (el uso de tokens explicando la varianza de rendimiento)",
+    "def": "Según las mediciones de Anthropic sobre su sistema de investigación multiagente, el uso de tokens por sí solo explica el 80 % de la varianza de rendimiento de ese sistema; un dato de referencia importante para juzgar si el aislamiento vale la pena.",
+    "source": "[^S3]",
+    "pitfall": "Pensar que ese número implica que aumentar el uso de tokens de forma continua trae un rendimiento proporcionalmente mejor en la tarea.",
+    "distractor_rationale": "Quien lee mal «explica la varianza» como «palanca causal positiva» puede concluir que «gastar más tokens da mejores resultados», cuando se trata de la atribución estadística del origen de las diferencias de rendimiento en ese sistema, no de que invertir tokens sin límite mejore el rendimiento de forma lineal."
+  },
+  {
+    "term": "CONTEXT_WINDOW",
+    "def": "Una constante del código de ejemplo del curso que representa el límite de capacidad de la ventana de contexto; se fija con criterio de ingeniería según el modelo que uses de verdad.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que CONTEXT_WINDOW se puede fijar en cualquier valor grande y «seguro» sin alinearlo con el tamaño real de la ventana del modelo.",
+    "distractor_rationale": "Quien es poco sensible a las especificaciones del modelo puede tratar esta constante como un marcador de posición de ingeniería que se rellena a gusto, mientras los comentarios del código del curso indican explícitamente «en proyectos reales se fija al límite real de tu modelo»: fijarla mal afecta directamente la precisión del momento en que se dispara la compactación."
+  },
+  {
+    "term": "COMPACT_RATIO",
+    "def": "Una constante del código de ejemplo del curso que define la proporción de umbral que dispara la compactación; cuando el uso supera la capacidad de la ventana multiplicada por esa proporción, se dispara la compactación.",
+    "source": "[^S1]",
+    "pitfall": "Creer que COMPACT_RATIO tiene un valor estándar de la industria que habría que buscar y aplicar al escribir el código.",
+    "distractor_rationale": "Quien busca una «configuración estándar» puede perderse la afirmación explícita del curso de que esa proporción no tiene respuesta estándar, es un criterio de ingeniería y no una cláusula de especificación, y que hay que ajustarla según el tamaño real de la ventana de tu modelo y el volumen de resultados de herramientas por turno."
+  },
+  {
+    "term": "shouldCompact",
+    "def": "La función de juicio del código de ejemplo del curso: revisa si el uso acumulado de tokens alcanzó o superó el umbral de compactación y decide si hay que dispararla.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que shouldCompact necesita saber de qué compactación se trata, o cuántas veces se compactó históricamente, para juzgar bien esta vez.",
+    "distractor_rationale": "Quien imagina que la lógica de compactación necesita máquinas de estado complejas puede sobrestimar las responsabilidades de shouldCompact, mientras el curso afirma explícitamente que «no le importa de qué ventana se trata, solo mira el uso de la ventana actual»: la lógica de juicio es en realidad bien simple."
+  },
+  {
+    "term": "tokensUsed",
+    "def": "La variable contador del código de ejemplo del curso que sigue el uso acumulado de tokens de la ventana actual; debe volver a cero después de que la compactación se dispara y se completa, porque representa «cuánto lleva usado esta ventana» y no el total histórico.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que tokensUsed debería acumularse de forma continua para representar el total de tokens gastados desde el inicio de la tarea hasta ahora, sin reiniciarse después de compactar.",
+    "distractor_rationale": "Quien da por hecho que «uso acumulado» significa «total histórico» puede saltarse el reinicio posterior a la compactación, que es justamente la raíz del bug de la «tormenta de compactación» que el ejercicio del curso diagnostica: sin reiniciarlo, shouldCompact queda permanentemente verdadero desde el primer disparo en adelante."
+  },
+  {
+    "term": "trackUsage",
+    "def": "La función auxiliar del código de ejemplo del curso: acumula en el contador tokensUsed los input_tokens y los output_tokens de cada respuesta del modelo.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que a trackUsage le basta con contar los output_tokens porque son lo que el modelo «escribió de nuevo» en ese turno.",
+    "distractor_rationale": "Quien se fija solo en la salida del modelo e ignora el costo de entrada puede dejar fuera los input_tokens, mientras el código del curso acumula explícitamente en el contador tanto response.usage.input_tokens como output_tokens, porque los dos consumen de verdad capacidad de ventana y presupuesto."
+  },
+  {
+    "term": "update_notes",
+    "def": "La herramienta del código de ejemplo del curso con la que el agente escribe en NOTES.md; su semántica es que cada escritura sobrescribe en bloque con el contenido completo, sin ninguna fusión incremental.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que la entrada de update_notes debería ser el contenido incremental agregado en esta ronda y que la implementación de la herramienta lo anexará automáticamente después de las notas existentes.",
+    "distractor_rationale": "Quien está acostumbrado a los patrones habituales de «actualización incremental» puede juzgar mal la semántica de update_notes, mientras el curso afirma explícitamente que es «el contenido completo que quieras guardar, escrito en bloque»: la semántica más simple de «este es el estado actual», sin ninguna lógica de fusión que atender."
+  },
+  {
+    "term": "runAgent",
+    "def": "La función principal del código de ejemplo del curso que junta en un mismo bucle el seguimiento del uso, la compactación disparada por umbral y la lectura y escritura de notas, para ejecutar tareas que exceden la capacidad de una sola ventana.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que cada vez que escribes un bucle de agente deberías incluir por defecto esta versión completa de runAgent, tratando el seguimiento del uso, la compactación por umbral y las notas estructuradas como un paquete estándar.",
+    "distractor_rationale": "Quien ve un ejemplo de implementación completo puede hacerse la ilusión de que «así es como se hace», y se pierde el recordatorio de la sección final del curso sobre el sentido de la proporción: agrega complejidad solo cuando mejora los resultados de forma demostrable; a las tareas que terminan en una docena de turnos no les hace falta ninguna de estas piezas."
+  },
+  {
+    "term": "tormenta de compactación",
+    "def": "El fenómeno de bug donde olvidar reiniciar tokensUsed después de compactar hace que casi cada turno siguiente dispare la compactación por error, con lo que la tarea gira en el mismo lugar resumiendo y reiniciando una y otra vez.",
+    "source": "[^S1]",
+    "pitfall": "Al ver que la compactación se dispara seguido, atribuir la causa a un COMPACT_RATIO fijado demasiado bajo y pensar que subir el umbral lo resuelve.",
+    "distractor_rationale": "Quien ajusta parámetros apenas ve el síntoma superficial puede atribuir la causa raíz a la configuración del umbral sin revisar si tokensUsed volvió a cero después de compactar; el ejercicio del curso identifica explícitamente la raíz en la confusión de semánticas del contador: tocar el umbral trata el síntoma, no la causa."
+  },
+  {
+    "term": "compactación disparada por umbral",
+    "def": "El mecanismo que cablea la compactación al bucle: cuando el uso acumulado alcanza la proporción de umbral fijada, se dispara la compactación de forma proactiva y el trabajo continúa, sin esperar a que la ventana reviente de verdad.",
+    "source": "[^S1]",
+    "pitfall": "Confundir la compactación disparada por umbral con la válvula de presupuesto del curso 7 (parar al tocar el techo) y pensar que en los dos casos la acción posterior al disparo es detener el trabajo del agente.",
+    "distractor_rationale": "Quien hace la analogía entre dos mecanismos «disparados por alcanzar un volumen» puede perderse la distinción explícita del curso: los dos usan los mismos datos del acumulador, pero la válvula de presupuesto al tocar el techo frena (para) y la compactación por umbral al alcanzar el umbral toma aire (compacta y sigue trabajando); son acciones completamente distintas."
+  },
+  {
+    "term": "readNotes",
+    "def": "La función del código de ejemplo del curso que lee el contenido actual de las notas desde NOTES.md y devuelve un texto de marcador de posición si la lectura falla (porque el archivo todavía no existe).",
+    "source": "[^S1]",
+    "pitfall": "Pensar que readNotes debería llamarse en cada vuelta del bucle, llevando el contenido de las notas a cada petición para asegurar que la información esté siempre visible.",
+    "distractor_rationale": "Quien persigue que «la información esté siempre visible» puede defender llamadas frecuentes a readNotes, mientras la comprobación en lección del curso discutió justamente esa propuesta: las notas se leen una vez en momentos críticos como el reinicio de la ventana, y no se meten en la petición de cada turno consumiendo presupuesto de atención una y otra vez."
+  },
+  {
+    "term": "writeNotes",
+    "def": "La función del código de ejemplo del curso que escribe en el archivo NOTES.md el contenido completo de notas que recibe, para que la herramienta update_notes la use cuando se la llama.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que writeNotes tiene que juzgar las diferencias entre el contenido viejo y el nuevo y escribir solo las partes que cambiaron para mejorar la eficiencia de escritura.",
+    "distractor_rationale": "Quien no termina de asimilar la semántica simplificada de «sobrescritura en bloque» puede imaginar para writeNotes responsabilidades complejas de comparación incremental, mientras la implementación del curso simplemente escribe el contenido completo en bloque: la complejidad está minimizada a propósito."
+  },
+  {
+    "term": "llamada de compactación",
+    "def": "La llamada extra al modelo que dispara la compactación para generar el resumen de traspaso; su salida se usa directamente para reiniciar el arreglo de mensajes y no entra al bucle principal para seguir razonando.",
+    "source": "[^S1]",
+    "pitfall": "Tratar la llamada de compactación como una llamada normal del bucle principal, a la que también habría que revisarle el stop_reason para decidir si el bucle continúa.",
+    "distractor_rationale": "Quien aplica de forma mecánica la lógica de juicio del bucle principal puede perderse el recordatorio del curso: en la llamada de compactación «stop_reason ya no importa porque esta respuesta nunca entra al bucle principal»; su salida se toma directamente para reiniciar messages y no participa del juicio de continuación."
+  }
+]

@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Producir la variante en español del curso learn-context-engineering para learn.agentmentor.dev, tomando como base la variante en inglés ya verificada. Es una traducción con pulido pedagógico a partir de en (no del zh): misma estructura de 6 lecciones, mismos slugs de lección, mismos ids de bloque interactivo y mismas posiciones de respuesta correcta, citas de las fuentes conservadas en su inglés original, código ejecutable con la lógica intacta y solo comentarios y cadenas visibles traducidos, referencias entre cursos apuntando a los títulos en español, y una prosa técnica natural en español, en tono profesional cercano y sin rigidez de traducción automática.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "El responsable ratificó el plan multilingüe de forma explícita: los seis idiomas en learn.agentmentor.dev, primero el inglés y después el resto de idiomas como oleadas de traducción a partir de la base en inglés, en lotes de 2-3 cursos y con un commit por curso. La variante en inglés es la fuente de verdad verificada y corregida en su fundamentación, así que no hizo falta ninguna aclaración adicional."
+  },
+  "learnerModel": {
+    "targetReader": "Una persona desarrolladora que ha terminado los primeros siete cursos de esta serie, sabe escribir a mano un bucle dirigido por stop_reason y quiere controlar qué ve el modelo en cada turno de una tarea larga",
+    "knownConcepts": [
+      "Escribir a mano un bucle de agente dirigido por stop_reason (curso 7)",
+      "El historial messages que crece en cada turno; los bloques tool_result que se devuelven juntos",
+      "La ventana de contexto como recurso finito (curso 5)",
+      "Los subagentes, que parten de un contexto independiente y solo devuelven conclusiones (curso 6)",
+      "Lectura y escritura de JavaScript / Node.js básico"
+    ],
+    "unknownConcepts": [
+      "La ingeniería de contexto como continuación de la ingeniería de prompts",
+      "El presupuesto de atención y la degradación de contexto como una economía del contexto",
+      "La altitud del prompt del sistema (lógica rígida hardcodeada, orientación vaga o heurísticas sólidas)",
+      "Las herramientas y los ejemplos como contexto; ejemplos canónicos en vez de listas interminables de casos límite",
+      "Precarga frente a recuperación justo a tiempo; identificadores ligeros y descubrimiento progresivo",
+      "La estrategia de compactación: qué tiene que sobrevivir y qué se puede tirar",
+      "La toma de notas estructurada (NOTES.md) como estado fuera de la ventana",
+      "Los subagentes como técnica de gestión de contexto y su economía del contexto"
+    ],
+    "assumedEnvironment": "Un entorno de Node.js, acceso a una terminal y un editor de texto; el código del arnés del curso 7 disponible para ampliarlo",
+    "firstIndependentAction": "Tomar una de sus propias sesiones largas de agente y marcar qué contexto entró por precarga y cuál por recuperación, y qué se tendría que haber compactado",
+    "noviceRamp": [
+      "La lección 1 asienta la disciplina en el presupuesto de atención y la degradación de contexto antes de cualquier técnica",
+      "La lección 2 disecciona lo que ya cuenta como contexto (la altitud del prompt del sistema, las herramientas, los ejemplos)",
+      "La lección 3 traza la frontera entre precarga y justo a tiempo con identificadores ligeros",
+      "La lección 4 añade la compactación y las notas estructuradas para tareas largas",
+      "La lección 5 reencuadra los subagentes desde la economía de contexto, y la lección 6 conecta el seguimiento de uso, la compactación por umbral y NOTES.md al arnés del curso 7"
+    ]
+  },
+  "learnerBrief": "El lector objetivo ha terminado los primeros siete cursos, sabe escribir a mano el bucle del arnés y lee JavaScript. Todavía no sabe cómo gobernar qué entra en la ventana en cada turno. El curso lo lleva a explicar la ingeniería de contexto a través del presupuesto de atención y la degradación de contexto, corregir la altitud del prompt del sistema, separar la precarga de la recuperación justo a tiempo, diseñar la compactación y las notas estructuradas para tareas largas, razonar sobre los subagentes en términos de economía del contexto y, por último, conectar el seguimiento de tokens, la compactación disparada por umbral y un cuaderno NOTES.md al arnés del curso 7.",
+  "scope": "Se cubre: la ingeniería de contexto frente a la ingeniería de prompts, el presupuesto de atención y la degradación de contexto, la altitud del prompt del sistema, las herramientas y los ejemplos como contexto, la precarga frente a la recuperación justo a tiempo con identificadores ligeros y descubrimiento progresivo, la estrategia de compactación y la toma de notas estructurada, los subagentes como aislamiento de contexto, con la economía del contexto que eso implica, y una capa práctica de gestión de contexto sobre el arnés del curso 7. No se cubre: la técnica de escritura de prompts (curso 3), la persistencia y la recuperación entre sesiones (curso 5), los patrones de colaboración multiagente más allá de la mirada del contexto (curso 6), ni RAG o bases de datos vectoriales. Profundidad: desde cero hasta ejecutar por completo una tarea demasiado grande para una sola ventana mediante una capa de contexto autogestionada.",
+  "status": {
+    "stage": "generated",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-context-engineering/es/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Los diagramas se mantienen exactamente donde los usa la variante en inglés (la anatomía del contexto y el flujo de la compactación), con las etiquetas reescritas en español; no se añade ni se quita ninguno. Qué entra en la ventana en cada turno es contenido espacial que un diagram transmite bien, y la colocación heredada ya estaba validada en revisión.",
+    "weakestPoints": [
+      "S5 (el roadmap comunitario) contiene la frase de opinión sobre la muerte de la ingeniería de prompts; el curso la cita solo como la postura de esa fuente y abre con el encuadre de la «progresión natural» de S1, pero quien lea en diagonal puede seguir sobrevalorando el eslogan",
+      "Las cifras de tokens (4x/15x, resúmenes de 1000-2000 tokens) son datos que Anthropic reporta para sistemas concretos, y se enmarcan como tales y no como constantes",
+      "La implementación de compactación de la lección 6 es de nivel didáctico; en producción habría que preferir las API nativas de compactación donde estén disponibles, cosa que la lección afirma de forma explícita",
+      "Al ser una traducción al español de una variante en inglés verificada, la deriva idiomática es el riesgo residual: las citas de las fuentes se conservaron verbatim en inglés y el código ejecutable mantiene la lógica idéntica, pero la prosa se vertió a un español natural en lugar de traducirse palabra por palabra, así que la revisión debe comprobar la equivalencia de significado con las lecciones en inglés"
+    ],
+    "followUpChecks": [
+      "Ejecutar course-guard sobre el directorio es y actualizar status.guardStatus con el resultado real (ahora está en pending)",
+      "Pasada de renderizado en learn.agentmentor.dev /es/context-engineering/... tras el despliegue: las 6 lecciones más el README, con las tarjetas interactivas hidratadas",
+      "Verificar que cada ancla [^Sn] de las lecciones en es tiene su bloque ## Sn correspondiente en el sources.md en es",
+      "Confirmar que los ids de los seis bloques de comprobación y las posiciones de respuesta correcta son idénticos byte a byte a la variante en inglés (b/a/c/c/a/b en orden de lección)",
+      "Volver a ejecutar el JS del proyecto final (seguimiento de uso de tokens + compactación por umbral + NOTES.md) y confirmar que la ejecución de la tarea larga coincide con las salidas afirmadas"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "La persona que aprende puede tomar una tarea larga que excede una ventana de contexto, repartir su contexto entre precarga y recuperación justo a tiempo, conectar el seguimiento de uso de tokens con compactación disparada por umbral y un cuaderno NOTES.md a un arnés dirigido por stop_reason, y llevar la tarea hasta el final explicando qué conservó cada compactación y por qué.",
+    "interactionCheck": "Seis bloques agentmentor-check, uno por lección (la atención finita en la L1, la corrección de altitud en la L2, el compromiso entre estrategias en la L3, el compromiso de la compactación en la L4, la ventana limpia en la L5 y las notas en cada turno en la L6), conservados desde la variante en inglés con ids, modos, número de opciones y posiciones de respuesta correcta idénticos; label, prompt, whyHere, el texto de las opciones y el feedback son traducciones al español ajustadas al malentendido propio de cada lección. Los ejercicios mantienen la estructura de niveles de la variante en inglés, con rubric, answer e hints en cada nivel.",
+    "learnerFitCheck": "El curso presupone los siete cursos previos: el bucle del arnés, la ventana finita y las nociones básicas de subagentes. La economía del presupuesto de atención, la altitud, la frontera de recuperación, la compactación y el aislamiento se enseñan desde cero en orden de dependencia; la persona construye por primera vez la capa de contexto completa en la lección 6, después de todos los prerrequisitos. El primer ejercicio de la lección 1 solo pide auditar la propia sesión.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "Variante en español de la variante en inglés verificada: la estructura, la fundamentación y las posiciones de respuesta se heredan del original verificado",
+      "Todos los bloques interactivos conservan id, mode, número de opciones y respuesta correcta con paridad byte a byte respecto al inglés",
+      "Todas las citas de las fuentes se mantienen en su inglés original y se comprobaron byte a byte contra sources.md",
+      "Las referencias entre cursos usan los títulos en español y el código del proyecto final mantiene la lógica idéntica"
+    ]
+  },
+  "nextSteps": [
+    "Ejecutar course-guard sobre la variante en es y corregir lo que señale",
+    "Actualizar status.guardStatus una vez que el guard se haya ejecutado de verdad",
+    "Desplegar learn.agentmentor.dev y comprobar que las páginas /es se renderizan con las tarjetas interactivas hidratadas",
+    "Producir las variantes de idioma restantes usando esta misma variante en inglés como base de traducción",
+    "Animar a quienes aprenden a poner seguimiento de tokens y compactación en un agente real de larga duración de su propio proyecto como proyecto de consolidación tras el curso"
+  ],
+  "memoryBoundary": "Este agentmentor.json es un registro de estado local del curso (course-local state record), almacenado únicamente en el directorio del curso para las comprobaciones de calidad y el seguimiento de la ruta de aprendizaje. Nunca se escribe de vuelta en la memoria a largo plazo de Claude Code ni de ningún sistema de IA anfitrión, y no afecta a otros cursos ni a otras conversaciones."
+}
