@@ -21,7 +21,7 @@ Em um fluxo de trabalho, o tratamento de erros precisa responder a três pergunt
 2. **Você deve repetir, pular ou abortar?** (uma retentativa pode resolver vs. uma retentativa piora as coisas)
 3. **Se abortar, como você limpa os passos que já terminaram?** (reverter o banco de dados vs. enviar um aviso de cancelamento)
 
-Se o passo que falhou é opcional (digamos, enviar uma notificação), pule-o e siga em frente. Deixar que uma falha não crítica não derrube a execução inteira se chama degradação graciosa. Mas se o passo que falhou é crítico, pulá-lo deixa um estado inconsistente, então você deveria abortar.
+Se o passo que falhou é opcional (digamos, enviar uma notificação), pule-o e siga em frente. Não deixar que uma falha não crítica derrube a execução inteira se chama degradação graciosa. Mas se o passo que falhou é crítico, pulá-lo deixa um estado inconsistente, então você deveria abortar.
 
 Sem respostas, seu fluxo de trabalho fica frágil demais (um errinho o derruba) ou perigoso demais (ele ignora erros e continua rodando, deixando estado inconsistente para trás).[^S9]
 
@@ -186,7 +186,7 @@ async function retrySelective(fn, maxAttempts = 3) {
 {
   "id": "workflows-zh-05-retry-strategy",
   "label": "Escolha da estratégia de retentativa correta",
-  "prompt": "Um fluxo de trabalho precisa chamar uma API externa para buscar dados. A API permite 60 requisições por minuto; além disso, ela retorna 429, e você precisa esperar 60 segundos para continuar. O fluxo de trabalho precisa chamar a API 100 vezes dentro de um minuto. Como você deve tratar os erros 429?",
+  "prompt": "Um fluxo de trabalho precisa chamar uma API externa para buscar dados. A API permite 60 requisições por minuto; acima disso, ela retorna 429, e você precisa esperar 60 segundos para continuar. O fluxo de trabalho precisa chamar a API 100 vezes dentro de um minuto. Como você deve tratar os erros 429?",
   "whyHere": "Você acabou de aprender a classificação de erros (transitório vs. permanente) e as estratégias de retentativa (fixa, backoff exponencial, seletiva). Isto verifica se você consegue olhar um tipo específico de erro (limitação de taxa) e escolher uma forma sensata de tratá-lo, em vez de recorrer ao backoff por reflexo.",
   "mode": "single",
   "choices": [
@@ -450,7 +450,7 @@ async function processOrder(orderId, orderData) {
 }
 ```
 
-**O benefício:** se um passo roda duas vezes por causa de um soluço de rede (a primeira tentativa expirou, mas na verdade teve sucesso), a idempotência garante que não haja efeitos colaterais duplicados.[^S9]
+**O benefício:** se um passo roda duas vezes por causa de uma instabilidade de rede (a primeira tentativa expirou, mas na verdade teve sucesso), a idempotência garante que não haja efeitos colaterais duplicados.[^S9]
 
 ## Camadas de tratamento de erros
 

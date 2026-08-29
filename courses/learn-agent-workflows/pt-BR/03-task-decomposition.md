@@ -11,7 +11,7 @@
 
 Uma tarefa cai na sua mesa: “Divida nossa aplicação Rails monolítica em uma arquitetura de microsserviços.” Essa é uma tarefa complexa. Você não sabe por onde começar, quantos passos ela leva nem o que cada passo faz.
 
-**Decomposição de tarefas é como você pega uma tarefa vaga e grande demais e a quebra em passos pequenos e claros.**[^S16]
+**Decomposição de tarefas é o processo de pegar uma tarefa vaga e grande demais e quebrá-la em passos pequenos e claros.**[^S16]
 
 Uma boa decomposição atende a três critérios:
 
@@ -308,7 +308,7 @@ Agora decomponha esta tarefa: gerar um relatório de estatísticas de contribuid
 
 **A vantagem da decomposição por LLM:** ela esboça um primeiro plano rápido e pega passos que você poderia ter esquecido.
 
-**A desvantagem da decomposição por LLM:** ela pode ficar abstrata demais (dizer “analise os dados” em vez de “calcule a complexidade ciclomática de cada arquivo”), então precisa de um humano para afiar.[^S16]
+**A desvantagem da decomposição por LLM:** ela pode ficar abstrata demais (dizer “analise os dados” em vez de “calcule a complexidade ciclomática de cada arquivo”), então precisa de um humano para refiná-la.[^S16]
 
 ## Dicas práticas para identificar dependências
 
@@ -425,7 +425,7 @@ await Promise.all(services.map(s => deployService(s)));
 
 Escolha uma das tarefas abaixo e quebre-a em 5 a 8 passos:
 
-**Tarefa A:** gerar um relatório de performance de uma aplicação web (tempo de carregamento, tamanho dos recursos, Core Web Vitals)
+**Tarefa A:** gerar um relatório de desempenho de uma aplicação web (tempo de carregamento, tamanho dos recursos, Core Web Vitals)
 
 **Tarefa B:** limpar um repositório Git (remover dependências não usadas, apagar código morto, atualizar comentários desatualizados)
 
@@ -445,7 +445,7 @@ A quantidade de passos é razoável (de 5 a 8 passos, não 3 gigantes nem 15 fra
 Trabalhe de trás para frente, a partir do fim (o relatório ou resultado final): de que dados o relatório precisa? De onde vêm esses dados? Quais dados podem ser obtidos sem depender de mais nada?
 
 <!-- hint -->
-As três métricas de performance da Tarefa A (tempo de carregamento, tamanho dos recursos, Core Web Vitals) podem ser medidas todas de uma vez — elas dependem apenas de uma entrada compartilhada (a URL da aplicação no ar). Essa é uma oportunidade de paralelismo de manual.
+As três métricas de desempenho da Tarefa A (tempo de carregamento, tamanho dos recursos, Core Web Vitals) podem ser medidas todas de uma vez — elas dependem apenas de uma entrada compartilhada (a URL da aplicação no ar). Essa é uma oportunidade de paralelismo de manual.
 
 ### Nível 2: Conserte uma decomposição quebrada
 

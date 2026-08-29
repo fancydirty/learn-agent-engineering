@@ -34,7 +34,7 @@ Você está construindo um bot de atendimento. Um usuário pergunta: “Você co
 }
 ```
 
-Repare no novo campo `tools`. Ele não é uma mensagem; é um manifesto que informa ao modelo quais ferramentas ele tem em mãos, como cada uma se parece e quais parâmetros cada uma exige.[^S3] Você precisa enviar esse manifesto em toda requisição — o modelo não “lembra” dele, então o seu código tem que incluí-lo todas as vezes.
+Repare no novo campo `tools`. Ele não é uma mensagem; é um manifesto que informa ao modelo quais ferramentas ele tem em mãos, como é cada uma e quais parâmetros cada uma exige.[^S3] Você precisa enviar esse manifesto em toda requisição — o modelo não “lembra” dele, então o seu código tem que incluí-lo todas as vezes.
 
 O modelo lê o manifesto e, em vez de responder o status do pedido diretamente, retorna algo assim:
 
@@ -52,7 +52,7 @@ O modelo lê o manifesto e, em vez de responder o status do pedido diretamente, 
 
 Duas coisas novas aparecem aqui: `stop_reason` virou `"tool_use"`, e o array `content` ganhou um bloco novo com `type: "tool_use"`. O modelo não consultou informação nenhuma sobre o pedido — ele nem sabe onde fica o sistema de pedidos. Ele está apenas dizendo: “preciso que você chame `get_order_status` para mim com estes parâmetros, e depois me conte o resultado”.
 
-Seu código assume daqui em diante, consulta de fato o sistema de pedidos, obtém um resultado e empacota esse resultado na próxima requisição a ser enviada de volta:
+Seu código assume o controle daqui em diante, consulta de fato o sistema de pedidos, obtém um resultado e empacota esse resultado na próxima requisição a ser enviada de volta:
 
 ```json
 {
@@ -177,7 +177,7 @@ Se você tomar um atalho e enviar uma rodada só com o primeiro `tool_use_id` so
 
 ## Chamadas do mesmo lote não enxergam os resultados umas das outras
 
-Agora que a regra da devolução em lote está resolvida, há uma armadilha mais funda: a **dependência de dados** entre blocos `tool_use` do mesmo lote.
+Agora que a regra da devolução em lote está resolvida, há uma armadilha mais profunda: a **dependência de dados** entre blocos `tool_use` do mesmo lote.
 
 Mude de cenário. Um agente de transferência de dinheiro está montado com duas ferramentas: `read_balance(account_id)` lê o saldo, e `withdraw(account_id, amount)` tira dinheiro. O usuário diz: “Tire \$100 da A001, se houver saldo suficiente”. Em uma única resposta, o modelo devolve dois blocos `tool_use`: `read_balance({"account_id": "A001"})` e `withdraw({"account_id": "A001", "amount": 100})`.
 
@@ -253,7 +253,7 @@ Este laço não tem um teto fixo de iterações — para um único pedido do usu
 
 ## Troque o host, os nomes dos campos mudam, a estrutura não
 
-Se você está em uma API compatível com a da OpenAI, o mesmo mecanismo vem em outra embalagem: a requisição de chamada aparece no array `choices[0].message.tool_calls`, o sinal de término não se chama `stop_reason` e sim `finish_reason`, e o valor dele é `"tool_calls"` em vez de `"tool_use"`.[^S7] A documentação oficial da OpenAI descreve o processo como "a multi-step conversation between your application and a model via the OpenAI API. When the model calls a function, you must execute it and return the result" (uma conversa de múltiplos passos entre a sua aplicação e um modelo via API da OpenAI; quando o modelo chama uma função, você tem que executá-la e retornar o resultado) — o modelo emite uma requisição de chamada, a aplicação executa e devolve o resultado, exatamente como na Claude.[^S1]
+Se você está em uma API compatível com a da OpenAI, o mesmo mecanismo vem em outra embalagem: a requisição de chamada aparece no array `choices[0].message.tool_calls`, o sinal de término não se chama `stop_reason` e sim `finish_reason`, e o valor dele é `"tool_calls"` em vez de `"tool_use"`.[^S7] A documentação oficial da OpenAI descreve o processo como "a multi-step conversation between your application and a model via the OpenAI API. When the model calls a function, you must execute it and return the result" (uma conversa de múltiplos passos entre a sua aplicação e um modelo via API da OpenAI; quando o modelo chama uma função, você tem que executá-la e retornar o resultado) — o modelo emite uma requisição de chamada, a aplicação executa e devolve o resultado, exatamente como no Claude.[^S1]
 
 Os nomes dos campos mudam conforme a API, mas o esqueleto — “o modelo só envia pedidos, o host cuida da execução, os resultados voltam carregando um identificador, e isso pode repetir por várias rodadas” — é universal.
 

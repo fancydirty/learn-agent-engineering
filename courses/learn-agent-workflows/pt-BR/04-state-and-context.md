@@ -218,7 +218,7 @@ async function loadCheckpoint(file) {
       "id": "a",
       "text": "Depois da fase 1, porque é a primeira fase",
       "correct": false,
-      "feedback": "A fase 1 leva apenas 5 minutos, então executá-la de novo depois de uma queda custa pouco. Um checkpoint pertence a um ponto depois de uma operação longa ou irreversível, não simplesmente ao primeiro passo da sequência."
+      "feedback": "A fase 1 leva apenas 5 minutos, então executá-la de novo depois de uma queda custa pouco. Um checkpoint deve vir depois de uma operação longa ou irreversível, não simplesmente no primeiro passo da sequência."
     },
     {
       "id": "b",
@@ -230,7 +230,7 @@ async function loadCheckpoint(file) {
       "id": "c",
       "text": "Depois da fase 3, porque a escrita já terminou",
       "correct": false,
-      "feedback": "Um checkpoint depois da fase 3 protege o resultado escrito, mas se a própria fase 3 falhar (quebrando no meio da escrita), o checkpoint nunca tem a chance de salvar. A estratégia melhor é salvar antes da fase 3, para que, em caso de falha, você possa corrigir o problema e escrever de novo."
+      "feedback": "Um checkpoint depois da fase 3 protege o resultado escrito, mas se a própria fase 3 falhar (quebrando no meio da escrita), o checkpoint nunca tem a chance de salvar. A melhor estratégia é salvar antes da fase 3, para que, em caso de falha, você possa corrigir o problema e escrever de novo."
     }
   ]
 }
@@ -240,7 +240,7 @@ async function loadCheckpoint(file) {
 
 **Quando usar:** fluxos de trabalho de longa duração (> 1 hora), trabalho que precisa se coordenar entre máquinas ou trabalho que precisa de aprovação humana.
 
-**Vantagem:** o estado é persistente; a queda de um processo ou o reinício de uma máquina não importam, e pausar/retomar é suportado.
+**Vantagem:** o estado é persistente; a queda de um processo ou o reinício de uma máquina não importam, e dá para pausar e retomar.
 
 **Desvantagem:** exige uma dependência externa (um banco de dados, Redis) e acrescenta complexidade.[^S13]
 
@@ -399,7 +399,7 @@ const context = {
 };
 ```
 
-**Por quê?** Contexto estruturado é mais fácil de o agente entender e mais fácil de você depurar.
+**Por quê?** Contexto estruturado é mais fácil para o agente entender e mais fácil para você depurar.
 
 ### Princípio 3: contexto acumulado vs. contexto reiniciado
 
@@ -594,7 +594,7 @@ Locais dos checkpoints: (1) depois que a fase 2 (push) termina — construir e e
 O estado deve conseguir responder: em que fase está o fluxo de trabalho? Em que estado está cada serviço (construindo / construído / implantado / falhou)? Se quebrar, de onde ele retoma?
 
 <!-- hint -->
-O status de cada serviço é independente (a falha de build de um serviço não muda o status de outro), então cada serviço deve ter seus próprios campos de status. Os checkpoints pertencem a pontos depois de operações caras e antes de operações irreversíveis (o deploy em produção).
+O status de cada serviço é independente (a falha de build de um serviço não muda o status de outro), então cada serviço deve ter seus próprios campos de status. Os checkpoints devem vir depois de operações caras e antes de operações irreversíveis (o deploy em produção).
 
 <!-- /exercises -->
 

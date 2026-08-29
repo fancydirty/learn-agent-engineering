@@ -23,9 +23,9 @@ Este curso ensina você a projetar e construir fluxos de trabalho de agentes: le
 ## Objetivos de aprendizado
 
 Ao final deste curso você será capaz de:
-- Entender o que separa a orquestração de um fluxo de trabalho de uma conversa avulsa
+- Entender o que diferencia a orquestração de fluxos de trabalho de uma conversa avulsa
 - Decompor de forma sistemática uma tarefa complexa em passos executáveis de um fluxo de trabalho
-- Projetar a gestão de estado e os checkpoints de um fluxo de trabalho
+- Projetar o gerenciamento de estado e os checkpoints de um fluxo de trabalho
 - Construir tratamento de erros e estratégias de recuperação que se sustentam em produção
 - Montar fluxos de trabalho multiagente de nível de produção
 

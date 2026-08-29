@@ -70,7 +70,7 @@ O script guarda os loops, as ramificações e os resultados intermediários; o c
 
 Quatro características marcam uma tarefa que se encaixa em um fluxo de trabalho:
 
-1. **Mais agentes do que uma conversa consegue coordenar.** Uma única conversa dá conta de 3 a 5 subagentes; além disso, você precisa de um fluxo de trabalho.
+1. **Mais agentes do que uma conversa consegue coordenar.** Uma única conversa dá conta de 3 a 5 subagentes; acima disso, você precisa de um fluxo de trabalho.
 2. **Você quer a orquestração codificada como um script legível e reutilizável.** Escreva uma vez, execute de novo quando quiser.
 3. **A tarefa se divide em fases claras.** Analisar, planejar, implementar, verificar.
 4. **Você precisa de execução paralela ou de verificação cruzada.** Subtarefas independentes, validação adversarial, comparação em formato de torneio.
@@ -82,7 +82,7 @@ Cenários típicos:
 - **Auditoria de base de código.** Varrer 500 arquivos, um agente por arquivo checando problemas de segurança, e depois agregar os resultados.
 - **Migração em larga escala.** Atualizar 200 componentes de Vue 2 para Vue 3 em paralelo, e verificar a integração no final.
 - **Pesquisa com verificação cruzada.** Colocar 5 agentes para pesquisar a mesma questão de forma independente, cruzar os fatos e produzir um relatório de consistência.
-- **Revisão de design sob vários ângulos.** Avaliar um design por três ângulos (arquitetura, performance, custo) de forma independente e depois juntar tudo.[^S1]
+- **Revisão de design sob vários ângulos.** Avaliar um design por três ângulos (arquitetura, desempenho, custo) de forma independente e depois juntar tudo.[^S1]
 
 Quando o fluxo de trabalho é a ferramenta errada:
 
@@ -102,7 +102,7 @@ Quando o fluxo de trabalho é a ferramenta errada:
       "id": "a",
       "text": "Não, porque gerar documentação é trabalho criativo e não pode ser reduzido a passos.",
       "correct": false,
-      "feedback": "Gerar documentação de API não é trabalho criativo; é uma tarefa altamente estruturada: extrair, gerar, validar, agregar. Cada passo tem entradas e saídas bem definidas, que é exatamente o que combina com um fluxo de trabalho."
+      "feedback": "Gerar documentação de API não é trabalho criativo; é uma tarefa altamente estruturada: extrair, gerar, validar, agregar. Cada passo tem entradas e saídas bem definidas, e é exatamente isso que combina com um fluxo de trabalho."
     },
     {
       "id": "b",
@@ -272,7 +272,7 @@ O Cenário A se encaixa em uma conversa única. Corrigir um bug em uma função 
 Pergunte a si mesmo: se uma pessoa fizesse essas duas tarefas, o Cenário A é do tipo que você senta e termina em 10 minutos, ou é um trabalho maior, que leva dias, exige um checklist e passos escalonados?
 
 <!-- hint -->
-A palavra-chave do Cenário B é “30 componentes”. Quando a contagem passa de 10, considere um fluxo de trabalho; quando uma tarefa pode ser descrita como “faça a mesma operação em N objetos”, um fluxo de trabalho quase sempre é a escolha melhor.
+A palavra-chave do Cenário B é “30 componentes”. Quando a contagem passa de 10, considere um fluxo de trabalho; quando uma tarefa pode ser descrita como “faça a mesma operação em N objetos”, um fluxo de trabalho quase sempre é a melhor escolha.
 
 <!-- /exercises -->
 

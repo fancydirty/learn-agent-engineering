@@ -46,9 +46,9 @@ O valor de retorno é o próprio conteúdo do arquivo, normalmente com números 
 3  }
 ```
 
-Ler um arquivo não muda estado nenhum. Se o modelo ler a coisa errada, ou ler demais, o pior desfecho é algum conteúdo irrelevante neste único turno — e o modelo tende a perceber que leu errado e ler de novo. É por isso que ela é chamada de a categoria “mais segura”: não que não tenha risco, mas que o risco não consegue escapar dos limites desta conversa.
+Ler um arquivo não muda estado nenhum. Se o modelo ler a coisa errada, ou ler demais, o pior desfecho é algum conteúdo irrelevante neste único turno — e o modelo tende a perceber que leu errado e ler de novo. É por isso que ela é chamada de categoria “mais segura”: não que não tenha risco, mas que o risco não consegue escapar dos limites desta conversa.
 
-O risco de verdade é **ler um arquivo em que jamais se deveria ter tocado**. Se o agente tem permissão para ler `~/.ssh/id_rsa` ou o `.env` do projeto, um inocente “me mostre o que tem neste diretório” pode erguer uma chave secreta na íntegra para dentro do contexto da conversa. Daí em diante, o vazamento já aconteceu no momento em que esse contexto é emitido pelo modelo, escrito num log, ou levado para fora por alguma ferramenta posterior de “chamar API externa”. É por isso que ferramentas de leitura de arquivo quase sempre vêm acompanhadas de uma lista de permissões de caminhos ou de um sandbox, em vez de “é só leitura, pode entregar as chaves”. A Lição 5 cobre em detalhe como estabelecer esse tipo de fronteira.
+O risco de verdade é **ler um arquivo em que jamais se deveria ter tocado**. Se o agente tem permissão para ler `~/.ssh/id_rsa` ou o `.env` do projeto, um inocente “me mostre o que tem neste diretório” pode trazer uma chave secreta na íntegra para dentro do contexto da conversa. Daí em diante, o vazamento já aconteceu no momento em que esse contexto é emitido pelo modelo, escrito num log, ou levado para fora por alguma ferramenta posterior de “chamar API externa”. É por isso que ferramentas de leitura de arquivo quase sempre vêm acompanhadas de uma lista de permissões de caminhos ou de um sandbox, em vez de “é só leitura, pode entregar as chaves”. A Lição 5 cobre em detalhe como estabelecer esse tipo de fronteira.
 
 ## Escrever: onde as consequências deixam de ser simétricas
 
@@ -190,7 +190,7 @@ Um retorno normal fica assim:
 { "ok": true, "ts": "1735689600.000200" }
 ```
 
-Mas um serviço externo vai te limitar por rate limit, dar timeout, rejeitar uma requisição por falta de permissão e mudar a própria interface no intervalo entre as suas chamadas. Isso não são “situações inesperadas”, são as condições normais de operação desta categoria. O que de fato decide se a ferramenta presta não é “o que ela retorna quando está tudo bem”, é “o que ela retorna quando as coisas falham”:
+Mas um serviço externo vai te limitar por rate limit, dar timeout, rejeitar uma requisição por falta de permissão e mudar a própria interface no intervalo entre as suas chamadas. Essas não são “situações inesperadas”, são as condições normais de operação desta categoria. O que de fato decide se a ferramenta presta não é “o que ela retorna quando está tudo bem”, é “o que ela retorna quando as coisas falham”:
 
 ```json
 { "ok": false, "error": "rate_limited", "retry_after": 30 }

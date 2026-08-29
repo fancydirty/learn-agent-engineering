@@ -9,7 +9,7 @@ order: 4
 
 # Tool calling de agentes: fazendo agentes agirem de verdade
 
-Este curso percorre o mecanismo completo do tool calling de agentes (tool use / function calling): exatamente quais campos viajam entre a requisição de uma chamada de ferramenta e a sua resposta, os limites de risco dos cinco tipos comuns de ferramenta (ler, escrever, executar, buscar, chamar uma API externa), como escrever uma interface de ferramenta que o modelo escolhe corretamente e também preenche corretamente, e como colocar em prática os níveis de permissão e as defesas contra prompt injection. Ele é para quem já sabe escrever prompts básicos e já usou uma ferramenta como o Claude Code, mas ainda não estudou de forma sistemática o protocolo de tool calling por baixo. Ele não ensina nenhum framework de agente específico (LangChain, AutoGPT) e não cobre treinamento nem fine-tuning de modelos — o foco é a cadeia em si: como o modelo pede uma ação e como a aplicação hospedeira a executa com segurança.
+Este curso percorre o mecanismo completo do tool calling de agentes (tool use / function calling): exatamente quais campos viajam entre a requisição de uma chamada de ferramenta e a sua resposta, os limites de risco dos cinco tipos comuns de ferramenta (ler, escrever, executar, buscar, chamar uma API externa), como escrever uma interface de ferramenta que o modelo escolhe corretamente e também preenche corretamente, e como colocar em prática os níveis de permissão e as defesas contra prompt injection. Ele é para quem já sabe escrever prompts básicos e já usou uma ferramenta como o Claude Code, mas ainda não estudou de forma sistemática o protocolo de tool calling por baixo. Ele não ensina nenhum framework de agente específico (LangChain, AutoGPT) e não cobre treinamento nem fine-tuning de modelos — o foco é a cadeia em si: como o modelo pede uma ação e como o host a executa com segurança.
 
 ## Conteúdo do curso
 
@@ -23,7 +23,7 @@ Este curso percorre o mecanismo completo do tool calling de agentes (tool use / 
 ## Objetivos de aprendizado
 
 Ao final deste curso você será capaz de:
-- Enunciar a linha do tool calling em que o modelo apenas propõe e a aplicação hospedeira executa, e usá-la para julgar se uma tarefa de fato precisa de ferramentas
+- Enunciar a linha do tool calling em que o modelo apenas propõe e o host executa, e usá-la para julgar se uma tarefa de fato precisa de ferramentas
 - Ler e escrever à mão uma ida e volta completa de tool_use / tool_result, incluindo o retorno em lote de várias chamadas em paralelo
 - Classificar os cinco tipos de ferramenta (ler, escrever, executar, buscar, chamar uma API externa) por raio de impacto e identificar a armadilha a que cada um é mais propenso
 - Escrever a description da ferramenta, o JSON Schema e o valor de retorno que permitem ao modelo escolher a ferramenta certa, preencher os parâmetros corretamente e se autocorrigir depois de uma falha

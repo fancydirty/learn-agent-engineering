@@ -21,8 +21,8 @@ $ node agent.js "Este projeto usa lodash? Veja como ele está no GitHub"
 Resposta final:
 Sim, o projeto usa lodash. O package.json fixa a versão em ^4.17.21, e
 src/utils/format.js faz require dele diretamente. No GitHub, lodash/lodash
-tem hoje mais de 60 mil estrelas, e o último push foi há cerca de dois
-meses — o repositório segue mantido. Para confirmar se ^4.17.21 é a
+tem hoje mais de 60 mil estrelas, e o último push foi há algumas
+semanas — o repositório segue mantido. Para confirmar se ^4.17.21 é a
 release mais recente, seria preciso mais uma consulta à lista de releases.
 ```
 
@@ -309,7 +309,7 @@ if (last3.length === 3 && last3.every((s) => s === signature)) {
 }
 ```
 
-Junto com `MAX_TURNS` como chave-mestra, as três válvulas de segurança têm funções distintas: `MAX_TURNS` protege contra "o modelo segue pedindo ferramentas em novas variações e nunca para"; a detecção de chamadas repetidas protege contra "o modelo fica preso girando nos mesmos argumentos"; e as verificações internas de caminho e formato das ferramentas (aquelas escritas no Passo 3) protegem contra "o modelo inventou um argumento fora dos limites e a ferramenta obedientemente o executou assim mesmo". Tire qualquer uma das três camadas e o laço corre o risco de disparar sem controle ou de ultrapassar seus limites.[^S18]
+Junto com `MAX_TURNS` como chave geral, as três válvulas de segurança têm funções distintas: `MAX_TURNS` protege contra "o modelo segue pedindo ferramentas em novas variações e nunca para"; a detecção de chamadas repetidas protege contra "o modelo fica preso girando nos mesmos argumentos"; e as verificações internas de caminho e formato das ferramentas (aquelas escritas no Passo 3) protegem contra "o modelo inventou um argumento fora dos limites e a ferramenta obedientemente o executou assim mesmo". Tire qualquer uma das três camadas e o laço corre o risco de disparar sem controle ou de ultrapassar seus limites.[^S18]
 
 **Como você identifica pelos logs que uma ferramenta está mal conectada?** Dois dos sinais mais comuns:
 

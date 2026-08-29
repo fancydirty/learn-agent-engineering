@@ -39,13 +39,13 @@ Nada de errado com isso — até é atencioso. Mas você não pediu instruções
 >
 > A de `src/utils/logger.ts:12` parece ser um wrapper de logging intencional; as outras 6 parecem sobras de depuração. Quer que eu limpe essas?
 
-Nas duas vezes a pergunta foi palavra por palavra a mesma. Mesmo modelo, mesmo prompt. Uma coisa era diferente: na segunda vez, esse agente tinha uma coisa a mais em mãos — uma **ferramenta**. Na primeira vez ele só podia chutar, a partir do conhecimento que viu no treinamento, um comando que “provavelmente resolve” e descrevê-lo para você. Na segunda vez ele de fato rodou uma busca, viu o que existe no seu projeto agora, e só então falou.
+Nas duas vezes a pergunta foi exatamente a mesma, palavra por palavra. Mesmo modelo, mesmo prompt. Uma coisa era diferente: na segunda vez, esse agente tinha uma coisa a mais em mãos — uma **ferramenta**. Na primeira vez ele só podia chutar, a partir do conhecimento que viu no treinamento, um comando que “provavelmente resolve” e descrevê-lo para você. Na segunda vez ele de fato rodou uma busca, viu o que existe no seu projeto agora, e só então falou.
 
 O que esta lição deixa claro é exatamente isso: o que é uma ferramenta, o que faz um agente sair de “falar sobre uma abordagem” para “de fato rodar a busca”, e quais tarefas não precisam de ferramenta nenhuma.
 
 ## Uma ferramenta é um cardápio que o host entrega ao modelo
 
-Primeiro, corrija um instinto: aquilo que encontrou os 7 arquivos não foi o modelo. O modelo não tem sistema de arquivos; ele não consegue abrir um diretório nem rodar uma correspondência de regex por conta própria. O que de fato executou aquela busca foi o **programa host** que roda o agente — talvez o Claude Code, talvez um script de algumas dezenas de linhas que você escreveu chamando a API da Claude.
+Primeiro, corrija um instinto: aquilo que encontrou os 7 arquivos não foi o modelo. O modelo não tem sistema de arquivos; ele não consegue abrir um diretório nem rodar uma correspondência de regex por conta própria. O que de fato executou aquela busca foi o **programa host** que roda o agente — talvez o Claude Code, talvez um script de algumas dezenas de linhas que você escreveu chamando a API do Claude.
 
 **Uma ferramenta é a lista com que o programa host diz ao modelo “aqui estão as coisas que eu posso fazer por você”.** Cada item especifica três coisas: como a capacidade se chama, quando usá-la e quais parâmetros passar. [^S3]
 
@@ -136,7 +136,7 @@ Algumas tarefas o modelo dá conta sozinho, sem nenhum contato com o mundo exter
 - Traduzir um pedaço de Python para JavaScript com a mesma lógica
 - Escrever um trecho de código novo direto de um requisito que você descreveu (antes de tocar em qualquer arquivo existente do seu projeto)
 
-O conhecimento de que essas tarefas dependem, o modelo viu bastante exemplo parecido durante o treinamento; só a habilidade de linguagem já as conclui. Force uma ferramenta nesse tipo de tarefa e o modelo ainda vai ter que decidir, a cada vez, “chamo ou não chamo nesta rodada” — uma decisão a mais é uma chance a mais de errar. Desperdício puro.
+Essas tarefas dependem de um conhecimento de que o modelo viu bastante exemplo parecido durante o treinamento; só a habilidade de linguagem já as conclui. Force uma ferramenta nesse tipo de tarefa e o modelo ainda vai ter que decidir, a cada vez, “chamo ou não chamo nesta rodada” — uma decisão a mais é uma chance a mais de errar. Desperdício puro.
 
 Outras tarefas o modelo não consegue fazer por mais esperto que seja, porque o que falta não é habilidade — é **informação**:
 
@@ -146,7 +146,7 @@ Outras tarefas o modelo não consegue fazer por mais esperto que seja, porque o 
 
 Para esse tipo de tarefa, por mais detalhado ou indutivo que você faça o prompt, o modelo não consegue conjurar uma resposta real, porque ele simplesmente não tem os dados em mãos. O único caminho é dar a ele um canal para que o programa host vá buscá-los — e essa é a razão de as ferramentas existirem.
 
-Como são esses cinco tipos de ferramenta — ler, escrever, rodar comandos, buscar, chamar serviços externos —, vamos desmontar um a um na Lição 3; para esta lição, tudo o que você precisa guardar é como fazer a pergunta “isto precisa de ferramenta?”.
+Esses cinco tipos de ferramenta — ler, escrever, rodar comandos, buscar, chamar serviços externos — vamos desmontar um a um na Lição 3; para esta lição, tudo o que você precisa guardar é como fazer a pergunta “isto precisa de ferramenta?”.
 
 <!-- exercises -->
 ## 💻 Exercícios

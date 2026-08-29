@@ -25,7 +25,7 @@ Digamos que sua caixa de ferramentas tenha uma ferramenta de busca em código. E
 }
 ```
 
-A pessoa usuária pergunta: "Em qual diretório está o utils.ts?"
+O usuário pergunta: "Em qual diretório está o utils.ts?"
 
 Tudo o que o modelo tem para trabalhar são aquelas duas linhas — o nome e a descrição. Ele não tem como saber se `search_files` procura arquivos pelo nome ou procura uma string dentro do conteúdo dos arquivos; a descrição não diz. O modelo escolhe essa ferramenta e passa `utils.ts` como query:
 
@@ -58,7 +58,7 @@ Mesma pergunta, mas desta vez o modelo lê "to find files by their name, use cod
 { "id": "call_1", "name": "code_search_glob", "input": { "pattern": "**/utils.ts" } }
 ```
 
-Entre as duas chamadas, nada mudou: mesmo modelo, mesmo prompt, nenhuma alteração em qualquer código de implementação. A única diferença são aquelas poucas linhas que o modelo consegue ler na definição da ferramenta — um nome mais preciso, uma descrição que explicita a fronteira e nomeia a ferramenta alternativa, e parâmetros com suas próprias descrições. É disso que trata esta lição: cada campo de uma interface de ferramenta é a única coisa com que o modelo tem para raciocinar quando toma uma decisão.
+Entre as duas chamadas, nada mudou: mesmo modelo, mesmo prompt, nenhuma alteração em qualquer código de implementação. A única diferença são aquelas poucas linhas que o modelo consegue ler na definição da ferramenta — um nome mais preciso, uma descrição que explicita a fronteira e nomeia a ferramenta alternativa, e parâmetros com suas próprias descrições. É disso que trata esta lição: cada campo de uma interface de ferramenta é a única coisa com que o modelo conta para raciocinar quando toma uma decisão.
 
 ## A descrição é tudo o que o modelo vê ao escolher uma ferramenta
 
@@ -92,7 +92,7 @@ Uma boa descrição deve "Avoid ambiguity by clearly describing (and enforcing w
       "id": "c",
       "text": "A descrição serve principalmente para economizar tokens, então quanto mais curta melhor; deixe o modelo adivinhar como usá-la a partir do system prompt",
       "correct": false,
-      "feedback": "Direção errada. Uma descrição vaga não economiza tokens — ela faz o modelo tentar e errar entre várias ferramentas parecidas, receber resultados vazios e repetir, e essas idas e vindas fracassadas custam muito mais tokens do que algumas frases claras. O custo em tokens realmente importa quando a contagem de ferramentas fica alta o bastante, mas isso se resolve enxugando a quantidade e a granularidade das ferramentas, e não escrevendo de forma vaga a explicação de cada uma."
+      "feedback": "Direção errada. Uma descrição vaga não economiza tokens — ela faz o modelo tentar e errar entre várias ferramentas parecidas, receber resultados vazios e repetir, e essas idas e voltas fracassadas custam muito mais tokens do que algumas frases claras. O custo em tokens realmente importa quando a contagem de ferramentas fica alta o bastante, mas isso se resolve enxugando a quantidade e a granularidade das ferramentas, e não escrevendo de forma vaga a explicação de cada uma."
     }
   ]
 }
@@ -102,7 +102,7 @@ Uma boa descrição deve "Avoid ambiguity by clearly describing (and enforcing w
 
 O trabalho da descrição é explicitar o que a ferramenta faz; o trabalho do nome é outro — ele deve impedir que a ferramenta seja confundida com outra numa caixa de ferramentas lotada. Assim que você tem muitas ferramentas, especialmente depois de conectar vários serviços externos, nomes como `list_prs`, `send_message`, `create_issue` são nomes que qualquer um poderia escolher, e o nome sozinho não diz a qual serviço eles pertencem.
 
-A recomendação oficial é prefixar os nomes das ferramentas com o serviço: "When your tools span multiple services or resources, prefix names with the service (e.g., github_list_prs, slack_send_message). This makes tool selection unambiguous as your library grows, and is especially important when using tool search."[^S10] (quando suas ferramentas abrangem vários serviços ou recursos, prefixe os nomes com o serviço; isso torna a seleção de ferramentas inequívoca conforme sua biblioteca cresce). Quando o modelo precisa escolher uma ferramenta entre dezenas, um nome prefixado estreita o campo logo de cara, de modo que ele pode descartar a maior parte das opções sem abrir cada descrição para compará-las linha a linha. Os cinco tipos de ferramenta da Lição 3 (ler, escrever, executar, buscar, chamar) se beneficiam do mesmo jeito se cada um for sustentado por um serviço diferente: `fs_read_file` e `db_read_row` obviamente não são a mesma coisa à primeira vista, ao passo que um `read` solto embaralha os dois.
+A recomendação oficial é prefixar os nomes das ferramentas com o serviço: "When your tools span multiple services or resources, prefix names with the service (e.g., github_list_prs, slack_send_message). This makes tool selection unambiguous as your library grows, and is especially important when using tool search."[^S10] (quando suas ferramentas abrangem vários serviços ou recursos, prefixe os nomes com o serviço; isso torna a seleção de ferramentas inequívoca conforme sua biblioteca cresce, e é especialmente importante quando se usa busca de ferramentas). Quando o modelo precisa escolher uma ferramenta entre dezenas, um nome prefixado estreita o campo logo de cara, de modo que ele pode descartar a maior parte das opções sem abrir cada descrição para compará-las linha a linha. Os cinco tipos de ferramenta da Lição 3 (ler, escrever, executar, buscar, chamar) se beneficiam do mesmo jeito se cada um for sustentado por um serviço diferente: `fs_read_file` e `db_read_row` obviamente não são a mesma coisa à primeira vista, ao passo que um `read` solto embaralha os dois.
 
 ## input_schema: fixe o formato dos parâmetros
 

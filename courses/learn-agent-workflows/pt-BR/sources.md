@@ -8,7 +8,7 @@ URL: https://code.claude.com/docs/en/workflows
 
 - authority: official-docs
 
-A página oficial de workflows do Claude Code, que explica como um workflow dinâmico conduz vários subagentes a partir de um script — o formato que serve para auditorias de bases de código grandes, migrações amplas e pesquisas com verificação cruzada.
+A página oficial de fluxos de trabalho do Claude Code, que explica como um fluxo de trabalho dinâmico conduz vários subagentes a partir de um script — o formato que serve para auditorias de bases de código grandes, migrações amplas e pesquisas com verificação cruzada.
 
 Citação principal:
 > "Reach for a workflow when a task needs more agents than one conversation can coordinate, or when you want the orchestration codified as a script you can read and rerun."
@@ -30,7 +30,7 @@ URL: https://claude-world.com/articles/what-is-a-workflow-multi-agent-orchestrat
 
 - authority: authoritative-guide
 
-Traça como o Claude Code saiu de um agente único para o fan-out de subagentes e daí para workflows conduzidos por script, e apresenta os quatro estágios mais a ideia central da orquestração.
+Traça como o Claude Code saiu de um agente único para o fan-out de subagentes e daí para fluxos de trabalho conduzidos por script, e apresenta os quatro estágios mais a ideia central da orquestração.
 
 Citação principal:
 > "Orchestration is exactly what it sounds like: one score, many musicians. A script deciding it — for loop, if statement — is orchestration."
@@ -41,7 +41,7 @@ URL: https://www.mindstudio.ai/blog/claude-code-agentic-workflow-patterns
 
 - authority: authoritative-guide
 
-Percorre cinco padrões de workflow — sequencial, operador, dividir-e-juntar, times de agentes e headless — e a complexidade de tarefa que cada um atende.
+Percorre cinco padrões de fluxo de trabalho — sequencial, operador, dividir-e-juntar, times de agentes e headless — e a complexidade de tarefa que cada um atende.
 
 Citação principal:
 > "Understanding the five core Claude workflow patterns — sequential, operator, split-and-merge, agent teams, and headless — determines how much you can actually get done."
@@ -63,7 +63,7 @@ URL: https://aws.amazon.com/marketplace/build-learn/ai-agent-learning-series/age
 
 - authority: official-docs
 
-O guia da própria AWS sobre orquestração multiagente com Step Functions, Bedrock Agents e MWAA, cobrindo o control plane, a gestão de estado e as etapas de aprovação humana.
+O guia da própria AWS sobre orquestração multiagente com Step Functions, Bedrock Agents e MWAA, cobrindo o control plane, o gerenciamento de estado e as etapas de aprovação humana.
 
 Citação principal:
 > "An orchestrated workflow needs configurable retry policies with exponential backoff and jitter so that transient errors don't permanently fail long-running workflows."
@@ -74,7 +74,7 @@ URL: https://medium.com/@vasanthancomrads/handling-failures-in-agent-based-workf
 
 - authority: blog
 
-Um apanhado prático do tratamento de falhas em workflows de agentes — retries, fallbacks, validação e circuit breakers — voltado a sistemas que precisam se sustentar em produção.
+Um apanhado prático do tratamento de falhas em fluxos de trabalho de agentes — retries, fallbacks, validação e circuit breakers — voltado a sistemas que precisam se sustentar em produção.
 
 Citação principal:
 > "User Input → Agent → Tool Call → Retry → Circuit Breaker → Validation → Fallback (if needed) → Confidence Check → Human-in-loop (optional) → Final Output"
@@ -118,7 +118,7 @@ URL: https://www.mindstudio.ai/blog/workflow-state-vs-session-state-ai-agents
 
 - authority: authoritative-guide
 
-Separa os dois tipos de estado — o estado de sessão, o contexto descartável da conversa atual, e o estado do workflow, o histórico da tarefa que sobrevive a ela — e defende que a máquina de estados é a forma mais clara de modelar o segundo.
+Separa os dois tipos de estado — o estado de sessão, o contexto descartável da conversa atual, e o estado do fluxo de trabalho, o histórico da tarefa que sobrevive a ela — e defende que a máquina de estados é a forma mais clara de modelar o segundo.
 
 Citação principal:
 > "Claude Code uses a file called CLAUDE.md in projects as a form of persistent workflow context — a place to store project-specific instructions, conventions, and state that survives across sessions."
@@ -129,7 +129,7 @@ URL: https://machinelearningmastery.com/5-architectural-patterns-for-persistent-
 
 - authority: authoritative-guide
 
-Distingue estado de memória — o estado é o retrato da tarefa atual, a memória é o que foi aprendido com as anteriores — e mostra como os checkpoints salvam o estado do workflow para que uma execução possa continuar.
+Distingue estado de memória — o estado é o retrato da tarefa atual, a memória é o que foi aprendido com as anteriores — e mostra como os checkpoints salvam o estado do fluxo de trabalho para que uma execução possa continuar.
 
 Citação principal:
 > "State is a snapshot. It's everything the agent currently knows about a task right now: what step it's on, what the last tool call returned, what variables it's tracking."
@@ -151,7 +151,7 @@ URL: https://ranjankumar.in/building-agents-that-remember-state-management-in-mu
 
 - authority: blog
 
-Apresenta a árvore de memória de tarefas — uma hierarquia em que cada nó é um passo com sua ação, entradas, saídas e status — como forma de dar suporte a raciocínio não linear e de gerenciar um workflow.
+Apresenta a árvore de memória de tarefas — uma hierarquia em que cada nó é um passo com sua ação, entradas, saídas e status — como forma de dar suporte a raciocínio não linear e de gerenciar um fluxo de trabalho.
 
 Citação principal:
 > "Store this state externally (Redis, Postgres, etc.) and load it at the start of each agent turn. If the agent crashes, you can resume exactly where it left off."

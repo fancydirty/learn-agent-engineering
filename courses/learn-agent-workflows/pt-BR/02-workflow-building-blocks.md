@@ -9,7 +9,7 @@
 
 ## Fluxos de trabalho não são mágica, são composição
 
-Na lição anterior vimos que um fluxo de trabalho consegue coordenar dezenas de agentes para concluir uma tarefa complexa. Mas abra um script de fluxo de trabalho e você vai encontrar código comum: funções, loops, condicionais.
+Na lição anterior vimos que um fluxo de trabalho consegue coordenar dezenas de agentes para concluir uma tarefa complexa. Mas abra um script de fluxo de trabalho e você vai encontrar apenas código comum: funções, loops, condicionais.
 
 **O poder de um fluxo de trabalho vem da combinação de quatro blocos de construção simples:**
 
@@ -409,7 +409,7 @@ async function healthCheckWorkflow() {
 
 **Este fluxo de trabalho usa os quatro blocos de construção:**
 - **Passos**: `listServices`, `checkServiceHealth`, as chamadas `agent()`
-- **Estado**: o objeto `state` guardando o total e as listas de saudáveis/fora de saúde
+- **Estado**: o objeto `state` guardando o total e as listas de saudáveis/não saudáveis
 - **Ramificações**: paralelo x sequencial conforme a quantidade de serviços, e o tipo de relatório conforme o status de saúde
 - **Loops**: o loop paralelo com `map`, o loop sequencial com `for`
 
@@ -425,8 +425,8 @@ async function healthCheckWorkflow() {
 **Identifique as oportunidades de paralelismo:**
 
 - Se vários passos não dependem uns dos outros, eles podem rodar em paralelo
-- “Para cada X, faça Y” quase sempre pode ser paralelizado
-- O paralelismo pode transformar dez tarefas de 5 minutos, de 50 minutos para 5
+- “Para cada X, faça Y” geralmente pode ser paralelizado
+- O paralelismo pode fazer dez tarefas de 5 minutos caírem de 50 minutos para 5
 
 **Deixe as dependências explícitas:**
 

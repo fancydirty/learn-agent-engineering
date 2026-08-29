@@ -601,7 +601,7 @@ async function runTestsWithRetry(env, options) {
 **Características centrais:**
 - **Testes em paralelo**: vários ambientes rodam seus testes ao mesmo tempo, cortando drasticamente o tempo total
 - **Tolerância a falhas**: a falha de um ambiente não afeta os outros
-- **Retentativa inteligente**: testes que falham repetem automaticamente (quedas de rede e falhas transitórias são comuns)
+- **Retentativa inteligente**: testes que falham repetem automaticamente (oscilações de rede e falhas transitórias são comuns)
 - **Análise de falhas**: sugestões de correção para as falhas são geradas automaticamente[^S20]
 
 ## Observabilidade de fluxos de trabalho
@@ -754,7 +754,7 @@ Se você processa 100 arquivos em paralelo com `Promise.all(array.map(...))`, vo
 
 **Parabéns por concluir o curso de Design de Fluxos de Trabalho com Agentes.**
 
-Agora você domina:
+Agora você já tem uma boa noção de:
 - Os conceitos centrais dos fluxos de trabalho e onde eles se encaixam
 - As três estratégias de decomposição de tarefas
 - Gerenciamento de estado e o mecanismo de checkpoint

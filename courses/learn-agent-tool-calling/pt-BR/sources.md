@@ -19,7 +19,7 @@ URL: https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview
 
 - authority: official-docs
 
-Dá uma visão geral do mecanismo de uso de ferramentas do Claude, distinguindo as client tools, executadas pela aplicação hospedeira, das server tools, executadas pelos servidores da Anthropic, e apresenta a estrutura básica da resposta assim que uma chamada de ferramenta é disparada.
+Dá uma visão geral do mecanismo de uso de ferramentas do Claude, distinguindo as client tools, executadas pelo aplicativo host, das server tools, executadas pelos servidores da Anthropic, e apresenta a estrutura básica da resposta assim que uma chamada de ferramenta é disparada.
 
 Citação principal:
 > "It then returns a structured call that your application executes (client tools) or that Anthropic executes (server tools). ... Claude responds with stop_reason: "tool_use" and one or more tool_use blocks. Your code executes the operation and sends back a tool_result."
@@ -41,7 +41,7 @@ URL: https://platform.claude.com/docs/en/agents-and-tools/tool-use/how-tool-use-
 
 - authority: official-docs
 
-Afirma sem rodeios que o modelo em si nunca executa nada — ele só emite uma requisição estruturada, e a execução de fato fica com a aplicação hospedeira ou com os servidores da Anthropic — e apresenta o laço canônico de várias rodadas conduzido pelo stop_reason. A melhor base autoritativa para a afirmação central deste curso.
+Afirma sem rodeios que o modelo em si nunca executa nada — ele só emite uma requisição estruturada, e a execução de fato fica com o aplicativo host ou com os servidores da Anthropic — e apresenta o laço canônico de várias rodadas conduzido pelo stop_reason. A melhor base autoritativa para a afirmação central deste curso.
 
 Citação principal:
 > "The model never executes anything on its own. It emits a structured request, your code (or Anthropic's servers) runs the operation, and the result flows back into the conversation. ... 2. Claude responds with stop_reason: "tool_use" and one or more tool_use blocks. 3. Execute each tool. Format the outputs as tool_result blocks. 4. Send a new request... 5. Repeat from step 2 while stop_reason is "tool_use"."
@@ -63,7 +63,7 @@ URL: https://code.claude.com/docs/en/tools-reference
 
 - authority: official-docs
 
-Lista as ferramentas embutidas que o Claude Code expõe como aplicação hospedeira e os nomes exatos usados nas regras de permissão, nas listas de ferramentas de subagentes e nos matchers de hooks — o que ajuda quem aprende a entender o conceito de catálogo de ferramentas dentro de um laço hospedeiro real.
+Lista as ferramentas embutidas que o Claude Code expõe como aplicativo host e os nomes exatos usados nas regras de permissão, nas listas de ferramentas de subagentes e nos matchers de hooks — o que ajuda quem aprende a entender o conceito de catálogo de ferramentas dentro do laço de um host real.
 
 Citação principal:
 > "Claude Code has access to a set of built-in tools that help it understand and modify your codebase. The tool names are the exact strings you use in permission rules, subagent tool lists, and hook matchers."
@@ -130,7 +130,7 @@ URL: https://modelcontextprotocol.io/specification/2025-11-25
 
 - authority: official-docs
 
-A especificação oficial explica que o MCP se inspira nas ideias do Language Server Protocol para padronizar a integração de ferramentas e de contexto em todo o ecossistema de aplicações de IA, permitindo que aplicações hospedeiras diferentes exponham ferramentas por meio de um único protocolo uniforme.
+A especificação oficial explica que o MCP se inspira nas ideias do Language Server Protocol para padronizar a integração de ferramentas e de contexto em todo o ecossistema de aplicações de IA, permitindo que aplicativos host diferentes exponham ferramentas por meio de um único protocolo uniforme.
 
 Citação principal:
 > "MCP takes some inspiration from the Language Server Protocol, which standardizes how to add support for programming languages across a whole ecosystem of development tools. In a similar way, MCP standardizes how to integrate additional context and tools into the ecosystem of AI applications."
@@ -196,7 +196,7 @@ URL: https://owasp.org/www-project-top-10-for-large-language-model-applications/
 
 - authority: official-docs
 
-A página oficial da OWASP traz a definição autoritativa de Excessive Agency e as suas três causas de fundo (funcionalidade excessiva, permissões excessivas e autonomia excessiva), além da mitigação específica de aprovação humana para ações de alto risco — o que embasa o capítulo do curso sobre os limites de autorização de ferramentas de um agente.
+A página oficial da OWASP traz a definição autoritativa de Excessive Agency e as suas três causas-raiz (funcionalidade excessiva, permissões excessivas e autonomia excessiva), além da mitigação específica de aprovação humana para ações de alto risco — o que embasa o capítulo do curso sobre os limites de autorização de ferramentas de um agente.
 
 Citação principal:
 > "Excessive Agency is the vulnerability that enables damaging actions to be performed in response to unexpected, ambiguous, or manipulated outputs from an LLM, regardless of what is causing the LLM to malfunction. ... Utilise human-in-the-loop control to require a human to approve high-impact actions before they are taken. This may be implemented in a downstream system (outside the scope of the LLM application) or within the LLM extension itself."
