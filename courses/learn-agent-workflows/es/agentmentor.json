@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Producir la variante en español del curso learn-agent-workflows para learn.agentmentor.dev, tomando como base la variante en inglés ya verificada. Es una traducción con pulido pedagógico a partir de en (no del zh): misma estructura de 6 lecciones, mismos slugs de lección, mismos ids de bloque interactivo y mismas posiciones de respuesta correcta, citas de las fuentes conservadas en su inglés original, código ejecutable con la lógica intacta y solo comentarios y cadenas visibles traducidos, y una prosa técnica natural en español, en tono profesional cercano y sin rigidez de traducción automática.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "El responsable ratificó el plan multilingüe: los seis idiomas en learn.agentmentor.dev, primero el inglés y después el resto de idiomas como oleadas de traducción a partir de la base en inglés. La variante en inglés es la fuente de verdad verificada y corregida en su fundamentación, así que no hizo falta ninguna aclaración adicional."
+  },
+  "learnerModel": {
+    "targetReader": "Una persona desarrolladora que ha usado Claude Code o una herramienta de agente de IA similar, entiende los diagramas de flujo y las máquinas de estados básicas, y quiere diseñar flujos de automatización complejos de varios pasos",
+    "knownConcepts": [
+      "Uso básico de Claude Code o de una herramienta de IA similar",
+      "El patrón de agente en una sola conversación",
+      "Conceptos básicos de diagramas de flujo (nodos, flechas, bifurcaciones)",
+      "Conceptos básicos de máquinas de estados (estados, transiciones)",
+      "Fundamentos de al menos un lenguaje de programación (sabe leer JavaScript)",
+      "Comandos básicos de terminal",
+      "Nociones básicas de Git y control de versiones"
+    ],
+    "unknownConcepts": [
+      "Qué separa de raíz un flujo de trabajo de una conversación puntual",
+      "El concepto de orquestación",
+      "Los subagentes y el patrón de fan-out y agregación",
+      "Las estrategias de descomposición de tareas (secuencial, paralela, híbrida)",
+      "El estado del flujo de trabajo frente al contexto del agente",
+      "Los checkpoints y la recuperación",
+      "Los errores transitorios frente a los permanentes",
+      "El backoff exponencial y el jitter",
+      "El patrón circuit breaker",
+      "Las acciones compensatorias y el patrón Saga"
+    ],
+    "assumedEnvironment": "Puede ejecutar código JavaScript/Node.js, tiene acceso a una terminal y a un editor de texto, y sabe leer y seguir ejemplos de código",
+    "firstIndependentAction": "Identificar una tarea repetitiva del propio trabajo que un flujo de trabajo podría automatizar",
+    "noviceRamp": [
+      "La lección 1 parte de un dolor concreto (el desbordamiento del contexto, volver a explicar el mismo proceso una y otra vez) y usa el ejemplo de un pipeline de revisión de código para construir la intuición de por qué existen los flujos de trabajo",
+      "La lección 2 construye el modelo mental paso a paso mediante cuatro bloques sencillos (pasos, estado, bifurcaciones, bucles), cada uno con su ejemplo de código",
+      "La lección 3 enseña la descomposición de tareas de forma sistemática, de lo simple a lo complejo (primero secuencial, luego paralela, luego híbrida), con un ejemplo completo por estrategia",
+      "Las lecciones 4 y 5 profundizan en la gestión de estado y el manejo de errores —las claves de la fiabilidad de un flujo de trabajo— como unidades relativamente independientes que se pueden estudiar por separado",
+      "La lección 6 lo reúne todo mediante tres escenarios reales que muestran flujos de trabajo completos de nivel productivo"
+    ]
+  },
+  "learnerBrief": "El lector objetivo es una persona desarrolladora que ya usa Claude Code y quiere diseñar automatizaciones complejas de varios pasos. Entiende los diagramas de flujo y las máquinas de estados básicas y tiene experiencia programando, pero no conoce la orquestación de flujos de trabajo, ni las estrategias de descomposición de tareas, ni las buenas prácticas de gestión de estado y manejo de errores. El curso lo lleva a diseñar y construir por su cuenta flujos de trabajo de nivel productivo: entender por qué importan los flujos de trabajo, dominar la descomposición, diseñar el estado y los checkpoints, construir un manejo de errores sólido y estudiar patrones reales mediante escenarios resueltos.",
+  "scope": "Se cubre: el concepto de flujo de trabajo y dónde aplica, la orquestación frente a la conversación puntual, los cuatro bloques de construcción (pasos, estado, bifurcaciones, bucles), tres estrategias de descomposición (secuencial, paralela, híbrida), la identificación de dependencias, el estado del flujo de trabajo frente al contexto del agente, tres patrones de gestión de estado (variables del script, checkpoints, almacenamiento externo), las prácticas de paso de contexto, la clasificación de errores (transitorios frente a permanentes), las estrategias de reintento (backoff exponencial, jitter), el patrón circuit breaker, las acciones compensatorias y el patrón Saga, la idempotencia, tres escenarios reales (refactorización de código, generación de documentación, automatización de pruebas) y la observabilidad para depurar. No se cubre: la instalación ni el uso básico de Claude Code, el conocimiento avanzado específico de un lenguaje, los motores de flujos de trabajo distribuidos (Temporal, Airflow), los editores visuales de flujos de trabajo ni el despliegue de flujos de trabajo sobre Kubernetes. Profundidad: desde cero hasta diseñar y publicar de forma autónoma flujos de trabajo de varios pasos de nivel productivo.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-workflows/es/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Se conservan los diagramas mermaid exactamente donde los usa la variante en inglés (la estructura del flujo de trabajo, las bifurcaciones y los apoyos visuales de la descomposición), con las etiquetas de los nodos traducidas al español. No se añadió ni se quitó ningún diagram: las decisiones de colocación ya se validaron en revisión, y la forma de un flujo de trabajo es justo el contenido donde un diagrama gana a la prosa.",
+    "weakestPoints": [
+      "Los tres escenarios de la lección 6 son largos; quien lea en diagonal puede pasar por alto que cada escenario reutiliza patrones de las lecciones 3 a 5, y las referencias cruzadas del resumen mitigan ese riesgo",
+      "El código de reintentos y backoff usa ejemplos simplificados en memoria en lugar de una cola o un planificador reales, y así está pensado, pero quien maneje cargas de producción tendrá que adaptarlos",
+      "Los motores de orquestación avanzados (Temporal, Airflow) quedan explícitamente fuera de alcance, así que quien necesite garantías distribuidas recibe indicaciones, no instrucción",
+      "Al ser una traducción de la variante en inglés verificada, el riesgo residual es la deriva idiomática: cada cita de las fuentes se conservó verbatim en inglés y se comprobó byte a byte, y el código ejecutable mantiene la lógica idéntica, pero la prosa se vertió a un español natural en lugar de traducirse palabra por palabra, así que la revisión debe comprobar la equivalencia de significado con la lección en inglés y no la alineación frase a frase"
+    ],
+    "followUpChecks": [
+      "Pasada de renderizado completa en learn.agentmentor.dev /es/agent-workflows/... tras el despliegue: las 6 lecciones más el README, con las tarjetas interactivas hidratadas y los diagramas mermaid renderizados",
+      "Comprobar que cada término del glosario aparece verbatim en las lecciones en es (comprobación de attach), una vez que el agente de glosario entregue glossary.json",
+      "Comprobar que cada ancla [^Sn] de las lecciones en es tiene su bloque ## Sn correspondiente en el sources.md en es",
+      "Confirmar que los ids de los bloques de comprobación y las posiciones de respuesta correcta son idénticos byte a byte a la variante en inglés (b/b/b/b/b en las lecciones 1 a 5)",
+      "Volver a ejecutar los ejemplos de JS ejecutables y confirmar que las salidas coinciden con los registros declarados"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "La persona que aprende puede tomar una tarea real de varios pasos de su propio trabajo, descomponerla en un flujo de trabajo con pasos, estado, bifurcaciones y manejo de errores explícitos, implementarlo con checkpoints para que una ejecución interrumpida se reanude en lugar de empezar de cero, y justificar cada decisión de reintento o de compensación.",
+    "interactionCheck": "Cinco lecciones llevan un bloque agentmentor-check cada una (encaje del escenario en la lección 1, lógica de ramificación en la 2, estrategia de descomposición en la 3, colocación de los checkpoints en la 4 y estrategia de reintento en la 5), conservados desde la variante en inglés con ids, modos, número de opciones y posiciones de respuesta correcta idénticos; label, prompt, whyHere, el texto de las opciones y el feedback son traducciones al español ajustadas al malentendido propio de cada lección. Los ejercicios mantienen la estructura de niveles de la variante en inglés, con rubric, answer e hints en cada nivel.",
+    "learnerFitCheck": "El curso solo presupone lo que concede el modelo de aprendiz: leer JavaScript, intuición básica de diagramas de flujo y máquinas de estados, y haber usado antes Claude Code. La orquestación, la descomposición, los checkpoints y la taxonomía de errores se enseñan desde cero y en orden de dependencia; quien aprende monta un flujo de trabajo completo por primera vez en la lección 6, después de que se hayan introducido todos los requisitos previos. El primer ejercicio de la lección 1 solo pide reflexionar sobre el propio trabajo.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "Traducción al español de la variante en inglés verificada: la estructura, la fundamentación y las posiciones de respuesta se heredan del original verificado",
+      "Todos los bloques interactivos conservan id, mode, número de opciones y respuesta correcta con paridad byte a byte respecto al inglés",
+      "Todas las citas de las fuentes se mantienen en su inglés original (política de citas ratificada por el responsable) y se comprobaron línea a línea contra en/sources.md",
+      "Los ejemplos ejecutables de JS mantienen la lógica idéntica; solo se tradujeron los comentarios y las cadenas visibles para la persona usuaria"
+    ]
+  },
+  "nextSteps": [
+    "Ejecutar course-guard sobre la variante en es y corregir lo que señale",
+    "Incorporar el glossary.json en español que entrega el agente de glosario y volver a pasar la comprobación de attach",
+    "Desplegar learn.agentmentor.dev y comprobar que las páginas /es se renderizan con las tarjetas interactivas hidratadas y los diagramas mermaid",
+    "Producir las variantes de idioma restantes usando esta misma variante en inglés como base de traducción",
+    "Animar a quienes aprenden a automatizar una tarea real de su propio backlog como proyecto de consolidación al terminar el curso"
+  ],
+  "memoryBoundary": "Este agentmentor.json es un registro de estado local del curso (course-local state record), almacenado únicamente en el directorio del curso para las comprobaciones de calidad y el seguimiento de la ruta de aprendizaje. Nunca se escribe de vuelta en la memoria a largo plazo de Claude Code ni de ningún sistema de IA anfitrión, y no afecta a otros cursos ni a otras conversaciones."
+}

@@ -1,0 +1,422 @@
+[
+  {
+    "term": "flujo de trabajo",
+    "def": "Un script ejecutable que descompone una tarea compleja en pasos, delega cada paso a un agente nuevo y coordina el conjunto por sí mismo.",
+    "source": "[^S2]",
+    "pitfall": "Pensar que un flujo de trabajo es simplemente varias conversaciones encadenadas, cuando su esencia es que el script guarda el flujo de control (bucles, bifurcaciones) en lugar de dejar que el agente improvise el siguiente movimiento.",
+    "distractor_rationale": "Los principiantes confunden un flujo de trabajo con 'llamar a un agente varias veces' y pierden de vista el valor de la orquestación determinista: la misma entrada siempre produce la misma ruta de ejecución."
+  },
+  {
+    "term": "orquestación",
+    "def": "El script decide el orden, el paralelismo y las bifurcaciones de una tarea, en lugar de que el agente decida el flujo de control por sí mismo.",
+    "source": "[^S3]",
+    "pitfall": "Dejar que el agente decida 'qué hacer a continuación' en lugar del script, lo que hace que la ruta de ejecución sea impredecible, difícil de depurar e imposible de reproducir.",
+    "distractor_rationale": "'Dejar que la IA lo planifique' suena inteligente, pero la producción necesita predecibilidad: el flujo de control pertenece al código, el razonamiento pertenece al agente."
+  },
+  {
+    "term": "una sola conversación",
+    "def": "Un agente termina una tarea dentro de una sola ventana de contexto, donde todo el historial y los resultados viven dentro de esa única conversación.",
+    "source": "[^S1]",
+    "pitfall": "Usar una conversación única para una tarea que abarca más de 50 archivos o varias etapas de validación, lo que desborda la ventana de contexto o hace que el agente olvide el trabajo anterior.",
+    "distractor_rationale": "Una conversación única funciona para tareas pequeñas, pero el trabajo complejo excede la ventana de contexto y necesita un flujo de trabajo para descomponerlo."
+  },
+  {
+    "term": "subagente",
+    "def": "La instancia de agente independiente que lanza un paso del flujo de trabajo, con su propia ventana de contexto, que termina una subtarea y devuelve un resultado.",
+    "source": "[^S3]",
+    "pitfall": "Esperar que un subagente herede automáticamente el contexto del padre, cuando cada subagente es independiente y necesita que el contexto se le pase explícitamente.",
+    "distractor_rationale": "El aislamiento de un subagente es una característica, no un error: evita la contaminación del contexto para que cada paso vea solo la información relevante."
+  },
+  {
+    "term": "fan-out-reduce",
+    "def": "El núcleo de la descomposición paralela: repartir el trabajo entre muchos subagentes en paralelo (fan-out), luego fusionar cada resultado en una sola salida (reduce).",
+    "source": "[^S4]",
+    "pitfall": "Olvidar el paso de reducción, dejando los resultados paralelos dispersos sin ninguna salida final unificada.",
+    "distractor_rationale": "El fan-out es intuitivo, pero el reduce a menudo se pasa por alto; sin él, 100 resultados paralelos son 100 fragmentos, no una respuesta."
+  },
+  {
+    "term": "paso",
+    "def": "La operación atómica de un flujo de trabajo, ya sea una llamada a un agente (necesita razonamiento) o una función determinista (transformaciones de datos, matemáticas).",
+    "source": "[^S5]",
+    "pitfall": "Hacer que el agente haga un simple filtrado de arrays o sume números, cuando esas operaciones deterministas deberían ser funciones simples y el agente debería centrarse en el razonamiento.",
+    "distractor_rationale": "El razonamiento del agente es costoso y poco confiable; las operaciones deterministas se ejecutan más rápido, más baratas y de manera más confiable como código."
+  },
+  {
+    "term": "estado",
+    "def": "Toda la información que un flujo de trabajo tiene actualmente: en qué paso va, el resultado de cada paso y lo que necesita a continuación, como la memoria del flujo de trabajo.",
+    "source": "[^S12]",
+    "pitfall": "Confundir el estado con el historial de conversación del agente; el estado son datos estructurados y persistidos, mientras que el historial de conversación se trunca y se olvida.",
+    "distractor_rationale": "El historial de conversación no es confiable (se desborda y se olvida), así que el estado es la memoria confiable del flujo de trabajo y debe gestionarse explícitamente."
+  },
+  {
+    "term": "contexto",
+    "def": "La información entregada a una sola llamada de agente, extraída selectivamente del estado del flujo de trabajo, que contiene solo lo que ese paso necesita.",
+    "source": "[^S15]",
+    "pitfall": "Pasar todo el estado a cada llamada de agente; cuanto más grande sea el contexto, más se distrae el agente, y la calidad del razonamiento cae mientras el costo aumenta.",
+    "distractor_rationale": "'Cuanto más sepa el agente, mejor' está mal; un contexto reducido mantiene al agente enfocado en la tarea actual y mejora la calidad."
+  },
+  {
+    "term": "estado del flujo de trabajo",
+    "def": "Toda la información sobre la tarea actual, pasada entre pasos pero no entre sesiones, y persistible a una base de datos para recuperación.",
+    "source": "[^S11]",
+    "pitfall": "Confiar en que el agente recuerde 'ahora estamos en el paso 3'; los agentes olvidan, así que el estado debe vivir explícitamente en variables del script o en una base de datos.",
+    "distractor_rationale": "La memoria de un agente no es confiable, así que el estado del flujo de trabajo debe externalizarse, estructurarse y ser persistible."
+  },
+  {
+    "term": "Estado de sesión",
+    "def": "El historial de conversación y el contexto transitorio que el agente gestiona por sí mismo, que el flujo de trabajo no necesita rastrear.",
+    "source": "[^S11]",
+    "pitfall": "Intentar gestionar el estado de sesión del agente desde dentro del flujo de trabajo; ese es el trabajo del sistema del agente, y el flujo de trabajo solo debe gestionar el estado de la tarea.",
+    "distractor_rationale": "Separación de responsabilidades: el flujo de trabajo rastrea el progreso de la tarea, el agente rastrea el historial de conversación, y los dos no deben mezclarse."
+  },
+  {
+    "term": "punto de control",
+    "def": "Guardar el estado del flujo de trabajo en almacenamiento externo después de un paso clave, para que una caída se reanude desde el punto de control más reciente en lugar de empezar de nuevo.",
+    "source": "[^S12]",
+    "pitfall": "Crear puntos de control después de cada operación pequeña; los puntos de control demasiado frecuentes ralentizan el flujo de trabajo, así que guarda después de operaciones costosas o antes de las irreversibles.",
+    "distractor_rationale": "Los puntos de control conllevan sobrecarga (E/S de disco, serialización), así que deben colocarse estratégicamente, no dispersos por todas partes."
+  },
+  {
+    "term": "máquina de estados",
+    "def": "Modelar un flujo de trabajo con estados discretos (init, processing, completed) y reglas de transición explícitas, persistiendo cada transición.",
+    "source": "[^S11]",
+    "pitfall": "Usar strings para fases sin definir transiciones legales, lo que permite que el flujo de trabajo alcance un estado ilegal (como saltar de completed de vuelta a init).",
+    "distractor_rationale": "Una máquina de estados te obliga a pensar en qué transiciones son legales, manteniendo el flujo de trabajo fuera de un desastre irrecuperable."
+  },
+  {
+    "term": "descomposición secuencial",
+    "def": "Una estrategia de descomposición que divide una tarea en pasos que deben ejecutarse en orden, cada uno dependiendo de la salida del paso anterior.",
+    "source": "[^S18]",
+    "pitfall": "Usar descomposición secuencial para todo, perdiendo oportunidades de paralelizar y haciendo el flujo de trabajo innecesariamente lento.",
+    "distractor_rationale": "La descomposición secuencial es clara pero ineficiente; identifica oportunidades de paralelizar primero y solo ejecuta pasos en orden cuando existe una dependencia real."
+  },
+  {
+    "term": "descomposición paralela",
+    "def": "Una estrategia de descomposición que divide una tarea en subtareas independientes que pueden ejecutarse al mismo tiempo, con resultados fusionados al final.",
+    "source": "[^S18]",
+    "pitfall": "Ejecutar tareas dependientes en paralelo, así que el paso B necesita el resultado del paso A pero A no ha terminado, produciendo una condición de carrera.",
+    "distractor_rationale": "El paralelismo asume independencia; debes confirmar que no hay dependencias de datos entre tareas antes de ejecutarlas en paralelo."
+  },
+  {
+    "term": "descomposición híbrida",
+    "def": "Una estrategia de descomposición donde las fases de alto nivel se ejecutan en orden y los pasos internos de cada fase se ejecutan en paralelo, combinando ambas fortalezas.",
+    "source": "[^S18]",
+    "pitfall": "Ir todo secuencial o todo paralelo, ignorando que la mayoría de las tareas reales son híbridas, con dependencias y oportunidades de paralelizar.",
+    "distractor_rationale": "Las tareas reales suelen ser híbridas: las fases dependen unas de otras (deben ordenarse) mientras que las subtareas dentro de una fase son independientes (pueden ejecutarse en paralelo)."
+  },
+  {
+    "term": "dependencia",
+    "def": "La relación de entrada/salida entre pasos; si el paso B necesita la salida del paso A, B depende de A y no puede ejecutarse hasta que A termine.",
+    "source": "[^S17]",
+    "pitfall": "Olvidar marcar las dependencias al esbozar el flujo, así que solo descubres durante la implementación que el orden de los pasos está mal y necesita rediseño.",
+    "distractor_rationale": "Las dependencias deciden el orden de ejecución y el potencial de paralelizar, así que deben marcarse explícitamente durante la fase de diseño."
+  },
+  {
+    "term": "chain-of-thought",
+    "def": "Una técnica de prompting que le pide al LLM que muestre su razonamiento intermedio mientras descompone o razona, en lugar de saltar directamente a una respuesta.",
+    "source": "[^S16]",
+    "pitfall": "Esperar que el LLM descomponga una tarea compleja con precisión sin chain-of-thought; las tareas complejas necesitan una cadena de razonamiento, y una petición directa tiende a producir descomposiciones incompletas o incorrectas.",
+    "distractor_rationale": "El chain-of-thought hace que el LLM exponga su razonamiento, mejorando la calidad de la descomposición en tareas complejas."
+  },
+  {
+    "term": "zero-shot",
+    "def": "Pedirle al LLM que complete una tarea sin ejemplos, confiando en su conocimiento preentrenado.",
+    "source": "[^S16]",
+    "pitfall": "Usar un prompt zero-shot mientras esperas una descomposición en tu formato específico; sin ejemplos, el formato de salida puede no coincidir con tu expectativa.",
+    "distractor_rationale": "El zero-shot funciona para tareas generales, pero la salida en un formato o estructura específicos se guía mejor con ejemplos few-shot."
+  },
+  {
+    "term": "error transitorio",
+    "def": "Un error temporal, generalmente por fluctuación de red, contención de recursos o sobrecarga breve, que puede tener éxito al reintentar.",
+    "source": "[^S8]",
+    "pitfall": "Reintentar cada error como si fuera transitorio; reintentar un error permanente (como permisos faltantes) solo desperdicia recursos.",
+    "distractor_rationale": "El reintento funciona para errores transitorios; los errores permanentes necesitan un arreglo de configuración o código, así que distinguir los dos es la base del manejo eficiente de errores."
+  },
+  {
+    "term": "error permanente",
+    "def": "Un error persistente, generalmente por mala configuración, permisos faltantes o un error de código, que no tendrá éxito al reintentar.",
+    "source": "[^S9]",
+    "pitfall": "Reintentar un error permanente tres veces antes de rendirse; deberías fallar rápido en el momento en que se identifica como permanente, para evitar perder tiempo.",
+    "distractor_rationale": "La característica de un error permanente es que 'reintentar no ayudará'; fallar temprano permite al desarrollador arreglar la causa raíz rápido."
+  },
+  {
+    "term": "retroceso exponencial",
+    "def": "Una estrategia de reintento donde el retraso de cada reintento crece exponencialmente (1s, 2s, 4s, 8s...), dándole más tiempo al servicio para recuperarse.",
+    "source": "[^S8]",
+    "pitfall": "Reintentar con un retraso fijo; si el servicio está sobrecargado, cada cliente reintentando a la vez empeora la sobrecarga (el efecto de manada estampida).",
+    "distractor_rationale": "El retroceso exponencial aumenta gradualmente el retraso, aliviando la presión y dándole tiempo al servicio para recuperarse, por lo que es la estrategia de reintento recomendada."
+  },
+  {
+    "term": "jitter",
+    "def": "Agregar una perturbación aleatoria al retraso de reintento para que múltiples clientes no reintenten en el mismo instante exacto, distribuyendo la carga.",
+    "source": "[^S8]",
+    "pitfall": "Usar retroceso exponencial sin jitter; múltiples clientes aún pueden reintentar en el mismo momento (todos esperando 4 segundos), causando un pico de tráfico.",
+    "distractor_rationale": "El jitter mejora el retroceso exponencial al aleatorizar el tiempo de reintento, reduciendo aún más la presión sobre el servicio."
+  },
+  {
+    "term": "circuit breaker",
+    "def": "Cuando la tasa de errores cruza un umbral, pausa las llamadas al servicio que falla y falla rápido, evitando recursos desperdiciados y fallas en cascada.",
+    "source": "[^S7]",
+    "pitfall": "Continuar reintentando un servicio que sigue fallando, desperdiciando recursos y arrastrando el flujo de trabajo, cuando un circuit breaker debería fallar rápido en su lugar.",
+    "distractor_rationale": "Un circuit breaker reconoce el patrón de 'el servicio ya está caído', detiene los reintentos sin sentido y protege el resto del sistema."
+  },
+  {
+    "term": "acciones de compensación",
+    "def": "Una operación que deshace un paso completado, así que cuando un flujo de trabajo falla a mitad de camino, retrocede los pasos anteriores para mantener los datos consistentes.",
+    "source": "[^S6]",
+    "pitfall": "Asumir que la compensación es solo un ROLLBACK de base de datos; las acciones entre sistemas (un correo ya enviado, una API de terceros ya llamada) no pueden deshacerse realmente, así que la compensación es 'notificar para cancelar', no 'retroceder'.",
+    "distractor_rationale": "Las acciones compensatorias son la respuesta práctica a las transacciones distribuidas, pero no son mágicas; algunas acciones no pueden deshacerse y solo pueden corregirse de manera compensatoria."
+  },
+  {
+    "term": "patrón Saga",
+    "def": "Definir una acción forward y una acción compensatoria para cada paso, y en caso de falla ejecutar las compensaciones en reversa para lograr una transacción distribuida.",
+    "source": "[^S6]",
+    "pitfall": "La compensación misma falla pero nada la maneja; necesitas registrar la falla de compensación y marcarla para un humano.",
+    "distractor_rationale": "El Saga es un patrón elegante, pero las compensaciones también pueden fallar (red, permisos), así que debe haber un plan de respaldo."
+  },
+  {
+    "term": "idempotencia",
+    "def": "La propiedad donde ejecutar una operación N veces tiene el mismo efecto que ejecutarla una vez, sin producir efectos secundarios en repeticiones.",
+    "source": "[^S9]",
+    "pitfall": "Usar una operación incremental (contador++) en lugar de una asignación (establecer contador = X); los incrementos no son idempotentes y se acumulan en repeticiones.",
+    "distractor_rationale": "La idempotencia hace que los reintentos sean seguros: en un tiempo de espera de red no puedes saber si la operación tuvo éxito, y una operación idempotente simplemente puede reintentarse."
+  },
+  {
+    "term": "bifurcación",
+    "def": "Un flujo de trabajo eligiendo una ruta de ejecución diferente basada en una condición, como una sentencia if-else o switch.",
+    "source": "[^S2]",
+    "pitfall": "Dejar que el agente decida la lógica de bifurcación; si la condición no es ambigua (una comparación numérica, un booleano), usa el if-else del script en lugar de preguntarle al agente.",
+    "distractor_rationale": "Una bifurcación determinista (en el script) es más rápida, más confiable y más predecible; el agente solo debe tomar decisiones de bifurcación que requieran comprensión y razonamiento."
+  },
+  {
+    "term": "bucle",
+    "def": "Un flujo de trabajo repitiendo la misma operación, como un bucle for (sobre cada elemento) o un bucle while (hasta que se cumpla una condición).",
+    "source": "[^S2]",
+    "pitfall": "Dejar que el agente decida 'si continuar' dentro de un bucle; si la condición es clara (como que la lista de archivos se agote), usa el control de bucle del script.",
+    "distractor_rationale": "El control de bucle es lógica determinista y debe vivir en el script, no depender del juicio del agente."
+  },
+  {
+    "term": "tope de concurrencia",
+    "def": "Limitar cuántas tareas paralelas se ejecutan a la vez para evitar agotar recursos (demasiados archivos abiertos, un pool de conexiones saturado).",
+    "source": "[^S8]",
+    "pitfall": "Usar Promise.all() para procesar 1000 archivos en paralelo, lo que puede exceder el límite de manejadores de archivo, límite de memoria o límite de tasa de API.",
+    "distractor_rationale": "La concurrencia ilimitada suena rápida pero agota los recursos y se cuelga; procesamiento por lotes (digamos 10 a la vez) mantiene la concurrencia bajo control."
+  },
+  {
+    "term": "contrato de entrada/salida",
+    "def": "Cada paso define claramente qué entrada acepta y qué salida devuelve, tan precisa como una firma de función.",
+    "source": "[^S6]",
+    "pitfall": "Tipos de entrada/salida difusos en un paso (como data: any), lo que hace difícil localizar el problema cuando el paso de datos entre pasos sale mal.",
+    "distractor_rationale": "Un contrato claro hace que el flujo de trabajo sea fácil de entender y depurar: cuando el paso B se rompe, sabes de inmediato que la salida del paso A tenía el formato incorrecto."
+  },
+  {
+    "term": "observabilidad",
+    "def": "La capacidad de un flujo de trabajo para responder preguntas como '¿qué tan avanzado estoy, qué errores he encontrado, dónde están los cuellos de botella de rendimiento?'.",
+    "source": "[^S20]",
+    "pitfall": "Un flujo de trabajo sin logs ni salida de progreso se ejecuta como una caja negra; no puedes saber qué tan lejos llegó, cuánto falta o si está atascado.",
+    "distractor_rationale": "La observabilidad no es opcional; es un requisito para flujos de trabajo de nivel producción, ya que solo puedes depurar y optimizar lo que puedes ver."
+  },
+  {
+    "term": "seguimiento del progreso",
+    "def": "Registrar cuántos pasos ha terminado un flujo de trabajo, cuántos quedan y cuándo se espera que se complete.",
+    "source": "[^S12]",
+    "pitfall": "Solo imprimir al principio y al final, sin progreso en medio, así que el usuario no puede saber si el flujo de trabajo se está ejecutando o está atascado.",
+    "distractor_rationale": "Experiencia de usuario: un flujo de trabajo de larga duración debe mostrar progreso, o el usuario sospechará que se colgó y lo interrumpirá."
+  },
+  {
+    "term": "registro de errores",
+    "def": "Un registro de cada error que ocurrió en el flujo de trabajo, incluyendo el nombre del paso, el tipo de error, el mensaje de error y la marca de tiempo.",
+    "source": "[^S7]",
+    "pitfall": "Un try-catch que captura el error pero solo imprime error.message, perdiendo el stack y el contexto y haciendo que el problema sea difícil de localizar.",
+    "distractor_rationale": "Un registro de errores completo debe llevar qué paso, qué error, el estado en ese momento y el stack completo, todos esenciales para la depuración."
+  },
+  {
+    "term": "perfilado de rendimiento",
+    "def": "Medir cuánto tarda cada paso para identificar el cuello de botella de rendimiento de un flujo de trabajo.",
+    "source": "[^S20]",
+    "pitfall": "Optimizar un flujo de trabajo por intuición; primero debes medir la duración de cada paso y optimizar el más lento para hacer una diferencia real.",
+    "distractor_rationale": "El primer paso de la optimización de rendimiento es la medición; encuentra el cuello de botella antes de optimizar, ya que la optimización ciega a menudo apunta al lugar equivocado."
+  },
+  {
+    "term": "flujo de control invertido",
+    "def": "La innovación central de un flujo de trabajo: en lugar de que el agente decida qué hacer a continuación, el script decide qué agente llamar a continuación.",
+    "source": "[^S2]",
+    "pitfall": "Entregarle al agente una lista de tareas y dejar que decida el orden, lo que pierde el determinismo del flujo de control así que cada ejecución puede diferir.",
+    "distractor_rationale": "El flujo de control invertido es la diferencia esencial entre un flujo de trabajo y una conversación única; el script manteniendo el control hace que la ejecución sea predecible."
+  },
+  {
+    "term": "orquestación determinista",
+    "def": "La ruta de ejecución de un flujo de trabajo es decidida por el flujo de control del script (bucles, bifurcaciones), así que la misma entrada produce la misma ruta.",
+    "source": "[^S2]",
+    "pitfall": "Diseñar el flujo de trabajo para que 'el agente decida el siguiente paso', haciendo que cada ejecución tome una ruta diferente, imposible de reproducir y difícil de depurar.",
+    "distractor_rationale": "El determinismo es un requisito de producción: una entrada idéntica debe seguir una ruta idéntica para que puedas reproducir errores y verificar arreglos."
+  },
+  {
+    "term": "ventana de contexto",
+    "def": "La cantidad máxima de texto que un agente puede ver a la vez, usualmente cientos de miles a un millón de tokens; más allá de eso debe truncar u olvidar.",
+    "source": "[^S3]",
+    "pitfall": "Esperar que el agente recuerde el contenido de 100 archivos en una sola conversación; la ventana de contexto es finita y se desborda en olvido.",
+    "distractor_rationale": "El límite de la ventana de contexto es por qué existen los flujos de trabajo: una tarea demasiado grande para una ventana debe descomponerse en múltiples pasos."
+  },
+  {
+    "term": "explosión de contexto",
+    "def": "Cuando el resultado de cada paso sigue acumulándose en el contexto, así que crece sin límites hasta que excede el límite o degrada el rendimiento.",
+    "source": "[^S14]",
+    "pitfall": "Acumular contexto: agregar el resultado de cada paso al objeto de contexto, así que el contexto del último paso tiene todo el historial y puede alcanzar cientos de miles de tokens.",
+    "distractor_rationale": "El contexto debe gestionarse reiniciándolo: cada paso ve solo lo que necesita, y los resultados históricos viven en el estado del flujo de trabajo en lugar de en el contexto."
+  },
+  {
+    "term": "contexto que se reinicia",
+    "def": "Cada paso limpia el contexto y pasa solo lo que el paso actual necesita, evitando la explosión de contexto.",
+    "source": "[^S14]",
+    "pitfall": "Tener miedo de resetear porque el agente podría necesitar 'todo de antes', cuando de hecho la mayoría de los pasos solo necesitan una porción pequeña y relevante.",
+    "distractor_rationale": "Resetear el contexto es la estrategia predeterminada; usa contexto acumulativo solo para pasos que genuinamente necesitan todo el historial, como un paso de resumen final."
+  },
+  {
+    "term": "contexto que se acumula",
+    "def": "El resultado de cada paso se agrega al contexto para que los pasos posteriores vean todo el historial, lo que funciona para un paso de resumen final.",
+    "source": "[^S14]",
+    "pitfall": "Usar contexto acumulativo para cada paso, así que el contexto se infla, los pasos posteriores se ralentizan y el costo aumenta.",
+    "distractor_rationale": "El contexto acumulativo pertenece solo a los pocos pasos que necesitan una vista global (como un reporte de resumen final), no como predeterminado."
+  },
+  {
+    "term": "almacenamiento externo",
+    "def": "Persistir el estado del flujo de trabajo en una base de datos, Redis o el sistema de archivos, en lugar de mantenerlo solo en variables en memoria.",
+    "source": "[^S13]",
+    "pitfall": "Un flujo de trabajo de larga duración cuyo estado vive solo en memoria; una caída del proceso o reinicio de máquina pierde todo.",
+    "distractor_rationale": "Los flujos de trabajo que se ejecutan por más de una hora, se coordinan entre máquinas o necesitan aprobación humana deben persistir el estado en almacenamiento externo."
+  },
+  {
+    "term": "Puntos de control por fase",
+    "def": "Guardar un punto de control después de que completa cada fase importante del flujo de trabajo, en lugar de después de cada operación pequeña.",
+    "source": "[^S12]",
+    "pitfall": "Crear puntos de control después de cada línea de código; los guardados demasiado frecuentes ralentizan el flujo de trabajo, así que guarda en límites significativos (una fase completándose).",
+    "distractor_rationale": "Los puntos de control deben colocarse estratégicamente: después de que completa una fase, después de una operación costosa o antes de una irreversible, no sin pensar por todas partes."
+  },
+  {
+    "term": "lógica de recuperación",
+    "def": "Después de que un flujo de trabajo se reanuda desde un punto de control, omite los pasos ya completados y continúa desde el punto de interrupción.",
+    "source": "[^S12]",
+    "pitfall": "Cargar el punto de control pero aun así ejecutar desde el principio; el punto de control se desperdicia a menos que omitas las fases completadas basándote en el campo de fase.",
+    "distractor_rationale": "El valor de un punto de control es omitir el trabajo terminado al reanudar, lo que requiere diseñar lógica de recuperación (como un if en la fase)."
+  },
+  {
+    "term": "aprobación humana",
+    "def": "El flujo de trabajo hace pausa en un punto de decisión clave para esperar que un humano confirme antes de continuar, común antes de despliegues de producción o eliminación de datos.",
+    "source": "[^S13]",
+    "pitfall": "Un flujo de trabajo totalmente automatizado desplegando directo a producción sin verificación humana, así que un solo error tiene un amplio radio de explosión; agrega una puerta de aprobación antes de operaciones de producción.",
+    "distractor_rationale": "La automatización no significa desatendida; una aprobación humana antes de operaciones de alto riesgo es una línea de seguridad, no un paso atrás de la automatización."
+  },
+  {
+    "term": "lote",
+    "def": "Dividir un conjunto grande de tareas en grupos pequeños procesados un grupo a la vez, con paralelismo dentro de cada grupo, para controlar la concurrencia y el uso de recursos.",
+    "source": "[^S8]",
+    "pitfall": "Usar Promise.all(array.map(...)) para ejecutar 1000 tareas en paralelo, lo que puede agotar la memoria, manejadores de archivo o una cuota de API.",
+    "distractor_rationale": "El procesamiento por lotes equilibra velocidad y recursos: más rápido que puramente secuencial, más seguro que concurrencia ilimitada, y un punto medio práctico."
+  },
+  {
+    "term": "límite de tasa",
+    "def": "El límite de una API en peticiones por unidad de tiempo; excederlo devuelve un error 429, y debes esperar o ralentizar tu tasa de peticiones.",
+    "source": "[^S8]",
+    "pitfall": "Reintentar inmediatamente en un 429, lo que puede disparar el límite de nuevo; espera el tiempo de Retry-After o limita proactivamente tu tasa de peticiones.",
+    "distractor_rationale": "Un límite de tasa es un error transitorio predecible, y la mejor estrategia es respetar proactivamente el límite (lotes + retraso) en lugar de reintentar pasivamente."
+  },
+  {
+    "term": "contención de recursos",
+    "def": "Múltiples tareas paralelas accediendo a un recurso limitado (una conexión de base de datos, un manejador de archivo) a la vez, causando que algunas fallen o se agoten por tiempo.",
+    "source": "[^S8]",
+    "pitfall": "Concurrencia ilimitada agotando el pool de conexiones, así que las tareas posteriores no pueden obtener una conexión y se agotan por tiempo; limita la concurrencia para que coincida con la capacidad del recurso.",
+    "distractor_rationale": "El paralelismo debe coincidir con la capacidad del recurso: con un pool de 10 conexiones, la concurrencia no debe exceder 10, o las tareas competirán y fallarán."
+  },
+  {
+    "term": "falla en cascada",
+    "def": "La falla de un servicio causando que los servicios que dependen de él también fallen, con la falla propagándose hacia afuera.",
+    "source": "[^S7]",
+    "pitfall": "El servicio A está caído pero el flujo de trabajo sigue reintentando, quemando recursos y arrastrando otras partes; un circuit breaker debería fallar rápido en su lugar.",
+    "distractor_rationale": "La falla en cascada proviene de 'rehusarse a admitir la falla'; un circuit breaker admite que el servicio está caído, deja de llamarlo y protege el resto."
+  },
+  {
+    "term": "fallar rápido",
+    "def": "En un error del que claramente no puedes recuperarte (un error permanente, un circuit breaker abierto), fallar inmediatamente sin reintentar, para ahorrar recursos.",
+    "source": "[^S9]",
+    "pitfall": "Reintentar cada error tres veces; reintentar un error permanente (permisos, configuración) solo desperdicia tiempo cuando deberías fallar inmediatamente.",
+    "distractor_rationale": "Fallar rápido expone el problema antes, así que el desarrollador puede localizar y arreglar la causa raíz más rápido que si está enterrada en reintentos."
+  },
+  {
+    "term": "degradación elegante",
+    "def": "Cuando un paso no crítico falla, el flujo de trabajo lo omite y continúa en lugar de fallar como un todo.",
+    "source": "[^S8]",
+    "pitfall": "Un paso opcional de notificación falla y derriba todo el flujo de trabajo; distingue pasos críticos (abortar en falla) de opcionales (registrar y continuar).",
+    "distractor_rationale": "La degradación elegante hace que un flujo de trabajo sea más robusto: un correo fallido no debería bloquear el procesamiento de pedidos; registrar el error es suficiente."
+  },
+  {
+    "term": "grafo de dependencias",
+    "def": "Un grafo con nodos para pasos y flechas para dependencias, mostrando las dependencias y el orden de ejecución entre pasos claramente.",
+    "source": "[^S17]",
+    "pitfall": "Escribir código sin dibujar el grafo de dependencias, solo para encontrar durante la implementación que el orden de los pasos está mal o se perdió una dependencia, forzando una refactorización.",
+    "distractor_rationale": "El grafo de dependencias es una herramienta central de diseño de flujos de trabajo; dibujarlo expone problemas de diseño más fácilmente que escribir código."
+  },
+  {
+    "term": "DAG",
+    "def": "La versión formal de un grafo de dependencias: los nodos son pasos, las aristas dirigidas son dependencias, y 'acíclico' garantiza sin deadlock.",
+    "source": "[^S17]",
+    "pitfall": "El paso A depende de B, B de C, y C de A, formando un ciclo que bloquea todo así que ningún paso puede empezar.",
+    "distractor_rationale": "La restricción 'acíclica' del DAG es lo que hace que un flujo de trabajo sea ejecutable; una dependencia cíclica significa un error de diseño."
+  },
+  {
+    "term": "hoja",
+    "def": "Un nodo en el grafo de dependencias que no depende de nada más, así que puede ejecutarse primero.",
+    "source": "[^S21]",
+    "pitfall": "No identificar las hojas y simplemente ejecutar todo en paralelo; las tareas con dependencias fallan cuando se ejecutan en paralelo (falta entrada).",
+    "distractor_rationale": "Identificar hojas es la precondición para ejecución paralela: ejecuta todas las hojas en paralelo primero, luego los nodos que dependen de ellas."
+  },
+  {
+    "term": "orden topológico",
+    "def": "Determinar el orden de ejecución de los pasos a partir de sus dependencias, garantizando que cada paso se ejecute solo después de que sus dependencias estén completas.",
+    "source": "[^S17]",
+    "pitfall": "Ordenar pasos arbitrariamente, ignorando dependencias, así que llegas al paso B y descubres que necesita el resultado del paso A pero A no se ha ejecutado.",
+    "distractor_rationale": "Un ordenamiento topológico computa un orden de ejecución legal automáticamente; ordenar a mano un grafo de dependencias complejo es propenso a errores."
+  },
+  {
+    "term": "flujo de trabajo de refactorización",
+    "def": "Una tubería completa que analiza código, genera un plan de refactorización, refactoriza en orden de dependencias y verifica con pruebas.",
+    "source": "[^S21]",
+    "pitfall": "Probar solo después de refactorizar cada componente; cuando una prueba falla no puedes saber qué componente la causó, así que refactoriza y prueba en lotes.",
+    "distractor_rationale": "Un flujo de trabajo de refactorización debe verificar incrementalmente: prueba después de cada lote así que una falla apunta rápidamente al componente específico."
+  },
+  {
+    "term": "generar documentación de API",
+    "def": "Un flujo automatizado que extrae APIs del código, genera ejemplos, renderiza docs y los publica.",
+    "source": "[^S20]",
+    "pitfall": "Mantener docs y código como dos copias separadas; los docs se vuelven obsoletos rápido, así que genera docs del código automáticamente para mantenerlos sincronizados.",
+    "distractor_rationale": "Una tubería de generación de documentación mantiene docs y código sincronizados: vuelve a ejecutar la tubería después de un cambio de código y los docs reflejan el estado más reciente."
+  },
+  {
+    "term": "flujo de automatización de pruebas",
+    "def": "Un flujo de trabajo de pruebas de extremo a extremo que configura entornos, ejecuta pruebas en paralelo, recopila resultados y genera un reporte.",
+    "source": "[^S20]",
+    "pitfall": "Ejecutar el conjunto completo de pruebas secuencialmente por entorno, lo que toma una eternidad; prueba múltiples entornos en paralelo en su lugar.",
+    "distractor_rationale": "El valor de la automatización de pruebas es velocidad y consistencia: las pruebas paralelas acortan el tiempo de retroalimentación, y la automatización mantiene las condiciones idénticas en cada ejecución."
+  },
+  {
+    "term": "descomposición de tareas",
+    "def": "Tomar una tarea vaga y demasiado grande y partirla en pasos pequeños y claros, cada uno con entradas y salidas definidas.",
+    "source": "[^S16]",
+    "pitfall": "Descomponer en pasos que son demasiado grandes (como 'preparar los datos'), lo que oculta lo que el paso realmente cubre y bloquea el paralelismo.",
+    "distractor_rationale": "Descompón bien y construir el flujo de trabajo se siente como encajar Lego; descompón mal y encuentras a mitad de ejecución que faltan pasos o están mal ordenados."
+  },
+  {
+    "term": "depurar",
+    "def": "Localizar problemas en un flujo de trabajo a través de logs, inspección de estado y rastreo paso a paso.",
+    "source": "[^S20]",
+    "pitfall": "Un flujo de trabajo falla sin logs, así que no puedes saber qué paso falló o por qué, y no puede depurarse.",
+    "distractor_rationale": "La depurabilidad debe diseñarse desde el principio: logging por paso, estado persistido y registros de error detallados son todos precondiciones para la depuración."
+  },
+  {
+    "term": "semiabierto",
+    "def": "El estado del circuit breaker donde, después de un tiempo de espera, unas pocas peticiones de prueba pasan: si tienen éxito el breaker se cierra, de lo contrario permanece abierto.",
+    "source": "[^S7]",
+    "pitfall": "Reabrir el breaker a tráfico completo en el instante en que pasa el tiempo de espera, saltándose la fase de prueba, así que un servicio aún roto se inunda de nuevo.",
+    "distractor_rationale": "Los principiantes tratan un circuit breaker como binario (abierto/cerrado) y pierden la sonda semiabierta que prueba la recuperación antes de restaurar el tráfico completo."
+  }
+]
