@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Producir la variante en español del curso learn-agent-observability para learn.agentmentor.dev, tomando como base la variante en inglés ya verificada. Es una traducción con pulido pedagógico a partir de en (no del zh): misma estructura de 6 lecciones, mismos slugs de lección, mismos ids de bloque interactivo y mismas posiciones de respuesta correcta, citas de las fuentes conservadas en su inglés original, código ejecutable con la lógica intacta y solo comentarios y cadenas visibles traducidos, la disciplina de fundamentación de sources.md respetada (sin números de umbral inventados, sin presentar la formulación propia del curso como oficial), referencias entre cursos apuntando a los títulos en español, y una prosa técnica natural en español, en tono profesional cercano y sin rigidez de traducción automática.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "El responsable ratificó el plan multilingüe de forma explícita: los seis idiomas en learn.agentmentor.dev, primero el inglés y después el resto de idiomas como oleadas de traducción a partir de la base en inglés, en lotes de 2-3 cursos y con un commit por curso. La variante en inglés es la fuente de verdad verificada y corregida en su fundamentación, así que no hizo falta ninguna aclaración adicional."
+  },
+  "learnerModel": {
+    "targetReader": "Una persona desarrolladora que ha terminado los primeros diez cursos de esta serie, hace correr una vía de evaluación y quiere rastrear el fallo de un agente hasta el paso exacto en vez de adivinarlo",
+    "knownConcepts": [
+      "Escribir a mano un bucle de arnés dirigido por stop_reason y el emparejamiento tool_use/tool_result (curso 7)",
+      "La vía de evaluación y las métricas más allá de la tasa de aprobación (curso 10)",
+      "Los puntos de control y la reanudación (curso 9)",
+      "Lectura y escritura de JavaScript / Node.js básico"
+    ],
+    "unknownConcepts": [
+      "Por qué el no determinismo rompe el «reproduce y luego depura»",
+      "Las transcripciones crudas como prueba de primera mano frente al autorreporte del agente",
+      "El diseño de logs estructurados y de métricas para un arnés propio",
+      "Los árboles de traza, los ids de correlación y el anidamiento de los subagentes",
+      "Cómo te miente el propio pipeline de telemetría (fallos silenciosos, pérdida por lotes)",
+      "Los hooks como sondas en los puntos del ciclo de vida del bucle",
+      "Un flujo de depuración pensado para ejecuciones no deterministas"
+    ],
+    "assumedEnvironment": "Un entorno de Node.js, acceso a una terminal, un editor de texto y el código del arnés del curso 7 disponible para ampliarlo",
+    "firstIndependentAction": "Tomar una ejecución fallida de su propio agente y listar qué preguntas no puede responder ahora mismo con los artefactos que tiene",
+    "noviceRamp": [
+      "La lección 1 nombra el problema —un síntoma sobre varias causas indistinguibles desde fuera— antes de cualquier herramienta",
+      "La lección 2 establece la jerarquía de pruebas: primero la transcripción cruda, el autorreporte nunca",
+      "La lección 3 añade los logs estructurados y las métricas; la lección 4 los hilvana en un árbol de traza con ids de correlación",
+      "La lección 5 coloca sondas de hooks en los puntos clave del bucle y recorre el flujo de localización que tiene en cuenta el no determinismo",
+      "La lección 6 conecta la capa de observabilidad completa al arnés del curso 7 y hace un recorrido entero de síntoma a arreglo"
+    ]
+  },
+  "learnerBrief": "El lector objetivo ha terminado los primeros diez cursos, hace correr una vía de evaluación y lee JavaScript. Las evaluaciones le dicen si algo aprueba o falla, pero no por qué. El curso lo lleva a tratar las transcripciones crudas como prueba de primera mano, a diseñar logs estructurados y métricas, a hilvanar los registros en árboles de traza con ids de correlación, a colocar sondas de hooks en los puntos clave del bucle y, por último, a conectar una capa de observabilidad completa al arnés del curso 7 y recorrer una depuración entera, de síntoma a arreglo.",
+  "scope": "Se cubre: por qué el no determinismo rompe el «reproduce y luego depura», las transcripciones crudas como prueba, el diseño de logs estructurados y métricas para un arnés, los árboles de traza con ids de correlación y el anidamiento de subagentes, los modos de fallo del pipeline de telemetría, los hooks como sondas del ciclo de vida, un flujo de localización (filtrar por prompt id, encontrar la primera divergencia, repetir paso a paso) y una capa de observabilidad práctica (logs JSONL + impresión del árbol de traza + agregación de métricas). No se cubre: plataformas de observabilidad concretas (solo se nombran donde las nombran las citas), umbrales de alerta y diseño de SLO (no existen cifras de primera mano) ni la metodología de evaluación del curso 10 (allí las mismas métricas puntúan y aquí diagnostican). Profundidad: desde cero hasta rastrear un síntoma real hasta el paso que lo causó.",
+  "status": {
+    "stage": "generated",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-observability/es/",
+    "guardStatus": "pending"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Los diagramas se mantienen exactamente donde los usa la variante en inglés (la estructura del árbol de traza), con las etiquetas reescritas en español; no se añadió ni se quitó ninguno. Un árbol de spans es el contenido con forma de diagrama de este curso, y esa colocación ya venía validada por la revisión del original.",
+    "weakestPoints": [
+      "Las reglas de disciplina de redacción de sources.md son estrictas aquí: el flujo de depuración de cinco pasos es una disposición propia del curso y las técnicas de reproducción no llevan cita por diseño; quien busque autoridad para esas secciones tiene que leerlas como práctica de ingeniería, que es justo lo que el texto dice de forma explícita",
+      "Los modos de fallo del pipeline de telemetría se enseñan contra el comportamiento documentado de una CLI concreta; otras pilas fallan de otra manera",
+      "El resultado negativo del filtrado de las variables OTEL_* es comportamiento de producto atado a una versión, y el texto lo fecha",
+      "Al ser una traducción al español de una variante en inglés verificada, la deriva idiomática es el riesgo residual: las citas de las fuentes se conservaron verbatim en inglés y el código ejecutable mantiene la lógica idéntica, pero la prosa se vertió a un español natural en lugar de traducirse palabra por palabra, así que la revisión debe comprobar la equivalencia de significado con las lecciones en inglés"
+    ],
+    "followUpChecks": [
+      "Ejecutar course-guard sobre el directorio es y actualizar status.guardStatus con el resultado real (ahora está en pending)",
+      "Pasada de renderizado en learn.agentmentor.dev /es/agent-observability/... tras el despliegue: las 6 lecciones más el README, con las tarjetas interactivas hidratadas",
+      "Verificar que cada ancla [^Sn] de las lecciones en es tiene su bloque ## Sn correspondiente en el sources.md en es",
+      "Confirmar que los ids de los seis bloques de comprobación y las posiciones de respuesta correcta son idénticos byte a byte a la variante en inglés (c/a/b/c/a/b en orden de lección)",
+      "Volver a ejecutar el JS del proyecto final (logging JSONL, impresión del árbol de traza, agregación de métricas, nivel de privacidad HEAD_CHARS=0) y confirmar que las salidas coinciden con los logs afirmados"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "La persona que aprende puede conectarle a un arnés una capa de observabilidad —un registro estructurado por cada petición al modelo y por cada llamada a herramienta, un árbol de traza hilvanado con ids de correlación y una agregación de métricas— y después tomar un síntoma del tipo «no sé decir por qué», filtrar por prompt id, encontrar la primera divergencia, repetir la ejecución con las mismas entradas, arreglarlo y mostrar la comparación de la nueva ejecución.",
+    "interactionCheck": "Seis bloques agentmentor-check, uno por lección (repetir para reproducir en la L1, resumen frente a transcripción en la L2, el recuento de errores que miente en la L3, la telemetría silenciosa en la L4, el atajo de OTel por hooks en la L5 y registrarlo todo en la L6), conservados desde la variante en inglés con ids, modos, número de opciones y posiciones de respuesta correcta idénticos; label, prompt, whyHere, el texto de las opciones y el feedback son traducciones al español ajustadas al malentendido propio de cada lección. Los ejercicios mantienen la estructura de niveles de la variante en inglés, con rubric, answer e hints en cada nivel.",
+    "learnerFitCheck": "El curso presupone los diez cursos previos: el bucle del arnés, el vía de evaluación y JavaScript. La jerarquía de pruebas, el diseño de logging, las trazas, los hooks y el flujo de localización se enseñan desde cero en orden de dependencia; la persona ensambla la capa completa por primera vez en la lección 6, después de todos los prerrequisitos. El primer ejercicio de la lección 1 solo pide un inventario de preguntas sin respuesta sobre una ejecución fallida propia.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "Variante en español de la variante en inglés verificada: la estructura, la fundamentación y las posiciones de respuesta se heredan del original verificado",
+      "Todos los bloques interactivos conservan id, mode, número de opciones y respuesta correcta con paridad byte a byte respecto al inglés",
+      "Todas las citas de las fuentes se mantienen en su inglés original y se comprobaron byte a byte contra sources.md",
+      "Se conservan las declaraciones de costura entre la L5 y la L6 que resolvió la revisión: la correspondencia de pasos, la reconciliación entre el esbozo y la versión real, la diferencia de anidamiento de los spans de herramienta y la tabla de vocabulario de campos"
+    ]
+  },
+  "nextSteps": [
+    "Ejecutar course-guard sobre la variante en es y corregir lo que señale",
+    "Actualizar status.guardStatus una vez que el guard se haya ejecutado de verdad",
+    "Desplegar learn.agentmentor.dev y comprobar que las páginas /es se renderizan con las tarjetas interactivas hidratadas",
+    "Producir las variantes de idioma restantes usando esta misma variante en inglés como base de traducción",
+    "Animar a quienes aprenden a hacer el recorrido de síntoma a arreglo sobre un fallo real de su propio agente como proyecto de consolidación tras el curso"
+  ],
+  "memoryBoundary": "Este agentmentor.json es un registro de estado local del curso (course-local state record), almacenado únicamente en el directorio del curso para las comprobaciones de calidad y el seguimiento de la ruta de aprendizaje. Nunca se escribe de vuelta en la memoria a largo plazo de Claude Code ni de ningún sistema de IA anfitrión, y no afecta a otros cursos ni a otras conversaciones."
+}
