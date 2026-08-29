@@ -11,7 +11,7 @@
 
 Diseñas un flujo de trabajo perfecto: 10 pasos, dependencias limpias. En el paso 8, el servidor se reinicia. El flujo de trabajo se cae.
 
-¿Lo vuelves a correr? Entonces el trabajo de los primeros 7 pasos —quizá 30 minutos— se tira a la basura.
+¿Lo vuelves a ejecutar? Entonces el trabajo de los primeros 7 pasos —quizá 30 minutos— se tira a la basura.
 
 **Ese es el precio de no tener gestión de estado.**
 
@@ -25,7 +25,7 @@ Sin gestión de estado, un agente solo puede pasar información a través del hi
 
 Con gestión de estado, el flujo de trabajo tiene una «memoria» clara: persistente, consultable y recuperable.[^S11]
 
-## Estado contra contexto contra memoria
+## Estado, contexto y memoria: cómo distinguirlos
 
 Estas tres palabras se confunden con facilidad, así que fijémoslas primero:[^S12]
 
@@ -211,20 +211,20 @@ async function loadCheckpoint(file) {
   "id": "workflows-zh-04-checkpoint-placement",
   "label": "Juzgar si un punto de control está bien ubicado",
   "prompt": "Un flujo de trabajo de migración de datos tiene 4 fases: (1) leer 1000 registros de la base de datos de origen (5 minutos) (2) transformar el formato de los datos (10 minutos) (3) escribir en la base de datos de destino (20 minutos) (4) verificar la consistencia de los datos (5 minutos). Si solo puedes poner 1 punto de control, ¿después de qué fase debería ir?",
-  "whyHere": "Acabas de aprender el concepto de punto de control y sus estrategias (periódicos, por fase, antes de operaciones críticas); esto comprueba si puedes elegir la ubicación óptima a partir de las características de la tarea (costo en tiempo, reversibilidad)",
+  "whyHere": "Acabas de aprender el concepto de punto de control y sus estrategias (periódicos, por fase, antes de operaciones críticas); esto comprueba si puedes elegir la ubicación óptima del punto de control a partir de las características de la tarea (costo en tiempo, reversibilidad)",
   "mode": "single",
   "choices": [
     {
       "id": "a",
       "text": "Después de la fase 1, porque es la primera fase",
       "correct": false,
-      "feedback": "La fase 1 tarda solo 5 minutos, así que volver a correrla después de una caída cuesta poco. Un punto de control va después de una operación larga o irreversible, no simplemente en el primer paso de la secuencia."
+      "feedback": "La fase 1 tarda solo 5 minutos, así que volver a ejecutarla después de una caída cuesta poco. Un punto de control va después de una operación larga o irreversible, no simplemente en el primer paso de la secuencia."
     },
     {
       "id": "b",
       "text": "Después de la fase 2, porque es la más costosa y viene antes de la escritura",
       "correct": true,
-      "feedback": "Correcto. La fase 2 es la fase de cómputo puro más larga (10 minutos), y la fase 3 es una escritura irreversible. Un punto de control después de la fase 2 evita volver a correr la transformación costosa y además guarda el estado justo antes de la escritura irreversible. Si la fase 3 falla, retomas desde el punto de control, arreglas el problema y escribes de nuevo, sin necesidad de volver a leer ni a transformar."
+      "feedback": "Correcto. La fase 2 es la fase de cómputo puro más larga (10 minutos), y la fase 3 es una escritura irreversible. Un punto de control después de la fase 2 evita volver a ejecutar la transformación costosa y además guarda el estado justo antes de la escritura irreversible. Si la fase 3 falla, retomas desde el punto de control, arreglas el problema y escribes de nuevo, sin necesidad de volver a leer ni a transformar."
     },
     {
       "id": "c",
@@ -401,7 +401,7 @@ const context = {
 
 **¿Por qué?** Un contexto estructurado es más fácil de entender para el agente y más fácil de depurar para ti.
 
-### Principio 3: contexto que se acumula contra contexto que se reinicia
+### Principio 3: contexto que se acumula frente a contexto que se reinicia
 
 **Contexto que se acumula:** el resultado de cada paso se agrega al contexto, así que este no para de crecer.
 
@@ -535,23 +535,23 @@ Para los tres flujos de trabajo de abajo, elige el patrón de gestión de estado
 
 **Flujo de trabajo B:** entrenar un modelo de aprendizaje automático, 50 épocas de 10 minutos cada una, 500 minutos en total (8 horas)
 
-**Flujo de trabajo C:** revisar 100 PR, cada uno con aprobación humana antes del merge, y el proceso completo puede correr por varios días
+**Flujo de trabajo C:** revisar 100 PR, cada uno con aprobación humana antes del merge, y el proceso completo puede durar varios días
 
 <!-- rubric -->
 Elección correcta de los patrones (A: variables de script, B: puntos de control, C: almacenamiento externo); razonamiento sólido (considera la duración, la recuperabilidad y si hace falta intervención humana)
 
 <!-- answer -->
-Flujo de trabajo A: variables de script. Todo dura apenas 100 segundos, muy poco, así que incluso volver a correrlo entero después de una caída cuesta poco y no se justifica una gestión de estado elaborada. Flujo de trabajo B: puntos de control. 8 horas es mucho y empezar de nuevo después de una caída sale demasiado caro, así que deberías guardar un punto de control cada pocas épocas. Pero el entrenamiento es continuo —no hay trabajo entre procesos ni espera por una persona—, así que los puntos de control alcanzan. Flujo de trabajo C: almacenamiento externo. El proceso corre por días, involucra aprobación humana y el flujo de trabajo se pausa y se retoma en otro momento o en otro proceso, así que tienes que persistir el estado en un almacenamiento externo (por ejemplo, una base de datos) para poder consultar el progreso y retomar en cualquier momento.
+Flujo de trabajo A: variables de script. Todo dura apenas 100 segundos, muy poco, así que incluso volver a ejecutarlo entero después de una caída cuesta poco y no se justifica una gestión de estado elaborada. Flujo de trabajo B: puntos de control. 8 horas es mucho y empezar de nuevo después de una caída sale demasiado caro, así que deberías guardar un punto de control cada pocas épocas. Pero el entrenamiento es continuo —no hay trabajo entre procesos ni espera por una persona—, así que los puntos de control alcanzan. Flujo de trabajo C: almacenamiento externo. El proceso dura días, involucra aprobación humana y el flujo de trabajo se pausa y se retoma en otro momento o en otro proceso, así que tienes que persistir el estado en un almacenamiento externo (por ejemplo, una base de datos) para poder consultar el progreso y retomar en cualquier momento.
 
 <!-- hint -->
-Considera tres preguntas: (1) ¿La duración total se mide en minutos, horas o días? (2) ¿Qué tan caro es volver a correrlo después de una caída? (3) ¿Necesita pausarse y retomarse más tarde?
+Considera tres preguntas: (1) ¿La duración total se mide en minutos, horas o días? (2) ¿Qué tan caro es volver a ejecutarlo después de una caída? (3) ¿Necesita pausarse y retomarse más tarde?
 
 <!-- hint -->
 Las variables de script sirven para tareas rápidas (< 10 minutos). Los puntos de control sirven para tareas costosas (de 10 minutos a unas horas). El almacenamiento externo sirve para tareas de larga duración (> unas horas) o que necesitan intervención humana.
 
 ### Nivel 2: Diseñar una estructura de estado
 
-Diseña el objeto de estado para un flujo de trabajo de «despliegue de varios servicios». El flujo de trabajo necesita: (1) construir imágenes Docker para 5 servicios (2) subirlas a un registro de imágenes (3) desplegarlas una por una en un entorno de pruebas (4) correr pruebas de integración (5) si las pruebas pasan, desplegar a producción.
+Diseña el objeto de estado para un flujo de trabajo de «despliegue de varios servicios». El flujo de trabajo necesita: (1) construir imágenes Docker para 5 servicios (2) subirlas a un registro de imágenes (3) desplegarlas una por una en un entorno de pruebas (4) ejecutar pruebas de integración (5) si las pruebas pasan, desplegar a producción.
 
 **Requisitos:**
 - Diseña un objeto JSON que represente el estado del flujo de trabajo

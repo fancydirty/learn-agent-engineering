@@ -21,8 +21,8 @@ $ node agent.js "¿Usamos lodash en este proyecto? Averigua cómo le va en GitHu
 Respuesta final:
 Sí, el proyecto usa lodash. package.json lo fija en ^4.17.21 y
 src/utils/format.js lo requiere directamente. En GitHub, lodash/lodash
-tiene ahora más de 61k estrellas y su último push fue hace unos 2
-meses: el repositorio sigue mantenido. Para confirmar si ^4.17.21 es la
+tiene ahora más de 60k estrellas y su último push fue hace unas
+semanas: el repositorio sigue mantenido. Para confirmar si ^4.17.21 es la
 última versión publicada haría falta una consulta más a su lista de releases.
 ```
 
@@ -328,7 +328,7 @@ Junto con `MAX_TURNS` como interruptor general, las tres válvulas de seguridad 
       "id": "a",
       "text": "El modelo no es lo bastante capaz y no distingue los casos; hay que cambiar a un modelo más potente",
       "correct": false,
-      "feedback": "No exactamente. Cambiar de modelo trata el síntoma, no la causa. El problema real está en el tool_result: una cadena vacía apenas se distingue de «la herramienta está rota», así que el modelo no puede separar «de verdad no encontrado» de «la llamada falló» y solo puede reformular y reintentar."
+      "feedback": "Cambiar de modelo trata el síntoma, no la causa. El problema real está en el tool_result: una cadena vacía apenas se distingue de «la herramienta está rota», así que el modelo no puede separar «de verdad no encontrado» de «la llamada falló» y solo puede reformular y reintentar."
     },
     {
       "id": "b",

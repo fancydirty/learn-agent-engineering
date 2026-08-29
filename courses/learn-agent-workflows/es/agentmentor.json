@@ -87,7 +87,7 @@
     "Ejecutar course-guard sobre la variante en es y corregir lo que señale",
     "Incorporar el glossary.json en español que entrega el agente de glosario y volver a pasar la comprobación de attach",
     "Desplegar learn.agentmentor.dev y comprobar que las páginas /es se renderizan con las tarjetas interactivas hidratadas y los diagramas mermaid",
-    "Producir las variantes de idioma restantes usando esta misma variante en inglés como base de traducción",
+    "Producir las variantes de idioma restantes usando la misma variante en inglés como base de traducción",
     "Animar a quienes aprenden a automatizar una tarea real de su propio backlog como proyecto de consolidación al terminar el curso"
   ],
   "memoryBoundary": "Este agentmentor.json es un registro de estado local del curso (course-local state record), almacenado únicamente en el directorio del curso para las comprobaciones de calidad y el seguimiento de la ruta de aprendizaje. Nunca se escribe de vuelta en la memoria a largo plazo de Claude Code ni de ningún sistema de IA anfitrión, y no afecta a otros cursos ni a otras conversaciones."

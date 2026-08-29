@@ -182,7 +182,7 @@
     "distractor_rationale": "'JSON' suena como una especificación completa porque nombra un estándar. Fija la sintaxis, no tu esquema: nombres de campo y formatos de valor todavía tienen que mostrarse o enunciarse."
   },
   {
-    "term": "cadena de pensamiento",
+    "term": "chain-of-thought",
     "def": "Una técnica de prompting que hace que el modelo despliegue pasos de razonamiento intermedios antes de dar una respuesta final, lo cual eleva la precisión en tareas que necesitan razonamiento de varios pasos.",
     "source": "[^S5]",
     "pitfall": "Atornillar pasos de razonamiento a cada tarea, incluidas traducción, formateo y trabajo creativo, donde agregan longitud y costo sin mejorar nada.",
@@ -400,7 +400,7 @@
   },
   {
     "term": "redacción de documentos",
-    "def": "Trabajo de prompt dirigido a producir o reformar prosa (documentación técnica, notas de reunión, resúmenes, informes) donde audiencia, propósito, tono y estructura cargan la tarea.",
+    "def": "Trabajo de prompt dirigido a producir o reformar prosa (documentación técnica, notas de reunión, resúmenes, reportes) donde audiencia, propósito, tono y estructura cargan la tarea.",
     "source": "[^S3]",
     "pitfall": "Pedir un resumen sin decir quién lo lee, así que el modelo aterriza en una profundidad aleatoria: demasiado técnico para un gerente, demasiado superficial para un ingeniero.",
     "distractor_rationale": "Quienes escriben suponen que 'resume con claridad' es una instrucción objetiva. La claridad depende enteramente del lector, y el modelo solo conoce al lector que nombras."

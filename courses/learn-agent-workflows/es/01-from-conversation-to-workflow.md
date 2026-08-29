@@ -75,7 +75,7 @@ Cuatro rasgos marcan una tarea que encaja con un flujo de trabajo:
 3. **La tarea se divide en fases claras.** Analizar, planificar, implementar, verificar.
 4. **Necesitas ejecución en paralelo o verificación cruzada.** Subtareas independientes, validación adversarial, comparación tipo torneo.
 
-Los docs oficiales lo dicen sin rodeos: "Reach for a workflow when a task needs more agents than one conversation can coordinate, or when you want the orchestration codified as a script you can read and rerun." (Conviene recurrir a un flujo de trabajo cuando una tarea necesita más agentes de los que una sola conversación puede coordinar, o cuando quieres la orquestación codificada como un script que puedas leer y volver a ejecutar).[^S1]
+La documentación oficial lo dice sin rodeos: "Reach for a workflow when a task needs more agents than one conversation can coordinate, or when you want the orchestration codified as a script you can read and rerun." (Conviene recurrir a un flujo de trabajo cuando una tarea necesita más agentes de los que una sola conversación puede coordinar, o cuando quieres la orquestación codificada como un script que puedas leer y volver a ejecutar).[^S1]
 
 Escenarios típicos:
 
@@ -175,7 +175,7 @@ Lo que te da una orquestación determinista:
 - **Reejecutable.** El script vive en `.claude/workflows/` y se puede invocar por su nombre.
 - **Escalable.** Pasar de 10 agentes a 100 es solo un cambio en el número de vueltas del bucle.[^S2]
 
-## Tu primer escenario de flujo de trabajo: una tubería de revisión de código
+## Tu primer escenario de flujo de trabajo: un pipeline de revisión de código
 
 Veamos un caso real. Tu equipo tiene 15 PR esperando revisión y cada PR necesita cuatro comprobaciones:
 

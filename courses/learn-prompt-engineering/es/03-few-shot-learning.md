@@ -80,7 +80,7 @@ El modelo capta tres tipos de información a partir de los ejemplos:
 
 1. **El mapeo de entrada a salida**: qué tipo de entrada produce qué tipo de salida
 2. **El formato y el estilo de la salida**: una respuesta corta o una detallada, JSON o texto plano
-3. **El estándar para los casos límite**: cómo debe clasificarse un caso ambiguo
+3. **El estándar para los casos límite**: cómo debería clasificarse un caso ambiguo
 
 **Un hallazgo clave**: la investigación muestra que el **formato** y la **diversidad** de los ejemplos importan más que si cada ejemplo es correcto[^S4]. Aunque algunas etiquetas de los ejemplos estén mal, la IA todavía puede aprender un patrón útil, siempre que el formato sea consistente y los ejemplos cubran distintos tipos de entrada.
 
@@ -305,7 +305,7 @@ Si das un solo ejemplo, la IA ve una instancia aislada, no una regla.
 
 ### Trampa 2: formato inconsistente entre los ejemplos
 
-Una flecha → aquí, un dos puntos : allá, varias líneas en otro lado.
+Una flecha → aquí, dos puntos : allá, varias líneas en otro lado.
 
 **Solución**: elige un formato y síguelo estrictamente en cada ejemplo.
 

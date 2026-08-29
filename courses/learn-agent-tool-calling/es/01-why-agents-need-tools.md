@@ -23,7 +23,7 @@ Estás en un proyecto con unas cuantas decenas de archivos y le dices esto a un 
 >
 > Esto busca recursivamente en todos los archivos bajo `src/` las líneas que contienen `console.log` e imprime el nombre del archivo y el número de línea. Si tu proyecto usa TypeScript, recuerda incluir `.ts`/`.tsx` en el alcance de la búsqueda.
 
-Nada malo con eso — hasta es considerado. Pero no pediste instrucciones sobre cómo buscar, pediste los resultados. Cuando este turno termina, sigues sin saber qué archivos de tu proyecto contienen realmente `console.log`. Tienes que ir a abrir una terminal y escribir ese comando tú mismo.
+No hay nada de malo en eso — hasta es una respuesta atenta. Pero no pediste instrucciones sobre cómo buscar, pediste los resultados. Cuando este turno termina, sigues sin saber qué archivos de tu proyecto contienen realmente `console.log`. Tienes que ir a abrir una terminal y escribir ese comando tú mismo.
 
 **La segunda vez, la misma frase, entregada a un Agente con una herramienta de búsqueda conectada.** Su respuesta se lee así:
 

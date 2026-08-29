@@ -28,7 +28,7 @@ Este curso te enseña a diseñar prompts claros y eficaces para que las herramie
 | 01 | [Qué es un prompt y por qué importa](./01-what-is-prompt.md) | Entender qué es un prompt, distinguir las instrucciones vagas de las claras y captar cómo el prompt determina la calidad de la salida de la IA |
 | 02 | [La estructura básica de un prompt](./02-prompt-structure.md) | Dominar los cuatro elementos centrales de un prompt (rol, tarea, formato, restricciones) y reescribir peticiones vagas como instrucciones estructuradas |
 | 03 | [Few-shot learning: guiar a la IA con ejemplos](./03-few-shot-learning.md) | Usar de 2 a 5 ejemplos para mostrarle a la IA el patrón que buscas, distinguir zero-shot, one-shot y few-shot, y elegir ejemplos de calidad |
-| 04 | [Chain-of-thought: hacer que la IA muestre su razonamiento](./04-chain-of-thought.md) | Mejorar la precisión en tareas complejas pidiéndole a la IA que muestre sus pasos de razonamiento, aplicando la técnica de pensemos paso a paso |
+| 04 | [Chain-of-thought: hacer que la IA muestre su razonamiento](./04-chain-of-thought.md) | Mejorar la precisión en tareas complejas pidiéndole a la IA que muestre sus pasos de razonamiento, aplicando la técnica de «pensemos paso a paso» |
 | 05 | [Depuración y mejora de prompts](./05-debugging-prompts.md) | Detectar de forma sistemática los problemas de un prompt, diagnosticar sus causas, iterar y construir una rutina de depuración eficaz |
 | 06 | [Estrategias de prompt para distintas tareas](./06-task-specific-strategies.md) | Aplicar la mejor estrategia de prompt según el tipo de tarea: generación de código, redacción, análisis de datos |
 

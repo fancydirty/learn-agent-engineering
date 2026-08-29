@@ -19,7 +19,7 @@ URL: https://alexop.dev/posts/claude-code-workflows-deterministic-orchestration/
 
 - authority: authoritative-guide
 
-Una lectura detallada del patrón de orquestación determinista: el script es dueño de los bucles y las ramas, cada llamada a `agent()` entrega el trabajo a un subagente nuevo, y solo el trabajo en sí lo dirige el modelo.
+Una lectura detallada del patrón de orquestación determinista: el script es dueño de los bucles y las bifurcaciones, cada llamada a `agent()` entrega el trabajo a un subagente nuevo, y solo el trabajo en sí lo dirige el modelo.
 
 Cita clave:
 > "A normal agent decides the control flow as it goes. A workflow inverts that. You write the control flow as plain code, and each individual step is delegated to a fresh subagent."
@@ -52,7 +52,7 @@ URL: https://maecapozzi.com/blog/building-a-multi-agent-orchestrator
 
 - authority: blog
 
-Un informe de campo sobre la construcción de un orquestador de seis fases para agentes de programación especializados, con trazado distribuido, orquestación por fases y aislamiento de procesos.
+Un reporte de campo sobre la construcción de un orquestador de seis fases para agentes de programación especializados, con trazado distribuido, orquestación por fases y aislamiento de procesos.
 
 Cita clave:
 > "Phase-based orchestration: Break work into discrete phases (planning, implementation, testing, review) rather than letting agents free-roam."
@@ -74,7 +74,7 @@ URL: https://medium.com/@vasanthancomrads/handling-failures-in-agent-based-workf
 
 - authority: blog
 
-Un repaso práctico del manejo de fallos en flujos de trabajo de agentes —reintentos, fallbacks, validación y circuit breakers— pensado para sistemas que tienen que aguantar en producción.
+Un repaso práctico del manejo de fallas en flujos de trabajo de agentes —reintentos, fallbacks, validación y circuit breakers— pensado para sistemas que tienen que aguantar en producción.
 
 Cita clave:
 > "User Input → Agent → Tool Call → Retry → Circuit Breaker → Validation → Fallback (if needed) → Confidence Check → Human-in-loop (optional) → Final Output"
@@ -85,7 +85,7 @@ URL: https://www.augmentcode.com/guides/async-ai-agent-workflows
 
 - authority: authoritative-guide
 
-La secuencia de recuperación que usan los sistemas en producción: backoff exponencial con jitter para los errores transitorios, cambio de proveedor, acciones compensatorias y cómo configura AWS Step Functions el manejo de errores.
+La secuencia de recuperación que usan los sistemas en producción: retroceso exponencial con jitter para los errores transitorios, cambio de proveedor, acciones compensatorias y cómo configura AWS Step Functions el manejo de errores.
 
 Cita clave:
 > "Retry with exponential backoff and jitter for transient errors (5xx, network timeouts). AWS Step Functions provides error handling with configurable backoff and jitter for retries."
@@ -107,7 +107,7 @@ URL: https://www.xgrid.co/resources/temporal-ai-agent-orchestration-failure-patt
 
 - authority: authoritative-guide
 
-Once patrones de fallo observados al desplegar agentes de IA sobre Temporal, con análisis y correcciones para la orquestación de LLM, los reintentos, la cancelación, la carga y los pasos con intervención humana.
+Once patrones de falla observados al desplegar agentes de IA sobre Temporal, con análisis y correcciones para la orquestación de LLM, los reintentos, la cancelación, la carga y los pasos con intervención humana.
 
 Cita clave:
 > "LLM activity retry policies should be defined per error class, not as a single catch-all policy on the activity registration."
@@ -129,7 +129,7 @@ URL: https://machinelearningmastery.com/5-architectural-patterns-for-persistent-
 
 - authority: authoritative-guide
 
-Distingue el estado de la memoria —el estado es la instantánea de la tarea actual, la memoria es lo que se aprendió de las anteriores— y muestra cómo los checkpoints guardan el estado del flujo de trabajo para que una ejecución pueda reanudarse.
+Distingue el estado de la memoria —el estado es la instantánea de la tarea actual, la memoria es lo que se aprendió de las anteriores— y muestra cómo los puntos de control guardan el estado del flujo de trabajo para que una ejecución pueda reanudarse.
 
 Cita clave:
 > "State is a snapshot. It's everything the agent currently knows about a task right now: what step it's on, what the last tool call returned, what variables it's tracking."

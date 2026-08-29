@@ -27,7 +27,7 @@ Al terminar este curso podrás:
 - Leer y escribir a mano una ida y vuelta completa de tool_use / tool_result, incluido el retorno por lotes de varias llamadas en paralelo
 - Clasificar los cinco tipos de herramienta (leer, escribir, ejecutar, buscar y llamar a una API externa) por radio de impacto y detectar la trampa a la que cada uno es más propenso
 - Escribir la description, el JSON Schema y el valor de retorno de una herramienta para que el modelo elija la correcta, rellene bien los parámetros y se autocorrija tras un fallo
-- Graduar las operaciones de las herramientas con allow / ask / deny, y reconocer los riesgos de la sobreautorización y de la combinación de la lethal trifecta
+- Graduar las operaciones de las herramientas con allow / ask / deny, y reconocer los riesgos de la sobreautorización y de la combinación de la trifecta letal
 - Construir desde cero un agente de llamada a herramientas con un bucle de ejecución, un registro y una válvula de seguridad
 
 ## Requisitos previos

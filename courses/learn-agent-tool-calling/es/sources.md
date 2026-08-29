@@ -207,7 +207,7 @@ URL: https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/
 
 - authority: authoritative-guide
 
-Esta entrada propone y define con autoridad el marco tan citado de la lethal trifecta (acceso a datos privados, exposición a contenido no confiable y capacidad de comunicarse hacia fuera): se usa para enseñar el modelo de riesgo de la inyección indirecta de prompt que acaba en exfiltración de datos.
+Esta entrada propone y define con autoridad el marco tan citado de la «trifecta letal» (acceso a datos privados, exposición a contenido no confiable y capacidad de comunicarse hacia fuera): se usa para enseñar el modelo de riesgo de la inyección indirecta de prompt que acaba en exfiltración de datos.
 
 Cita clave:
 > "The lethal trifecta of capabilities is: Access to your private data—one of the most common purposes of tools in the first place! Exposure to untrusted content—any mechanism by which text (or images) controlled by a malicious attacker could become available to your LLM. The ability to externally communicate in a way that could be used to steal your data."

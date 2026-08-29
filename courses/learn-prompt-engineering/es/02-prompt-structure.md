@@ -9,9 +9,9 @@
 
 ## Por qué la IA sigue respondiendo la pregunta equivocada
 
-Le pides a la IA que «escriba un resumen del proyecto» y te entrega una plantilla genérica sin ninguno de los detalles reales de tu proyecto. ¿Dónde se torció? No es que a la IA le falte capacidad. A tu instrucción le faltaban las piezas que importan: de qué proyecto se trata, para quién es, qué debería contener y qué formato debería tener.
+Le pides a la IA que «escriba un resumen del proyecto» y te entrega una plantilla genérica sin ninguno de los detalles reales de tu proyecto. ¿Dónde estuvo el fallo? No es que a la IA le falte capacidad. A tu instrucción le faltaban las piezas que importan: de qué proyecto se trata, para quién es, qué debería contener y qué formato debería tener.
 
-Un prompt efectivo no es una línea lanzada por encima del muro. Es una instrucción completa construida a partir de cuatro elementos. Esta lección cubre cuáles son esos cuatro elementos, qué hace cada uno y cómo combinarlos.
+Un prompt efectivo no es una frase suelta que lanzas al aire. Es una instrucción completa construida a partir de cuatro elementos. Esta lección cubre cuáles son esos cuatro elementos, qué hace cada uno y cómo combinarlos.
 
 ## Los cuatro elementos de un prompt
 
@@ -79,8 +79,8 @@ de datos grandes y sugiere cómo arreglarlas.
 
 Ahora la IA sabe:
 - El foco es el rendimiento, no otras preocupaciones
-- Debe razonar sobre el caso de conjuntos de datos grandes
-- No debe limitarse a marcar problemas, debe proponer soluciones
+- Debería razonar sobre el caso de conjuntos de datos grandes
+- No debería limitarse a marcar problemas, debería proponer soluciones
 
 **Una tarea tiene tres capas:**
 1. **Verbo** — resumir, analizar, generar, editar, revisar...
@@ -200,7 +200,7 @@ Transcripción:
 [pega aquí la transcripción]
 ```
 
-Este prompt es claro, completo y reutilizable. Convierte la parte de la transcripción en un marcador de posición y tendrás una plantilla que puedes ejecutar una y otra vez. En la próxima reunión, solo cambias la transcripción nueva.
+Este prompt es claro, completo y reutilizable. Convierte la parte de la transcripción en un marcador de posición y tendrás una plantilla que puedes ejecutar una y otra vez. En la próxima reunión, solo pones la transcripción nueva.
 
 ```agentmentor-check
 {
@@ -432,6 +432,6 @@ Documento:
 <!-- hint -->
 La clave para diseñar el prompt de una tarea compleja: define desde qué ángulos quieres que la IA examine el problema y después dale una prioridad a cada ángulo. No dejes que la IA decida por su cuenta qué importa.
 <!-- hint -->
-Diseña el formato de salida en función de «cómo vas a usar el resultado». Si vas a editar el documento punto por punto, entrega «ubicación + problema + solución». Si vas a generar un informe, entrega «resumen + lista detallada».
+Diseña el formato de salida en función de «cómo vas a usar el resultado». Si vas a editar el documento punto por punto, entrega «ubicación + problema + solución». Si vas a generar un reporte, entrega «resumen + lista detallada».
 
 <!-- /exercises -->

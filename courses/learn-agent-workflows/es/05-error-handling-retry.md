@@ -9,23 +9,23 @@
 
 ## Los errores son la norma en los flujos de trabajo
 
-Tu flujo de trabajo corre perfecto diez veces. En la undécima, en el paso 8, la API devuelve un 503. El flujo de trabajo se cae.
+Tu flujo de trabajo se ejecuta a la perfección diez veces. En la undécima, en el paso 8, la API devuelve un 503. El flujo de trabajo se cae.
 
-Entonces agregas un `try-catch`, atrapas el error, lo registras y sigues adelante. En la duodécima corrida, la conexión a la base de datos se agota por tiempo. El flujo de trabajo continúa, pero la escritura falló, y ahora tus datos quedaron inconsistentes.
+Entonces agregas un `try-catch`, atrapas el error, lo registras y sigues adelante. En la duodécima ejecución, la conexión a la base de datos se agota por tiempo. El flujo de trabajo continúa, pero la escritura falló, y ahora tus datos quedaron inconsistentes.
 
 **El manejo de errores no es tan simple como «agregar un try-catch».**
 
 En un flujo de trabajo, el manejo de errores tiene que responder tres preguntas:[^S7]
 
-1. **¿Este error es temporal o permanente?** (fluctuación de red contra permisos faltantes)
-2. **¿Deberías reintentar, saltar o abortar?** (un reintento podría arreglarlo contra un reintento lo empeora)
-3. **Si abortas, ¿cómo limpias los pasos que ya terminaron?** (revertir la base de datos contra enviar un aviso de cancelación)
+1. **¿Este error es temporal o permanente?** (fluctuación de red frente a permisos faltantes)
+2. **¿Deberías reintentar, saltar o abortar?** (un reintento podría arreglarlo frente a un reintento lo empeora)
+3. **Si abortas, ¿cómo limpias los pasos que ya terminaron?** (revertir la base de datos frente a enviar un aviso de cancelación)
 
-Si el paso que falló es opcional (digamos, enviar una notificación), sáltalo y sigue. Dejar que una falla no crítica no descarrile toda la corrida se llama degradación elegante. Pero si el paso que falló es crítico, saltarlo deja un estado inconsistente, así que deberías abortar en su lugar.
+Si el paso que falló es opcional (digamos, enviar una notificación), sáltalo y sigue. Impedir que una falla no crítica descarrile toda la ejecución se llama degradación elegante. Pero si el paso que falló es crítico, saltarlo deja un estado inconsistente, así que deberías abortar en su lugar.
 
-Sin respuestas, tu flujo de trabajo es o demasiado frágil (un error chico lo tumba) o demasiado peligroso (ignora los errores y sigue corriendo, dejando atrás un estado inconsistente).[^S9]
+Sin respuestas, tu flujo de trabajo es o demasiado frágil (un error chico lo tumba) o demasiado peligroso (ignora los errores y sigue ejecutándose, dejando atrás un estado inconsistente).[^S9]
 
-## Clasificar los errores: transitorios contra permanentes
+## Clasificar los errores: transitorios frente a permanentes
 
 **Los errores transitorios** son temporales; un reintento podría tener éxito.[^S8]
 
@@ -75,7 +75,7 @@ function classifyError(error) {
 
 ## Estrategias de reintento
 
-**Ante errores transitorios, reintentar es tu primer movimiento. Pero reintentar tiene más miga de lo que parece.**[^S8]
+**Ante errores transitorios, reintentar es tu primer movimiento. Pero reintentar tiene más matices de lo que parece.**[^S8]
 
 ### Estrategia 1: reintento con retardo fijo
 
@@ -187,7 +187,7 @@ async function retrySelective(fn, maxAttempts = 3) {
   "id": "workflows-zh-05-retry-strategy",
   "label": "Elegir la estrategia de reintento adecuada",
   "prompt": "Un flujo de trabajo necesita llamar a una API externa para traer datos. La API permite 60 peticiones por minuto; pasado ese punto devuelve 429, y hay que esperar 60 segundos para continuar. El flujo de trabajo necesita llamar a la API 100 veces dentro de un minuto. ¿Cómo deberías manejar los errores 429?",
-  "whyHere": "Acabas de aprender la clasificación de errores (transitorios contra permanentes) y las estrategias de reintento (fijo, retroceso exponencial, selectivo). Esto comprueba si puedes mirar un tipo de error concreto (el límite de tasa) y elegir una forma sensata de manejarlo, en lugar de recurrir al retroceso por reflejo.",
+  "whyHere": "Acabas de aprender la clasificación de errores (transitorios frente a permanentes) y las estrategias de reintento (fijo, retroceso exponencial, selectivo). Esto comprueba si puedes mirar un tipo de error concreto (el límite de tasa) y elegir una forma sensata de manejarlo, en lugar de recurrir al retroceso por reflejo.",
   "mode": "single",
   "choices": [
     {
@@ -327,7 +327,7 @@ async function transactionalWorkflow() {
 
 ### Patrón 2: acciones de compensación (el patrón Saga)
 
-**La idea:** define una acción de compensación para cada operación y, ante una falla, corre las compensaciones para deshacer los pasos que ya se completaron.[^S6]
+**La idea:** define una acción de compensación para cada operación y, ante una falla, ejecuta las compensaciones para deshacer los pasos que ya se completaron.[^S6]
 
 ```javascript
 async function sagaWorkflow() {
@@ -415,21 +415,21 @@ async function sagaWorkflow() {
 **Puntos clave:**
 
 1. Cada paso tiene un `forward` (la acción) y un `compensate` (el deshacer).
-2. Ante una falla, corre las compensaciones de los pasos completados en orden inverso.
-3. Una compensación puede fallar ella misma; regístrala y márcala para que la vea una persona.[^S6]
+2. Ante una falla, ejecuta las compensaciones de los pasos completados en orden inverso.
+3. Una compensación puede fallar a su vez; regístrala y márcala para que la vea una persona.[^S6]
 
 ### Patrón 3: diseño idempotente
 
-**Idempotente:** correrlo N veces tiene el mismo efecto que correrlo una vez.[^S9]
+**Idempotente:** ejecutarlo N veces tiene el mismo efecto que ejecutarlo una vez.[^S9]
 
 ```javascript
-// No idempotente: las corridas repetidas se van sumando
+// No idempotente: las ejecuciones repetidas se van sumando
 async function incrementCounter(userId) {
   const current = await getCounter(userId);
   await setCounter(userId, current + 1);
 }
 
-// Idempotente: las corridas repetidas aterrizan en el mismo resultado
+// Idempotente: las ejecuciones repetidas dan el mismo resultado
 async function setCounter(userId, value) {
   await db.update('counters', { userId }, { value });
 }
@@ -450,7 +450,7 @@ async function processOrder(orderId, orderData) {
 }
 ```
 
-**El beneficio:** si un paso corre dos veces por un tropiezo de red (el primer intento se agotó por tiempo pero en realidad tuvo éxito), la idempotencia garantiza que no haya efectos secundarios duplicados.[^S9]
+**El beneficio:** si un paso se ejecuta dos veces por un tropiezo de red (el primer intento se agotó por tiempo pero en realidad tuvo éxito), la idempotencia garantiza que no haya efectos secundarios duplicados.[^S9]
 
 ## Capas del manejo de errores
 

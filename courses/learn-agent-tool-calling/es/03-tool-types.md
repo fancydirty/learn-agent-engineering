@@ -190,7 +190,7 @@ Un retorno normal se ve así:
 { "ok": true, "ts": "1735689600.000200" }
 ```
 
-Pero un servicio externo te va a limitar la tasa, agotar el tiempo de espera, rechazar una petición por permisos que faltan y cambiar su propia interfaz en el hueco entre tus llamadas. Estas no son «situaciones inesperadas», son las condiciones normales de funcionamiento de esta categoría. Lo que de verdad decide si la herramienta sirve no es «qué devuelve cuando todo va bien», es «qué devuelve cuando las cosas fallan»:
+Pero un servicio externo te va a limitar la tasa, va a dejar peticiones sin respuesta hasta agotar el tiempo de espera, va a rechazar otras por permisos que faltan y va a cambiar su propia interfaz en el hueco entre tus llamadas. Estas no son «situaciones inesperadas», son las condiciones normales de funcionamiento de esta categoría. Lo que de verdad decide si la herramienta sirve no es «qué devuelve cuando todo va bien», es «qué devuelve cuando las cosas fallan»:
 
 ```json
 { "ok": false, "error": "rate_limited", "retry_after": 30 }

@@ -80,7 +80,7 @@ Una buena descripción debería "Avoid ambiguity by clearly describing (and enfo
       "id": "a",
       "text": "La description es sobre todo un comentario para quien mantenga este código más adelante; el modelo simplemente lo lee de paso",
       "correct": false,
-      "feedback": "No exactamente. Está al revés. Cuando el modelo elige una herramienta y rellena los parámetros, todo lo que ve son los campos name, description e input_schema: no puede ver el código de implementación y mucho menos los comentarios que hay dentro. La description no es una narración que el modelo lee «de paso»; es la base completa de su decisión. Las notas para un colega van en comentarios de código o en la documentación, que son cosa aparte de este campo."
+      "feedback": "Está al revés. Cuando el modelo elige una herramienta y rellena los parámetros, todo lo que ve son los campos name, description e input_schema: no puede ver el código de implementación y mucho menos los comentarios que hay dentro. La description no es una narración que el modelo lee «de paso»; es la base completa de su decisión. Las notas para un colega van en comentarios de código o en la documentación, que son cosa aparte de este campo."
     },
     {
       "id": "b",
@@ -102,7 +102,7 @@ Una buena descripción debería "Avoid ambiguity by clearly describing (and enfo
 
 El trabajo de la descripción es detallar qué hace la herramienta; el del nombre es otro: evitar que la herramienta se confunda con otra dentro de una caja abarrotada. En cuanto tienes muchas herramientas, sobre todo después de conectar varios servicios externos, nombres como `list_prs`, `send_message` o `create_issue` son nombres que cualquiera podría elegir, y el nombre por sí solo no dice a qué servicio pertenecen.
 
-El consejo oficial es prefijar los nombres de las herramientas con el servicio: "When your tools span multiple services or resources, prefix names with the service (e.g., github_list_prs, slack_send_message). This makes tool selection unambiguous as your library grows, and is especially important when using tool search."[^S10] (cuando tus herramientas abarcan varios servicios o recursos, prefija los nombres con el servicio). Cuando el modelo tiene que elegir una herramienta entre decenas, un nombre con prefijo estrecha el campo de entrada, de modo que puede descartar la mayoría de las opciones sin abrir cada descripción para compararlas línea a línea. Los cinco tipos de herramientas de la Lección 3 (read, write, execute, search, call) se benefician igual si cada uno se apoya en un servicio distinto: `fs_read_file` y `db_read_row` a simple vista no son lo mismo, mientras que un `read` a secas los mezcla.
+El consejo oficial es prefijar los nombres de las herramientas con el servicio: "When your tools span multiple services or resources, prefix names with the service (e.g., github_list_prs, slack_send_message). This makes tool selection unambiguous as your library grows, and is especially important when using tool search."[^S10] (cuando tus herramientas abarcan varios servicios o recursos, prefija los nombres con el servicio). Cuando el modelo tiene que elegir una herramienta entre decenas, un nombre con prefijo acota primero el campo, de modo que puede descartar la mayoría de las opciones sin abrir cada descripción para compararlas línea a línea. Los cinco tipos de herramientas de la Lección 3 (read, write, execute, search, call) se benefician igual si cada uno se apoya en un servicio distinto: `fs_read_file` y `db_read_row` a simple vista no son lo mismo, mientras que un `read` a secas los mezcla.
 
 ## input_schema: fijar la forma de los parámetros
 
@@ -145,7 +145,7 @@ Hay también una dirección más sutil: el modelo puede añadir campos de la nad
 { "title": "La página de login devuelve 500", "priority": "high", "skip_review": true }
 ```
 
-Esa clave `skip_review` nunca estuvo en las properties del esquema; el modelo se la inventó por su cuenta. El comportamiento por defecto de JSON Schema estándar es justamente permitir que un objeto lleve claves extra no declaradas, y si la implementación de tu herramienta resulta que pasa la entrada entera a un sistema aguas abajo, y el código de ese sistema tiene de verdad una rama que comprueba ese nombre de campo, una sola alucinación del modelo se salta en silencio un paso de revisión que tenía que ocurrir. Añadir `"additionalProperties": false` en la parte superior del input_schema escribe también «solo se permiten las claves declaradas» en las reglas de validación.
+Esa clave `skip_review` nunca estuvo en las properties del esquema; el modelo se la inventó por su cuenta. El comportamiento por defecto de JSON Schema estándar es justamente permitir que un objeto lleve claves extra no declaradas, y si la implementación de tu herramienta resulta que pasa la entrada entera a un sistema aguas abajo, y el código de ese sistema tiene de verdad una bifurcación que comprueba ese nombre de campo, una sola alucinación del modelo se salta en silencio un paso de revisión que tenía que ocurrir. Añadir `"additionalProperties": false` en la parte superior del input_schema escribe también «solo se permiten las claves declaradas» en las reglas de validación.
 
 Para que la plataforma imponga todo esto de verdad, añade el campo de nivel superior `"strict": true` a la definición de la herramienta. El modo strict funciona restringiendo el propio muestreo del modelo: "Setting strict: true on a tool definition guarantees Claude's tool inputs match your JSON Schema by constraining the model's token sampling to schema-valid outputs (a technique called grammar-constrained sampling)."[^S20] (poner strict: true garantiza que las entradas de herramienta coincidan con tu JSON Schema, restringiendo el muestreo de tokens del modelo a salidas válidas según el esquema). Se respetan type, enum, required y additionalProperties, y los parámetros inválidos simplemente nunca llegan a generarse. En la documentación oficial, los esquemas de ejemplo del modo strict llevan además `additionalProperties: false`: los dos están pensados para usarse juntos. Solo en este punto se cumple de verdad que «los valores inválidos quedan descartados antes incluso de enviar la petición»; para una herramienta sin modo strict, no puedes quitar ni una línea de validación de parámetros del lado de la implementación.
 
@@ -233,7 +233,7 @@ Una versión de referencia:
       "mode": {
         "type": "string",
         "enum": ["create_new", "overwrite_existing"],
-        "description": "create_new: el archivo no debe existir, si no da error; overwrite_existing: permite sobrescribir un archivo que ya existe"
+        "description": "create_new: el archivo no debe existir; si no, da error; overwrite_existing: permite sobrescribir un archivo que ya existe"
       }
     },
     "required": ["path", "content", "mode"]

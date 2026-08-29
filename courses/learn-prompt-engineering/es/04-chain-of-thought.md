@@ -15,7 +15,7 @@ Para tareas que necesitan razonamiento de varios pasos (problemas matemáticos, 
 
 ## Qué es chain-of-thought
 
-**El prompting de chain-of-thought (CoT)** es una técnica que hace que el modelo despliegue pasos de razonamiento intermedios antes de dar una respuesta final[^S5]. En palabras de la investigación, el prompting de cadena de pensamiento "enables complex reasoning capabilities through intermediate reasoning steps" (habilita capacidades de razonamiento complejo mediante pasos de razonamiento intermedios)[^S5]. La intuición es simple: "Chain of Thought prompting encourages the model to think through the problem in a step-by-step manner, which is supposed to mimic how humans break down complex problems" (el prompting de cadena de pensamiento anima al modelo a pensar el problema paso a paso, imitando cómo los humanos descomponen problemas complejos)[^S10]. Es lo mismo que haces tú cuando anotas ecuaciones y resultados intermedios en una hoja borrador para resolver un problema de matemáticas.
+**El prompting de chain-of-thought (CoT)** es una técnica que hace que el modelo despliegue pasos de razonamiento intermedios antes de dar una respuesta final[^S5]. En palabras de la investigación, el prompting de cadena de pensamiento "enables complex reasoning capabilities through intermediate reasoning steps" (habilita capacidades de razonamiento complejo mediante pasos de razonamiento intermedios)[^S5]. La intuición es simple: "Chain of Thought prompting encourages the model to think through the problem in a step-by-step manner, which is supposed to mimic how humans break down complex problems" (el prompting de cadena de pensamiento anima al modelo a pensar el problema paso a paso, lo que se supone que imita cómo los humanos descomponen problemas complejos)[^S10]. Es lo mismo que haces tú cuando anotas ecuaciones y resultados intermedios en una hoja borrador para resolver un problema de matemáticas.
 
 Compara los dos enfoques:
 
@@ -92,7 +92,7 @@ Problema: un auto viaja a 80 km/h durante 2.5 horas y después a 60 km/h durante
 Razonamiento:
 ```
 
-El ejemplo muestra el formato del razonamiento y qué tan detallados deben ser los pasos, y el modelo imita ese estilo.
+El ejemplo muestra el formato del razonamiento y qué tan detallados deberían ser los pasos, y el modelo imita ese estilo.
 
 ## Qué tareas encajan con CoT
 

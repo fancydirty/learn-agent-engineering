@@ -9,7 +9,7 @@
 
 ## Ya estás usando prompts (quizá no muy bien)
 
-Abres ChatGPT o Claude, escribes «escríbeme un informe» y recibes de vuelta algo genérico que no coincide con lo que realmente necesitabas. Eso no es la IA fallándote. Tu prompt era demasiado vago. Lo único que vio la IA fueron tres palabras. No tiene idea de para quién es el informe, qué problema debería resolver, qué tono debería usar ni qué debería incluir.
+Abres ChatGPT o Claude, escribes «escríbeme un reporte» y recibes de vuelta algo genérico que no coincide con lo que realmente necesitabas. No es que la IA te esté fallando. Tu prompt era demasiado vago. Lo único que vio la IA fueron tres palabras. No tiene idea de para quién es el reporte, qué problema debería resolver, qué tono debería usar ni qué debería incluir.
 
 Un prompt es la instrucción que le das a la IA[^S13]. Determina cuánto de tu intención puede captar la IA y pone un techo a la calidad de lo que recibes de vuelta. Misma pregunta, dos resultados: una instrucción vaga obtiene una respuesta vaga, una clara obtiene un resultado preciso. Esta lección te enseña a detectar esa diferencia, que es la base de todo lo que viene después.
 
@@ -110,7 +110,7 @@ En tareas complejas, la claridad con la que escribes el prompt genera una difere
 - **Salidas inconsistentes.** Haz la misma pregunta difusa dos veces y el estilo, la profundidad y el énfasis vuelven distintos cada vez.
 - **Tokens y tiempo desperdiciados.** Un prompt vago hace que la IA genere una pila de material que no puedes usar, quemando tu presupuesto de tokens (si estás en una API de pago) o tu paciencia.
 
-**Hallazgo clave:** el grupo de investigación de Developer Tools de Microsoft encontró que, en tareas de generación de código, "prompts with explicit specifications reduced the need for back-and-forth refinements by 68%."[^S12] (los prompts con especificaciones explícitas redujeron en un 68 % la necesidad de refinamientos de ida y vuelta). Eso significa que tienes muchas más probabilidades de obtener código utilizable al primer intento, en lugar de rodear el objetivo por una tercera y una cuarta ronda.
+**Hallazgo clave:** el grupo de investigación de Developer Tools de Microsoft encontró que, en tareas de generación de código, "prompts with explicit specifications reduced the need for back-and-forth refinements by 68%."[^S12] (los prompts con especificaciones explícitas redujeron en un 68% la necesidad de refinamientos de ida y vuelta). Eso significa que tienes muchas más probabilidades de obtener código utilizable al primer intento, en lugar de rodear el objetivo por una tercera y una cuarta ronda.
 
 La recompensa de un prompt claro aparece de inmediato: menos ensayo y error, una tasa de acierto más alta al primer intento y una salida que de verdad puedes dirigir.
 

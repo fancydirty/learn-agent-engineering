@@ -165,7 +165,7 @@ async function longWorkflow(taskId) {
 }
 ```
 
-**Puntos de control:** guarda el estado después de los pasos clave para que el flujo de trabajo pueda reanudarse desde el punto de fallo en lugar de empezar de nuevo.[^S12]
+**Puntos de control:** guarda el estado después de los pasos clave para que el flujo de trabajo pueda reanudarse desde el punto de falla en lugar de empezar de nuevo.[^S12]
 
 ## Bloque de construcción 3: las bifurcaciones
 
@@ -337,7 +337,7 @@ graph TD
     C -->|No| E[Comprobar todos los servicios en secuencia]
     D --> F[Recolectar resultados]
     E --> F
-    F --> G{¿Hay servicios con fallo?}
+    F --> G{¿Hay servicios con fallas?}
     G -->|Sí| H[Generar reporte de alerta]
     G -->|No| I[Generar reporte de salud]
     H --> J[Enviar notificación]
@@ -389,7 +389,7 @@ async function healthCheckWorkflow() {
     const alert = await agent({
       task: 'Genera un reporte de alerta',
       prompt: `${state.unhealthy.length} servicios están en mal estado,
-               genera un reporte detallado del fallo y los pasos de corrección sugeridos`,
+               genera un reporte detallado de la falla y los pasos de corrección sugeridos`,
       context: state.unhealthy
     });
     await sendAlert(alert);
@@ -425,8 +425,8 @@ async function healthCheckWorkflow() {
 **Detecta las oportunidades de paralelismo:**
 
 - Si varios pasos no dependen entre sí, pueden ejecutarse en paralelo
-- «Haz Y para cada X» casi siempre se puede paralelizar
-- El paralelismo puede llevar diez tareas de 5 minutos de 50 minutos a 5
+- «Haz Y para cada X» por lo general se puede paralelizar
+- Con paralelismo, diez tareas de 5 minutos pasan de 50 minutos a 5
 
 **Haz explícitas las dependencias:**
 

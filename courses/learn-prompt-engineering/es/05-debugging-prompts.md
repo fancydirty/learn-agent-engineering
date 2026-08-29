@@ -58,7 +58,7 @@ Encuentra qué parte del prompt (o qué parte faltante) causó el problema.
 
 **Una lista de verificación para el diagnóstico**:
 
-- **¿La tarea es clara?** «Resume los puntos clave» es difuso. Nunca dice cuántos puntos ni qué tan largo debe ser cada uno.
+- **¿La tarea es clara?** «Resume los puntos clave» es difuso. Nunca dice cuántos puntos ni qué tan largo debería ser cada uno.
 - **¿Hay un ejemplo de formato?** No. La IA solo puede adivinar qué forma quieres.
 - **¿Las restricciones alcanzan?** Nada dice «devuelve solo los puntos, sin preámbulo».
 - **¿Hay algo ambiguo?** «Puntos clave» podría significar «argumentos centrales» o «todas las afirmaciones».
@@ -159,7 +159,7 @@ La clave es **enumerar cada campo obligatorio** y decir qué hacer cuando falte 
 
 ### Problema 3: explicar de más
 
-**Síntoma**: pediste código y recibiste código más un muro de explicación; pediste una lista y recibiste una introducción y un resumen envolviéndola.
+**Síntoma**: pediste código y recibiste código más un muro de explicación; pediste una lista y la recibiste envuelta en una introducción y un resumen.
 
 **Diagnóstico**: falta una restricción de «devuelve solo X».
 
@@ -247,7 +247,7 @@ v3 (2024-01-15):
 Resultado: pasa todos los casos de prueba
 ```
 
-Ahora sabes qué te compró cada cambio, y si una versión nueva resulta peor puedes volver a la última buena.
+Ahora sabes qué ganaste con cada cambio, y si una versión nueva resulta peor puedes volver a la última buena.
 
 ### Práctica 3: haz una prueba A/B con los cambios que te generan duda
 
@@ -367,7 +367,7 @@ Resume los puntos clave de este artículo.
 1. **Causa raíz**: el prompt nunca especifica un formato de salida, así que la IA decide cada vez cómo resumir
 2. **Qué falta concretamente**:
    - Nunca dice cuántos puntos
-   - Nunca dice qué tan largo debe ser cada punto
+   - Nunca dice qué tan largo debería ser cada punto
    - Nunca dice qué formato (lista, párrafo, tabla)
    - Nunca dice si incluir un preámbulo
 

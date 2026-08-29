@@ -60,7 +60,7 @@ Salida: ["a@example.com"]
 
 Este prompt fija la entrada, la salida, los casos límite y el estilo de código, así que la IA puede escribir código usable al primer intento.
 
-Hay investigación detrás de esto: "prompts with explicit specifications reduced the need for back-and-forth refinements by 68%" (los prompts con especificaciones explícitas redujeron un 68% la necesidad de refinamientos de ida y vuelta)[^S12] — detalla los pormenores y tendrás muchas más probabilidades de recibir código usable de entrada.
+Hay investigación detrás de esto: "prompts with explicit specifications reduced the need for back-and-forth refinements by 68%" (los prompts con especificaciones explícitas redujeron en un 68% la necesidad de refinamientos de ida y vuelta)[^S12] — detalla los pormenores y tendrás muchas más probabilidades de recibir código usable de entrada.
 
 ### Buenas prácticas de generación de código
 
@@ -123,7 +123,7 @@ Nombra las dimensiones de revisión y la IA no gastará tiempo en detalles que n
 
 ## Tipo de tarea 2: redactar y resumir documentos
 
-El trabajo con documentos cubre mucho terreno: documentación técnica, notas de reunión, resúmenes de artículos, generación de informes.
+El trabajo con documentos cubre mucho terreno: documentación técnica, notas de reunión, resúmenes de artículos, generación de reportes.
 
 ### Los elementos clave de la redacción de documentos
 
@@ -368,7 +368,7 @@ de error en vez de los datos inválidos.
       "id": "d",
       "text": "D - Fijar el rol de la IA como analista de producto",
       "correct": false,
-      "feedback": "❌ Un rol aporta poco en una tarea de extracción. La dificultad aquí no es un punto de vista experto, sino el reconocimiento y el formato precisos. Una analista de producto y una persona común juzgan igual que «excelente calidad» es una ventaja."
+      "feedback": "❌ Un rol aporta poco en una tarea de extracción. La dificultad aquí no es un punto de vista experto, sino el reconocimiento y el formato precisos. Una analista de producto y una persona común juzgan «excelente calidad» como una ventaja de la misma manera."
     }
   ]
 }
@@ -421,7 +421,7 @@ Ahora tienes la caja de herramientas completa. El siguiente paso es **practicar*
 Dadas tres tareas, elige los puntos de estrategia más importantes para cada una y explica por qué.
 
 **Tarea A**: Que la IA genere una función en Python que implemente búsqueda binaria
-**Tarea B**: Que la IA resuma un white paper técnico en un informe de 2 páginas para la dirección
+**Tarea B**: Que la IA resuma un white paper técnico en un reporte de 2 páginas para la dirección
 **Tarea C**: Que la IA extraiga nombre del cliente, tipo de problema y urgencia de un lote de correos de clientes
 
 Por cada tarea, responde:
@@ -452,7 +452,7 @@ Por cada tarea, responde:
 
 ---
 
-**Tarea B: white paper técnico → informe para la dirección**
+**Tarea B: white paper técnico → reporte para la dirección**
 
 1. **Tipo de tarea**: redacción de documentos
 
@@ -462,8 +462,8 @@ Por cada tarea, responde:
    - Controlar el nivel de detalle: omitir detalles de implementación, cambiar la jerga por lenguaje de negocio, 2-3 oraciones por punto
 
 3. **Por qué importan**:
-   - De white paper a informe para la dirección es una tarea de «traducción»; el mayor desafío es el cambio de audiencia
-   - La dirección lee un informe para tomar una decisión, así que la estructura debería girar en torno a «por qué hacerlo, cuánto cuesta, cuáles son los riesgos»
+   - De white paper a reporte para la dirección es una tarea de «traducción»; el mayor desafío es el cambio de audiencia
+   - La dirección lee un reporte para tomar una decisión, así que la estructura debería girar en torno a «por qué hacerlo, cuánto cuesta, cuáles son los riesgos»
    - Si te equivocas en el nivel de detalle, queda o demasiado técnico (la dirección no lo puede seguir) o demasiado flaco (sin base para decidir)
 
 ---
@@ -495,7 +495,7 @@ Elige uno de los escenarios de abajo y diseña un prompt completo que reúna tod
 
 **Escenario 1**: Asistente de revisión de código
 - Que la IA revise un fragmento de código Python buscando posibles problemas de rendimiento y agujeros de seguridad
-- Devolver un informe de revisión estructurado, ordenado por gravedad
+- Devolver un reporte de revisión estructurado, ordenado por gravedad
 - Cada problema incluye: ubicación, descripción, corrección sugerida, prioridad
 
 **Escenario 2**: Generador de apuntes de estudio
@@ -577,6 +577,6 @@ Corrección sugerida: [qué cambiar concretamente, con un fragmento de código o
 <!-- hint -->
 Pasos para diseñar un prompt combinado: (1) enmárcalo primero con los cuatro elementos, (2) agrega estrategias específicas de la tarea según el tipo (few-shot / CoT / definición de formato), (3) piensa los casos límite y agrega restricciones, (4) revisa si el formato de salida es fácil de usar.
 <!-- hint -->
-Una vez diseñado, lee el prompt como si fueras la IA: ¿entiendes cada requisito en una sola pasada? ¿Hay puntos difusos? ¿El formato de salida se puede copiar y pegar directo en un informe?
+Una vez diseñado, lee el prompt como si fueras la IA: ¿entiendes cada requisito en una sola pasada? ¿Hay puntos difusos? ¿El formato de salida se puede copiar y pegar directo en un reporte?
 
 <!-- /exercises -->

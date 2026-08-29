@@ -25,7 +25,7 @@ Este curso te enseña a diseñar y construir flujos de trabajo de agentes: lleva
 Al terminar este curso podrás:
 - Entender qué separa la orquestación de un flujo de trabajo de una conversación puntual
 - Descomponer de forma sistemática una tarea compleja en pasos ejecutables de un flujo de trabajo
-- Diseñar la gestión de estado y los checkpoints de un flujo de trabajo
+- Diseñar la gestión de estado y los puntos de control de un flujo de trabajo
 - Construir estrategias de manejo de errores y recuperación que aguanten en producción
 - Ensamblar flujos de trabajo multiagente de nivel productivo
 

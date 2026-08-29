@@ -472,7 +472,7 @@ Tres problemas: (1) el paso 2, «generar las nuevas definiciones de los endpoint
 Una buena descomposición debería responder: ¿qué pasa si un paso falla? ¿Cómo sabes que un paso tuvo éxito? Cuando hay muchos objetos similares, ¿los procesas de a uno o en paralelo?
 
 <!-- hint -->
-Tiene que haber un paso de prueba antes de cualquier despliegue a producción, un paso de verificación después y, en el mejor de los casos, un paso de respaldo antes de cualquier operación de escritura.
+Tiene que haber un paso de prueba antes de cualquier despliegue a producción, un paso de verificación después y, idealmente, un paso de respaldo antes de cualquier operación de escritura.
 
 <!-- /exercises -->
 

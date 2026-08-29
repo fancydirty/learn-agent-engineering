@@ -9,7 +9,7 @@
 
 ## De la teoría a la práctica
 
-A lo largo de las primeras cinco lecciones cubrimos las piezas con las que se arma un flujo de trabajo: pasos, estado, descomposición y manejo de errores. Ahora las vamos a juntar y construir tres flujos de trabajo de nivel producción sacados de escenarios reales.
+A lo largo de las primeras cinco lecciones cubrimos los bloques de construcción de los flujos de trabajo: pasos, estado, descomposición y manejo de errores. Ahora las vamos a juntar y construir tres flujos de trabajo de nivel producción sacados de escenarios reales.
 
 **Los tres flujos de trabajo de esta lección:**
 
@@ -36,7 +36,7 @@ Refactorizar un proyecto de frontend heredado de 50 componentes, pasándolos de 
 
 ### Descomposición de la tarea
 
-El flujo de trabajo tiene 6 fases. Las dos primeras pueden procesar componentes en paralelo; las fases posteriores corren en orden de dependencia.
+El flujo de trabajo tiene 6 fases. Las dos primeras pueden procesar componentes en paralelo; las fases posteriores se ejecutan en orden de dependencia.
 
 ```mermaid
 graph TD
@@ -49,7 +49,7 @@ graph TD
     F --> G[Lote 1: Componentes hoja]
     F --> H[Lote 2: Componentes intermedios]
     F --> I[Lote 3: Componentes raíz]
-    G --> J[Fase 4: Correr la suite de pruebas]
+    G --> J[Fase 4: Ejecutar la suite de pruebas]
     H --> J
     I --> J
     J --> K{¿Pasan las pruebas?}
@@ -175,9 +175,9 @@ async function refactoringWorkflow(componentPaths) {
       console.log(`\n✓ Refactorización lista: ${state.refactored.length}/${state.input.total}`);
     }
     
-    // Fase 4: correr las pruebas
+    // Fase 4: ejecutar las pruebas
     if (state.phase === 'refactored') {
-      console.log('\n🧪 Fase 4: Corriendo la suite de pruebas...');
+      console.log('\n🧪 Fase 4: Ejecutando la suite de pruebas...');
       
       state.testResults = await runTestSuite({
         timeout: 300000,  // 5 minutos
@@ -449,13 +449,13 @@ async function apiDocGenerationWorkflow(servicePath) {
 **Características clave:**
 - **Patrón fan-out/agregación**: 30 endpoints generan su documentación en paralelo y al final se agrega todo
 - **Sin estado**: la tarea es lo bastante rápida (< 10 minutos) como para no necesitar puntos de control
-- **Idempotente**: puedes volver a correrlo cuando quieras y sobrescribir el archivo de salida[^S20]
+- **Idempotente**: puedes volver a ejecutarlo cuando quieras y sobrescribir el archivo de salida[^S20]
 
 ## Escenario 3: flujo de automatización de pruebas
 
 ### Requisitos
 
-Correr pruebas de punta a punta en varios entornos (local, staging, producción), recolectar los resultados de las pruebas y las métricas de rendimiento, y generar un reporte comparativo.
+Ejecutar pruebas de punta a punta en varios entornos (local, staging, producción), recolectar los resultados de las pruebas y las métricas de rendimiento, y generar un reporte comparativo.
 
 ### Implementación completa
 
@@ -480,8 +480,8 @@ async function e2eTestingWorkflow(config) {
     }
     state.phase = 'environments_ready';
     
-    // Fase 2: correr las pruebas en todos los entornos en paralelo
-    console.log('\n2️⃣ Corriendo las pruebas (en paralelo)...');
+    // Fase 2: ejecutar las pruebas en todos los entornos en paralelo
+    console.log('\n2️⃣ Ejecutando las pruebas (en paralelo)...');
     const testPromises = state.environments.map(async (env) => {
       console.log(`   [${env}] Iniciando las pruebas...`);
       
@@ -577,7 +577,7 @@ async function e2eTestingWorkflow(config) {
   }
 }
 
-// Auxiliar: correr las pruebas con reintento
+// Auxiliar: ejecutar las pruebas con reintento
 async function runTestsWithRetry(env, options) {
   const { maxRetries, testSuites, timeout } = options;
   
@@ -599,7 +599,7 @@ async function runTestsWithRetry(env, options) {
 ```
 
 **Características clave:**
-- **Pruebas en paralelo**: varios entornos corren sus pruebas al mismo tiempo, lo que recorta muchísimo el tiempo total
+- **Pruebas en paralelo**: varios entornos ejecutan sus pruebas al mismo tiempo, lo que recorta muchísimo el tiempo total
 - **Tolerancia a fallas**: que un entorno falle no afecta a los demás
 - **Reintento inteligente**: las pruebas fallidas se reintentan automáticamente (los tropiezos de red y las fallas transitorias son comunes)
 - **Análisis de fallas**: las sugerencias de arreglo para las fallas se generan automáticamente[^S20]
@@ -613,7 +613,7 @@ async function runTestsWithRetry(env, options) {
 - ¿Con qué errores se topó?
 - ¿Dónde están los cuellos de botella de rendimiento?
 
-Si no puedes responder esto, tus registros y tu seguimiento del estado no son lo bastante detallados. Depurar un flujo de trabajo se monta sobre esos registros, no sobre adivinar.
+Si no puedes responder esto, tus registros y tu seguimiento del estado no son lo bastante detallados. Depurar un flujo de trabajo se apoya en esos registros, no en adivinar.
 
 ### Implementar la observabilidad
 
