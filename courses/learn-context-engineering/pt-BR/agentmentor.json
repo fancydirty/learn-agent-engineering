@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Produzir a variante em português do Brasil do curso learn-context-engineering para o learn.agentmentor.dev, a partir da variante em inglês já verificada. É uma tradução com polimento pedagógico a partir do en (não do zh): mesma estrutura de 6 lições, mesmos slugs de lição, mesmos ids de bloco interativo e mesmas posições de resposta correta, citações das fontes mantidas no inglês original, código executável com a lógica intacta e apenas comentários e strings visíveis traduzidos, referências entre cursos apontando para os títulos em português, e uma prosa técnica natural em português, em tom profissional próximo e sem a rigidez de tradução automática.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "O responsável ratificou o plano multilíngue: os seis idiomas no learn.agentmentor.dev, primeiro o inglês (já completo) e depois os demais idiomas como ondas de tradução a partir da base em inglês. A variante em inglês é a fonte de verdade verificada e com a fundamentação corrigida, então nenhum esclarecimento adicional foi necessário."
+  },
+  "learnerModel": {
+    "targetReader": "Uma pessoa desenvolvedora que concluiu os sete primeiros cursos desta série, sabe escrever à mão um loop dirigido por stop_reason e quer controlar o que o modelo vê a cada turno de uma tarefa longa",
+    "knownConcepts": [
+      "Escrever à mão um loop de agente dirigido por stop_reason (curso 7)",
+      "O histórico messages crescendo a cada turno; os blocos tool_result devolvidos juntos",
+      "A janela de contexto como um recurso finito (curso 5)",
+      "Subagentes que partem de um contexto independente e devolvem apenas as conclusões (curso 6)",
+      "Leitura e escrita de JavaScript / Node.js básico"
+    ],
+    "unknownConcepts": [
+      "O context engineering como a progressão natural do prompt engineering",
+      "O orçamento de atenção e o apodrecimento do contexto como uma economia de tokens",
+      "A altitude do system prompt (hardcoding frágil vs orientação vaga vs boas heurísticas)",
+      "Ferramentas e exemplos como contexto; exemplos canônicos em vez de listas enormes de casos extremos",
+      "Pré-carregamento vs recuperação just-in-time; identificadores leves e descoberta progressiva",
+      "Estratégia de compactação: o que precisa sobreviver e o que pode ir embora",
+      "Notas estruturadas (NOTES.md) como estado fora da janela",
+      "Subagentes como técnica de gestão de contexto e sua economia de tokens"
+    ],
+    "assumedEnvironment": "Um ambiente Node.js, acesso ao terminal e um editor de texto; o código do harness do curso 7 disponível para ser estendido",
+    "firstIndependentAction": "Pegar uma das próprias sessões longas de agente e marcar que contexto entrou por pré-carregamento e que contexto entrou por recuperação, e o que deveria ter passado por compactação",
+    "noviceRamp": [
+      "A lição 1 fundamenta a disciplina no orçamento de atenção e no apodrecimento do contexto antes de qualquer técnica",
+      "A lição 2 disseca o que já conta como contexto (altitude do system prompt, ferramentas, exemplos)",
+      "A lição 3 traça a fronteira entre pré-carregamento e just-in-time com identificadores leves",
+      "A lição 4 acrescenta compactação e notas estruturadas para tarefas longas",
+      "A lição 5 reenquadra os subagentes pela economia de contexto, e a lição 6 conecta rastreio de tokens + compactação por limiar + NOTES.md ao harness do curso 7"
+    ]
+  },
+  "learnerBrief": "O leitor-alvo concluiu os sete primeiros cursos, sabe escrever à mão o loop do harness e lê JavaScript. Ainda não sabe como governar o que entra na janela a cada turno. O curso o leva a explicar o context engineering pelo orçamento de atenção e pelo apodrecimento do contexto, corrigir a altitude do system prompt, separar o pré-carregamento da recuperação just-in-time, projetar compactação e notas estruturadas para tarefas longas, raciocinar sobre subagentes em termos de economia de tokens e, por fim, conectar rastreio de tokens, compactação disparada por limiar e um caderno NOTES.md ao harness do curso 7.",
+  "scope": "Coberto: context engineering vs prompt engineering, orçamento de atenção e apodrecimento do contexto, altitude do system prompt, ferramentas e exemplos como contexto, pré-carregamento vs recuperação just-in-time com identificadores leves e descoberta progressiva, estratégia de compactação e notas estruturadas, subagentes como isolamento de contexto e sua economia de tokens, e uma camada prática de gestão de contexto sobre o harness do curso 7. Não coberto: a técnica de escrever prompts (curso 3), a persistência e a recuperação entre sessões (curso 5), os padrões de colaboração multiagente além da lente do contexto (curso 6), e RAG ou bancos de dados vetoriais. Profundidade: do zero até rodar uma tarefa grande demais para uma única janela por meio de uma camada de contexto autogerenciada.",
+  "status": {
+    "stage": "generated",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-context-engineering/pt-BR/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Os diagrams são mantidos exatamente onde a variante em inglês os usa (a anatomia do contexto e o fluxo de compactação), com os rótulos reescritos em português; nenhum foi acrescentado ou removido. O que entra na janela a cada turno é conteúdo espacial que um diagram carrega bem, e o posicionamento em inglês já passou por revisão.",
+    "weakestPoints": [
+      "A S5 (o roadmap comunitário) contém a frase opinativa de que o prompt engineering morreu; o curso a cita apenas como a posição daquela fonte e abre com o enquadramento de progressão natural da S1 — quem lê por alto ainda pode dar peso demais ao slogan",
+      "Os números de tokens (4x/15x, resumos de 1.000-2.000 tokens) são dados relatados pela Anthropic para sistemas específicos, e estão enquadrados como tal, não como constantes",
+      "A implementação de compactação da lição 6 é de nível didático; sistemas em produção devem preferir as APIs nativas de compactação quando disponíveis, o que a lição afirma explicitamente",
+      "Por ser uma tradução da variante em inglês verificada, o risco residual é o desvio idiomático: as citações das fontes foram mantidas verbatim em inglês e o código executável manteve a lógica idêntica, mas a prosa foi vertida para um português natural em vez de traduzida palavra por palavra, então a revisão deve conferir a equivalência de sentido com as lições em inglês"
+    ],
+    "followUpChecks": [
+      "Passada de renderização no learn.agentmentor.dev /pt-BR/context-engineering/... após o deploy: as 6 lições mais o README, com os cards interativos hidratados",
+      "Verificar que cada termo do glossário aparece verbatim nas lições em pt-BR (checagem de attach)",
+      "Verificar que cada âncora [^Sn] das lições em pt-BR tem o bloco ## Sn correspondente no sources.md em pt-BR",
+      "Confirmar que os seis ids de bloco de checagem e as posições de resposta correta são idênticos byte a byte ao inglês (b/a/c/c/a/b na ordem das lições)",
+      "Rodar de novo o JS do capstone (rastreio de usage + compactação por limiar + NOTES.md) e confirmar que a execução da tarefa longa bate com as saídas afirmadas"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "Quem aprende consegue pegar uma tarefa longa que excede uma janela de contexto, dividir o contexto dela entre pré-carregamento e recuperação just-in-time, conectar o rastreio de uso de tokens com compactação disparada por limiar e um caderno NOTES.md a um harness dirigido por stop_reason, e levar a tarefa até o fim explicando o que cada compactação manteve e por quê.",
+    "interactionCheck": "Seis blocos agentmentor-check, um por lição (atenção finita na L1; correção de altitude na L2; trade-off de estratégia na L3; trade-off de compactação na L4; janela limpa na L5; anotar a cada turno na L6), preservados da variante em inglês com ids, modes, número de opções e posições de resposta correta idênticos; label, prompt, whyHere, o texto das opções e o feedback são traduções para o português ajustadas ao mal-entendido próprio de cada lição. Os exercícios mantêm a estrutura de níveis da variante em inglês, com rubric, answer e hints em cada nível.",
+    "learnerFitCheck": "O curso pressupõe os sete cursos anteriores: o loop do harness, a janela finita e o básico de subagentes. A economia do orçamento de atenção, a altitude, a fronteira da recuperação, a compactação e o isolamento são ensinados do zero em ordem de dependência; quem aprende só constrói a camada de contexto completa na lição 6, depois de todos os pré-requisitos. O primeiro exercício da lição 1 pede apenas uma auditoria da própria sessão de quem lê.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "Tradução para o português do Brasil da variante em inglês verificada: estrutura, fundamentação e posições de resposta herdadas do original verificado",
+      "Todos os blocos interativos preservam id, mode, número de opções e resposta correta com paridade byte a byte em relação ao inglês",
+      "Todas as citações das fontes são mantidas no inglês original e conferidas byte a byte com o sources.md",
+      "Referências entre cursos usam os títulos dos cursos em português; o código do capstone manteve a lógica idêntica"
+    ]
+  },
+  "nextSteps": [
+    "Rodar o course-guard na variante em pt-BR e corrigir o que ele apontar",
+    "Fazer o deploy do learn.agentmentor.dev e conferir que as páginas /pt-BR renderizam com os cards interativos hidratados",
+    "Fechar a onda de locales com uma passada de revisão cruzada entre ko, es e pt-BR contra a base em inglês",
+    "Incentivar quem aprende a acoplar rastreio de tokens e compactação a um agente real de execução longa no próprio projeto como projeto de consolidação pós-curso"
+  ],
+  "memoryBoundary": "Este agentmentor.json é um registro de estado local do curso (course-local state record), armazenado apenas no diretório do curso para as checagens de qualidade e o acompanhamento da trilha de aprendizado. Ele nunca é escrito de volta na memória de longo prazo do Claude Code ou de qualquer sistema de IA hospedeiro, e não afeta outros cursos nem outras conversas."
+}
