@@ -1,0 +1,534 @@
+[
+  {
+    "term": "herramienta",
+    "def": "En el contexto de un agente, una herramienta es una capacidad concreta que el modelo puede solicitar durante la conversación; el programa host la registra y la ejecuta, convirtiendo al modelo de algo que solo habla en algo que puede actuar.",
+    "source": "[^S3]",
+    "pitfall": "Suponer que una herramienta es alguna habilidad incorporada del modelo mismo, sin necesidad de trabajo de registro por parte de quien desarrolla.",
+    "distractor_rationale": "Quienes aprenden tienden a equiparar «cosas que el modelo puede hacer» con «las habilidades incorporadas del modelo», y pasan por alto que una herramienta es en realidad un manifiesto externo que el programa host registra en la petición, no una característica nativa del modelo."
+  },
+  {
+    "term": "programa host",
+    "def": "El programa host es el código que realmente recibe la petición de llamada a herramienta del modelo, ejecuta la operación y devuelve el resultado al modelo — por ejemplo, Claude Code, o un script de agente que escribas tú.",
+    "source": "[^S4]",
+    "pitfall": "Suponer que una vez que el modelo devuelve un tool_use, el modelo mismo se conectó o tocó el sistema de archivos para completar la operación.",
+    "distractor_rationale": "«Lo que el modelo dice que quiere hacer es igual a lo que el modelo hizo» es la lectura más intuitiva pero equivocada, fácilmente confundida con la frontera central de que el modelo solo propone y el host ejecuta."
+  },
+  {
+    "term": "search_files",
+    "def": "Un nombre de herramienta de ejemplo usado a lo largo del curso, representando la clase de definiciones concretas de herramienta que «buscan archivos del proyecto según alguna condición».",
+    "source": "[^S3]",
+    "pitfall": "Suponer que un nombre de herramienta puede ser arbitrario y el modelo inferirá su propósito sin una descripción que coincida.",
+    "distractor_rationale": "Quienes aprenden transfieren el hábito de «nomenclatura autoexplicativa» de la programación ordinaria y olvidan que todo lo que el modelo realmente ve son los campos name/description/input_schema en sí."
+  },
+  {
+    "term": "name",
+    "def": "Un campo obligatorio en una definición de herramienta; es el identificador que el modelo escribe cuando elige una herramienta, y debe coincidir exactamente con el nombre dado en el momento de la llamada.",
+    "source": "[^S3]",
+    "pitfall": "Suponer que name es solo una etiqueta de cara a las personas, así que escribirlo vagamente no afectará si la llamada del modelo tiene éxito.",
+    "distractor_rationale": "Se confunde con el hábito de «legibilidad primero» de la nomenclatura de variables ordinaria, y se pasa por alto que name es también la clave de coincidencia exacta entre el modelo y el programa host."
+  },
+  {
+    "term": "description",
+    "def": "Un campo obligatorio en una definición de herramienta; declara en texto plano qué hace la herramienta, cuándo usarla y cómo se comporta, y es la única base legible que tiene el modelo al elegir una herramienta.",
+    "source": "[^S3]",
+    "pitfall": "Suponer que description es principalmente un comentario para quien mantiene el código, que el modelo simplemente lee de paso.",
+    "distractor_rationale": "Este es el concepto erróneo que la Lección 4 corrige explícitamente, pero en el primer contacto con estos tres campos en la Lección 1 es fácil tratar prematuramente description como un comentario de código ordinario."
+  },
+  {
+    "term": "input_schema",
+    "def": "Un campo obligatorio en una definición de herramienta; es un JSON Schema que especifica la forma que deben tomar los parámetros cuando se llama a la herramienta.",
+    "source": "[^S3]",
+    "pitfall": "Suponer que input_schema es solo documentación, así que no importa si el modelo da parámetros que no siguen el formato declarado.",
+    "distractor_rationale": "Quienes aprenden lo equiparan con description y pasan por alto que los tipos y la estructura del esquema son en sí las restricciones con las que deben alinearse los parámetros generados por el modelo."
+  },
+  {
+    "term": "client tools",
+    "def": "Herramientas que la aplicación host es responsable de ejecutar ella misma; el modelo solo genera la petición de llamada, mientras que el código de ejecución real corre del lado del host.",
+    "source": "[^S2]",
+    "pitfall": "Suponer que todas las herramientas se ejecutan uniformemente en los servidores de Anthropic, así que la aplicación host no necesita escribir ninguna lógica de ejecución propia.",
+    "distractor_rationale": "Es fácil leer mal «el modelo proporciona la capacidad de llamada a herramientas» como «el proveedor también ejecuta las herramientas por ti», confundiendo qué lado ejecuta realmente las client tools frente a las server tools."
+  },
+  {
+    "term": "server tools",
+    "def": "Herramientas que los servidores de Anthropic ejecutan en tu nombre, a diferencia de las client tools cuya lógica de ejecución debe implementar la aplicación host.",
+    "source": "[^S2]",
+    "pitfall": "Suponer que las server tools y las client tools se diferencian en si el modelo mismo es capaz de ejecutarlas.",
+    "distractor_rationale": "La única diferencia es quién ejecuta este paso, no la frontera de capacidad del modelo, pero quienes aprenden tienden a leer «server tools» literalmente como algún tipo más fuerte que el modelo ejecuta por su cuenta."
+  },
+  {
+    "term": "datos estructurados",
+    "def": "La petición de llamada a herramienta del modelo vuelve como un fragmento de datos estructurados (no una instrucción en lenguaje natural), llevando el nombre de la herramienta y los parámetros para que el programa host los analice y ejecute.",
+    "source": "[^S4]",
+    "pitfall": "Suponer que la petición de llamada del modelo es una descripción en lenguaje natural que necesita análisis manual, en lugar de un objeto cuyos campos el código puede leer directamente.",
+    "distractor_rationale": "La imagen por defecto que tienen quienes aprenden de «salida del modelo» es texto, así que pasan por alto que la parte de llamada a herramienta de esa salida tiene una estructura de campos estricta que el código puede consumir directamente."
+  },
+  {
+    "term": "required",
+    "def": "Un campo en JSON Schema que enumera los nombres de parámetros que una llamada a herramienta debe proporcionar; una llamada sin esos parámetros se trata como entrada inválida.",
+    "source": "[^S3]",
+    "pitfall": "Suponer que required es solo una sugerencia para que el modelo intente rellenar esos parámetros, y que la herramienta aún puede ejecutarse sin ellos.",
+    "distractor_rationale": "Se agrupa fácilmente con campos descriptivos como description, y se pasa por alto que required, como enum, es una restricción sobre la que puede rechazarse una validación real."
+  },
+  {
+    "term": "Claude Code",
+    "def": "El ejemplo concreto del curso del concepto de «programa host» — en sí mismo un producto de agente que solicita llamadas a muchas herramientas (leer archivos, buscar código, ejecutar comandos, etc.).",
+    "source": "[^S6]",
+    "pitfall": "Suponer que Claude Code es solo una interfaz de chat sin llamadas a herramientas ni operaciones de sistema de archivos detrás.",
+    "distractor_rationale": "La imagen previa que tienen quienes aprenden de una «herramienta de chat con IA» les hace subestimar cuánto Claude Code realmente lee y escribe archivos y ejecuta comandos."
+  },
+  {
+    "term": "tools",
+    "def": "Un campo llevado en la petición enviada al modelo; es un manifiesto de herramientas que enumera cuáles puede solicitar el modelo en esta conversación y qué parámetros necesita cada una.",
+    "source": "[^S3]",
+    "pitfall": "Suponer que el manifiesto de herramientas solo necesita enviarse en el primer turno y el modelo lo recordará en turnos posteriores.",
+    "distractor_rationale": "Quienes aprenden transfieren el hábito de «establecer el prompt de sistema una vez» y pasan por alto que el campo tools, como messages, tiene que reenviarse con cada petición."
+  },
+  {
+    "term": "stop_reason",
+    "def": "Un campo en la respuesta del modelo que explica por qué el modelo dejó de hablar esta vez — los valores incluyen tool_use, end_turn y otros — y es solo una señal, no un registro de ejecución.",
+    "source": "[^S2]",
+    "pitfall": "Suponer que ver stop_reason como tool_use significa que la herramienta correspondiente ya terminó de ejecutarse.",
+    "distractor_rationale": "Esta es la lectura errónea más común entre principiantes, porque «paró para usar una herramienta» se lee fácilmente como «la herramienta ya se usó» en lugar de «el modelo está solicitando usar una herramienta»."
+  },
+  {
+    "term": "tool_result",
+    "def": "Un tipo de bloque de contenido en el mensaje devuelto al modelo; lleva el resultado terminado de una ejecución de herramienta y coincide con su bloque tool_use correspondiente a través de tool_use_id.",
+    "source": "[^S5]",
+    "pitfall": "Suponer que puedes dividir los resultados de varias herramientas entre varias peticiones separadas y enviarlas de vuelta una a la vez.",
+    "distractor_rationale": "Quienes aprenden transfieren la intuición de «manejar una cosa a la vez» y pasan por alto que el protocolo requiere que cada bloque tool_use de un turno se reclame junto en el mismo mensaje nuevo."
+  },
+  {
+    "term": "tool_use_id",
+    "def": "Un campo en un bloque tool_result que debe coincidir exactamente con el id de su bloque tool_use correspondiente; el modelo lo usa para emparejar cada resultado con su petición.",
+    "source": "[^S5]",
+    "pitfall": "Suponer que tool_use_id puede rellenarse con el nombre de la herramienta, siempre que indique aproximadamente de qué herramienta se trataba.",
+    "distractor_rationale": "Principiantes confunden «identificar esta llamada» con «identificar esta herramienta», suponiendo erróneamente que el nombre de la herramienta logra el mismo efecto de emparejamiento."
+  },
+  {
+    "term": "is_error",
+    "def": "Un campo opcional en un bloque tool_result que marca si esta ejecución de herramienta en sí falló; establecido en true, le dice al modelo que esta llamada tuvo un problema.",
+    "source": "[^S5]",
+    "pitfall": "Suponer que is_error es un interruptor de revisión de seguridad que señala si el contenido es una instrucción confiable.",
+    "distractor_rationale": "El nombre del campo evoca moderación de contenido, pero su papel real se limita a señalar fallo de ejecución y no tiene nada que ver con confianza de contenido — un concepto erróneo que la Lección 5 corrige explícitamente."
+  },
+  {
+    "term": "finish_reason",
+    "def": "El nombre de campo que corresponde a stop_reason en APIs compatibles con OpenAI; el valor tool_calls significa que el modelo está solicitando una llamada a herramienta.",
+    "source": "[^S7]",
+    "pitfall": "Suponer que las APIs de diferentes proveedores son completamente incompatibles en nomenclatura de campos y estructura de ida y vuelta, requiriendo un modelo mental completamente diferente.",
+    "distractor_rationale": "Al ver nombres de campo diferentes, quienes aprenden asumen que el mecanismo subyacente difiere, cuando el esqueleto — el modelo solo solicita, el host ejecuta, el resultado vuelve con un identificador — es universal, solo reempaquetado."
+  },
+  {
+    "term": "messages",
+    "def": "El campo de array en la petición que lleva el historial de conversación; la respuesta de cada turno debe añadirse literalmente, incluyendo la respuesta tool_use del modelo y el tool_result siguiente.",
+    "source": "[^S4]",
+    "pitfall": "Suponer que solo necesitas enviar el tool_result de vuelta, sin también añadir la respuesta tool_use completa del modelo del turno anterior en messages.",
+    "distractor_rationale": "Este es el paso que más fácilmente se deja caer en una implementación de ida y vuelta, porque «solo quiero enviar el resultado de vuelta» hace fácil olvidar que el modelo necesita ver su propia petición en el registro para mantener coherente el contexto."
+  },
+  {
+    "term": "end_turn",
+    "def": "Un valor de stop_reason que significa que el modelo ha terminado de hablar para este turno, no necesita más llamadas a herramientas, y su contenido puede entregarse al usuario.",
+    "source": "[^S2]",
+    "pitfall": "Suponer que mientras el modelo devolvió algún contenido de texto, stop_reason debe ser end_turn.",
+    "distractor_rationale": "Quienes aprenden pasan por alto que el contenido de una respuesta puede tener tanto bloques de texto como bloques tool_use, y que la prueba real de «¿está terminada la tarea?» es stop_reason, no si hay texto en content."
+  },
+  {
+    "term": "bloque tool_use",
+    "def": "El tipo de bloque de contenido en el array content de respuesta del modelo que representa una petición de llamada a herramienta; está completo solo cuando lleva los tres campos id, name e input.",
+    "source": "[^S5]",
+    "pitfall": "Suponer que una respuesta tiene como máximo un bloque tool_use, así que no hay necesidad de iterar sobre múltiples llamadas paralelas.",
+    "distractor_rationale": "La mayoría de los ejemplos introductorios muestran solo una llamada a herramienta, facilitando pasar por alto que el modelo puede solicitar varias herramientas en paralelo en una respuesta; y como estos tres campos son todo lo que el modelo puede expresar, lógica de control como conteos de reintentos no está incorporada en el protocolo y debe implementarse en el código del host."
+  },
+  {
+    "term": "ida y vuelta",
+    "def": "El ciclo completo de una llamada a herramienta: el modelo emite una petición, el host la ejecuta, el resultado se envía de vuelta, y el modelo produce su siguiente respuesta.",
+    "source": "[^S4]",
+    "pitfall": "Suponer que una petición de usuario desencadena solo una ida y vuelta, con exactamente un turno entre la llamada a herramienta y la respuesta final.",
+    "distractor_rationale": "Los ejemplos introductorios suelen mostrar un escenario que termina después de una sola ida y vuelta, facilitando pasar por alto que las tareas reales a menudo necesitan varias idas y vueltas consecutivas para reunir suficiente información."
+  },
+  {
+    "term": "bucle",
+    "def": "La forma del lado del host de manejar llamadas a herramientas de múltiples turnos: mientras stop_reason siga siendo tool_use, sigue ejecutando herramientas, enviando resultados de vuelta y solicitando de nuevo, hasta que se convierta en end_turn.",
+    "source": "[^S4]",
+    "pitfall": "Suponer que este bucle tiene un límite de iteración fijo impuesto por el protocolo, así que no necesitas establecer tu propia condición de terminación en el código.",
+    "distractor_rationale": "El curso solo dice que el bucle no tiene un límite de iteración fijo, lo cual se invierte fácilmente a «el protocolo gestiona turnos automáticamente», cuando de hecho evitar un bucle infinito es responsabilidad del propio código del host (la Lección 6 cubre la válvula de seguridad MAX_TURNS)."
+  },
+  {
+    "term": "dependencia de datos",
+    "def": "Dentro de un lote de llamadas a herramientas paralelas, cuando el parámetro de una llamada debería en teoría igualar el valor de retorno de otra llamada — un valor que aún no existe en el momento en que se genera el lote.",
+    "source": "[^S21]",
+    "pitfall": "Suponer que dos herramientas siempre son seguras de ejecutar en paralelo en una respuesta mientras sean funciones diferentes con nombres diferentes.",
+    "distractor_rationale": "Quienes aprenden juzgan la paralelizabilidad por «¿son las herramientas iguales?», cuando la prueba real es si la entrada de una llamada depende de un resultado que el mismo lote aún no ha producido."
+  },
+  {
+    "term": "disable_parallel_tool_use",
+    "def": "Una configuración en el objeto tool_choice de la petición; establecida en true, el modelo llama como máximo una herramienta por respuesta, usado para ajustar el comportamiento cuando las dependencias de llamadas paralelas aún no están resueltas.",
+    "source": "[^S21]",
+    "pitfall": "Suponer que este interruptor es para optimización de rendimiento, y que activarlo hace que las herramientas se ejecuten más rápido.",
+    "distractor_rationale": "Desactiva la capacidad del modelo de emitir múltiples llamadas en una respuesta, lo cual en realidad aumenta el número de idas y vueltas; su valor está en la seguridad — forzar una a la vez evita paralelismo inseguro como una escritura que depende de una lectura del mismo lote."
+  },
+  {
+    "term": "radio de impacto",
+    "def": "El rango de daño que una llamada a herramienta puede causar cuando sale mal; es el criterio central para clasificar las cinco categorías de herramientas.",
+    "source": "[^S16]",
+    "pitfall": "Suponer que radio de impacto es una sensación subjetiva de si una herramienta «suena peligrosa», en lugar de una cuestión de si su entrada está delimitada por un esquema.",
+    "distractor_rationale": "Quienes aprenden juzgan el peligro por intuición (sintiendo que leer archivos y ejecutar comandos ambos «tocan el sistema»), pasando por alto que la diferencia real es si los parámetros están estructuralmente restringidos en lo que pueden hacer."
+  },
+  {
+    "term": "read_file",
+    "def": "El nombre de ejemplo del curso para la categoría de herramienta de lectura; su parámetro típico es una ruta de archivo, y devuelve el contenido del archivo.",
+    "source": "[^S6]",
+    "pitfall": "Suponer que una herramienta de lectura de archivos no conlleva ningún riesgo, porque no cambia ningún estado.",
+    "distractor_rationale": "El curso enfatiza «más segura no significa riesgo cero», lo cual se simplifica fácilmente a «solo lectura equivale a ningún riesgo», pasando por alto que leer un archivo que no debería (un archivo de secretos) es en sí una filtración."
+  },
+  {
+    "term": "write_file",
+    "def": "El nombre de ejemplo del curso para la categoría de herramienta de escritura; sus parámetros típicos son una ruta y contenido, y una vez que se ejecuta sobrescribe el archivo original y usualmente no puede deshacerse.",
+    "source": "[^S6]",
+    "pitfall": "Suponer que una herramienta de escritura de archivos conlleva aproximadamente el mismo riesgo de llamada que una herramienta de lectura de archivos, ya que sus formas de parámetros son casi idénticas.",
+    "distractor_rationale": "Las dos firmas realmente son similares (ambas ruta más parámetros), y esa similitud superficial oculta la diferencia central de «¿puede reintentarse con seguridad?» — la asimetría de consecuencias que el curso enfatiza."
+  },
+  {
+    "term": "bash",
+    "def": "El nombre de ejemplo del curso para la categoría de herramienta de ejecución; su parámetro es una cadena de comando abierta que puede ejecutar cualquier comando de shell.",
+    "source": "[^S16]",
+    "pitfall": "Suponer que una herramienta de ejecución de comandos es solo una herramienta de lectura/escritura «un poco más arriesgada» que puede restringirse con las mismas reglas de permisos.",
+    "distractor_rationale": "Quienes aprenden leen la diferencia de riesgo como un aumento gradual en lugar del salto de orden de magnitud que el curso enfatiza — un parámetro command no está delimitado por estructura de esquema, así que su frontera de capacidad equivale a todo el sistema operativo."
+  },
+  {
+    "term": "search_code",
+    "def": "El nombre de ejemplo del curso para la categoría de herramienta de búsqueda; sus parámetros típicos incluyen pattern y max_results, y devuelve una lista de ubicaciones de coincidencias en lugar de contenidos de archivos completos.",
+    "source": "[^S9]",
+    "pitfall": "Suponer que una herramienta de búsqueda debería devolver contenido tan completo y exhaustivo como sea posible, ya que eso es más «útil» para el modelo.",
+    "distractor_rationale": "Intuitivamente más información parece mejor, pasando por alto que devolver demasiado hace estallar el contexto; una herramienta de búsqueda está destinada a estrechar el rango, no volcar todo lo posiblemente relevante de una vez."
+  },
+  {
+    "term": "send_slack_message",
+    "def": "El nombre de ejemplo del curso para la categoría de herramienta de llamada a API externa; sus parámetros típicos son un canal y texto, y llamarla cruza la red hacia un servicio que no controlas.",
+    "source": "[^S19]",
+    "pitfall": "Suponer que los fallos de API externa son situaciones excepcionales que un diseño de herramienta no necesita manejar especialmente.",
+    "distractor_rationale": "El curso declara llanamente que «fallar es la norma, no la excepción»; quienes aprenden imaginan APIs externas como llamadas a funciones locales y pasan por alto que límites de tasa, tiempos de espera y rechazos de permisos son ocurrencias cotidianas para esta categoría."
+  },
+  {
+    "term": "command",
+    "def": "El campo de parámetro central de una herramienta de categoría de ejecución (como bash); es esencialmente un script de shell abierto cuya capacidad no está delimitada por estructura de esquema.",
+    "source": "[^S16]",
+    "pitfall": "Suponer que añadir una descripción detallada al parámetro command diciendo «qué tipo de comandos deberían ejecutarse» restringirá al modelo de operaciones peligrosas.",
+    "distractor_rationale": "Una descripción es solo texto explicativo sin poder de ejecución, fácilmente confundido con tener el efecto restrictivo de enum o required."
+  },
+  {
+    "term": "max_results",
+    "def": "Un parámetro común en herramientas de categoría de búsqueda; limita cuántas coincidencias vuelven en una llamada, evitando una sobrecarga de resultados que haga estallar el contexto.",
+    "source": "[^S9]",
+    "pitfall": "Suponer que no establecer límite y dejar que la búsqueda devuelva cada coincidencia ayuda al modelo a captar información más completa.",
+    "distractor_rationale": "Quienes aprenden pasan por alto que el espacio de contexto es un recurso finito; más coincidencias no significa que el modelo las use mejor, y en cambio desplazan su espacio de razonamiento."
+  },
+  {
+    "term": "asimetría entre herramientas de lectura y herramientas de escritura",
+    "def": "Las herramientas de lectura y escritura tienen formas de llamada similares, pero una lectura equivocada puede simplemente leerse de nuevo mientras que una escritura equivocada a menudo no puede deshacerse — sus consecuencias de riesgo no son equivalentes.",
+    "source": "[^S6]",
+    "pitfall": "Suponer que las herramientas de lectura y escritura deberían llevar el mismo nivel de riesgo, ya que sus estructuras de parámetros (una ruta más contenido) son casi idénticas.",
+    "distractor_rationale": "Este es exactamente el concepto erróneo central que el curso corrige — las firmas similares facilitan pasar por alto «¿puede reintentarse con seguridad?», el criterio real que decide el nivel de riesgo."
+  },
+  {
+    "term": "retry_after",
+    "def": "Un campo que una herramienta de API externa puede devolver en fallo, diciéndole al modelo cuánto tiempo esperar antes de reintentar — un ejemplo concreto de «la información de fallo debería llevar pistas accionables».",
+    "source": "[^S11]",
+    "pitfall": "Suponer que un fallo de API externa solo necesita devolver «la llamada falló», dejando la estrategia de reintento completamente al modelo.",
+    "distractor_rationale": "El curso enfatiza que los valores de retorno de fallo deben dar al modelo pistas accionables, fácilmente leído mal como que el detalle de error es adorno opcional en lugar de la información sobre la que el modelo realmente decide."
+  },
+  {
+    "term": "total_matches",
+    "def": "Un campo en el resultado devuelto de la herramienta search_code dando el número total de coincidencias, permitiendo al modelo juzgar si los resultados están completos o si la búsqueda debería estrecharse.",
+    "source": "[^S9]",
+    "pitfall": "Suponer que una herramienta de búsqueda solo necesita devolver la lista de coincidencias, sin decirle al modelo cuántas coincidencias totales hubo.",
+    "distractor_rationale": "Quienes aprenden pasan por alto que «¿son estos resultados devueltos todos ellos?» es en sí información clave que el modelo usa para decidir si seguir buscando."
+  },
+  {
+    "term": "code_search_grep",
+    "def": "El nombre de herramienta de búsqueda reescrito en el ejemplo de comparación del curso; su descripción declara claramente que busca por contenido y nombra code_search_glob como la herramienta a usar para encontrar archivos por nombre.",
+    "source": "[^S8]",
+    "pitfall": "Suponer que mientras un nombre de herramienta parezca inglés plausible, el modelo puede inferir su modo de búsqueda (por contenido o por nombre de archivo) por su cuenta.",
+    "distractor_rationale": "Quienes aprenden sobrestiman cuánto transmite el nombre mismo, cuando el curso usa este ejemplo precisamente para mostrar que lo que funciona es la orientación de «cuándo usar, cuándo no» en la descripción, no el nombre."
+  },
+  {
+    "term": "code_search_glob",
+    "def": "La herramienta de búsqueda de nombres de archivo emparejada con code_search_grep; el curso la usa para mostrar que nombrar la herramienta alternativa en una descripción reduce marcadamente las probabilidades del modelo de elegir la herramienta equivocada.",
+    "source": "[^S8]",
+    "pitfall": "Suponer que dos herramientas similares están bien mientras cada descripción declare claramente qué hace esa herramienta, sin nombrar la otra como alternativa.",
+    "distractor_rationale": "El ejemplo del curso muestra que describir la función propia de cada herramienta no es suficiente; lo que realmente dirige bien al modelo es decir explícitamente en la descripción «para este caso, usa la otra herramienta en su lugar»."
+  },
+  {
+    "term": "enum",
+    "def": "Una palabra clave de JSON Schema que estrecha el valor de un parámetro a uno de un conjunto enumerado de opciones; es una restricción real que rechaza entrada inválida, no solo una nota.",
+    "source": "[^S14]",
+    "pitfall": "Suponer que escribir una descripción detallada diciendo «qué valores pasar» tiene el mismo efecto que restringir con enum.",
+    "distractor_rationale": "Este es el concepto erróneo central que la lección corrige: una descripción solo expresa intención y no rechaza nada, mientras que solo campos como enum y required llevan poder de ejecución."
+  },
+  {
+    "term": "additionalProperties: false",
+    "def": "Una configuración de input_schema de nivel superior que requiere que el objeto de entrada lleve solo claves declaradas en properties, cerrando la brecha donde el modelo inventa campos extra que se deslizan al código aguas abajo.",
+    "source": "[^S20]",
+    "pitfall": "Suponer que el modelo no pasará campos que el esquema no declaró, así que es lo mismo si añades o no additionalProperties: false.",
+    "distractor_rationale": "El comportamiento por defecto de JSON Schema estándar es precisamente permitir claves extra no declaradas, así que un campo alucinado por el modelo (como skip_review: true) pasa directamente a la implementación de herramienta — el ejemplo mismo que el curso usa para mostrar por qué se necesita esta configuración."
+  },
+  {
+    "term": "modo strict",
+    "def": "Con strict: true establecido en una definición de herramienta, la plataforma restringe el muestreo del modelo para que la entrada generada coincida estrictamente con input_schema, y los parámetros inválidos nunca se generan en primer lugar.",
+    "source": "[^S20]",
+    "pitfall": "Suponer que solo escribir enum y required en el esquema hace que la plataforma intercepte llamadas que violan el esquema en el modo por defecto.",
+    "distractor_rationale": "En modo por defecto la API no valida los parámetros producidos por el modelo, así que desajustes de tipo o campos required caídos aún pueden ocurrir; solo con modo strict activado se cumple verdaderamente que «los valores inválidos se descartan antes de que se envíe la petición»."
+  },
+  {
+    "term": "namespacing",
+    "def": "La práctica de prefijar nombres de herramientas con el servicio (como github_, slack_), para que a medida que las herramientas crecen el modelo pueda primero descartar opciones irrelevantes por prefijo.",
+    "source": "[^S10]",
+    "pitfall": "Suponer que una vez que las herramientas abarcan múltiples servicios externos, una descripción lo suficientemente detallada en cada herramienta elimina cualquier necesidad de distinguirlas por nombre.",
+    "distractor_rationale": "Quienes aprenden reducen «elegir la herramienta correcta» completamente a la descripción, pasando por alto que un prefijo de nombre puede estrechar el campo antes de que el modelo compare descripciones una por una."
+  },
+  {
+    "term": "github_list_prs",
+    "def": "El ejemplo del curso de un nombre de herramienta con espacio de nombres; el prefijo github_ marca la herramienta como perteneciente al servicio GitHub, ayudando al modelo a distinguirla de operaciones con el mismo nombre en otros servicios.",
+    "source": "[^S10]",
+    "pitfall": "Suponer que un nombre conciso como list_prs ya es lo suficientemente claro, sin necesidad de un prefijo declarando a qué servicio pertenece.",
+    "distractor_rationale": "Con solo un servicio conectado tal nombre realmente es suficiente, pero quienes aprenden pasan por alto que una vez que la caja de herramientas abarca múltiples servicios, nombres sin prefijo chocan entre sí."
+  },
+  {
+    "term": "slack_send_message",
+    "def": "Otro de los ejemplos del curso de nombres de herramientas con espacio de nombres; el prefijo slack_ la marca como perteneciente al servicio Slack, distinguiéndola de otras herramientas de envío de mensajes.",
+    "source": "[^S10]",
+    "pitfall": "Suponer que todas las operaciones de «enviar» pueden compartir el nombre send_message, confiando solo en la descripción para distinguir a qué plataforma envía.",
+    "distractor_rationale": "Quienes aprenden subestiman el coste de selección de colisiones de nombres a medida que crece el recuento de herramientas, cuando un prefijo de espacio de nombres descarta la mayoría de opciones irrelevantes antes de que el modelo siquiera lea las descripciones."
+  },
+  {
+    "term": "title",
+    "def": "Un campo descriptivo en JSON Schema usado para dar a un parámetro un título legible; como description, solo explica y no impone ninguna restricción de ejecución.",
+    "source": "[^S14]",
+    "pitfall": "Suponer que title, como enum y required, es un campo restrictivo que realmente valida el valor de un parámetro.",
+    "distractor_rationale": "title aparece en el mismo esquema junto con description, enum y required, facilitando agruparlos todos como restricciones y pasar por alto que solo los dos últimos ejecutan algo."
+  },
+  {
+    "term": "MCP",
+    "def": "Un protocolo que define cómo interactúan clientes y servicios de herramientas; el curso cita su requisito explícito de que los mensajes de error sean expuestos al modelo para que pueda autocorregirse.",
+    "source": "[^S11]",
+    "pitfall": "Suponer que MCP es meramente un protocolo de transporte de herramientas, no relacionado con una cuestión de nivel de diseño como cómo deberían escribirse los mensajes de error.",
+    "distractor_rationale": "Quienes aprenden tienden a leer un protocolo como una especificación de formato puramente técnica, pasando por alto que la especificación MCP misma establece requisitos explícitos para calidad de interacción como retroalimentación de error."
+  },
+  {
+    "term": "55K tokens",
+    "def": "Una cifra de ejemplo del equipo de ingeniería de Anthropic: las definiciones de 58 herramientas pueden ocupar aproximadamente 55K tokens de contexto, ilustrando el impacto real del recuento de herramientas en la sobrecarga de contexto.",
+    "source": "[^S9]",
+    "pitfall": "Suponer que el contexto ocupado por definiciones de herramientas es insignificante y solo la longitud del cuerpo de conversación merece preocupación.",
+    "distractor_rationale": "Las definiciones de herramientas usualmente no aparecen en la conversación visible, así que quienes aprenden las tratan como un coste invisible que no necesita contarse, cuando consumen grandes cantidades de contexto antes de que la conversación siquiera comience."
+  },
+  {
+    "term": "134K tokens",
+    "def": "Un ejemplo más extremo que el curso cita, mostrando que a medida que el recuento de herramientas sigue creciendo, el contexto consumido solo por definiciones de herramientas puede inflarse a una escala muy significativa.",
+    "source": "[^S9]",
+    "pitfall": "Suponer que añadir interminablemente más herramientas a un agente le permite manejar más tipos de tareas sin compensación que sopesar.",
+    "distractor_rationale": "«Más herramientas significa más capacidad» es pensamiento aditivo intuitivo, fácilmente pasando por alto los dos costes reales — las definiciones de herramientas consumen contexto, y más herramientas similares elevan las probabilidades de que el modelo elija mal."
+  },
+  {
+    "term": "file_type",
+    "def": "Un campo de parámetro de ejemplo que el curso usa para mostrar que una descripción no es una restricción; con solo una descripción el modelo puede rellenarlo arbitrariamente, y solo enum realmente lo estrecha.",
+    "source": "[^S14]",
+    "pitfall": "Suponer que una descripción clara como «limita la búsqueda a un tipo de archivo, p. ej. typescript» hace que el modelo pase un valor consistentemente formateado.",
+    "distractor_rationale": "El curso demuestra explícitamente que con solo una descripción el modelo puede pasar typescript, ts, o una oración completa, fácilmente engañando a quienes aprenden a pensar que texto detallado por sí solo restringe algo."
+  },
+  {
+    "term": "granularidad",
+    "def": "Qué finamente se dividen las responsabilidades de una herramienta; el curso enfatiza que la granularidad no es ni mejor gruesa ni mejor fina — divide por función primero, luego controla probabilidades de elección equivocada con espacios de nombres y descripciones.",
+    "source": "[^S8]",
+    "pitfall": "Suponer que fusionar varias operaciones relacionadas en una herramienta que lo hace todo, distinguiendo comportamiento por un parámetro action, es una buena forma de controlar el recuento de herramientas.",
+    "distractor_rationale": "Parece reducir el recuento de herramientas y sobrecarga de tokens, pero el curso nota que el modelo debe primero adivinar el valor correcto de action y luego los parámetros, haciéndolo más propenso a errores que dividir en herramientas de responsabilidad única."
+  },
+  {
+    "term": "inyección de prompt",
+    "def": "Un ataque donde se esconden instrucciones en contenido que el agente eventualmente leerá (un issue, una página web), para que el agente confunda ese texto con una nueva instrucción que debe obedecer.",
+    "source": "[^S19]",
+    "pitfall": "Suponer que la inyección de prompt requiere que el atacante hable directamente con el agente, y no involucra contenido de terceros que el agente lee.",
+    "distractor_rationale": "Quienes aprenden asemejan «inyección» a un ataque que necesita interacción directa, pasando por alto el punto clave del curso — leer contenido y recibir instrucciones viajan por el mismo canal, así que el atacante nunca tiene que hablar con el agente."
+  },
+  {
+    "term": "allow",
+    "def": "Uno de los tres niveles de regla de permisos; se aplica a operaciones de solo lectura, sin efectos secundarios, que pueden repetirse sin dejar rastro, y es auto-aprobado sin confirmación humana.",
+    "source": "[^S15]",
+    "pitfall": "Suponer que una herramienta debería ponerse en el nivel allow solo porque su nombre suena «gentil» (digamos, comenzando con read).",
+    "distractor_rationale": "El curso enfatiza que el criterio de niveles es la consecuencia real de la acción (reversibilidad, radio de impacto), no el nombre de la herramienta o impresión superficial; una herramienta nombrada gentilmente aún puede necesitar límites extra para leer archivos sensibles."
+  },
+  {
+    "term": "ask",
+    "def": "Uno de los tres niveles de regla de permisos; se aplica a operaciones con efectos secundarios que son reversibles y cuyo radio de impacto permanece dentro del repositorio local, y requiere confirmación humana antes de ejecutarse.",
+    "source": "[^S15]",
+    "pitfall": "Suponer que cada operación de «escritura» debería denegarse rotundamente, sin distinguir si es reversible o de alcance local.",
+    "distractor_rationale": "Quienes aprenden equiparan «tiene efectos secundarios» con «alto riesgo, debe prohibirse», pasando por alto el estándar de calificación del curso de que operaciones locales reversibles usan ask en lugar de una prohibición total."
+  },
+  {
+    "term": "deny",
+    "def": "Uno de los tres niveles de regla de permisos; se aplica a operaciones irreversibles o cuyo radio de impacto alcanza más allá de local, rechazando ejecución, y se evalúa antes de ask y allow.",
+    "source": "[^S15]",
+    "pitfall": "Suponer que cuando deny, ask y allow entran en conflicto, la regla escrita más específicamente gana independientemente de su nivel.",
+    "distractor_rationale": "El curso declara que el orden de evaluación está fijado como deny, luego ask, luego allow — la primera coincidencia gana, no afectada por qué tan específica es una regla — lo cual quienes aprenden con experiencia en programación fácilmente generalizan mal como «reglas más específicas toman precedencia»."
+  },
+  {
+    "term": "Read(./.env)",
+    "def": "Un ejemplo de regla de permisos concreto del curso, poniendo la operación de leer el archivo .env directamente en la lista deny para mantener contenido secreto fuera del contexto de conversación.",
+    "source": "[^S15]",
+    "pitfall": "Suponer que la protección de archivo sensible debería depender de que el agente juzgue después de leer si pegarlo, en lugar de bloquear la lectura en la capa de permisos.",
+    "distractor_rationale": "El curso declara llanamente que esta ruta debería cortarse en la capa de permisos en lugar de dejarse a la auto-restricción post-ejecución del modelo, la cual quienes aprenden tienden a confiar excesivamente."
+  },
+  {
+    "term": "Bash(git push:*)",
+    "def": "Un ejemplo de regla de permisos del curso; la forma Tool(especificador) mapea directamente al nombre de herramienta exacto y alcance de llamada que el host expone al modelo.",
+    "source": "[^S15]",
+    "pitfall": "Suponer que las cadenas en una regla de permisos son etiquetas personalizadas arbitrarias sin correspondencia directa con los nombres de herramientas realmente expuestos al modelo.",
+    "distractor_rationale": "Quienes aprenden tratan la configuración de permisos como una capa de abstracción separada, pasando por alto el punto del curso de que los Read, Write y Bash en estas reglas son los nombres de herramientas exactos que la aplicación host expone al modelo."
+  },
+  {
+    "term": "agencia excesiva",
+    "def": "La categoría de riesgo de OWASP para una acción dañina siendo desencadenada por una salida de modelo inesperada, ambigua o manipulada que nunca debería haber ocurrido.",
+    "source": "[^S18]",
+    "pitfall": "Suponer que agencia excesiva se refiere solo a «los permisos del agente siendo establecidos demasiado holgadamente», en lugar de una categoría compuesta de varias causas raíz distintas.",
+    "distractor_rationale": "El nombre invita a leerlo literalmente como solo «demasiados permisos», pasando por alto que las tres causas raíz distintas que el curso expone también incluyen funcionalidad excesiva y autonomía excesiva."
+  },
+  {
+    "term": "Funcionalidad excesiva",
+    "def": "Una causa raíz de agencia excesiva: una sola herramienta lleva muchos sombreros (digamos, puede tanto leer la bandeja de entrada como enviar correo), así que una mala llamada tiene su radio de impacto magnificado.",
+    "source": "[^S18]",
+    "pitfall": "Suponer que establecer un nivel de permisos estricto en una herramienta poderosa es suficiente para compensar el riesgo de que esa herramienta haga muchos trabajos.",
+    "distractor_rationale": "El curso nota que esta es una de tres causas raíz independientes; incluso con el nivel de permisos correcto, una herramienta con demasiadas responsabilidades aún magnifica el daño de un solo mal juicio, y las dos deben manejarse por separado."
+  },
+  {
+    "term": "Permisos excesivos",
+    "def": "Una causa raíz de agencia excesiva: la herramienta misma hace una cosa, pero el acceso que se le concede va más allá de lo que la tarea realmente necesita.",
+    "source": "[^S18]",
+    "pitfall": "Suponer que una herramienta con un diseño de función única y clara no conlleva riesgo relacionado con permisos.",
+    "distractor_rationale": "El curso usa send_email para mostrar que incluso una herramienta de responsabilidad única (solo enviando una confirmación) aún plantea riesgo si se le concede la capacidad de leer la bandeja de entrada completa y enviar a cualquier dirección — una causa raíz independiente de funcionalidad excesiva."
+  },
+  {
+    "term": "Autonomía excesiva",
+    "def": "Una causa raíz de agencia excesiva: un agente ejecuta muchos pasos seguidos sin comprobación humana en el medio, así que para cuando se nota un problema una acción irreversible puede ya haberse ejecutado.",
+    "source": "[^S18]",
+    "pitfall": "Suponer que mientras cada herramienta sea segura en aislamiento, encadenarlas en una ejecución autónoma larga no conlleva riesgo extra.",
+    "distractor_rationale": "Quienes aprenden evalúan riesgo solo a nivel de llamada única, pasando por alto que esta causa raíz apunta específicamente al riesgo acumulativo de «muchos pasos seguidos sin nadie mirando», independiente de si alguna herramienta única es segura."
+  },
+  {
+    "term": "trifecta letal",
+    "def": "La combinación de riesgo formada cuando acceso a datos privados, exposición a contenido no confiable y capacidad de comunicarse externamente están todos presentes a la vez, dando a la inyección de prompt una ruta para sacar datos.",
+    "source": "[^S19]",
+    "pitfall": "Suponer que mientras el agente no toque contenido no confiable (digamos, no lee issues externos o páginas web), esta combinación de riesgo se evita.",
+    "distractor_rationale": "Las tres condiciones juntas forman la ruta de ataque completa; quienes aprenden tienden a fijarse en un eslabón, o suponer erróneamente que «ninguna acción de envío directa significa ninguna filtración» — la defensa es no dejar que las tres capacidades cuelguen de un agente, o añadir una comprobación humana en comunicación externa."
+  },
+  {
+    "term": "humano en el bucle",
+    "def": "Una de las mitigaciones de OWASP para agencia excesiva: acciones de alto impacto deben ser aprobadas por una persona antes de tomarse.",
+    "source": "[^S18]",
+    "pitfall": "Suponer que la comprobación human-in-the-loop debería situarse después de que la acción se haya ejecutado, para revisión y remediación post-facto.",
+    "distractor_rationale": "El curso declara que la pausa debe venir antes de que la acción se vuelva irreversible, no después; quienes aprenden la asemejan a un proceso de auditoría post-facto común y pasan por alto el requisito de temporización que el curso enfatiza."
+  },
+  {
+    "term": "sandbox",
+    "def": "Un mecanismo de aislamiento a nivel de SO que impone aislamiento de sistema de archivos y red independientemente del juicio del modelo, para que el daño permanezca contenido incluso si la inyección de prompt tiene éxito.",
+    "source": "[^S16]",
+    "pitfall": "Suponer que establecer todos los comandos peligrosos en deny en la capa de regla de permisos elimina cualquier necesidad de un sandbox a nivel de SO.",
+    "distractor_rationale": "El curso nota que las reglas de permisos juzgan antes de la ejecución basándose en la cadena de comando, y ese juicio puede ser persuadido; el sandbox es la última línea que aún se sostiene después de la ejecución, no dependiendo de si el modelo o las reglas juzgaron correctamente."
+  },
+  {
+    "term": "TOOLS",
+    "def": "El objeto único en el ejemplo del curso donde los campos de esquema de cada herramienta y su manejador de ejecución real viven en una tabla, previniendo que los dos lados se separen.",
+    "source": "[^S3]",
+    "pitfall": "Suponer que está bien mantener la lista de esquemas de herramientas y la búsqueda de manejador en tiempo de ejecución como dos copias separadas, siempre que recuerdes mantenerlas sincronizadas.",
+    "distractor_rationale": "El curso señala esto como una trampa fácil — un cambio de nombre o parámetro fácilmente olvida actualizar la otra copia — y derivar dos vistas de una tabla es lo que mantiene ambos lados coherentes para siempre."
+  },
+  {
+    "term": "toolSchemas",
+    "def": "La lista de parámetros tools derivada de la tabla TOOLS y enviada al modelo; contiene solo name/description/input_schema, no el manejador.",
+    "source": "[^S3]",
+    "pitfall": "Suponer que toolSchemas debe mantenerse a mano como una copia separada independiente de la tabla TOOLS.",
+    "distractor_rationale": "El curso enfatiza que toolSchemas y toolHandlers son dos vistas calculadas de los mismos datos TOOLS, no dos copias escritas a mano, fácilmente leído mal como necesitando sincronización manual separada."
+  },
+  {
+    "term": "toolHandlers",
+    "def": "La tabla de búsqueda en tiempo de ejecución derivada de la tabla TOOLS, mapeando cada nombre de herramienta a la función que realmente la ejecuta.",
+    "source": "[^S4]",
+    "pitfall": "Suponer que la búsqueda de manejador debería estar indexada por el campo id en el bloque tool_use devuelto del modelo, en lugar del campo name.",
+    "distractor_rationale": "Quienes aprenden confunden los roles de «el id usado para reclamar» y «el name usado para selección de herramienta»; la ejecución busca por name, y el id solo se usa para emparejar el tool_result."
+  },
+  {
+    "term": "github_repo_info",
+    "def": "La tercera herramienta de ejemplo que el curso implementa; consulta información básica sobre un repositorio público de GitHub y es la única herramienta que envía datos fuera del proyecto.",
+    "source": "[^S10]",
+    "pitfall": "Suponer que esta herramienta conlleva aproximadamente el mismo nivel de riesgo que read_file y search_files, ya que las tres son solo operaciones de «consulta» sin escrituras.",
+    "distractor_rationale": "Las tres parecen de solo lectura en superficie, facilitando pasar por alto que github_repo_info envía información local a la internet pública — exactamente donde «leer datos privados» y «comunicarse externamente» se encuentran."
+  },
+  {
+    "term": "SAFE_NAME",
+    "def": "La expresión regular en el código del curso usada para validar el formato de los parámetros owner/repo, previniendo que una cadena arbitraria sea enviada a la red externa.",
+    "source": "[^S18]",
+    "pitfall": "Suponer que una vez que input_schema define owner y repo como tipos string, no hay necesidad de validar su formato de nuevo dentro de la implementación de herramienta.",
+    "distractor_rationale": "Quienes aprenden asumen que la restricción de tipo a nivel de esquema es suficiente, pasando por alto que el esquema solo garantiza que el tipo es una cadena, no que el contenido de la cadena sea un formato de nombre de repositorio seguro."
+  },
+  {
+    "term": "MAX_TURNS",
+    "def": "El límite de iteraciones establecido en el bucle de ejecución del curso, previniendo que el modelo solicite interminablemente llamadas a herramientas para que el bucle nunca termine.",
+    "source": "[^S18]",
+    "pitfall": "Suponer que si MAX_TURNS se establece lo suficientemente alto, la llamada repetida del modelo a la misma herramienta eventualmente parará por su cuenta.",
+    "distractor_rationale": "El curso usa un caso de diagnóstico concreto para mostrar que elevar MAX_TURNS solo deja al bucle dar unas pocas vueltas más antes de golpear la pared, sin abordar por qué el modelo sigue reintentando (usualmente una señal de retorno poco clara)."
+  },
+  {
+    "term": "PROJECT_ROOT",
+    "def": "La constante en el código del curso para el directorio raíz del proyecto; read_file y search_files ambas la usan para una comprobación de límite de ruta para prevenir acceso a archivos fuera del proyecto.",
+    "source": "[^S16]",
+    "pitfall": "Suponer que declarar «la ruta debe ser relativa» en input_schema mantiene al modelo de pasar una ruta que intenta escapar del directorio del proyecto.",
+    "distractor_rationale": "La descripción es solo intención sin poder de ejecución; lo que realmente bloquea una ruta fuera de límites es la comprobación de prefijo del código contra PROJECT_ROOT con path.sep añadido — haciendo eco de la distinción de restricción versus nota de la Lección 4."
+  },
+  {
+    "term": "recentCalls",
+    "def": "El array en el código del curso que registra las firmas de las últimas pocas llamadas a herramientas, usado para detectar el patrón de «la misma herramienta con los mismos argumentos llamada tres veces seguidas».",
+    "source": "[^S18]",
+    "pitfall": "Suponer que detectar llamadas repetidas solo necesita comprobar si el modelo llamó al mismo nombre de herramienta, sin comparar también los argumentos.",
+    "distractor_rationale": "La firma en el código del curso es el nombre de herramienta y argumentos unidos; quienes aprenden pasan por alto que «argumentos diferentes» es consulta de múltiples pasos normal, y solo nombre-más-argumentos idénticos debería juzgarse como atascado."
+  },
+  {
+    "term": "GITHUB_TOKEN",
+    "def": "Una credencial opcional leída de una variable de entorno, usada para elevar el límite de tasa al llamar a la API de GitHub; la llamada también funciona anónimamente sin ella.",
+    "source": "[^S15]",
+    "pitfall": "Suponer que GITHUB_TOKEN es requerido para llamar a la herramienta github_repo_info, y la herramienta no puede ejecutarse sin él.",
+    "distractor_rationale": "El código del curso explícitamente lo hace opcional (ejecuta sin uno, solo con límites de tasa más estrictos), fácilmente leído mal como un prerrequisito de ejecución como los otros parámetros de entrada requeridos."
+  },
+  {
+    "term": "válvula de seguridad",
+    "def": "El término colectivo del curso para el conjunto de guardias añadidos al bucle de ejecución — MAX_TURNS, detección de llamadas repetidas, y las comprobaciones internas de ruta y formato de las herramientas — cada una parando un escenario de desboque diferente.",
+    "source": "[^S18]",
+    "pitfall": "Suponer que añadir solo una de las válvulas de seguridad (digamos MAX_TURNS) elimina cualquier riesgo de que el bucle se desboque o se extralimite.",
+    "distractor_rationale": "El curso declara llanamente que las tres capas tienen trabajos distintos y ninguna puede caerse; quienes aprenden tienden a asumir que la más visible (el límite de turnos) ya cubre cada escenario de desboque."
+  },
+  {
+    "term": "function walk(dir)",
+    "def": "La función de recorrido de directorio que el código del curso implementa por sí mismo, usada dentro de searchFiles para listar archivos recursivamente en lugar de lanzar a grep.",
+    "source": "[^S16]",
+    "pitfall": "Suponer que searchFiles debería simplemente empalmar entrada de usuario en un comando grep del sistema, ya que eso es más simple de implementar.",
+    "distractor_rationale": "El curso declara llanamente que hacer eso empalma entrada de usuario en la línea de comandos y puede desencadenar inyección de comandos, por lo cual escribe su propio recorrido de directorio — una compensación de diseño que quienes aprenden orientados a atajos fácilmente pasan por alto."
+  },
+  {
+    "term": "JSON Schema",
+    "def": "La especificación usada para definir el input_schema de una herramienta; sus title/description declaran intención y no añaden restricciones, mientras que palabras clave como enum y required realmente validan valores.",
+    "source": "[^S14]",
+    "pitfall": "Suponer que cada campo escrito en un JSON Schema restringe el parámetro, cuando algunos campos solo lo describen.",
+    "distractor_rationale": "Quienes aprenden ven todos los campos de esquema como un conjunto uniforme de reglas, pasando por alto que en JSON Schema title y description son solo notas mientras type, enum y required son las restricciones de validación reales."
+  },
+  {
+    "term": "restringiendo el muestreo",
+    "def": "La técnica detrás del modo strict: la plataforma restringe el muestreo de tokens del modelo a salidas válidas según esquema, para que las entradas de herramienta generadas siempre coincidan con el JSON Schema.",
+    "source": "[^S20]",
+    "pitfall": "Suponer que el modo strict valida y rechaza los parámetros del modelo después de la generación, de la forma en que funciona la validación ordinaria del lado del servidor.",
+    "distractor_rationale": "Quienes aprenden imaginan una puerta de validación post-hoc, pasando por alto que el modo strict funciona durante el muestreo — los parámetros inválidos nunca se generan en primer lugar, en lugar de generarse y luego rechazarse."
+  },
+  {
+    "term": "tool_choice",
+    "def": "El objeto de petición que controla cómo el modelo selecciona herramientas; establecer disable_parallel_tool_use: true en él (cuando type es auto) hace que el modelo llame como máximo una herramienta por respuesta.",
+    "source": "[^S21]",
+    "pitfall": "Suponer que tool_choice solo elige qué herramienta única forzar, sin darse cuenta de que también gobierna si se permiten llamadas paralelas.",
+    "distractor_rationale": "Quienes aprenden tratan tool_choice puramente como un selector de selección forzada, pasando por alto que su opción disable_parallel_tool_use es el interruptor para ajustar el comportamiento a una herramienta por respuesta para evitar paralelismo inseguro."
+  }
+]

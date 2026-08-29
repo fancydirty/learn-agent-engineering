@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Producir la variante en español del curso learn-agent-tool-calling para learn.agentmentor.dev, tomando como base la variante en inglés ya verificada. Es una traducción con pulido pedagógico a partir de en (no del zh): misma estructura de 6 lecciones, mismos slugs de lección, mismos ids de bloque interactivo y mismas posiciones de respuesta correcta, citas de las fuentes conservadas en su inglés original, código ejecutable con la lógica intacta y solo comentarios y cadenas visibles traducidos, referencias cruzadas apuntando a los títulos en español de los cursos publicados, y una prosa técnica natural en español, en tono profesional cercano y sin rigidez de traducción automática.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "El responsable ratificó el plan multilingüe: los seis idiomas en learn.agentmentor.dev, primero el inglés y después el resto de idiomas como oleadas de traducción a partir de la base en inglés. La variante en inglés es la fuente de verdad verificada y corregida en su fundamentación, así que no hizo falta ninguna aclaración adicional."
+  },
+  "learnerModel": {
+    "targetReader": "Una persona desarrolladora que sabe escribir prompts básicos y ha usado Claude Code o una herramienta de programación con IA similar, pero que todavía no ha estudiado de forma sistemática el protocolo subyacente de llamada a herramientas",
+    "knownConcepts": [
+      "Escribir prompts básicos y la forma básica de una conversación con un LLM",
+      "Usar Claude Code o una herramienta similar capaz de leer y escribir archivos y ejecutar comandos",
+      "Leer código básico de JavaScript / Node.js",
+      "Archivos, directorios y ejecución de comandos en una terminal",
+      "La idea general de que un agente lee contexto, decide y actúa"
+    ],
+    "unknownConcepts": [
+      "La frontera de «el modelo propone, el anfitrión ejecuta» en la llamada a herramientas",
+      "El viaje de ida y vuelta tool_use / tool_result y sus campos",
+      "stop_reason como motor del bucle de uso de herramientas",
+      "Los cinco tipos de herramienta y su radio de impacto",
+      "Escribir descripciones de herramienta y JSON Schema que el modelo rellene correctamente",
+      "El modo strict y additionalProperties: false",
+      "Los niveles de permiso allow / ask / deny",
+      "El exceso de agencia y la lethal trifecta",
+      "El retorno por lotes de las llamadas a herramientas en paralelo"
+    ],
+    "assumedEnvironment": "Puede ejecutar código JavaScript/Node.js, tiene acceso a una terminal y a un editor de texto, y puede seguir los ejemplos de código; no hace falta formación en aprendizaje automático",
+    "firstIndependentAction": "Ante una tarea pequeña, decidir si de verdad necesita una herramienta, aplicando la línea de «el modelo propone, el anfitrión ejecuta»",
+    "noviceRamp": [
+      "La lección 1 traza la frontera entre proponer y ejecutar a partir de un fallo concreto (un agente que solo sabe hablar) antes de entrar en ningún detalle del protocolo",
+      "La lección 2 recorre a mano un viaje completo de tool_use / tool_result campo por campo, incluido el retorno por lotes de las llamadas en paralelo",
+      "La lección 3 clasifica los cinco tipos de herramienta por radio de impacto, de modo que la intuición de riesgo se construye antes del diseño de interfaces",
+      "Las lecciones 4 y 5 profundizan en el diseño de interfaces y en los permisos como unidades relativamente independientes",
+      "La lección 6 ensambla un agente de llamada a herramientas ejecutable (bucle + registro + válvula de seguridad) usando todo lo anterior"
+    ]
+  },
+  "learnerBrief": "El lector objetivo sabe escribir prompts básicos y ha usado una herramienta de programación con IA, pero no ha estudiado el protocolo subyacente de la llamada a herramientas. Sabe leer JavaScript. El curso lo lleva a leer y escribir a mano un viaje completo de tool_use/tool_result, clasificar las herramientas por radio de impacto, diseñar descripciones y esquemas que el modelo rellene correctamente, aplicar permisos allow/ask/deny y reconocer la lethal trifecta, y por último construir un agente de llamada a herramientas ejecutable con un bucle de ejecución, un registro y una válvula de seguridad.",
+  "scope": "Se cubre: la frontera entre proponer y ejecutar, el viaje de ida y vuelta tool_use/tool_result y sus campos exactos, los bucles dirigidos por stop_reason, el retorno por lotes de las llamadas en paralelo, los cinco tipos de herramienta (lectura, escritura, ejecución, búsqueda y llamada a una API externa) y su radio de impacto, el diseño de la interfaz de una herramienta (name, description, JSON Schema, valor de retorno), el modo strict, los niveles de permiso allow/ask/deny, el exceso de agencia y la lethal trifecta, y un agente final ejecutable. No se cubre: los frameworks de agentes concretos (LangChain, AutoGPT) ni el entrenamiento o el fine-tuning de modelos. Profundidad: desde cero hasta construir un agente de llamada a herramientas seguro y ejecutable.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-tool-calling/es/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Se conservan los diagramas exactamente donde los usa la variante en inglés (el viaje de ida y vuelta y el flujo de evaluación de permisos), con las etiquetas traducidas al español; no se añadió ni se quitó ninguno. El viaje del protocolo es el único punto donde un diagram se gana su sitio, y la colocación ya se validó en revisión.",
+    "weakestPoints": [
+      "La lección 5 concentra el contenido de seguridad más denso (niveles de permiso, exceso de agencia, lethal trifecta); quien lea en diagonal puede confundir la frontera del sandbox impuesta por el sistema operativo con la evaluación de las reglas de permiso, y por eso la distinción entre las dos capas se enuncia de forma explícita",
+      "El código final de la lección 6 es un bucle de nivel didáctico, no un framework de producción; quien publique agentes reales tendrá que añadir su propia persistencia y observabilidad",
+      "La taxonomía de cinco herramientas es una simplificación pedagógica; las herramientas reales pueden quedar a caballo entre categorías, y así se señala donde importa",
+      "Al ser una traducción de la variante en inglés verificada, el riesgo residual es la deriva idiomática: cada cita de las fuentes se conservó verbatim en inglés y se comprobó byte a byte, y el código ejecutable mantiene la lógica idéntica, pero la prosa se vertió a un español natural en lugar de traducirse palabra por palabra, así que la revisión debe comprobar la equivalencia de significado con la lección en inglés y no la alineación frase a frase"
+    ],
+    "followUpChecks": [
+      "Pasada de renderizado completa en learn.agentmentor.dev /es/agent-tool-calling/... tras el despliegue: las 6 lecciones más el README, con las tarjetas interactivas hidratadas",
+      "Comprobar que cada término del glosario aparece verbatim en las lecciones en es (comprobación de attach), una vez que el agente de glosario entregue glossary.json",
+      "Comprobar que cada ancla [^Sn] de las lecciones en es tiene su bloque ## Sn correspondiente en el sources.md en es",
+      "Confirmar que los ids de los bloques de comprobación y las posiciones de respuesta correcta son idénticos byte a byte a la variante en inglés (la respuesta correcta es b en las 7 comprobaciones)",
+      "Volver a ejecutar el código final en JS y confirmar que el bucle, el registro y la válvula de seguridad se comportan según las salidas declaradas"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "La persona que aprende puede tomar una tarea real, decidir qué herramientas necesita, escribir la description y el JSON Schema de cada una para que el modelo la seleccione y la rellene correctamente, asignar niveles allow/ask/deny que bloqueen la sobreautorización, y conectar las herramientas a un agente ejecutable con un bucle de ejecución y una válvula de seguridad que detenga los bucles descontrolados.",
+    "interactionCheck": "Siete bloques agentmentor-check repartidos por las seis lecciones (quién lo ejecuta en la L1; el significado de stop_reason y el tool_result por lotes en la L2; el radio de impacto en la L3; el destinatario de la description en la L4; el mecanismo de inyección en la L5; el diagnóstico del bucle en la L6), conservados desde la variante en inglés con ids, modos, número de opciones y posiciones de respuesta correcta idénticos; label, prompt, whyHere, el texto de las opciones y el feedback son traducciones al español ajustadas al malentendido propio de cada lección. Los ejercicios mantienen la estructura de niveles de la variante en inglés, con rubric, answer e hints en cada nivel.",
+    "learnerFitCheck": "El curso solo presupone saber escribir prompts, haber usado herramientas antes y leer JavaScript. El protocolo de llamada a herramientas, la taxonomía de herramientas, el diseño de interfaces, los permisos y el modelo de riesgo de la inyección se enseñan desde cero y en orden de dependencia; quien aprende construye un agente completo por primera vez en la lección 6, después de todos los requisitos previos. El primer ejercicio de la lección 1 solo pide juzgar si hace falta una herramienta, sobre ejemplos propios de quien lee.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "Traducción al español de la variante en inglés verificada: la estructura, la fundamentación y las posiciones de respuesta se heredan del original verificado",
+      "Todos los bloques interactivos conservan id, mode, número de opciones y respuesta correcta con paridad byte a byte respecto al inglés",
+      "Todas las citas de las fuentes se mantienen en su inglés original (política de citas ratificada por el responsable) y se comprobaron línea a línea contra en/sources.md",
+      "Las referencias cruzadas usan los títulos en español de los cursos publicados; el código final mantiene la lógica idéntica"
+    ]
+  },
+  "nextSteps": [
+    "Ejecutar course-guard sobre la variante en es y corregir lo que señale",
+    "Incorporar el glossary.json en español que entrega el agente de glosario y volver a pasar la comprobación de attach",
+    "Desplegar learn.agentmentor.dev y comprobar que las páginas /es se renderizan con las tarjetas interactivas hidratadas",
+    "Producir las variantes de idioma restantes usando esta misma variante en inglés como base de traducción",
+    "Animar a quienes aprenden a conectar una herramienta real a un agente en su propio proyecto como proyecto de consolidación al terminar el curso"
+  ],
+  "memoryBoundary": "Este agentmentor.json es un registro de estado local del curso (course-local state record), almacenado únicamente en el directorio del curso para las comprobaciones de calidad y el seguimiento de la ruta de aprendizaje. Nunca se escribe de vuelta en la memoria a largo plazo de Claude Code ni de ningún sistema de IA anfitrión, y no afecta a otros cursos ni a otras conversaciones."
+}
