@@ -1,0 +1,597 @@
+[
+  {
+    "term": "sem estado",
+    "def": "A propriedade de que o servidor não mantém nenhum estado privado por sessão entre uma chamada de API e a próxima, então toda requisição deve carregar o histórico completo da conversa por conta própria.",
+    "source": "[^S6]",
+    "pitfall": "Presumir que o servidor guarda silenciosamente algum estado de turnos anteriores, então o modelo ainda consegue “lembrar” da conversa mesmo quando esta requisição não inclui o histórico.",
+    "distractor_rationale": "Um agente se comporta como se lembrasse, e é fácil atribuir esse comportamento a armazenamento no lado do servidor em vez do trabalho braçal do cliente de reenviar o histórico inteiro a cada turno."
+  },
+  {
+    "term": "janela de contexto",
+    "def": "O contêiner que guarda tudo o que o modelo de fato consegue ver em uma requisição: o system prompt, cada mensagem no array messages, as definições de ferramentas e a própria saída do modelo no turno.",
+    "source": "[^S1]",
+    "pitfall": "Presumir que a janela de contexto só guarda o texto do diálogo entre usuário e agente, e não resultados de ferramenta, definições de ferramentas ou a própria saída gerada pelo modelo.",
+    "distractor_rationale": "A palavra “janela” lê intuitivamente como “log do chat”, o que esconde as partes que os docs oficiais listam explicitamente — system prompt, definições de ferramentas, saída do modelo — que contam para a mesma janela."
+  },
+  {
+    "term": "system prompt",
+    "def": "Texto enviado com a requisição que define o papel e o comportamento do modelo; os docs oficiais o listam como um dos componentes que conta para a janela de contexto.",
+    "source": "[^S1]",
+    "pitfall": "Tratar o system prompt como uma “configuração” que não consome o mesmo orçamento de tokens que uma mensagem comum.",
+    "distractor_rationale": "O system prompt geralmente aparece como seu próprio campo separado no código, então lê como categoricamente diferente do array messages, obscurecendo que conta para o uso da janela do mesmo jeito."
+  },
+  {
+    "term": "definições de ferramentas",
+    "def": "O name, description e input_schema que você passa ao modelo para descrever cada ferramenta disponível; os docs afirmam que contam para a janela de contexto da mesma requisição.",
+    "source": "[^S1]",
+    "pitfall": "Presumir que uma definição de ferramenta só custa contexto quando o modelo de fato chama aquela ferramenta, então definições de ferramentas não usadas são “de graça”.",
+    "distractor_rationale": "Quem aprende conflata “a ferramenta foi chamada” com “a definição da ferramenta conta para a janela”, mas esses são independentes — uma vez na requisição, conta quer seja invocada ou não."
+  },
+  {
+    "term": "raciocínio estendido",
+    "def": "O conteúdo de raciocínio que o modelo produz ao gerar a resposta deste turno; os docs afirmam que conta para o uso da janela de contexto deste turno.",
+    "source": "[^S1]",
+    "pitfall": "Presumir que o raciocínio estendido é um “rascunho” interno que não consome o orçamento de tokens da requisição.",
+    "distractor_rationale": "A palavra “raciocínio” sugere algo que acontece silenciosamente em segundo plano sem deixar rastro, o que esconde que é saída do modelo como qualquer outra e portanto conta para a janela."
+  },
+  {
+    "term": "usage",
+    "def": "O campo na resposta da API que informa quantos tokens de entrada e saída a requisição de fato consumiu.",
+    "source": "[^S1]",
+    "pitfall": "Presumir que você só pode estimar o consumo de tokens contando caracteres você mesmo, e que a resposta nunca entrega um número exato.",
+    "distractor_rationale": "Quem aprende geralmente não construiu o hábito de inspecionar campos de resposta, então negligencia que o campo usage é oficial, preciso e diretamente legível."
+  },
+  {
+    "term": "context rot",
+    "def": "O fenômeno nomeado nos docs oficiais onde a acurácia e a recuperação se degradam conforme a contagem de tokens na janela cresce.",
+    "source": "[^S1]",
+    "pitfall": "Presumir que uma janela maior guardando mais histórico só pode fazer o modelo ter melhor desempenho, sem tal coisa como “empacotada demais, portanto pior”.",
+    "distractor_rationale": "“Melhor memória significa melhor desempenho” é a expectativa padrão do dia a dia sobre memória, e é aplicada diretamente à capacidade da janela, perdendo o ponto dos docs de que mais bagunça torna a parte genuinamente útil mais difícil de achar."
+  },
+  {
+    "term": "acúmulo",
+    "def": "O comportamento padrão em que o histórico de conversa se empilha na janela de contexto turno após turno, crescendo e nunca encolhendo a menos que algo ativamente o limpe.",
+    "source": "[^S1]",
+    "pitfall": "Presumir que o histórico de conversa é automaticamente condensado ou descartado pelo sistema conforme os turnos se acumulam, ficando em um tamanho razoável sem trabalho extra.",
+    "distractor_rationale": "Muitos outros sistemas de software limpam dados por conta própria, o que faz quem aprende esperar por padrão um mecanismo similar de “auto-redução” para o histórico de conversa."
+  },
+  {
+    "term": "reenvio",
+    "def": "O mecanismo real por trás da palavra “memória” — toda requisição reenvia as mensagens de histórico anteriores ao modelo verbatim, em vez do modelo armazenar ou lembrar de algo por conta própria.",
+    "source": "[^S6]",
+    "pitfall": "Presumir que um agente que parece “lembrar” faz isso porque o modelo manteve uma cópia do histórico internamente, em vez do código hospedeiro reempacotar e reenviar a cada turno.",
+    "distractor_rationale": "Do ponto de vista do usuário o agente parece que lembra, e essa impressão superficial é tomada como evidência de uma capacidade de memória do modelo, escondendo o reenvio que de fato a produz."
+  },
+  {
+    "term": "múltiplas sessões",
+    "def": "O escopo de informação que tem que sobreviver a uma única conversa e durar entre sessões independentes, o que enfiá-la no array messages atual não consegue alcançar.",
+    "source": "[^S1]",
+    "pitfall": "Presumir que uma vez que informação é escrita no histórico desta conversa, o agente ainda a verá quando uma nova sessão abrir mais tarde.",
+    "distractor_rationale": "Quem aprende conflata “esta conversa lembrou” com “conversas futuras conseguem ver”, perdendo que o tempo de vida da janela termina quando esta sessão termina."
+  },
+  {
+    "term": "Messages API",
+    "def": "A API na qual este curso se apoia; seus docs oficiais afirmam claramente que é sem estado e que você sempre envia o histórico de conversa completo com cada requisição.",
+    "source": "[^S6]",
+    "pitfall": "Presumir que a API rastreia algum tipo de identidade de sessão, então passar um ID de usuário ou conversa bastaria para ela reconstruir o histórico no servidor.",
+    "distractor_rationale": "A maioria das APIs web familiares de fato carrega estado de sessão por trás de um ID, então quem aprende importa essa expectativa e perde a declaração explícita de que esta não carrega nenhum."
+  },
+  {
+    "term": "acrescentar",
+    "def": "A forma mais simples de gerenciar o histórico de conversa — depois de cada turno, anexe as novas mensagens ao final do array messages existente e envie o array inteiro de novo no próximo turno.",
+    "source": "[^S1]",
+    "pitfall": "Presumir que acrescentar apenas adiciona novas mensagens sem afetar as mensagens mais antigas já no array ou a capacidade restante da janela.",
+    "distractor_rationale": "“Acrescentar” soa como uma operação trivialmente simples, o que esconde que é a causa raiz do histórico que só cresce e eventualmente enche a janela."
+  },
+  {
+    "term": "truncagem",
+    "def": "Cortar de vez o lote mais antigo de mensagens quando a janela está quase cheia e manter apenas os N mais recentes — simples de implementar, mas o que descarta se foi irreversivelmente.",
+    "source": "[^S1]",
+    "pitfall": "Presumir que a truncagem apenas “para de enviar” as mensagens cortadas temporariamente, então elas podem ser recuperadas quando necessário.",
+    "distractor_rationale": "“Truncar” e “deletar” sentem intuitivamente distintos, levando quem aprende a acreditar que a porção cortada está apenas escondida em vez de genuinamente removida do array prestes a ser enviado."
+  },
+  {
+    "term": "compactação",
+    "def": "O mecanismo oficial que destila o conteúdo de uma janela de contexto em um resumo de alta fidelidade, deixando o agente continuar com degradação mínima de desempenho quando a conversa fica longa.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que compactação e truncagem são fundamentalmente a mesma coisa sob um nome mais agradável.",
+    "distractor_rationale": "Ambas são formas de encurtar o histórico, então quem aprende as trata como sinônimos e perde a diferença-chave — a compactação reescreve o todo, a truncagem descarta trechos inteiros."
+  },
+  {
+    "term": "resumo de alta fidelidade",
+    "def": "O que a compactação produz — uma versão destilada que substitui a longa sequência de histórico bruto e fica à frente da janela, mantendo o que aconteceu e o que foi concluído enquanto descarta o detalhe palavra-por-palavra.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que um resumo de alta fidelidade pode reconstruir completamente todo detalhe da conversa original sem nada perdido.",
+    "distractor_rationale": "“Alta fidelidade” lê como “sem perdas”, obscurecendo o ponto explícito da lição de que um resumo é em última análise uma versão com perdas do original — números específicos e o fraseado exato podem ter ido embora."
+  },
+  {
+    "term": "limiar de disparo",
+    "def": "O nível de uso da janela no qual um mecanismo oficial começa automaticamente a compactar ou limpar resultados de ferramentas.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que o limiar de disparo é uma configuração puramente do lado do cliente que o desenvolvedor pode baixar para qualquer valor, sem um piso imposto pelo servidor.",
+    "distractor_rationale": "Quem aprende lê “o limiar é configurável” como “inteiramente a critério meu”, perdendo que a compactação tem um mínimo imposto pelo servidor abaixo do qual o limiar não pode ir."
+  },
+  {
+    "term": "limpeza de resultados de ferramenta",
+    "def": "O mecanismo oficial voltado ao inchaço do próprio uso de ferramenta — descarta resultados antigos e rebuscáveis enquanto mantém o registro de que a chamada aconteceu.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que limpar deleta o trecho inteiro do histórico contendo a chamada de ferramenta, incluindo o registro da própria chamada.",
+    "distractor_rationale": "A palavra “limpar” sugere deleção total, obscurecendo a distinção crucial de que só limpa o conteúdo retornado e preserva o registro da chamada."
+  },
+  {
+    "term": "rebuscável",
+    "def": "O qualificador que decide o que a limpeza pode descartar — conteúdo que a ferramenta retornou que ficou obsoleto e pode ser obtido de novo chamando a mesma ferramenta com os mesmos argumentos.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que a limpeza limpa indiscriminadamente todo resultado de ferramenta independentemente de se pode ser buscado de novo.",
+    "distractor_rationale": "Quem aprende negligencia o qualificador “rebuscável” e imagina que a limpeza julga puramente por idade, em vez de idade mais se o conteúdo pode ser recuperado sob demanda."
+  },
+  {
+    "term": "150K tokens",
+    "def": "O limiar de disparo padrão da compactação — a compactação dispara automaticamente quando o uso da janela atinge este nível.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que 150K tokens é um número que você pode baixar livremente sem nenhuma restrição.",
+    "distractor_rationale": "Quem aprende perde que este padrão fica ao lado de um mínimo imposto pelo servidor, tratando-o como um dial puramente do lado do cliente que pode ser girado arbitrariamente para baixo."
+  },
+  {
+    "term": "100K tokens",
+    "def": "O limiar de disparo padrão da limpeza de resultados de ferramenta, menor que os 150K da compactação, refletindo seu papel de entrar mais cedo contra a fonte única de inchaço da saída de ferramenta.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que 100K tokens e 150K tokens são duas formas de descrever o mesmo mecanismo e podem ser usados de forma intercambiável.",
+    "distractor_rationale": "Ambos os números aparecem em seções adjacentes da mesma lição, então são confundidos como reformulações de uma coisa em vez de limiares independentes pertencendo a dois mecanismos diferentes."
+  },
+  {
+    "term": "50K tokens",
+    "def": "O piso imposto pelo servidor para o limiar de disparo da compactação — o valor configurado deve ser pelo menos este grande, então o limiar não pode ser baixado arbitrariamente.",
+    "source": "[^S8]",
+    "pitfall": "Presumir que porque 150K é apenas um padrão, você pode definir o disparo onde quiser — digamos 10K — para compactar mais agressivamente.",
+    "distractor_rationale": "Quem aprende registra “150K é o padrão” e para por aí, perdendo o mínimo separado do lado do servidor que torna limiares muito baixos simplesmente inválidos."
+  },
+  {
+    "term": "últimas 3 chamadas",
+    "def": "A política de retenção padrão da limpeza de resultados de ferramenta — os resultados completos das últimas três chamadas de ferramenta ficam intactos, e resultados de ferramentas mais antigos são limpos.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que uma vez que a limpeza dispara ela limpa todo resultado de ferramenta de uma vez, sem considerar a ordem em que as chamadas aconteceram.",
+    "distractor_rationale": "“Limpar” lê como “limpar tudo”, perdendo que o mecanismo define uma janela de retenção explícita e só limpa o que cai fora dela."
+  },
+  {
+    "term": "modelo mental",
+    "def": "A divisão de trabalho de três vias do Cookbook para lidar com inchaço de contexto — compactação para uma janela que cresceu demais, limpeza para dados obsoletos e rebuscáveis dentro dela, memória para sobreviver entre sessões.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que os três mecanismos competem e você deve escolher exatamente um, em vez de serem um design em camadas onde todos os três podem estar em vigor ao mesmo tempo.",
+    "distractor_rationale": "Todos os três são discutidos sob o único guarda-chuva de “lidar com inchaço de histórico”, o que os faz parecer alternativas sobrepostas em vez do arranjo em camadas e não conflitante que a lição descreve."
+  },
+  {
+    "term": "uso da janela",
+    "def": "A medida de quanta capacidade de janela de contexto o histórico de conversa atual ocupa; é o que você verifica para decidir se truncar, compactar ou limpar.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que o uso da janela só importa quando você está prestes a ultrapassar algum limiar, e não precisa de atenção no resto do tempo.",
+    "distractor_rationale": "Quem aprende trata o uso da janela como um alarme que olha apenas quando dispara, perdendo que é a base contínua para toda decisão de gerenciamento de histórico."
+  },
+  {
+    "term": "transcrição inteira",
+    "def": "O escopo da compactação — mensagens do usuário, mensagens do assistente, chamadas de ferramenta, resultados de ferramentas e até blocos de compactação anteriores são todos achatados no novo resumo.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que uma segunda compactação deixa o bloco de resumo da primeira compactação intocado e só compacta as mensagens que vieram depois dele.",
+    "distractor_rationale": "Parece natural que um bloco já compactado está “pronto” e seguro, obscurecendo que uma compactação posterior dobra o resumo anterior de volta no novo junto com todo o resto."
+  },
+  {
+    "term": "ida e volta",
+    "def": "Uma troca completa de chamada de ferramenta — a mensagem assistant carregando tool_use mais a mensagem user carregando o tool_result correspondente — a menor unidade que o fatiamento de histórico pode tratar como atômica.",
+    "source": "[^S7]",
+    "pitfall": "Fatiar o histórico por contagem de mensagens, então o ponto de corte pode cair no meio de uma ida e volta e dividir um par que tem que mover junto.",
+    "distractor_rationale": "“Manter as últimas N mensagens” é a implementação óbvia e parece correta em diálogo comum, então a falha só aparece quando uma chamada de ferramenta por acaso atravessa a fronteira."
+  },
+  {
+    "term": "tool_use_id",
+    "def": "O identificador ligando um bloco tool_result de volta ao bloco tool_use que o produziu; a limpeza substitui o conteúdo do resultado mas deixa este id no lugar.",
+    "source": "[^S7]",
+    "pitfall": "Presumir que quando um resultado de ferramenta é limpo, a mensagem inteira incluindo seu tool_use_id desaparece do histórico.",
+    "distractor_rationale": "“Limpar” lê como deletar o registro inteiro, perdendo que a implementação da lição deliberadamente mantém tool_use_id e troca apenas o campo content."
+  },
+  {
+    "term": "memória externa",
+    "def": "Armazenamento que não está preso ao ciclo de vida de uma única conversa — geralmente um arquivo em disco — então informação escrita lá ainda pode ser lida depois que a sessão termina.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que escrever informação no array messages da sessão atual já conta como memória externa e persistirá entre sessões.",
+    "distractor_rationale": "O ato de “escrevê-la” é vagamente igualado a “lembrá-la”, perdendo que só escrever em algum lugar fora do tempo de vida da janela de fato se qualifica."
+  },
+  {
+    "term": "arquivo de memória",
+    "def": "Um arquivo mantido em disco para carregar informação entre sessões — CLAUDE.md sendo o caso representativo — que pode ser carregado no contexto no todo ou em parte quando uma sessão começa.",
+    "source": "[^S3]",
+    "pitfall": "Presumir que qualquer arquivo chamado “arquivo de memória” deve ser carregado por inteiro no início de toda sessão, sem tal coisa como recuperação sob demanda.",
+    "distractor_rationale": "CLAUDE.md, o primeiro exemplo que quem aprende encontra, de fato é carregado por inteiro, então esse comportamento é generalizado para todos os arquivos de memória, perdendo que a Auto memory toma a rota diferente de sob demanda."
+  },
+  {
+    "term": "carregado na janela de contexto",
+    "def": "O processo pelo qual o conteúdo de um arquivo de memória é lido do disco e injetado em uma requisição específica, tornando-o visível ao modelo para aquele turno.",
+    "source": "[^S3]",
+    "pitfall": "Presumir que porque um arquivo de memória existe em disco, ele já está no contexto e o modelo naturalmente consegue vê-lo.",
+    "distractor_rationale": "É aqui que o princípio da Lição 1 — o modelo vê apenas o que está na janela — é mais fácil de esquecer: estar em disco e ser carregado nesta requisição são duas coisas diferentes."
+  },
+  {
+    "term": "comentários HTML de nível de bloco",
+    "def": "Conteúdo embrulhado em <!-- --> dentro de um arquivo CLAUDE.md; os docs afirmam que é removido antes do conteúdo ser injetado no contexto do agente.",
+    "source": "[^S3]",
+    "pitfall": "Presumir que um comentário HTML escrito no CLAUDE.md ainda é visível ao agente quando ele lê o arquivo, e poderia influenciar seu comportamento.",
+    "distractor_rationale": "Na maioria das outras configurações um comentário HTML é algo que tanto humanos quanto programas conseguem ver e apenas não renderiza, então quem aprende perde a nota específica dos docs de que esses são removidos antes da injeção e o agente nunca os lê."
+  },
+  {
+    "term": "Auto memory",
+    "def": "Memória escrita pelo próprio modelo conforme a conversa avança, estruturada como um arquivo de índice mais arquivos de tópico sob demanda, complementando o CLAUDE.md escrito por humanos.",
+    "source": "[^S3]",
+    "pitfall": "Presumir que Auto memory e CLAUDE.md são dois nomes para o mesmo mecanismo, carregados no contexto exatamente da mesma forma.",
+    "distractor_rationale": "Ambos são arquivos de memória, então são tratados como uma coisa, perdendo que a tabela de comparação oficial os separa tanto em “quem escreve” quanto em “quando é carregada”."
+  },
+  {
+    "term": "arquivo de índice",
+    "def": "A primeira camada da estrutura de duas camadas da Auto memory — MEMORY.md, por exemplo — que armazena resumos de entrada por tópico em vez do conteúdo completo de cada tópico.",
+    "source": "[^S3]",
+    "pitfall": "Presumir que o arquivo de índice já contém o conteúdo completo de cada tópico, então o arquivo de tópico correspondente nunca precisa ser lido separadamente.",
+    "distractor_rationale": "Em algumas outras configurações um “índice” de fato carrega o payload inteiro, então quem aprende perde que este tem um teto de tamanho e guarda apenas resumos de entrada."
+  },
+  {
+    "term": "recuperação sob demanda",
+    "def": "Carregar apenas os resumos de entrada do índice no início da sessão, e ler um arquivo de memória de tópico específico apenas quando a tarefa atual de fato precisa dele.",
+    "source": "[^S3]",
+    "pitfall": "Presumir que recuperação sob demanda significa que o modelo prevê quais memórias precisará a seguir e as pré-carrega todas antecipadamente.",
+    "distractor_rationale": "“Sob demanda” é lido como o sistema antecipando inteligentemente necessidades, perdendo que o mecanismo real é “lê-lo apenas quando a tarefa genuinamente toca aquele tópico”, não pré-carregar."
+  },
+  {
+    "term": "MEMORY.md",
+    "def": "O arquivo de índice da Auto memory; a regra oficial é que apenas suas primeiras 200 linhas ou primeiros 25KB, o que vier primeiro, carregam no início de cada conversa.",
+    "source": "[^S3]",
+    "pitfall": "Presumir que MEMORY.md é lido por inteiro no início de toda sessão, sem corte baseado em tamanho.",
+    "distractor_rationale": "Quem aprende carrega a regra “carregado por inteiro” do CLAUDE.md, perdendo que os docs dão ao MEMORY.md seu próprio teto separado de carregamento de 200-linhas-ou-25KB."
+  },
+  {
+    "term": "CLAUDE.md",
+    "def": "Um arquivo de memória de projeto escrito por humanos carregado por inteiro no contexto no início de toda sessão; a meta de tamanho oficial é abaixo de 200 linhas, com um limite rígido de 4 MiB.",
+    "source": "[^S3]",
+    "pitfall": "Presumir que quanto mais longo e completo o CLAUDE.md ficar, mais ele ajuda o agente.",
+    "distractor_rationale": "“Documentação mais completa é mais útil” é um instinto comum de escrita, obscurecendo o custo concreto de que o CLAUDE.md é carregado por inteiro toda vez e um arquivo longo demais tanto queima contexto quanto reduz a aderência às instruções."
+  },
+  {
+    "term": "200 linhas",
+    "def": "A meta de tamanho oficial recomendada para um arquivo CLAUDE.md; passar disso consome mais contexto e reduz a aderência do agente às instruções.",
+    "source": "[^S3]",
+    "pitfall": "Tratar 200 linhas como um limite técnico rígido que causará erro ou truncagem se excedido.",
+    "distractor_rationale": "Quem aprende colapsa a recomendação branda e o limite rígido em um, perdendo que 200 linhas é uma diretriz de qualidade enquanto 4 MiB é o corte real onde o arquivo é ignorado."
+  },
+  {
+    "term": "4 MiB",
+    "def": "O limite rígido genuíno para CLAUDE.md — um arquivo até este tamanho é carregado por inteiro, e qualquer coisa maior é ignorada inteiramente.",
+    "source": "[^S3]",
+    "pitfall": "Presumir que um CLAUDE.md que cresce além do tamanho recomendado é carregado parcialmente ou aparado, então um arquivo grande demais pelo menos ainda contribui algo.",
+    "distractor_rationale": "Carregamento parcial parece o comportamento gracioso, obscurecendo que passado 4 MiB o arquivo é ignorado de todo — o agente não vê nenhum dele, não uma versão truncada."
+  },
+  {
+    "term": "/compact",
+    "def": "O comando de compactação no Claude Code; os docs notam que um CLAUDE.md na raiz do projeto sobrevive a ele, sendo relido do disco e reinjetado na sessão depois.",
+    "source": "[^S3]",
+    "pitfall": "Presumir que o conteúdo do CLAUDE.md só sobrevive à compactação se o resumo gerado por acaso o preservou.",
+    "distractor_rationale": "Parece que o CLAUDE.md é “incidentalmente preservado” dentro do resumo, perdendo que ele é separadamente relido e reinjetado, independente do que o resumo manteve."
+  },
+  {
+    "term": "verificação de limite",
+    "def": "Lógica de verificação de caminho adicionada à ferramenta de leitura/escrita de um arquivo de memória para que a ferramenta não possa ser convencida a ler ou escrever arquivos fora do diretório de memória.",
+    "source": "[^S3]",
+    "pitfall": "Presumir que escrever “apenas arquivos dentro do diretório de memória” na descrição da ferramenta é suficiente, sem verificação em nível de código requerida.",
+    "distractor_rationale": "Quem aprende conflata “a restrição está declarada no texto da descrição” com “a restrição é imposta por código”, perdendo que o texto da descrição apenas guia comportamento enquanto o limite real precisa de uma verificação de caminho na implementação."
+  },
+  {
+    "term": "diretório irmão de mesmo prefixo",
+    "def": "O diretório que derrota uma verificação de prefixo de string pura — /project/memory-evil compartilha o prefixo /project/memory e então passa startsWith, mesmo que esteja inteiramente fora da raiz de memória.",
+    "source": "[^S3]",
+    "pitfall": "Presumir que verificar se um caminho começa com a string do diretório raiz é suficiente para bloquear toda leitura ou escrita fora dos limites.",
+    "distractor_rationale": "Uma verificação startsWith parece intuitivamente eficaz, escondendo a distinção fina de que “compartilha um prefixo de string” não é o mesmo que “de fato vive dentro daquele diretório”."
+  },
+  {
+    "term": "path.sep",
+    "def": "A constante do Node para o separador de caminho da plataforma, usada na condição de limite segura abs.startsWith(ROOT + path.sep) para que apenas caminhos começando com “raiz mais separador” combinem.",
+    "source": "[^S3]",
+    "pitfall": "Presumir que um startsWith(ROOT) puro é suficiente e não há necessidade de anexar path.sep.",
+    "distractor_rationale": "Omitir path.sep é a causa direta do bypass de mesmo prefixo, mas o detalhe lê como preciosismo opcional em vez da peça que de fato fecha o buraco."
+  },
+  {
+    "term": "estado estruturado",
+    "def": "Progresso de tarefa expresso através de campos fixos — uma lista de todos com marcadores de status explícitos — que o código hospedeiro pode analisar de forma confiável, em oposição ao progresso descrito em prosa.",
+    "source": "[^S4]",
+    "pitfall": "Presumir que uma vez que o agente afirma em sua resposta qual etapa atingiu, aquela descrição já conta como estado estruturado.",
+    "distractor_rationale": "Uma descrição em linguagem natural parece transmitir a mesma informação, obscurecendo que “um programa consegue analisá-la de forma confiável” é o que de fato separa estado estruturado de prosa."
+  },
+  {
+    "term": "lista de todos",
+    "def": "Uma tarefa de múltiplas etapas dividida em um conjunto de itens, cada um carregando um campo de status explícito, então o agente e o código hospedeiro conseguem rastrear progresso juntos.",
+    "source": "[^S4]",
+    "pitfall": "Presumir que a lista de todos é apenas uma exibição de progresso para humanos e não tem efeito em qual etapa o agente de fato faz a seguir.",
+    "distractor_rationale": "“Lista” lê como informação puramente de apresentação, perdendo que também é o que o código hospedeiro consulta para decidir o que acontece a seguir."
+  },
+  {
+    "term": "ciclo de vida",
+    "def": "As quatro etapas pelas quais um todo passa desde o momento em que é identificado até não ser mais necessário: criado, ativado, concluído, removido.",
+    "source": "[^S4]",
+    "pitfall": "Presumir que um todo tem apenas estados “em progresso” e “pronto”, sem “criado mas não começado” e sem “removido” explícito.",
+    "distractor_rationale": "A conversa do dia a dia sobre status de tarefa geralmente cobre apenas “trabalhando nisso” e “terminado”, então quem aprende negligencia que o ciclo de vida oficial também inclui criação e remoção como etapas igualmente reais."
+  },
+  {
+    "term": "pending",
+    "def": "O primeiro estado no ciclo de vida de um todo — o item foi identificado e adicionado à lista, mas o trabalho nele não começou.",
+    "source": "[^S4]",
+    "pitfall": "Presumir que assim que um todo aparece na lista, ele já está em progresso por padrão.",
+    "distractor_rationale": "“Na lista” e “sendo trabalhado” são conflados, perdendo que pending existe precisamente para marcar “criado mas ainda não começado”."
+  },
+  {
+    "term": "in_progress",
+    "def": "O segundo estado no ciclo de vida de um todo — quando o trabalho de fato começa, o status muda de pending para este valor.",
+    "source": "[^S4]",
+    "pitfall": "Presumir que uma mudança de status é algo que o modelo narra no texto de sua resposta em vez de uma chamada de ferramenta estruturada explícita.",
+    "distractor_rationale": "Quem aprende lê “o status mudou” como “o modelo disse algo nesse sentido”, perdendo a insistência da lição de que toda mudança de status acontece através de uma chamada de ferramenta explícita."
+  },
+  {
+    "term": "completed",
+    "def": "O terceiro estado no ciclo de vida de um todo — o status definido quando a tarefa termina com sucesso.",
+    "source": "[^S4]",
+    "pitfall": "Presumir que um todo se torna completed por padrão simplesmente porque parou de ser mencionado.",
+    "distractor_rationale": "“Não mais mencionado” e “marcado completo” são duas coisas diferentes que são tratadas como equivalentes, perdendo que o status só de fato muda via uma chamada de ferramenta explícita."
+  },
+  {
+    "term": "deleted",
+    "def": "O quarto estado no ciclo de vida de um todo — um todo que não é mais necessário é removido definindo seu status para este valor em uma chamada TaskUpdate.",
+    "source": "[^S4]",
+    "pitfall": "Presumir que um todo indesejado pode apenas silenciosamente desaparecer da lista sem registro de status deixado para trás.",
+    "distractor_rationale": "“Deletar” intuitivamente significa “desaparecer sem rastro”, perdendo o ponto da lição de que remoção é igualmente uma mudança de status explícita, não um desaparecimento implícito."
+  },
+  {
+    "term": "ferramenta de acompanhamento de tarefas",
+    "def": "A ferramenta que deixa um agente criar e atualizar status de todos, então o progresso de tarefa aparece no fluxo de mensagens como chamadas de ferramenta estruturadas.",
+    "source": "[^S4]",
+    "pitfall": "Presumir que a ferramenta de acompanhamento de tarefas é uma conveniência de exibição para humanos sem influência em como o agente de fato executa a tarefa.",
+    "distractor_rationale": "“Acompanhar” lê como gravação passiva, perdendo que é o mecanismo tornando progresso legível por máquina e portanto capaz de moldar decisões posteriores de execução."
+  },
+  {
+    "term": "chamada de ferramenta estruturada",
+    "def": "A forma na qual uma mudança de status de acompanhamento de tarefa aparece no fluxo de mensagens — uma chamada identificável e independentemente analisável em vez de uma linha de prosa.",
+    "source": "[^S4]",
+    "pitfall": "Presumir que uma chamada de ferramenta estruturada difere de uma nota de progresso em linguagem natural apenas em parecer mais formal, enquanto transmite a mesma quantidade de informação.",
+    "distractor_rationale": "Ambas as superfícies comunicam “etapa dois está pronta” a um leitor humano, escondendo a diferença substantiva: apenas uma tem campos fixos que o código hospedeiro consegue ler sem interpretar linguagem."
+  },
+  {
+    "term": "checkpoint",
+    "def": "O estado de uma tarefa em um ponto no tempo escrito como dado e persistido em algum lugar fora do tempo de vida da sessão, então a execução pode retomar depois de uma interrupção.",
+    "source": "[^S4]",
+    "pitfall": "Presumir que porque a lista de todos já é estado estruturado, ela é automaticamente legível depois que a sessão termina e não precisa de checkpoint separado.",
+    "distractor_rationale": "“Estruturado” e “persistente” são conflados, perdendo que estado estruturado vivendo apenas no histórico de sessão desaparece junto com a sessão do mesmo jeito."
+  },
+  {
+    "term": "recuperabilidade",
+    "def": "A habilidade, depois de um reinício de processo, de ler o checkpoint mais recente e continuar de onde o trabalho parou em vez de começar do zero.",
+    "source": "[^S4]",
+    "pitfall": "Presumir que enquanto uma lista de todos existiu, o agente pode retomar de onde parou depois de um reinício quer um checkpoint tenha sido escrito ou não.",
+    "distractor_rationale": "Quem aprende conflata “a lista de todos existiu uma vez” com “a lista de todos ainda pode ser lida agora”, perdendo que recuperabilidade repousa no checkpoint, não na lista ter existido."
+  },
+  {
+    "term": "idempotente",
+    "def": "A propriedade de uma operação que produz o mesmo resultado não importa quantas vezes rode, então rerodá-la não causa efeitos colaterais extras.",
+    "source": "[^S4]",
+    "pitfall": "Presumir que toda etapa de tarefa custa o mesmo para refazer, sem necessidade de distinguir quais etapas são idempotentes e quais não são.",
+    "distractor_rationale": "“Fazer de novo” soa como apenas desperdiça tempo, escondendo que uma operação não idempotente — inserir um registro de banco de dados, digamos — pode corromper dados quando acidentalmente repetida, não apenas custar eficiência."
+  },
+  {
+    "term": "TaskUpdate",
+    "def": "A chamada de ferramenta usada para mudar o status de um todo; toda etapa do ciclo de vida, remoção incluída, passa por ela.",
+    "source": "[^S4]",
+    "pitfall": "Presumir que remover um todo não precisa de chamada de ferramenta dedicada e pode ser feito soltando a entrada dos dados da lista diretamente.",
+    "distractor_rationale": "Quem aprende reduz “remover” a “deletar a linha”, perdendo a declaração explícita dos docs de que remoção é feita através de uma chamada TaskUpdate definindo status para deleted, não apagando silenciosamente o registro."
+  },
+  {
+    "term": "MemoryTrap",
+    "def": "Uma vulnerabilidade real divulgada por pesquisadores da Cisco descrevendo como uma rotina aparentemente inofensiva — clonar um repo, aprovar uma instalação de dependência — vira injeção de prompt persistente.",
+    "source": "[^S5]",
+    "pitfall": "Presumir que MemoryTrap descreve um ataque obviamente anormal que poderia ser detectado enquanto acontecia.",
+    "distractor_rationale": "“Estudo de caso de vulnerabilidade” prepara quem aprende para esperar algo visivelmente errado, perdendo a ênfase da lição de que o caminho do ataque era inteiramente comum sem nenhuma etapa que parecesse suspeita."
+  },
+  {
+    "term": "ASI06",
+    "def": "O identificador de categoria de risco da OWASP para segurança de agente cobrindo Envenenamento de Memória & Contexto, a classe para a qual o MemoryTrap mapeia.",
+    "source": "[^S5]",
+    "pitfall": "Presumir que ASI06 só cobre casos onde um atacante ativamente explora o recurso de memória, excluindo situações benignas como memória simplesmente ficando desatualizada.",
+    "distractor_rationale": "A palavra “envenenamento” sugere apenas ataque deliberado, perdendo que a lição depois dobra memória desatualizada na mesma classe de risco compartilhando a mesma postura defensiva."
+  },
+  {
+    "term": "memória persistente",
+    "def": "Armazenamento que um agente lê e confia entre sessões; porque é carregada automaticamente e repetidamente, qualquer coisa escrita lá molda comportamento futuro, não apenas uma resposta.",
+    "source": "[^S5]",
+    "pitfall": "Presumir que memória persistente é puramente um recurso de conveniência e tratar seu caminho de escrita como não mais sensível que qualquer outra escrita de arquivo.",
+    "distractor_rationale": "Quem aprende avalia uma escrita por “este conteúdo é útil”, perdendo que o que torna memória persistente valiosa — carregamento automático repetido confiável — é exatamente o que torna uma escrita ruim compor com o tempo."
+  },
+  {
+    "term": "injeção de prompt persistente",
+    "def": "No que um fluxo de trabalho de desenvolvedor rotineiro virou no MemoryTrap — conteúdo injetado que não fica confinado a um turno mas é escrito onde será recarregado e reconfiado em sessões futuras.",
+    "source": "[^S5]",
+    "pitfall": "Presumir que uma injeção acabou assim que a resposta do turno atual parece normal, sem nada restante para limpar.",
+    "distractor_rationale": "Injeção de prompt comum é um evento de turno único, então quem aprende aplica aquele modelo mental aqui e perde que a parte “persistente” significa que o payload continua fazendo efeito depois que a sessão termina."
+  },
+  {
+    "term": "memória desatualizada",
+    "def": "Conteúdo em memória persistente que era uma vez correto mas não mais se aplica, e ainda é executado como uma regra atualmente válida simplesmente porque está parado na memória.",
+    "source": "[^S5]",
+    "pitfall": "Presumir que enquanto o conteúdo de memória não foi escrito maliciosamente, é seguro e pode ser confiado diretamente.",
+    "distractor_rationale": "Quem aprende iguala “risco” com “ataque malicioso”, perdendo o ponto da lição de que conteúdo bem-intencionado mas desatualizado produz a mesma classe de resultado que envenenamento."
+  },
+  {
+    "term": "superfícies confiáveis",
+    "def": "Lugares como memória, hooks e configuração que o sistema carrega repetidamente como fonte confiável, então conteúdo malicioso atingindo-as pode ser explorado repetidas vezes.",
+    "source": "[^S5]",
+    "pitfall": "Presumir que apenas o próprio recurso de memória é uma superfície de ataque, e que configuração de hooks e outros arquivos de configuração caem fora do que precisa defender.",
+    "distractor_rationale": "O título da lição centra na memória, o que estreita a guarda de quem aprende apenas para memória, perdendo que a fonte lista explicitamente hooks e configuração como o mesmo tipo de superfície confiável."
+  },
+  {
+    "term": "raciocínio futuro",
+    "def": "O que um atacante de fato influencia uma vez que conteúdo malicioso atinge uma superfície confiável — não esta única resposta, mas o raciocínio do modelo entre muitas sessões futuras.",
+    "source": "[^S5]",
+    "pitfall": "Presumir que se a resposta deste turno parece normal, o ataque não causou impacto real.",
+    "distractor_rationale": "“Nada pareceu errado este turno” é confundido com “o risco está descartado”, perdendo que o dano do envenenamento de memória aparece em sessões posteriores em vez de no momento da escrita."
+  },
+  {
+    "term": "configuração de hooks",
+    "def": "A configuração global que, ao lado da memória persistente, conteúdo malicioso também atingiu no caso MemoryTrap — outro armazenamento que o sistema carrega e confia repetidamente.",
+    "source": "[^S5]",
+    "pitfall": "Presumir que defender memória persistente contra envenenamento fecha todo caminho que um ataque estilo MemoryTrap poderia tomar.",
+    "distractor_rationale": "O enquadramento e a maior parte da discussão da lição centram na memória, então quem aprende negligencia que a fonte nomeia configuração de hooks como um alvo separado e independentemente atingido no mesmo ataque."
+  },
+  {
+    "term": "camada de instrução altamente confiável",
+    "def": "A camada que o conteúdo malicioso do MemoryTrap influenciou através do system prompt — uma fonte de instruções que o sistema concede alto grau de confiança.",
+    "source": "[^S5]",
+    "pitfall": "Presumir que o system prompt é texto fixo que o desenvolvedor escreveu e nunca poderia ser indiretamente influenciado por conteúdo em memória ou outro armazenamento persistente.",
+    "distractor_rationale": "O system prompt é geralmente pensado como conteúdo estático inteiramente sob controle do desenvolvedor, então quem aprende perde que pode ser montado de memória ou configuração envenenadas e carregar aquele conteúdo junto."
+  },
+  {
+    "term": "envenenamento de memória",
+    "def": "Conteúdo malicioso ativamente escrito em memória persistente ou outra superfície confiável, então armazenamento que deveria ser confiável em vez disso carrega o payload de um atacante.",
+    "source": "[^S5]",
+    "pitfall": "Presumir que envenenamento de memória e memória desatualizada são o mesmo risco surgindo da mesma forma.",
+    "distractor_rationale": "Ambas aparecem como “memória contém algo que não deveria ser confiado”, então são tratadas como uma coisa, perdendo a divisão explícita da lição por origem — uma escrita maliciosamente, uma simplesmente ficou desatualizada."
+  },
+  {
+    "term": "credenciais",
+    "def": "Chaves, senhas e tokens de acesso — conteúdo que, uma vez escrito em um arquivo de memória carregado automaticamente, é reexposto na janela toda sessão sem benefício correspondente.",
+    "source": "[^S5]",
+    "pitfall": "Presumir que porque uma chave foi usada legitimamente para esta tarefa, escrevê-la em um arquivo de memória no caminho é inofensivo.",
+    "distractor_rationale": "“Foi usada legitimamente aqui” é tomado como uma razão de que é segura para armazenar, perdendo que uma vez que uma credencial entra em armazenamento repetidamente carregado automaticamente ela é reexposta toda sessão independentemente de quão legítimo foi o uso original."
+  },
+  {
+    "term": "texto bruto não confiável",
+    "def": "Conteúdo de arquivo, texto web e saída de dependência que um agente lê ao fazer uma tarefa — dados de entrada para aquela única tarefa, não algo para ser copiado verbatim em memória persistente.",
+    "source": "[^S5]",
+    "pitfall": "Presumir que qualquer coisa que o agente leu por conta própria e achou útil pode ir direto em um arquivo de memória sem revisão adicional.",
+    "distractor_rationale": "“O agente leu por conta própria” é confundido com “é confiável”, perdendo que a origem real — uma dependência de terceiros, digamos — pode esconder instruções projetadas especificamente para serem escritas em memória."
+  },
+  {
+    "term": "Regras e fatos estáveis e confirmados",
+    "def": "Conteúdo de uma fonte claramente confiável que um humano confirmou — convenções de estilo de código, uma causa raiz estabelecida por investigação real — o tipo que vale a pena escrever em memória persistente.",
+    "source": "[^S5]",
+    "pitfall": "Decidir o que armazenar baseado apenas em se o conteúdo parece útil, sem perguntar se sua fonte é confiável e se foi confirmado.",
+    "distractor_rationale": "“Útil” e “confiável” são dois julgamentos separados que colapsam em um, perdendo a insistência da lição de que apenas conteúdo confirmado e estável merece ser automaticamente confiado por toda sessão futura."
+  },
+  {
+    "term": "ferramentas de leitura/escrita de memória",
+    "def": "O par de ferramentas (read_memory / write_memory) que deixa um agente escrever conteúdo que vale a pena manter para além da janela e recuperar o que armazenou antes.",
+    "source": "[^S3]",
+    "pitfall": "Presumir que escrever “o que armazenar” na descrição de write_memory impede completamente o agente de escrever conteúdo não confiável em memória.",
+    "distractor_rationale": "Uma descrição é guia em nível de prompt, mas é confundida como tendo a mesma confiabilidade que um bloqueio em nível de código."
+  },
+  {
+    "term": "raiz de memória",
+    "def": "O diretório dedicado aos arquivos de memória (MEMORY_ROOT no código); toda operação que as ferramentas de leitura/escrita de memória realizam está confinada a ele.",
+    "source": "[^S3]",
+    "pitfall": "Presumir que enquanto as ferramentas de memória são funcionalmente corretas, nenhuma verificação de limite de caminho separada é necessária e elas naturalmente nunca tocarão arquivos fora do diretório.",
+    "distractor_rationale": "“Lê e escreve corretamente” e “nunca lê ou escreve fora dos limites” são propriedades independentes que são confladas, perdendo que apenas uma verificação de limite dedicada garante a segunda."
+  },
+  {
+    "term": "write_memory",
+    "def": "A ferramenta que escreve texto em um arquivo sob a raiz de memória; sua descrição especifica o limite do “que armazenar” que a Lição 5 estabeleceu.",
+    "source": "[^S3]",
+    "pitfall": "Presumir que a verificação de limite de caminho de write_memory também lida com risco de conteúdo, então nada mais é necessário.",
+    "distractor_rationale": "A verificação de caminho e revisão de conteúdo resolvem dois problemas diferentes — uma guarda contra escrever fora do diretório de memória, a outra contra escrever conteúdo não confiável dentro dele, que é exatamente o que envenenamento de memória faz sem nunca deixar o diretório."
+  },
+  {
+    "term": "orientação em nível de prompt",
+    "def": "Uma regra expressa apenas na descrição de uma ferramenta, que guia a tendência comportamental do modelo mas não é imposta por código da forma que uma verificação de caminho é.",
+    "source": "[^S5]",
+    "pitfall": "Confundir “a regra está escrita na descrição” com “a regra é imposta”, e tratar o risco como fechado.",
+    "distractor_rationale": "Uma descrição claramente redigida parece uma garantia, perdendo que uma instrução injetada suficientemente persuasiva pode convencer o modelo do contrário — imposição real requer revisão de conteúdo ou confirmação humana."
+  },
+  {
+    "term": "reinjeção de memória entre sessões",
+    "def": "Lógica que ativamente lê arquivos de memória quando uma nova sessão começa e injeta seu conteúdo como uma mensagem inicial, então a memória está na janela desde o primeiríssimo turno.",
+    "source": "[^S3]",
+    "pitfall": "Presumir que uma vez que um arquivo de memória foi escrito em disco, o agente naturalmente verá seu conteúdo quando a próxima sessão começar.",
+    "distractor_rationale": "É aqui que as Lições 1 e 3 pousam concretamente: um arquivo parado em disco não aparece na janela de contexto da próxima requisição por si só, e apenas código que ativamente o lê e injeta o torna visível."
+  },
+  {
+    "term": "compactação feita à mão",
+    "def": "A implementação de ensino simplificada de compactação deste curso — disparar em um orçamento de caracteres, dividir o histórico em limites de ida-e-volta completos, depois fazer uma chamada ao modelo para gerar o resumo.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que compactação feita à mão é equivalente ao mecanismo oficial compact_20260112 e pode substituí-lo em um projeto real.",
+    "distractor_rationale": "A versão feita à mão de fato imita a abordagem do mecanismo oficial, então lê como funcionalmente equivalente, perdendo o lembrete explícito da lição de preferir os parâmetros nativos em projetos reais em vez de reinventá-los."
+  },
+  {
+    "term": "compact_20260112",
+    "def": "O identificador para o recurso de compactação nativa da Anthropic, disparando a 150K tokens por padrão — o mecanismo que a versão feita à mão da lição meramente imita.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que porque você pode escrever compactação à mão, não há razão para alcançar o parâmetro nativo quando o SDK o suporta.",
+    "distractor_rationale": "Escrevê-la você mesmo parece mais controlável e mais instrutivo, perdendo que a implementação nativa lida com limiares e casos extremos que a versão de ensino simplificada não lida."
+  },
+  {
+    "term": "clear_tool_uses_20250919",
+    "def": "O identificador para o recurso de limpeza de resultados de ferramenta nativa da Anthropic, disparando a 100K tokens por padrão e mantendo os resultados das últimas 3 chamadas.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que a lógica de limpeza feita à mão da lição é uma implementação idêntica de clear_tool_uses_20250919 e as duas são intercambiáveis.",
+    "distractor_rationale": "As duas parecem similares em efeito, obscurecendo a nota explícita da lição de que a versão feita à mão é uma implementação de ensino simplificada, não o próprio recurso beta nativo."
+  },
+  {
+    "term": "orçamento de caracteres",
+    "def": "Uma aproximação de ensino grosseira que mede uso de tokens por contagem de caracteres para decidir se o histórico precisa de compactação; não é uma contagem precisa de tokens.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que um orçamento de caracteres e uma contagem real de tokens são a mesma coisa, então contagens de caracteres podem ser usadas diretamente como contagens de tokens.",
+    "distractor_rationale": "Caracteres e tokens sentem intuitivamente intercambiáveis como unidades, perdendo a nota explícita da lição de que isto é uma simplificação de ensino e projetos reais precisam de um endpoint de contagem dedicado."
+  },
+  {
+    "term": "splitKeepingToolPairs",
+    "def": "O ajudante que decide onde cortar o histórico para compactação, recuando o ponto de corte até que um par tool_use / tool_result não esteja mais dividido entre o resumo e a porção mantida.",
+    "source": "[^S7]",
+    "pitfall": "Substituí-lo por uma fatia direta por contagem de mensagens, que pode deixar um tool_result na porção mantida enquanto seu tool_use correspondente é dobrado no resumo.",
+    "distractor_rationale": "Uma fatia direta parece equivalente e mais simples, e funciona bem até o ponto de corte por acaso cair em uma mensagem tool_result — ponto em que a estrutura do protocolo quebra e a próxima requisição dá erro."
+  },
+  {
+    "term": "mensagem de resumo",
+    "def": "A mensagem única que uma compactação feita à mão produz para substituir o histórico anterior, emendada à frente do array messages.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que a mensagem de resumo contém todo detalhe do histórico compactado e pode ser confiada para reconstruir o texto original.",
+    "distractor_rationale": "“Resumo” é casualmente tratado como um arquivo comprimido equivalente, perdendo que é fundamentalmente com perdas e o detalhe original não volta."
+  },
+  {
+    "term": "chamada de resumo",
+    "def": "A chamada extra ao modelo que uma compactação feita à mão faz para gerar o resumo — um dos custos concretos de compactar.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que geração de resumo é processamento puro de string local que não precisa de nenhuma chamada adicional ao modelo.",
+    "distractor_rationale": "“Comprimir histórico” soa como truncagem ou reformatação, perdendo que o conteúdo do resumo tem que ser destilado pelo modelo, que é por que custa outra chamada."
+  },
+  {
+    "term": "conteúdo de placeholder",
+    "def": "O texto substituto que uma função de limpeza feita à mão troca pelo conteúdo de tool_result antigo além da contagem a manter, deixando o tool_use_id intocado.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que uma vez que um resultado de ferramenta é limpo, a mensagem inteira incluindo seu tool_use_id desaparece do histórico.",
+    "distractor_rationale": "“Limpar” lê como deletar o registro inteiro, perdendo que a implementação da lição deliberadamente preserva tool_use_id e troca apenas o campo content."
+  },
+  {
+    "term": "contagem a manter",
+    "def": "O número de chamadas de ferramenta mais recentes cujos resultados completos são preservados pela limpeza; resultados além dela são substituídos por conteúdo de placeholder, ecoando o padrão nativo de 3.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que a lógica de limpeza feita à mão é totalmente equivalente à clear_tool_uses_20250919 nativa e pode substituí-la.",
+    "distractor_rationale": "As duas são similares em efeito, obscurecendo a nota da lição de que a versão feita à mão é uma implementação de ensino simplificada em vez do recurso beta nativo."
+  },
+  {
+    "term": "poda de histórico",
+    "def": "A capacidade que esta lição adiciona ao loop de execução para que uma conversa longa não inche para sempre, cobrindo tanto compactação feita à mão quanto limpeza de resultados de ferramenta.",
+    "source": "[^S2]",
+    "pitfall": "Presumir que implementar apenas um dos dois mecanismos — compactação sozinha, ou limpeza sozinha — é suficiente para lidar com todo tipo de inchaço.",
+    "distractor_rationale": "A lição conecta ambos no mesmo loop, e é fácil negligenciar que abordam duas fontes diferentes de inchaço — uma janela geral grande demais versus dados obsoletos e rebuscáveis — então nenhuma sozinha cobre todo caso."
+  },
+  {
+    "term": "TOOLS",
+    "def": "A tabela única registrando o schema e a função de implementação de cada ferramenta; o loop deriva toolSchemas e toolHandlers dela.",
+    "source": "[^S9]",
+    "pitfall": "Presumir que adicionar uma ferramenta à tabela TOOLS requer apenas escrever a função handler, sem schema correspondente necessário.",
+    "distractor_rationale": "O handler e o schema respondem “como roda” e “o que o modelo vê” respectivamente, e é fácil atender apenas ao primeiro, perdendo que ambos devem ser registrados juntos antes do modelo saber que a ferramenta existe ou como chamá-la."
+  },
+  {
+    "term": "loop com memória",
+    "def": "O loop terminado que esta lição constrói — o loop de execução do curso de tool calling com leitura/escrita de memória, reinjeção de memória, compactação feita à mão e limpeza de resultados de ferramenta todos encaixados.",
+    "source": "[^S9]",
+    "pitfall": "Presumir que uma vez que ferramentas de leitura/escrita de memória são conectadas o loop está completo, sem necessidade de poda de histórico por cima.",
+    "distractor_rationale": "“Consegue ler e escrever memória” parece a linha de chegada, perdendo o ponto da lição de que o loop com memória é o resultado combinado de leitura/escrita, reinjeção, compactação e limpeza — nenhum dos quais é opcional."
+  }
+]
