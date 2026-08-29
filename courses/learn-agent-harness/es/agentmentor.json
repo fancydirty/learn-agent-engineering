@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Producir la variante en español del curso learn-agent-harness para learn.agentmentor.dev, tomando como base la variante en inglés ya verificada. Es una traducción con pulido pedagógico a partir de en (no del zh): misma estructura de 6 lecciones, mismos slugs de lección, mismos ids de bloque interactivo y mismas posiciones de respuesta correcta, citas de las fuentes conservadas en su inglés original, código ejecutable con la lógica intacta y solo comentarios y cadenas visibles traducidos, y una prosa técnica natural en español, en tono profesional cercano y sin rigidez de traducción automática.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "El responsable ratificó el plan multilingüe: los seis idiomas en learn.agentmentor.dev, primero el inglés (ya completo, 12/12) y después el resto de idiomas como oleadas de traducción a partir de la base en inglés. La variante en inglés es la fuente de verdad verificada y corregida en su fundamentación, así que no hizo falta ninguna aclaración adicional."
+  },
+  "learnerModel": {
+    "targetReader": "Una persona desarrolladora que ha terminado los primeros seis cursos de esta serie, entiende un ida y vuelta de tool calling y la ventana de contexto finita, y quiere controlar el bucle que hace funcionar a un agente",
+    "knownConcepts": [
+      "Un ida y vuelta completo de tool calling (stop_reason: tool_use, tool_result)",
+      "La ventana de contexto como recurso finito que se acumula",
+      "La división básica del trabajo entre varios agentes",
+      "Lectura básica de JavaScript / Node.js",
+      "Escribir prompts estructurados"
+    ],
+    "unknownConcepts": [
+      "El límite harness/modelo y por qué el harness determina la fiabilidad",
+      "El bucle central dirigido por stop_reason como un while",
+      "Condiciones de parada explícitas frente a fiarse de que el modelo pare solo",
+      "Bucles muertos frente a giro en vacío frente a agotamiento de presupuesto",
+      "Los errores acumulados a lo largo de muchos turnos",
+      "Dónde va un checkpoint humano dentro del bucle",
+      "La válvula de aprobación para operaciones de alto impacto"
+    ],
+    "assumedEnvironment": "Un entorno de Node.js, acceso a una terminal y un editor de texto; no hace falta base de machine learning",
+    "firstIndependentAction": "Señalar una sesión real de agente y nombrar qué capa (modelo o harness) tomó cada decisión de control",
+    "noviceRamp": [
+      "La lección 1 traza primero el límite harness/modelo, anclado en «mismo modelo, distinto harness, resultado completamente distinto»",
+      "La lección 2 convierte el familiar ida y vuelta único en un bucle while, mostrando stop_reason como la condición del bucle",
+      "La lección 3 reemplaza el fiarse-de-que-el-modelo-pare por un conjunto explícito de condiciones de parada",
+      "La lección 4 nombra los tres modos de descontrol y le ajusta un mecanismo de resguardo a cada uno",
+      "La lección 5 cubre la intervención (interrumpir, redirigir, human-in-the-loop) como una unidad relativamente independiente, y la lección 6 ensambla el harness mínimo con las cuatro válvulas"
+    ]
+  },
+  "learnerBrief": "El lector objetivo ha terminado los primeros seis cursos, entiende el ida y vuelta de tool calling y la ventana de contexto finita, y lee JavaScript. Todavía no sabe qué es la capa del harness ni cómo mantener bajo control el bucle de un agente. El curso lo lleva a trazar la línea harness/modelo, escribir a mano el bucle dirigido por stop_reason, diseñar condiciones de parada explícitas, reconocer y atrapar los modos de descontrol, colocar checkpoints humanos delante de las operaciones irreversibles, y por último construir un harness mínimo con condiciones de parada, un tope de turnos, un tope de presupuesto, detección de giro en vacío y una válvula de aprobación.",
+  "scope": "Se cubre: el límite harness/modelo, el bucle central dirigido por stop_reason, las condiciones de parada explícitas, los modos de descontrol (bucles muertos, giro en vacío, agotamiento de presupuesto, errores acumulados) y sus mecanismos de resguardo, la intervención y la dirección (interrumpir, redirigir, human-in-the-loop, la válvula de aprobación delante de las operaciones irreversibles), y un harness mínimo ejecutable. No se cubre: los tutoriales de API de frameworks (Claude Agent SDK, LangChain), la orquestación multiagente (un curso aparte) y la evaluación/regresión (el curso de verificación). Profundidad: desde cero hasta escribir a mano un harness de agente controlado.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-harness/es/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Los diagramas se mantienen exactamente donde los usa el original (la forma del bucle y la colocación de las válvulas de control), con las etiquetas reescritas en español; no se añade ni se quita ninguno. Un bucle con válvulas es el tipo de estructura que un diagram enuncia mejor que la prosa, y la colocación heredada ya estaba validada en revisión.",
+    "weakestPoints": [
+      "La S5 (la hoja de ruta comunitaria de ingeniería de agentes) es asistida por IA y de autoridad de blog; el curso usa solo sus afirmaciones marco y lo dice en sources.md, pero conviene que quien lee trate sus datos concretos con cautela",
+      "La taxonomía de descontrol en tres vías (bucle muerto / giro en vacío / agotamiento de presupuesto) es pedagógica; los fallos reales suelen mezclar modos, lo que la lección 4 señala",
+      "El harness de la lección 6 es de nivel didáctico y de un solo proceso; los harness productivos necesitan persistencia y observabilidad, algo que se difiere a cursos posteriores de la serie",
+      "Al ser una traducción al español de una variante en inglés verificada, la deriva idiomática es el riesgo residual: las citas de las fuentes se conservaron verbatim en inglés y el código ejecutable mantiene la lógica idéntica, pero la prosa se vertió a un español natural en lugar de traducirse palabra por palabra, así que la revisión debe comprobar la equivalencia de significado con la lección en inglés"
+    ],
+    "followUpChecks": [
+      "Pasada de renderizado en learn.agentmentor.dev /es/agent-harness/... tras el despliegue: las 6 lecciones más el README, con las tarjetas interactivas hidratadas",
+      "Verificar que cada ancla [^Sn] de las lecciones en es tiene su bloque ## Sn correspondiente en el sources.md en es",
+      "Confirmar que los ids de los seis bloques de comprobación y las posiciones de respuesta correcta son idénticos byte a byte a la variante en inglés (c/b/b/a/b/a en orden de lección)",
+      "Volver a ejecutar el JS del harness del proyecto final y confirmar que las condiciones de parada, los contadores de presupuesto, la detección de giro en vacío y la válvula de aprobación HIGH_IMPACT coinciden con las salidas afirmadas"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "La persona que aprende puede escribir a mano un harness de agente mínimo —un bucle dirigido por stop_reason con condiciones de parada explícitas, un tope de turnos, un tope de presupuesto, detección de giro en vacío y una válvula de aprobación humana delante de las operaciones de alto impacto— y explicar qué modo de fallo existe para atrapar cada válvula.",
+    "interactionCheck": "Seis bloques agentmentor-check, uno por lección (intercambio modelo frente a harness en la L1, tool_use no ejecutado en la L2, insuficiencia del auto-stop en la L3, diagnóstico de búsqueda descontrolada en la L4, aprobar-antes-no-después en la L5, aprobación-antes-de-ejecutar en la L6), conservados desde la variante en inglés con ids, modos, número de opciones y posiciones de respuesta correcta idénticos; label, prompt, whyHere, el texto de las opciones y el feedback son traducciones al español ajustadas al malentendido propio de cada lección. Los ejercicios mantienen la estructura de niveles de la variante en inglés, con rubric, answer e hints en cada nivel.",
+    "learnerFitCheck": "El curso presupone los seis cursos previos: el protocolo de ida y vuelta, la ventana de contexto finita y la lectura de JavaScript. El límite del harness, la semántica del bucle, las condiciones de parada, la taxonomía de descontrol y los puntos de intervención se enseñan desde cero en orden de dependencia; la persona ensambla por primera vez el harness completo en la lección 6, después de todos los prerrequisitos. El primer ejercicio de la lección 1 solo pide un juicio de qué-capa-decidió-esto sobre una sesión real.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "Traducción al español de la variante en inglés verificada: la estructura, la fundamentación y las posiciones de respuesta se heredan del original verificado",
+      "Todos los bloques interactivos conservan id, mode, número de opciones y respuesta correcta con paridad byte a byte respecto al inglés",
+      "Todas las citas de las fuentes se mantienen en su inglés original (política de citas ratificada por el responsable)",
+      "Las referencias entre cursos usan los títulos en español y el código del harness del proyecto final mantiene la lógica idéntica"
+    ]
+  },
+  "nextSteps": [
+    "Ejecutar course-guard sobre la variante en es y corregir lo que señale",
+    "Desplegar learn.agentmentor.dev y comprobar que las páginas /es se renderizan con las tarjetas interactivas hidratadas",
+    "Producir las variantes de idioma restantes usando esta misma variante en inglés como base de traducción",
+    "Animar a quienes aprenden a incorporar condiciones de parada y una válvula de aprobación a un bucle de agente real de su propio proyecto como proyecto de consolidación tras el curso"
+  ],
+  "memoryBoundary": "Este agentmentor.json es un registro de estado local del curso (course-local state record), almacenado únicamente en el directorio del curso para las comprobaciones de calidad y el seguimiento de la ruta de aprendizaje. Nunca se escribe de vuelta en la memoria a largo plazo de Claude Code ni de ningún sistema de IA anfitrión, y no afecta a otros cursos ni a otras conversaciones."
+}
