@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Produzir a variante em português do Brasil do curso learn-agent-workflows para o learn.agentmentor.dev, a partir da variante em inglês já verificada. É uma tradução com polimento pedagógico a partir do en (não do zh): mesma estrutura de 6 lições, mesmos slugs de lição, mesmos ids de bloco interativo e mesmas posições de resposta correta, citações das fontes mantidas no inglês original, código executável com a lógica intacta e apenas comentários e strings visíveis traduzidos, e uma prosa técnica natural em português, em tom profissional próximo e sem a rigidez de tradução automática.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "O responsável ratificou o plano multilíngue: os seis idiomas no learn.agentmentor.dev, primeiro o inglês (já completo) e depois os demais idiomas como ondas de tradução a partir da base em inglês. A variante em inglês é a fonte de verdade verificada e com a fundamentação corrigida, então nenhum esclarecimento adicional foi necessário."
+  },
+  "learnerModel": {
+    "targetReader": "Uma pessoa desenvolvedora que já usou o Claude Code ou uma ferramenta de agente de IA parecida, entende fluxogramas e máquinas de estado básicos e quer projetar automações complexas de várias etapas",
+    "knownConcepts": [
+      "Uso básico do Claude Code ou de uma ferramenta de IA parecida",
+      "O padrão de agente em conversa única",
+      "Conceitos básicos de fluxograma (nós, setas, ramificações)",
+      "Conceitos básicos de máquina de estados (estados, transições)",
+      "Fundamentos de pelo menos uma linguagem de programação (consegue ler JavaScript)",
+      "Comandos básicos de terminal",
+      "Noções de Git e de controle de versão"
+    ],
+    "unknownConcepts": [
+      "O que separa de verdade um workflow de uma conversa avulsa",
+      "O conceito de orquestração",
+      "Subagentes e o padrão de fan-out e agregação",
+      "Estratégias de decomposição de tarefas (sequencial, paralela, híbrida)",
+      "Estado do workflow versus contexto do agente",
+      "Checkpoints e recuperação",
+      "Erros transitórios versus permanentes",
+      "Backoff exponencial e jitter",
+      "O padrão circuit breaker",
+      "Ações compensatórias e o padrão Saga"
+    ],
+    "assumedEnvironment": "Consegue rodar código JavaScript/Node.js, tem acesso a um terminal e a um editor de texto, e consegue ler e acompanhar exemplos de código",
+    "firstIndependentAction": "Identificar uma tarefa repetitiva do próprio trabalho que um workflow poderia automatizar",
+    "noviceRamp": [
+      "A lição 1 parte de uma dor concreta (estouro de contexto, explicar o mesmo processo de novo a cada vez) e usa o exemplo de um pipeline de code review para construir a intuição de por que os workflows existem",
+      "A lição 2 monta o modelo mental passo a passo com quatro blocos de construção simples (passos, estado, ramificações, loops), cada um com um exemplo de código",
+      "A lição 3 ensina a decomposição de tarefas de forma sistemática, do simples ao complexo (primeiro sequencial, depois paralela, depois híbrida), com um exemplo completo por estratégia",
+      "As lições 4 e 5 aprofundam a gestão de estado e o tratamento de erros — as chaves da confiabilidade de um workflow — como unidades relativamente independentes, que podem ser estudadas em separado",
+      "A lição 6 junta tudo em três cenários reais que mostram workflows completos, prontos para produção"
+    ]
+  },
+  "learnerBrief": "O leitor-alvo é uma pessoa desenvolvedora que já usa o Claude Code e quer projetar automações complexas de várias etapas. Ela entende fluxogramas e máquinas de estado básicos e tem experiência em programação, mas não conhece orquestração de workflows, estratégias de decomposição de tarefas nem as boas práticas de gestão de estado e tratamento de erros. O curso a leva a projetar e construir sozinha workflows prontos para produção: entender por que os workflows importam, dominar a decomposição, projetar estado e checkpoints, montar um tratamento de erros sólido e estudar padrões reais por meio de cenários resolvidos.",
+  "scope": "Coberto: o conceito de workflow e onde ele se aplica, orquestração versus conversa avulsa, os quatro blocos de construção (passos, estado, ramificações, loops), três estratégias de decomposição (sequencial, paralela, híbrida), identificação de dependências, estado do workflow versus contexto do agente, três padrões de gestão de estado (variáveis do script, checkpoints, armazenamento externo), práticas de passagem de contexto, classificação de erros (transitórios versus permanentes), estratégias de retry (backoff exponencial, jitter), o padrão circuit breaker, ações compensatórias e o padrão Saga, idempotência, três cenários reais (refatoração de código, geração de documentação, automação de testes) e observabilidade para depuração. Não coberto: a instalação ou o uso básico do Claude Code, conhecimento avançado específico de uma linguagem, motores de workflow distribuídos (Temporal, Airflow), editores visuais de workflow ou o deploy de workflows em Kubernetes. Profundidade: do zero até projetar e entregar de forma autônoma workflows de várias etapas prontos para produção.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-workflows/pt-BR/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Os diagramas mermaid ficam exatamente onde a variante em inglês os usa (estrutura do workflow, ramificações e a visualização da decomposição), com os rótulos dos nós vertidos para o português. Nenhum diagram foi acrescentado ou removido: as decisões de posicionamento já passaram por revisão no original, e o formato de um workflow é justamente o conteúdo em que um diagram ensina melhor do que a prosa.",
+    "weakestPoints": [
+      "Os três cenários da lição 6 são longos, e quem lê na diagonal pode não perceber que cada cenário reaproveita padrões das lições 3 a 5 — as referências cruzadas da recapitulação amenizam isso",
+      "O código de retry e backoff usa exemplos simplificados em memória, e não uma fila ou um agendador de verdade; é intencional, mas quem for rodar cargas de produção precisa adaptá-los",
+      "Motores de orquestração avançados (Temporal, Airflow) estão explicitamente fora de escopo, então quem precisa de garantias distribuídas recebe indicações, não instrução",
+      "Por ser uma tradução da variante em inglês verificada, o risco residual é o desvio idiomático: cada citação das fontes foi mantida verbatim em inglês e conferida byte a byte, e o código executável manteve a lógica idêntica, mas a prosa foi vertida para um português natural em vez de traduzida palavra por palavra, então a revisão deve conferir a equivalência de sentido com a lição em inglês, e não o alinhamento frase a frase"
+    ],
+    "followUpChecks": [
+      "Passada de renderização completa no learn.agentmentor.dev /pt-BR/agent-workflows/... após o deploy: as 6 lições mais o README, com os cards interativos hidratados e os diagramas mermaid renderizando",
+      "Rodar o course-guard no diretório pt-BR e conferir o attach dos termos do glossário (o glossary.json é produzido por um agente posterior, então essa checagem ainda está pendente)",
+      "Verificar que cada âncora [^Sn] das lições em pt-BR tem o bloco ## Sn correspondente no sources.md em pt-BR",
+      "Confirmar que os ids dos blocos de checagem e as posições de resposta correta são idênticos byte a byte à variante em inglês (b/b/b/b/b nas lições 1 a 5)",
+      "Reexecutar os exemplos em JS e confirmar que as saídas batem com os logs afirmados no texto"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "Quem aprende consegue pegar uma tarefa real de várias etapas do próprio trabalho, decompô-la em um workflow com passos, estado, ramificações e tratamento de erros explícitos, implementá-la com checkpoints para que uma execução interrompida continue de onde parou em vez de recomeçar, e justificar cada decisão de retry e de compensação.",
+    "interactionCheck": "Cinco lições trazem um bloco agentmentor-check cada (adequação do cenário na lição 1, lógica de ramificação na 2, estratégia de decomposição na 3, posicionamento de checkpoint na 4 e estratégia de retry na 5), preservados da variante em inglês com ids, modes, número de opções e posições de resposta correta idênticos; label, prompt, whyHere, o texto das opções e o feedback são traduções para o português ajustadas ao mal-entendido próprio de cada lição. Os exercícios mantêm a estrutura de níveis da variante em inglês, com rubric, answer e hints em cada nível.",
+    "learnerFitCheck": "O curso pressupõe apenas o que o modelo de aprendiz concede: ler JavaScript, intuição básica de fluxograma e máquina de estados, e uso prévio do Claude Code. Orquestração, decomposição, checkpoints e a taxonomia de erros são ensinados do zero e em ordem de dependência; quem aprende só monta um workflow inteiro na lição 6, depois que todos os pré-requisitos foram apresentados. O primeiro exercício da lição 1 pede apenas uma reflexão sobre o próprio trabalho.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "Tradução para o português do Brasil da variante em inglês verificada: estrutura, fundamentação e posições de resposta herdadas do original verificado",
+      "Todos os blocos interativos preservam id, mode, número de opções e resposta correta com paridade byte a byte em relação ao inglês",
+      "Todas as citações das fontes são mantidas no inglês original (política de citações ratificada pelo responsável) e conferidas byte a byte contra o sources.md",
+      "Os exemplos executáveis em JS mantêm a lógica idêntica; só comentários e strings visíveis para quem usa foram traduzidos"
+    ]
+  },
+  "nextSteps": [
+    "Rodar o course-guard na variante em pt-BR e corrigir o que ele apontar",
+    "Produzir o glossary.json em pt-BR (agente separado, despachado depois que as lições estiverem finalizadas) e conferir o attach de cada termo nas lições",
+    "Fazer o deploy do learn.agentmentor.dev e conferir que as páginas /pt-BR renderizam com os cards interativos hidratados e os diagramas mermaid",
+    "Fechar a onda de locales com uma passada de revisão cruzada entre ko, es e pt-BR contra a base em inglês"
+  ],
+  "memoryBoundary": "Este agentmentor.json é um registro de estado local do curso (course-local state record), armazenado apenas no diretório do curso para as checagens de qualidade e o acompanhamento da trilha de aprendizado. Ele nunca é escrito de volta na memória de longo prazo do Claude Code ou de qualquer sistema de IA hospedeiro, e não afeta outros cursos nem outras conversas."
+}

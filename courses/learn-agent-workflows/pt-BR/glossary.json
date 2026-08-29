@@ -1,0 +1,422 @@
+[
+  {
+    "term": "fluxo de trabalho",
+    "def": "Um script executável que quebra uma tarefa complexa em passos, delega cada passo a um agente novo e mantém a coordenação e o fluxo de controle por conta própria.",
+    "source": "[^S2]",
+    "pitfall": "Pensar que um fluxo de trabalho é só várias conversas encadeadas, quando sua essência é que o script guarda o fluxo de controle (loops, ramificações) em vez de deixar o agente improvisar o próximo movimento.",
+    "distractor_rationale": "Iniciantes confundem um fluxo de trabalho com 'chamar um agente várias vezes' e perdem o valor da orquestração determinística: a mesma entrada sempre produz o mesmo caminho de execução."
+  },
+  {
+    "term": "orquestração",
+    "def": "O script decidindo a ordem, o paralelismo e as ramificações de uma tarefa, em vez de o agente decidir o fluxo de controle por conta própria.",
+    "source": "[^S3]",
+    "pitfall": "Deixar o agente decidir 'o que fazer em seguida' em vez do script, o que torna o caminho de execução imprevisível, difícil de depurar e impossível de reproduzir.",
+    "distractor_rationale": "'Deixe a IA planejar' parece inteligente, mas produção precisa de previsibilidade: fluxo de controle pertence ao código, raciocínio pertence ao agente."
+  },
+  {
+    "term": "conversa única",
+    "def": "Um agente concluindo uma tarefa dentro de uma única janela de contexto, onde todo o histórico e todos os resultados vivem dentro dessa conversa.",
+    "source": "[^S1]",
+    "pitfall": "Usar uma conversa única para uma tarefa que abrange mais de 50 arquivos ou vários estágios de validação, o que estoura a janela de contexto ou faz o agente esquecer trabalho anterior.",
+    "distractor_rationale": "Uma conversa única serve para tarefas pequenas, mas trabalho complexo excede a janela de contexto e precisa de um fluxo de trabalho para decompô-lo."
+  },
+  {
+    "term": "subagente",
+    "def": "A instância de agente independente que um passo de fluxo de trabalho inicia, com sua própria janela de contexto, que conclui uma subtarefa e retorna um resultado.",
+    "source": "[^S3]",
+    "pitfall": "Esperar que um subagente herde o contexto do pai automaticamente, quando cada subagente é independente e precisa que o contexto seja passado explicitamente.",
+    "distractor_rationale": "O isolamento de um subagente é um recurso, não um defeito: ele evita poluição de contexto para que cada passo veja apenas informação relevante."
+  },
+  {
+    "term": "fan-out-reduce",
+    "def": "O coração da decomposição paralela: espalhar trabalho entre muitos subagentes paralelos (fan out), depois mesclar todos os resultados em uma única saída (reduce).",
+    "source": "[^S4]",
+    "pitfall": "Esquecer o passo reduce, deixando resultados paralelos espalhados sem saída final unificada.",
+    "distractor_rationale": "Fan-out é intuitivo, mas reduce costuma ser ignorado; sem ele, 100 resultados paralelos são 100 fragmentos, não uma resposta."
+  },
+  {
+    "term": "passo",
+    "def": "A operação atômica de um fluxo de trabalho, ou uma chamada de agente (precisa de raciocínio) ou uma função determinística (transformações de dados, matemática).",
+    "source": "[^S5]",
+    "pitfall": "Fazer o agente executar filtragem simples de array ou somar números, quando essas operações determinísticas deveriam ser funções simples e o agente deveria focar em raciocínio.",
+    "distractor_rationale": "Raciocínio de agente é caro e pouco confiável; operações determinísticas rodam mais rápido, mais barato e de forma mais confiável como código."
+  },
+  {
+    "term": "estado",
+    "def": "Todas as informações que um fluxo de trabalho atualmente guarda: em que passo está, o resultado de cada passo e o que precisa em seguida, como a memória do fluxo de trabalho.",
+    "source": "[^S12]",
+    "pitfall": "Confundir estado com histórico de conversa do agente; estado são dados estruturados e persistidos, enquanto histórico de conversa é truncado e esquecido.",
+    "distractor_rationale": "Histórico de conversa é pouco confiável (estoura e é esquecido), então estado é a memória confiável do fluxo de trabalho e deve ser gerenciado explicitamente."
+  },
+  {
+    "term": "contexto",
+    "def": "A informação passada para uma única chamada de agente, seletivamente extraída do estado do fluxo de trabalho, contendo apenas o que aquele passo precisa.",
+    "source": "[^S15]",
+    "pitfall": "Passar todo o estado para cada chamada de agente; quanto maior o contexto, mais o agente se distrai, e a qualidade do raciocínio cai enquanto o custo sobe.",
+    "distractor_rationale": "'Quanto mais o agente sabe, melhor' está errado; um contexto enxuto mantém o agente focado na tarefa atual e melhora a qualidade."
+  },
+  {
+    "term": "estado do fluxo de trabalho",
+    "def": "Todas as informações sobre a tarefa atual, passadas entre passos mas não entre sessões, e persistíveis em um banco de dados para recuperação.",
+    "source": "[^S11]",
+    "pitfall": "Confiar no agente para lembrar 'estamos no passo 3 agora'; agentes esquecem, então estado deve viver explicitamente em variáveis de script ou banco de dados.",
+    "distractor_rationale": "A memória de um agente é pouco confiável, então estado do fluxo de trabalho deve ser externalizado, estruturado e persistível."
+  },
+  {
+    "term": "Estado de sessão",
+    "def": "O histórico de conversa e o contexto transitório que o agente gerencia para si mesmo, que o fluxo de trabalho não precisa rastrear.",
+    "source": "[^S11]",
+    "pitfall": "Tentar gerenciar o estado de sessão do agente de dentro do fluxo de trabalho; esse é o trabalho do sistema de agentes, e o fluxo de trabalho deveria gerenciar apenas estado de tarefa.",
+    "distractor_rationale": "Separação de responsabilidades: o fluxo de trabalho rastreia progresso de tarefa, o agente rastreia histórico de conversa, e os dois não devem ser misturados."
+  },
+  {
+    "term": "checkpoint",
+    "def": "Salvar estado do fluxo de trabalho em armazenamento externo depois de um passo importante, para que uma queda retome do checkpoint mais recente em vez de começar do zero.",
+    "source": "[^S12]",
+    "pitfall": "Fazer checkpoint depois de cada operação minúscula; checkpoints excessivamente frequentes desaceleram o fluxo de trabalho, então salve depois de operações caras ou antes de operações irreversíveis.",
+    "distractor_rationale": "Checkpoints carregam overhead (I/O de disco, serialização), então devem ser colocados estrategicamente, não espalhados por todo lugar."
+  },
+  {
+    "term": "máquina de estados",
+    "def": "Modelar um fluxo de trabalho com estados discretos (init, processing, completed) e regras de transição explícitas, persistindo cada transição.",
+    "source": "[^S11]",
+    "pitfall": "Usar strings para fases sem definir transições legais, o que deixa o fluxo de trabalho alcançar um estado ilegal (como pular de completed de volta para init).",
+    "distractor_rationale": "Uma máquina de estados força você a pensar sobre quais transições são legais, mantendo o fluxo de trabalho fora de uma bagunça irrecuperável."
+  },
+  {
+    "term": "decomposição sequencial",
+    "def": "Uma estratégia de decomposição que divide uma tarefa em passos que devem rodar em ordem, cada um dependendo da saída do passo anterior.",
+    "source": "[^S18]",
+    "pitfall": "Usar decomposição sequencial para tudo, perdendo oportunidades paralelas e tornando o fluxo de trabalho desnecessariamente lento.",
+    "distractor_rationale": "Decomposição sequencial é clara mas ineficiente; identifique oportunidades paralelas primeiro e só rode passos em ordem quando existir dependência real."
+  },
+  {
+    "term": "decomposição paralela",
+    "def": "Uma estratégia de decomposição que divide uma tarefa em subtarefas independentes que podem rodar ao mesmo tempo, com resultados mesclados no final.",
+    "source": "[^S18]",
+    "pitfall": "Rodar tarefas dependentes em paralelo, então passo B precisa do resultado do passo A mas A não terminou, produzindo uma corrida de dados.",
+    "distractor_rationale": "Paralelismo pressupõe independência; você deve confirmar que não há dependências de dados entre tarefas antes de rodá-las em paralelo."
+  },
+  {
+    "term": "decomposição híbrida",
+    "def": "Uma estratégia de decomposição onde fases de alto nível rodam em ordem e os passos internos de cada fase rodam em paralelo, combinando ambas as forças.",
+    "source": "[^S18]",
+    "pitfall": "Ir totalmente sequencial ou totalmente paralelo, ignorando que a maioria das tarefas reais é híbrida, com dependências e oportunidades paralelas.",
+    "distractor_rationale": "Tarefas reais costumam ser híbridas: fases dependem umas das outras (devem ser ordenadas) enquanto subtarefas dentro de uma fase são independentes (podem rodar em paralelo)."
+  },
+  {
+    "term": "dependência",
+    "def": "A relação de entrada/saída entre passos; se passo B precisa da saída do passo A, B depende de A e não pode rodar até A terminar.",
+    "source": "[^S17]",
+    "pitfall": "Esquecer de marcar dependências ao esboçar o fluxo, então você só descobre durante a implementação que a ordem dos passos está errada e precisa redesenhar.",
+    "distractor_rationale": "Dependências decidem ordem de execução e potencial paralelo, então devem ser marcadas explicitamente durante a fase de design."
+  },
+  {
+    "term": "chain-of-thought",
+    "def": "Uma técnica de prompting que pede ao LLM para mostrar seu raciocínio intermediário ao decompor ou raciocinar, em vez de pular direto para uma resposta.",
+    "source": "[^S16]",
+    "pitfall": "Esperar que o LLM decomponha uma tarefa complexa com precisão sem chain-of-thought; tarefas complexas precisam de uma cadeia de raciocínio, e um pedido direto tende a gerar decomposições incompletas ou erradas.",
+    "distractor_rationale": "Chain-of-thought faz o LLM expor seu raciocínio, melhorando a qualidade da decomposição em tarefas complexas."
+  },
+  {
+    "term": "zero-shot",
+    "def": "Pedir ao LLM para completar uma tarefa sem exemplos, contando com seu conhecimento pré-treinado.",
+    "source": "[^S16]",
+    "pitfall": "Usar um prompt zero-shot enquanto espera uma decomposição no seu formato específico; sem exemplos, o formato de saída pode não corresponder à sua expectativa.",
+    "distractor_rationale": "Zero-shot serve para tarefas gerais, mas saída em um formato ou estrutura específica é melhor guiada com exemplos few-shot."
+  },
+  {
+    "term": "erro transitório",
+    "def": "Um erro temporário, geralmente de flutuação de rede, disputa de recursos ou sobrecarga breve, que pode ter sucesso em uma retentativa.",
+    "source": "[^S8]",
+    "pitfall": "Repetir todo erro como se fosse transitório; repetir um erro permanente (como permissões ausentes) só desperdiça recursos.",
+    "distractor_rationale": "Retentativa serve para erros transitórios; erros permanentes precisam de correção de configuração ou código, então distinguir os dois é a base de tratamento de erros eficiente."
+  },
+  {
+    "term": "erro permanente",
+    "def": "Um erro persistente, geralmente de configuração incorreta, permissões ausentes ou bug de código, que não terá sucesso em retentativa.",
+    "source": "[^S9]",
+    "pitfall": "Repetir um erro permanente três vezes antes de desistir; você deveria falhar rápido no momento em que é identificado como permanente, para evitar desperdiçar tempo.",
+    "distractor_rationale": "A marca de um erro permanente é 'repetir não ajuda'; falhar cedo permite que o desenvolvedor corrija a causa raiz rapidamente."
+  },
+  {
+    "term": "backoff exponencial",
+    "def": "Uma estratégia de retentativa onde o atraso de cada retentativa cresce exponencialmente (1s, 2s, 4s, 8s...), dando ao serviço mais tempo para se recuperar.",
+    "source": "[^S8]",
+    "pitfall": "Repetir com atraso fixo; se o serviço está sobrecarregado, todo cliente repetindo de uma vez piora a sobrecarga (o efeito thundering-herd).",
+    "distractor_rationale": "Retrocesso exponencial aumenta gradualmente o atraso, aliviando pressão e dando ao serviço tempo para se recuperar, razão pela qual é a estratégia de retentativa recomendada."
+  },
+  {
+    "term": "jitter",
+    "def": "Adicionar uma perturbação aleatória ao atraso de retentativa para que vários clientes não repitam no mesmo instante exato, espalhando a carga.",
+    "source": "[^S8]",
+    "pitfall": "Usar retrocesso exponencial sem jitter; vários clientes ainda podem repetir no mesmo momento (todos esperando 4 segundos), causando um pico de tráfego.",
+    "distractor_rationale": "Jitter melhora o retrocesso exponencial ao randomizar o timing de retentativa, reduzindo ainda mais a pressão sobre o serviço."
+  },
+  {
+    "term": "circuit breaker",
+    "def": "Quando a taxa de erro cruza um limiar, ele pausa chamadas ao serviço que está falhando e falha rápido, evitando recursos desperdiçados e falha em cascata.",
+    "source": "[^S7]",
+    "pitfall": "Continuar a repetir um serviço que continua falhando, desperdiçando recursos e arrastando o fluxo de trabalho para baixo, quando um circuit breaker deveria falhar rápido.",
+    "distractor_rationale": "Um circuit breaker reconhece o padrão 'o serviço já está fora', para retentativas inúteis e protege o resto do sistema."
+  },
+  {
+    "term": "ação compensatória",
+    "def": "Uma operação que desfaz um passo concluído, então quando um fluxo de trabalho falha no meio do caminho ele reverte passos anteriores para manter dados consistentes.",
+    "source": "[^S6]",
+    "pitfall": "Supor que compensação é apenas um ROLLBACK de banco de dados; ações entre sistemas (um email já enviado, uma API de terceiros já chamada) não podem ser verdadeiramente desfeitas, então compensação é 'notificar para cancelar', não 'reverter'.",
+    "distractor_rationale": "Ações compensatórias são a resposta prática para transações distribuídas, mas não são mágica; algumas ações não podem ser desfeitas e só podem ser corrigidas compensatoriamente."
+  },
+  {
+    "term": "padrão Saga",
+    "def": "Definir uma ação para frente e uma ação compensatória para cada passo, e em caso de falha rodar as compensações em reverso para alcançar uma transação distribuída.",
+    "source": "[^S6]",
+    "pitfall": "A compensação em si falha mas nada a trata; você precisa registrar a falha da compensação em log e sinalizá-la para um humano.",
+    "distractor_rationale": "A Saga é um padrão elegante, mas compensações também podem falhar (rede, permissões), então deve haver um plano de contingência."
+  },
+  {
+    "term": "idempotência",
+    "def": "A propriedade onde rodar uma operação N vezes tem o mesmo efeito que rodá-la uma vez, não produzindo efeitos colaterais em repetições.",
+    "source": "[^S9]",
+    "pitfall": "Usar uma operação de incremento (counter++) em vez de atribuição (set counter = X); incrementos não são idempotentes e acumulam em repetição.",
+    "distractor_rationale": "Idempotência torna retentativas seguras: em um timeout de rede você não consegue dizer se a operação teve sucesso, e uma operação idempotente pode simplesmente ser repetida."
+  },
+  {
+    "term": "ramificação",
+    "def": "Um fluxo de trabalho escolhendo um caminho de execução diferente baseado em uma condição, como uma instrução if-else ou switch.",
+    "source": "[^S2]",
+    "pitfall": "Deixar o agente decidir lógica de ramificação; se a condição é inequívoca (uma comparação numérica, um booleano), use o if-else do script em vez de perguntar ao agente.",
+    "distractor_rationale": "Uma ramificação determinística (no script) é mais rápida, mais confiável e mais previsível; o agente só deveria tomar decisões de ramificação que exigem compreensão e raciocínio."
+  },
+  {
+    "term": "loop",
+    "def": "Um fluxo de trabalho repetindo a mesma operação, como um loop for (sobre cada elemento) ou um loop while (até uma condição valer).",
+    "source": "[^S2]",
+    "pitfall": "Deixar o agente decidir 'se continuar' dentro de um loop; se a condição é clara (como a lista de arquivos está esgotada), use o controle de loop do script.",
+    "distractor_rationale": "Controle de loop é lógica determinística e deve viver no script, não depender do julgamento do agente."
+  },
+  {
+    "term": "limite de concorrência",
+    "def": "Limitar quantas tarefas paralelas rodam de uma vez para evitar esgotar recursos (arquivos abertos demais, um pool de conexões saturado).",
+    "source": "[^S8]",
+    "pitfall": "Usar Promise.all() para processar 1000 arquivos em paralelo, o que pode exceder o limite de handles de arquivo, limite de memória ou limite de taxa de API.",
+    "distractor_rationale": "Concorrência ilimitada parece rápida mas esgota recursos e trava; processamento em lote (digamos 10 por vez) mantém concorrência sob controle."
+  },
+  {
+    "term": "contrato de entrada/saída",
+    "def": "Cada passo definindo claramente que entrada aceita e que saída retorna, tão preciso quanto uma assinatura de função.",
+    "source": "[^S6]",
+    "pitfall": "Tipos de entrada/saída difusos em um passo (como data: any), o que dificulta localizar o problema quando passagem de dados entre passos dá errado.",
+    "distractor_rationale": "Um contrato claro torna o fluxo de trabalho fácil de entender e depurar: quando passo B quebra, você imediatamente sabe que a saída do passo A estava no formato errado."
+  },
+  {
+    "term": "observabilidade",
+    "def": "A capacidade de um fluxo de trabalho responder perguntas como 'quão longe estou, que erros encontrei, onde estão os gargalos de desempenho'.",
+    "source": "[^S20]",
+    "pitfall": "Um fluxo de trabalho sem logs ou saída de progresso roda como uma caixa preta; você não consegue dizer quão longe chegou, quanto tempo falta ou se está travado.",
+    "distractor_rationale": "Observabilidade não é opcional; é um requisito para fluxos de trabalho de nível de produção, já que você só consegue depurar e otimizar o que consegue ver."
+  },
+  {
+    "term": "acompanhamento de progresso",
+    "def": "Registrar quantos passos um fluxo de trabalho concluiu, quantos faltam e quando é esperado que termine.",
+    "source": "[^S12]",
+    "pitfall": "Só imprimir no início e no fim, sem progresso no meio, então o usuário não consegue dizer se o fluxo de trabalho está rodando ou travado.",
+    "distractor_rationale": "Experiência do usuário: um fluxo de trabalho de longa duração deve mostrar progresso, ou o usuário vai suspeitar que travou e interrompê-lo."
+  },
+  {
+    "term": "log de erros",
+    "def": "Um registro de todo erro que ocorreu no fluxo de trabalho, incluindo nome do passo, tipo de erro, mensagem de erro e timestamp.",
+    "source": "[^S7]",
+    "pitfall": "Um try-catch que captura o erro mas só imprime error.message, perdendo a pilha e o contexto e dificultando localizar o problema.",
+    "distractor_rationale": "Um log de erros completo deveria carregar qual passo, que erro, o estado no momento e a pilha completa, todos essenciais para depuração."
+  },
+  {
+    "term": "profiling de desempenho",
+    "def": "Medir quanto tempo cada passo leva para identificar o gargalo de desempenho de um fluxo de trabalho.",
+    "source": "[^S20]",
+    "pitfall": "Otimizar um fluxo de trabalho por feeling; você deveria primeiro medir a duração de cada passo e otimizar o mais lento para fazer diferença real.",
+    "distractor_rationale": "O primeiro passo da otimização de desempenho é medição; encontre o gargalo antes de otimizar, já que otimização cega costuma mirar no lugar errado."
+  },
+  {
+    "term": "fluxo de controle",
+    "def": "A inovação central de um fluxo de trabalho: em vez de o agente decidir o que fazer em seguida, o script decide qual agente chamar em seguida.",
+    "source": "[^S2]",
+    "pitfall": "Entregar ao agente uma lista de tarefas e deixá-lo decidir a ordem, o que perde o determinismo do fluxo de controle então cada execução pode diferir.",
+    "distractor_rationale": "Fluxo de controle invertido é a diferença essencial entre um fluxo de trabalho e uma conversa única; o script guardando controle torna execução previsível."
+  },
+  {
+    "term": "orquestração determinística",
+    "def": "O caminho de execução de um fluxo de trabalho é decidido pelo fluxo de controle do script (loops, ramificações), então a mesma entrada gera o mesmo caminho.",
+    "source": "[^S2]",
+    "pitfall": "Projetar o fluxo de trabalho para que 'o agente decida o próximo passo', fazendo cada execução tomar um caminho diferente, impossível de reproduzir e difícil de depurar.",
+    "distractor_rationale": "Determinismo é um requisito de produção: entrada idêntica deveria seguir um caminho idêntico para que você possa reproduzir bugs e verificar correções."
+  },
+  {
+    "term": "janela de contexto",
+    "def": "A quantidade máxima de texto que um agente pode ver de uma vez, geralmente centenas de milhares a um milhão de tokens; além disso deve truncar ou esquecer.",
+    "source": "[^S3]",
+    "pitfall": "Esperar que o agente lembre o conteúdo de 100 arquivos em uma conversa única; a janela de contexto é finita e estoura virando esquecimento.",
+    "distractor_rationale": "O limite da janela de contexto é o motivo pelo qual fluxos de trabalho existem: uma tarefa grande demais para uma janela deve ser decomposta em vários passos."
+  },
+  {
+    "term": "explosão do contexto",
+    "def": "Quando o resultado de cada passo continua se acumulando no contexto, então ele cresce sem limite até exceder o limite ou degradar desempenho.",
+    "source": "[^S14]",
+    "pitfall": "Acumular contexto: adicionar o resultado de cada passo ao objeto de contexto, então o contexto do último passo guarda todo histórico e pode alcançar centenas de milhares de tokens.",
+    "distractor_rationale": "Contexto deveria ser gerenciado com reinicialização: cada passo vê apenas o que precisa, e resultados históricos vivem no estado do fluxo de trabalho em vez de no contexto."
+  },
+  {
+    "term": "contexto reiniciado",
+    "def": "Cada passo limpa o contexto e passa apenas o que o passo atual precisa, evitando explosão de contexto.",
+    "source": "[^S14]",
+    "pitfall": "Ter medo de reiniciar porque o agente pode precisar de 'tudo de antes', quando na verdade a maioria dos passos precisa apenas de uma pequena fatia relevante.",
+    "distractor_rationale": "Reinicialização de contexto é a estratégia padrão; use contexto acumulado apenas para passos que genuinamente precisam de todo histórico, como um resumo final."
+  },
+  {
+    "term": "contexto acumulado",
+    "def": "O resultado de cada passo é adicionado ao contexto para que passos posteriores vejam todo histórico, o que serve para um passo de resumo final.",
+    "source": "[^S14]",
+    "pitfall": "Usar contexto acumulado para cada passo, então o contexto incha, passos posteriores desaceleram e custo sobe.",
+    "distractor_rationale": "Contexto acumulado pertence apenas aos poucos passos que precisam de uma visão global (como um relatório de resumo final), não como padrão."
+  },
+  {
+    "term": "armazenamento externo",
+    "def": "Persistir estado do fluxo de trabalho em um banco de dados, Redis ou sistema de arquivos, em vez de mantê-lo apenas em variáveis na memória.",
+    "source": "[^S13]",
+    "pitfall": "Um fluxo de trabalho de longa duração cujo estado vive apenas na memória; uma queda de processo ou reinício de máquina perde tudo.",
+    "distractor_rationale": "Fluxos de trabalho que rodam por mais de uma hora, coordenam entre máquinas ou precisam de aprovação humana deveriam persistir estado em armazenamento externo."
+  },
+  {
+    "term": "transição de fase",
+    "def": "Salvar um checkpoint depois que cada fase principal do fluxo de trabalho completa, em vez de depois de cada operação pequena.",
+    "source": "[^S12]",
+    "pitfall": "Fazer checkpoint depois de cada linha de código; salvamentos excessivamente frequentes desaceleram o fluxo de trabalho, então salve em limites significativos (uma fase completando).",
+    "distractor_rationale": "Checkpoints deveriam ser colocados estrategicamente: depois que uma fase completa, depois de uma operação cara ou antes de uma irreversível, não irracionalmente em todo lugar."
+  },
+  {
+    "term": "lógica de recuperação",
+    "def": "Depois que um fluxo de trabalho retoma de um checkpoint, ele pula os passos já completados e continua do ponto de interrupção.",
+    "source": "[^S12]",
+    "pitfall": "Carregar o checkpoint mas ainda rodar do topo; o checkpoint é desperdiçado a menos que você pule fases completadas baseado no campo de fase.",
+    "distractor_rationale": "O valor de um checkpoint é pular trabalho concluído na retomada, o que requer projetar lógica de recuperação (como um if na fase)."
+  },
+  {
+    "term": "aprovação humana",
+    "def": "O fluxo de trabalho pausando em um ponto de decisão importante para esperar um humano confirmar antes de continuar, comum antes de deploys de produção ou exclusão de dados.",
+    "source": "[^S13]",
+    "pitfall": "Um fluxo de trabalho totalmente automatizado fazendo deploy direto em produção sem checagem humana, então um único erro tem raio de impacto amplo; adicione um portão de aprovação antes de operações de produção.",
+    "distractor_rationale": "Automação não significa não assistido; uma aprovação humana antes de operações de alto risco é uma linha de segurança, não um passo atrás da automação."
+  },
+  {
+    "term": "lote",
+    "def": "Dividir um grande conjunto de tarefas em pequenos grupos processados um grupo por vez, com paralelismo dentro de cada grupo, para controlar concorrência e uso de recursos.",
+    "source": "[^S8]",
+    "pitfall": "Usar Promise.all(array.map(...)) para rodar 1000 tarefas em paralelo, o que pode esgotar memória, handles de arquivo ou cota de API.",
+    "distractor_rationale": "Processamento em lote equilibra velocidade e recursos: mais rápido que sequencial puro, mais seguro que concorrência ilimitada, e um meio termo prático."
+  },
+  {
+    "term": "limitação de taxa",
+    "def": "Um teto de API sobre requisições por unidade de tempo; excedê-lo retorna um erro 429, e você deve esperar ou desacelerar sua taxa de requisição.",
+    "source": "[^S8]",
+    "pitfall": "Repetir imediatamente em um 429, o que pode acionar o limite de novo; espere pelo tempo Retry-After ou proativamente desacelere sua taxa de requisição.",
+    "distractor_rationale": "Um limite de taxa é um erro transitório previsível, e a melhor estratégia é proativamente respeitar o limite (lote + atraso) em vez de passivamente repetir."
+  },
+  {
+    "term": "disputa por recursos",
+    "def": "Várias tarefas paralelas acessando um recurso limitado (uma conexão de banco de dados, um handle de arquivo) de uma vez, causando falha ou timeout de algumas.",
+    "source": "[^S8]",
+    "pitfall": "Concorrência ilimitada esgotando o pool de conexões, então tarefas posteriores não conseguem pegar uma conexão e dão timeout; limite concorrência para corresponder à capacidade de recursos.",
+    "distractor_rationale": "Paralelismo deveria corresponder à capacidade de recursos: com um pool de 10 conexões, concorrência não deveria exceder 10, ou tarefas vão disputar e falhar."
+  },
+  {
+    "term": "falha em cascata",
+    "def": "A falha de um serviço causando falha dos serviços que dependem dele também, com a falha se espalhando para fora.",
+    "source": "[^S7]",
+    "pitfall": "Serviço A está fora mas o fluxo de trabalho continua repetindo, queimando recursos e arrastando outras partes para baixo; um circuit breaker deveria falhar rápido.",
+    "distractor_rationale": "Falha em cascata vem de 'recusar-se a admitir falha'; um circuit breaker admite que o serviço está fora, para de chamá-lo e poupa o resto."
+  },
+  {
+    "term": "falhar rápido",
+    "def": "Em um erro do qual você claramente não pode se recuperar (um erro permanente, um circuit breaker aberto), falhar imediatamente sem repetir, para economizar recursos.",
+    "source": "[^S9]",
+    "pitfall": "Repetir todo erro três vezes; repetir um erro permanente (permissões, configuração) só desperdiça tempo quando você deveria falhar imediatamente.",
+    "distractor_rationale": "Falhar rápido superficializa o problema mais cedo, então o desenvolvedor pode localizar e corrigir a causa raiz mais rápido do que se estiver enterrado em retentativas."
+  },
+  {
+    "term": "degradação graciosa",
+    "def": "Quando um passo não crítico falha, o fluxo de trabalho o pula e continua em vez de falhar como um todo.",
+    "source": "[^S8]",
+    "pitfall": "Um passo de notificação opcional falhando derruba o fluxo de trabalho inteiro; distinga passos críticos (abortar em falha) de opcionais (registrar em log e continuar).",
+    "distractor_rationale": "Degradação graciosa torna um fluxo de trabalho mais robusto: um email que falhou não deveria bloquear processamento de pedido; registrar o erro é suficiente."
+  },
+  {
+    "term": "grafo de dependências",
+    "def": "Um grafo com nós para passos e setas para dependências, mostrando as dependências e ordem de execução entre passos claramente.",
+    "source": "[^S17]",
+    "pitfall": "Escrever código sem desenhar o grafo de dependências, só para descobrir durante implementação que a ordem dos passos está errada ou uma dependência foi perdida, forçando refatoração.",
+    "distractor_rationale": "O grafo de dependências é uma ferramenta central de design de fluxo de trabalho; desenhá-lo superficializa problemas de design mais facilmente do que escrever código."
+  },
+  {
+    "term": "DAG",
+    "def": "A versão formal de um grafo de dependências: nós são passos, arestas direcionadas são dependências, e 'acíclico' garante sem deadlock.",
+    "source": "[^S17]",
+    "pitfall": "Passo A depende de B, B de C e C de A, formando um ciclo que causa deadlock então nenhum passo pode começar.",
+    "distractor_rationale": "A restrição 'acíclico' do DAG é o que torna um fluxo de trabalho executável; uma dependência cíclica significa erro de design."
+  },
+  {
+    "term": "folha",
+    "def": "Um nó no grafo de dependências que não depende de mais nada, então pode rodar primeiro.",
+    "source": "[^S21]",
+    "pitfall": "Não identificar as folhas e apenas rodar tudo em paralelo; tarefas com dependências falham quando rodadas em paralelo (entrada faltando).",
+    "distractor_rationale": "Identificar folhas é pré-condição para execução paralela: rode todas as folhas em paralelo primeiro, depois os nós que dependem delas."
+  },
+  {
+    "term": "ordenação topológica",
+    "def": "Determinar a ordem de execução de passos a partir de suas dependências, garantindo que cada passo rode apenas depois que suas dependências terminarem.",
+    "source": "[^S17]",
+    "pitfall": "Ordenar passos arbitrariamente, ignorando dependências, então você alcança passo B e descobre que precisa do resultado do passo A mas A não rodou.",
+    "distractor_rationale": "Uma ordenação topológica computa uma ordem de execução legal automaticamente; ordenação manual de um grafo de dependências complexo é propensa a erro."
+  },
+  {
+    "term": "pipeline de refatoração de código",
+    "def": "Um pipeline completo que analisa código, gera um plano de refatoração, refatora em ordem de dependência e verifica com testes.",
+    "source": "[^S21]",
+    "pitfall": "Testar apenas depois de refatorar cada componente; quando um teste falha você não consegue dizer qual componente causou, então refatore e teste em lotes.",
+    "distractor_rationale": "Um fluxo de trabalho de refatoração deveria verificar incrementalmente: teste depois de cada lote para que uma falha aponte rapidamente para o componente específico."
+  },
+  {
+    "term": "pipeline de geração de documentação",
+    "def": "Um fluxo automatizado que extrai APIs de código, gera exemplos, renderiza documentação e a publica.",
+    "source": "[^S20]",
+    "pitfall": "Manter documentação e código como duas cópias separadas; documentação fica desatualizada rápido, então gere documentação automaticamente de código para mantê-los sincronizados.",
+    "distractor_rationale": "Um pipeline de geração de documentação mantém documentação e código sincronizados: reexecute o pipeline depois de uma mudança de código e a documentação reflete o estado mais recente."
+  },
+  {
+    "term": "fluxo de automação de testes",
+    "def": "Um fluxo de trabalho de testes de ponta a ponta que configura ambientes, roda testes em paralelo, coleta resultados e gera um relatório.",
+    "source": "[^S20]",
+    "pitfall": "Rodar a suíte de testes completa sequencialmente por ambiente, o que leva uma eternidade; teste vários ambientes em paralelo.",
+    "distractor_rationale": "O valor da automação de testes é velocidade e consistência: testes paralelos encurtam tempo de feedback, e automação mantém condições idênticas a cada execução."
+  },
+  {
+    "term": "decomposição de tarefas",
+    "def": "Pegar uma tarefa vaga e grande demais e quebrá-la em passos pequenos e claros, cada um com entradas e saídas definidas.",
+    "source": "[^S16]",
+    "pitfall": "Decompor em passos grandes demais (como 'preparar os dados'), o que esconde o que o passo realmente cobre e bloqueia paralelismo.",
+    "distractor_rationale": "Decomponha bem e construir o fluxo de trabalho parece montar Lego; decomponha mal e você descobre no meio da execução que passos estão faltando ou mal ordenados."
+  },
+  {
+    "term": "depurar",
+    "def": "Localizar problemas em um fluxo de trabalho através de logs, inspeção de estado e rastreamento passo a passo.",
+    "source": "[^S20]",
+    "pitfall": "Um fluxo de trabalho falha sem logs, então você não consegue dizer qual passo falhou ou por quê, e não pode ser depurado.",
+    "distractor_rationale": "Depurabilidade tem que ser projetada desde o início: logging por passo, estado persistido e registros de erros detalhados são todos pré-condições para depuração."
+  },
+  {
+    "term": "half-open",
+    "def": "O estado do circuit breaker onde, depois de um timeout, algumas requisições de teste passam: se tiverem sucesso o breaker fecha, caso contrário continua aberto.",
+    "source": "[^S7]",
+    "pitfall": "Reabrir o breaker para tráfego completo no instante em que o timeout passa, pulando a fase de teste, então um serviço ainda quebrado é inundado de novo.",
+    "distractor_rationale": "Iniciantes tratam um circuit breaker como binário (aberto/fechado) e perdem a sonda half-open que testa recuperação antes de restaurar tráfego completo."
+  }
+]
