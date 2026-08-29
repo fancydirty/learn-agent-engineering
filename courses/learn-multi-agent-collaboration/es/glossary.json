@@ -1,0 +1,499 @@
+[
+  {
+    "term": "contaminación de contexto",
+    "def": "Un error o un fragmento irrelevante que se recoge temprano en la tarea se mezcla en el único contexto del que depende todo el razonamiento posterior, y a la información correcta que llega después le cuesta lavarlo del todo.",
+    "source": "[^S7]",
+    "pitfall": "Suponer que, en cuanto el modelo encuentra más adelante la información correcta, su juicio equivocado anterior se corrige solo.",
+    "distractor_rationale": "Resulta intuitivo que la información correcta posterior debería imponerse sobre un error anterior, pero una vez que la información equivocada se ha referenciado varias veces convive con la versión correcta en la misma ventana de contexto, y puede que el modelo no distinga con nitidez cuál de las dos merece confianza."
+  },
+  {
+    "term": "dilución de la atención",
+    "def": "Cuanto más contenido se amontona en una sola ventana de contexto, menos atención puede darle el modelo a cada pieza individual, así que se equivoca o deja cosas fuera en tareas que necesitan sostener muchos detalles con precisión a la vez.",
+    "source": "[^S7]",
+    "pitfall": "Suponer que, mientras la ventana de contexto no esté llena, meter más contenido solo puede ayudar y no tiene contrapartida.",
+    "distractor_rationale": "La mala lectura habitual es «la ventana no está llena, así que todavía hay espacio», pero la dilución de la atención no va de quedarse sin espacio: va de que la atención del modelo a cada detalle se reparte más y más fina, algo que pasa mucho antes de que nada se desborde."
+  },
+  {
+    "term": "presupuesto de atención",
+    "def": "La forma en que Anthropic plantea el fondo finito de atención del que tira un modelo al procesar grandes volúmenes de contexto; cada token nuevo agota una parte de él.",
+    "source": "[^S7]",
+    "pitfall": "Tratar el presupuesto de atención como si se reiniciara cada vez que el modelo arranca un paso nuevo de razonamiento dentro de la misma conversación.",
+    "distractor_rationale": "Como cada turno se siente como un arranque en limpio, es tentador pensar que la atención se recarga entre pasos, pero el presupuesto se descuenta contra todo el contexto que se está procesando: un historial largo y acumulado lo sigue agotando en cada llamada posterior."
+  },
+  {
+    "term": "gradiente de rendimiento",
+    "def": "La descripción de Anthropic de cómo se manifiesta en realidad la degradación por contexto: la calidad decae de forma gradual a medida que el contexto crece, en lugar de funcionar perfecto hasta cierto umbral y luego fallar de golpe.",
+    "source": "[^S7]",
+    "pitfall": "Suponer que existe una cantidad de tokens segura por debajo de la cual la calidad no se ve afectada, y que los problemas solo empiezan al cruzarla.",
+    "distractor_rationale": "Un límite duro es más fácil de razonar, así que la gente busca un número umbral, pero Anthropic llama a esto explícitamente un gradiente y no un precipicio: la degradación ya está en marcha con contextos de tamaño moderado, solo que no lo bastante dramática como para notarla."
+  },
+  {
+    "term": "sistema multiagente",
+    "def": "Varios agentes —LLM que usan herramientas de forma autónoma en un bucle— trabajando juntos en una misma tarea, cada uno con su propio contexto.",
+    "source": "[^S1]",
+    "pitfall": "Leer «multiagente» como «llamar muchas veces al mismo agente».",
+    "distractor_rationale": "La palabra «varios» invita a leerlo como una cuenta de llamadas, pero la definición oficial habla de varios agentes que usan herramientas de forma independiente y trabajan juntos, no de un solo agente invocado repetidamente dentro de un mismo contexto."
+  },
+  {
+    "term": "sobrecarga de coordinación",
+    "def": "El tiempo y los tokens de más que se gastan en que varios agentes se repartan el trabajo y colaboren: partir la tarea, agregar los resultados y reconciliar salidas contradictorias.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que la sobrecarga de coordinación solo aparece cuando algo sale mal, y que una ejecución sin tropiezos no cuesta nada extra.",
+    "distractor_rationale": "La sobrecarga es un costo fijo horneado en el propio partir, delegar y agregar: incluso cuando cada subtarea sale bien al primer intento, el corte y la fusión siguen llevando tiempo y tokens."
+  },
+  {
+    "term": "paralelización",
+    "def": "Entregar a distintos agentes las partes de una tarea que son de verdad separables —las que no dependen de los resultados intermedios de las demás— para que trabajen a la vez.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que usar varios agentes significa automáticamente que la tarea se está paralelizando.",
+    "distractor_rationale": "Varios agentes no es lo mismo que trabajo en paralelo: si las piezas dependen mucho unas de otras, los agentes acaban en cola esperando la salida del otro, y pagas la sobrecarga de coordinación sin comprar ninguna ganancia de velocidad."
+  },
+  {
+    "term": "tarea en profundidad",
+    "def": "Una tarea cuya respuesta vive en una sola cadena de razonamiento que hay que recorrer paso a paso, con pasos muy acoplados que se resisten a cortarse limpiamente en piezas para distintos agentes.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que una tarea con muchos pasos encaja, por eso mismo, con un agente por paso.",
+    "distractor_rationale": "La cantidad de pasos parece una línea de corte natural, pero lo que hace que una tarea sea en profundidad es la dependencia estrecha de principio a fin entre los pasos; partirla deja a cada agente sin el contexto que su razonamiento necesita, por muchos pasos que haya."
+  },
+  {
+    "term": "tarea en amplitud",
+    "def": "Una tarea cuya respuesta se reparte entre unas cuantas direcciones relativamente independientes que de verdad se pueden perseguir por separado, sin depender de los resultados intermedios de las demás.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que cualquier tarea compuesta de varias partes es en amplitud y se puede partir sin riesgo.",
+    "distractor_rationale": "«Varias partes» se toma como motivo suficiente para partir, pero la prueba real es si esas partes son independientes de los resultados intermedios de las demás; si no, tienes una tarea en profundidad disfrazada de tarea en amplitud."
+  },
+  {
+    "term": "ventana de contexto",
+    "def": "El tramo de información que un modelo puede sostener en una sola pasada de inferencia; los sistemas multiagente alivian la contaminación y la dilución dándole a cada agente la suya, separada.",
+    "source": "[^S1]",
+    "pitfall": "Tratar la ventana de contexto como un mero límite de almacenamiento, sin efecto sobre la calidad de la salida.",
+    "distractor_rationale": "Es fácil leer la ventana como una simple cuestión de capacidad —cabe o no cabe—, pero el punto de la lección es que cuanto más metes, más se erosionan la atención del modelo a cada detalle y su calidad de razonamiento, mucho antes de que nada se desborde."
+  },
+  {
+    "term": "sistema de un solo agente",
+    "def": "Sacar la tarea adelante de principio a fin con un solo agente, sin partirla ni introducir colaboración multiagente.",
+    "source": "[^S2]",
+    "pitfall": "Tratar un sistema de un solo agente como un sistema multiagente recortado y, por fuerza, peor.",
+    "distractor_rationale": "«Más simple» se equipara con «más débil», pero la postura recomendada es conseguir primero que la tarea funcione con un agente y observar dónde se atasca de verdad; para muchas tareas un solo agente es mejor negocio en cuanto cuentas el costo en tokens de partir."
+  },
+  {
+    "term": "regla de escalado",
+    "def": "La regla práctica de Anthropic para dimensionar la cantidad de agentes contra la complejidad de la tarea: una búsqueda de datos simple necesita 1 agente con 3 a 10 llamadas a herramientas, una comparación directa de 2 a 4 subagentes con 10 a 15 llamadas cada uno, y solo una investigación lo bastante compleja como para dividir responsabilidades limpiamente pasa de 10 subagentes.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que cuanto más importante es una tarea, más subagentes merece.",
+    "distractor_rationale": "Importancia y separabilidad son cosas distintas: los niveles los fija cuán compleja es la tarea y si se divide en responsabilidades con límites claros, no cuánto te importa el resultado."
+  },
+  {
+    "term": "viables económicamente",
+    "def": "La condición de que un sistema multiagente solo vale la pena cuando el valor propio de la tarea es lo bastante alto como para pagar el costo extra en tokens que viene con la ganancia de rendimiento.",
+    "source": "[^S1]",
+    "pitfall": "Tratar «rinde mejor» como justificación suficiente para irse a multiagente.",
+    "distractor_rationale": "Una salida mejor parece el único criterio que cuenta, pero la viabilidad económica también exige que la mejora valga aproximadamente 15 veces el costo en tokens de una interacción de chat: rendir mejor no significa automáticamente que compense."
+  },
+  {
+    "term": "separación de responsabilidades",
+    "def": "El término de Anthropic para lo que te compran los subagentes: herramientas, prompts y rutas de exploración distintas por agente, lo que reduce la dependencia de la ruta para que el callejón sin salida de un agente no dirija a los demás.",
+    "source": "[^S1]",
+    "pitfall": "Leer la separación de responsabilidades como una mera cortesía organizativa, una forma ordenada de etiquetar quién hace qué.",
+    "distractor_rationale": "La expresión suena a higiene de software corriente, pero aquí nombra un efecto concreto sobre la calidad: como cada subagente explora en su propia trayectoria, una fuente engañosa con la que se topa uno nunca pasa a formar parte del razonamiento de los otros."
+  },
+  {
+    "term": "orquestador-subagente",
+    "def": "Una arquitectura donde un LLM central descompone dinámicamente las tareas, las delega a LLM trabajadores y sintetiza sus resultados.",
+    "source": "[^S2]",
+    "pitfall": "Suponer que el orquestador también maneja él mismo el contenido detallado de las subtareas.",
+    "distractor_rationale": "La palabra «central» sugiere una implicación práctica, pero el trabajo del orquestador son exactamente tres acciones —descomponer, delegar, sintetizar—, y en cuanto se pone a leer una fuente completa él mismo está haciendo el trabajo del subagente y la división del trabajo se difumina."
+  },
+  {
+    "term": "orquestador",
+    "def": "El agente central que decide cómo dividir el trabajo, quién recibe qué pieza y cómo coser varios resultados devueltos en una sola respuesta que se sostenga como un todo.",
+    "source": "[^S2]",
+    "pitfall": "Olvidar que el orquestador tiene una ventana de contexto propia que se puede contaminar y diluir igual que la de cualquier agente.",
+    "distractor_rationale": "Es fácil imaginar al orquestador como un enrutador neutral que no cuesta nada, pero cada resultado detallado que se le empuja de vuelta consume su contexto, que es justo por lo que «devolver solo la conclusión» existe como regla."
+  },
+  {
+    "term": "subagente",
+    "def": "Un agente que el orquestador despacha para completar una tarea delegada dentro de una ventana de contexto fresca y aislada, devolviendo su resultado al terminar.",
+    "source": "[^S3]",
+    "pitfall": "Suponer que un subagente puede ver el historial de conversación, las skills ya invocadas o los archivos ya leídos.",
+    "distractor_rationale": "Como el subagente se lanza desde dentro de tu sesión, se siente como una continuación de ella, pero la documentación es explícita en que arranca de cero y solo ve el mensaje de delegación que el orquestador compuso para él."
+  },
+  {
+    "term": "aislamiento de contexto",
+    "def": "Confinar el ámbito de trabajo de cada agente a su propia ventana de contexto, de modo que la contaminación de contexto dentro de un agente no se propague a otro.",
+    "source": "[^S3]",
+    "pitfall": "Tratar el aislamiento de contexto como un mero detalle de implementación, sin relación con los problemas de contaminación de contexto y dilución de la atención de la Lección 1.",
+    "distractor_rationale": "Se lee como una decisión de fontanería sobre cómo se cablean las sesiones, pero es el mecanismo real que alivia los dos problemas de la Lección 1: la contaminación y la dilución de cada subagente quedan acotadas dentro de su propia ventana en lugar de infectar a las demás."
+  },
+  {
+    "term": "repartir (fan-out)",
+    "def": "El orquestador distribuyendo en paralelo las subtareas ya partidas a un número equivalente de subagentes, para que todos empiecen a trabajar a la vez en lugar de ponerse en cola uno tras otro.",
+    "source": "[^S2]",
+    "pitfall": "Pensar que repartir significa sin más trocear la tarea en tantas piezas como sea posible.",
+    "distractor_rationale": "La cantidad de piezas parece ser toda la historia, pero cómo cortas importa más que con cuánta finura: cada trozo tiene que ser de verdad manejable por su cuenta, y un mal corte deja a los subagentes sin contexto clave y llegando a conclusiones que se contradicen entre ellas."
+  },
+  {
+    "term": "agregar",
+    "def": "El paso posterior al repartir, donde el orquestador pone varios resultados producidos de forma independiente uno al lado del otro, los compara, resuelve la duplicación o contradicción que aparezca y los reorganiza en la forma del entregable final.",
+    "source": "[^S3]",
+    "pitfall": "Pensar que agregar significa pegar las respuestas en bruto de los subagentes una tras otra.",
+    "distractor_rationale": "La concatenación es la lectura más obvia y la equivocada: la lección es explícita en que agregar compara, resuelve contradicciones y reorganiza en un documento que se lea como un todo en lugar de tres piezas cosidas de forma evidente."
+  },
+  {
+    "term": "devolver solo la conclusión",
+    "def": "El principio de que un subagente debería devolver su conclusión final y defendible junto con la evidencia clave que la respalda, no todo el rastro de razonamiento con sus rodeos y autocorrecciones.",
+    "source": "[^S3]",
+    "pitfall": "Suponer que enviarle al orquestador todo el hilo de pensamiento del subagente le permite emitir un juicio mejor informado.",
+    "distractor_rationale": "«Más información es mejor» es el instinto natural, pero empujar de vuelta al orquestador varios miles de palabras de razonamiento completo por subagente recrea la contaminación de contexto y la dilución de la atención en la propia capa del orquestador: exactamente lo que partir debía evitar."
+  },
+  {
+    "term": "fork",
+    "def": "Un subagente que hereda toda la conversación hasta ese momento en lugar de arrancar de cero; sus propias llamadas a herramientas siguen quedándose fuera de la conversación principal y solo vuelve su resultado final.",
+    "source": "[^S3]",
+    "pitfall": "Suponer que, como un fork arranca con el historial completo, también empuja su propio proceso de razonamiento de vuelta a la conversación principal.",
+    "distractor_rationale": "«Hereda toda la conversación» suena simétrico, como si la información fluyera en ambos sentidos, pero la herencia solo describe con qué arranca el fork: el camino de vuelta no cambia, y sus llamadas a herramientas intermedias nunca entran en tu contexto."
+  },
+  {
+    "term": "patrón Manager",
+    "def": "El nombre que el Agents SDK de OpenAI le da a la estructura orquestador-subagente: un manager central invoca subagentes especializados como herramientas y retiene el control de la conversación.",
+    "source": "[^S4]",
+    "pitfall": "Tratar el patrón Manager como un estilo de colaboración distinto y más avanzado que el orquestador-subagente.",
+    "distractor_rationale": "Que distintos marcos usen vocabulario distinto hace que las estructuras parezcan diferentes, pero Manager y orquestador-subagente describen la misma división del trabajo: reconocer la forma importa más que memorizar cualquiera de los dos términos."
+  },
+  {
+    "term": "descomponer",
+    "def": "La primera de las tres acciones del orquestador: mirar una tarea grande y averiguar en qué trozos se parte.",
+    "source": "[^S2]",
+    "pitfall": "Suponer que descomponer significa cortar la tarea en trozos de tamaño más o menos igual por longitud o cantidad de pasos.",
+    "distractor_rationale": "El corte parejo es el enfoque de menor esfuerzo, pero la pregunta real es qué trozos se pueden manejar de forma independiente sin depender de los resultados intermedios de otro trozo, algo que no tiene nada que ver con repartir el trabajo por igual."
+  },
+  {
+    "term": "delegar",
+    "def": "La segunda de las tres acciones del orquestador: entregar cada trozo, junto con el trasfondo que necesita, a un subagente para que lo lleve a cabo.",
+    "source": "[^S2]",
+    "pitfall": "Suponer que basta con decirle al subagente el nombre de la tarea y dejar que él rellene el trasfondo por su cuenta.",
+    "distractor_rationale": "Un subagente no puede ver por defecto el historial de conversación del orquestador, así que un nombre de tarea pelado lo deja adivinando alcance, fuentes y entregable: que es precisamente como se producen las tareas malinterpretadas y las búsquedas duplicadas."
+  },
+  {
+    "term": "sintetizar",
+    "def": "La tercera de las tres acciones del orquestador: una vez que los subagentes han devuelto sus resultados, combinarlos en la respuesta final.",
+    "source": "[^S2]",
+    "pitfall": "Suponer que la síntesis solo puede empezar después de que todos los subagentes hayan entregado su trabajo.",
+    "distractor_rationale": "Un único paso de recoger-y-fusionar es el modelo mental más ordenado, pero la documentación describe que el resultado de un subagente anterior alimenta el informe de tarea del siguiente, así que el orquestador suele ir y venir entre repartir y sintetizar."
+  },
+  {
+    "term": "teléfono descompuesto",
+    "def": "La pérdida de fidelidad que se acumula cuando el resultado de un subagente se parafrasea y se comprime de camino a través del orquestador; escribir la salida del subagente directo a un sistema de archivos es una forma de evitarlo.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que todo resultado tiene que pasar por el orquestador de camino a la salida final.",
+    "distractor_rationale": "El papel central del orquestador lo hace parecer un punto de control obligatorio, pero Anthropic señala que las salidas directas del subagente pueden saltarse el coordinador principal para ciertos tipos de resultado, mejorando tanto la fidelidad como el rendimiento."
+  },
+  {
+    "term": "autocontenido",
+    "def": "Una propiedad de un prompt de delegación: tras leerlo, el subagente no necesita trasfondo extra para deducir con precisión qué debería hacer.",
+    "source": "[^S3]",
+    "pitfall": "Suponer que un prompt es autocontenido con tal de que sea lo bastante largo y venga cargado de información.",
+    "distractor_rationale": "La longitud se usa como sustituto de la completitud, pero la prueba real es sacar el prompt por su cuenta y leerlo en frío: un informe palabrero al que le falta el alcance o la orientación sobre las fuentes sigue dejando al subagente adivinando."
+  },
+  {
+    "term": "orientación sobre las fuentes",
+    "def": "La parte de un prompt de delegación que le dice al subagente dónde buscar la respuesta: la página oficial de precios, un sitio externo de comparación, o ambos con uno teniendo prioridad.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que la orientación sobre las fuentes se puede omitir porque el subagente elegirá fuentes sensatas por su cuenta.",
+    "distractor_rationale": "Omitirla deja que cada subagente elija fuentes según su propia lectura, así que distintos subagentes acaban citando fuentes de autoridad distinta y sus conclusiones no se pueden comparar de forma directa: uno de los costos concretos de una descripción de tarea incompleta."
+  },
+  {
+    "term": "límites de la tarea",
+    "def": "La parte de un prompt de delegación que le dice al subagente que esta ejecución cubre solo esta porción y que no se pase de ahí.",
+    "source": "[^S1]",
+    "pitfall": "Tratar los límites de la tarea como una medida de ahorro de costos que no tiene nada que ver con la calidad de la salida.",
+    "distractor_rationale": "Recortar el alcance parece que solo ahorra tokens, pero los límites también deciden si el subagente se pierde información que querías o trae mucho más de lo que necesitabas: unos límites poco claros son la raíz compartida del trabajo duplicado y de los huecos."
+  },
+  {
+    "term": "un dominio de problema, un agente",
+    "def": "El principio de que cada subagente debería ser dueño solo de una clase de problema con límites claros, en lugar de hacer malabares con varias cosas sin relación a la vez.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que varios trabajos pueden ir al mismo subagente con tal de que todos sirvan al mismo objetivo general.",
+    "distractor_rationale": "Servir al mismo objetivo parece motivo suficiente para fusionar, pero la prueba es si los trabajos piden la misma clase de juicio: verificar números y resumir estilo de escritura necesitan modos de trabajo distintos aunque ambos alimenten un mismo informe."
+  },
+  {
+    "term": "CitationAgent",
+    "def": "Un subagente dedicado del sistema en producción de Anthropic que procesa los documentos y el informe de investigación para identificar las ubicaciones concretas de las citas, garantizando que las afirmaciones se atribuyan correctamente a sus fuentes.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que el CitationAgent podría fusionarse con el subagente que hace la investigación, ya que ambos sirven al mismo informe.",
+    "distractor_rationale": "Compartir salida hace que fusionar parezca eficiente, pero encontrar las ubicaciones de las citas es trabajo de comprobar y ubicar, mientras que investigar es trabajo de buscar y juzgar: esta división es la demostración concreta de «un dominio de problema, un agente», no un accidente de implementación."
+  },
+  {
+    "term": "prompt de delegación",
+    "def": "El informe de tarea que el orquestador le entrega a un subagente; su techo de calidad fija el techo de calidad de lo que el subagente produce.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que un prompt de delegación solo tiene que decir qué hacer, sin necesidad de detallar alcance, fuentes ni formato de salida.",
+    "distractor_rationale": "«Qué hacer» parece ser toda la consigna, pero una descripción de tarea sólida necesita un objetivo, un formato de salida, orientación sobre las fuentes y límites de tarea claros: todo lo que quede fuera, el subagente lo adivina, lo salta o se inventa una suposición y sigue adelante."
+  },
+  {
+    "term": "instrucción vaga",
+    "def": "Un informe como «investiga la escasez de semiconductores» que no fija rango de tiempo, ángulo, fuente ni entregable, dejando a los subagentes improvisar.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que el lío que provoca una instrucción vaga es un problema de capacidad del subagente que un modelo más fuerte arreglaría.",
+    "distractor_rationale": "Culpar al modelo es el diagnóstico más fácil, pero el caso oficial muestra al mismo lote de subagentes malinterpretando la tarea y corriendo búsquedas duplicadas puramente porque la instrucción no fijó ningún alcance: la capacidad no tiene nada que ver."
+  },
+  {
+    "term": "formato de salida",
+    "def": "La parte de un prompt de delegación que indica qué forma debería tener el entregable del subagente, lo que decide si el orquestador puede usar el resultado directamente.",
+    "source": "[^S1]",
+    "pitfall": "Tratar el formato de salida como un detalle de presentación que no afecta a si la tarea queda bien hecha.",
+    "distractor_rationale": "El formato se lee como cosmética, pero determina si el orquestador puede empalmar el resultado directo en el entregable final: dejarlo sin especificar suele significar un paso extra de conversión o una nueva ejecución."
+  },
+  {
+    "term": "malinterpretar la tarea",
+    "def": "El fallo donde un subagente, trabajando desde una descripción de tarea que no era lo bastante detallada, lee mal el requisito y produce algo desviado de lo que el orquestador quería.",
+    "source": "[^S1]",
+    "pitfall": "Tratar una tarea malinterpretada como un lapsus ocasional en la comprensión del subagente.",
+    "distractor_rationale": "Colgárselo a la comprensión esconde la causa que sí se puede arreglar: el contraejemplo oficial muestra que la raíz suele ser una instrucción sin alcance ni límites, así que «el modelo entendió mal» te manda a ajustar lo que no es."
+  },
+  {
+    "term": "pipeline",
+    "def": "Un patrón de colaboración que descompone una tarea en una secuencia de pasos, donde cada llamada al LLM procesa la salida de la anterior.",
+    "source": "[^S2]",
+    "pitfall": "Pensar que un pipeline y el productor-revisor son el mismo patrón con dos nombres.",
+    "distractor_rationale": "Ambos entregan la salida de un paso al siguiente, pero un pipeline recorre un conjunto fijo de pasos y se detiene: nunca devuelve trabajo a un paso anterior porque la salida no quedó suficientemente buena, que es exactamente lo que hace el bucle del productor-revisor."
+  },
+  {
+    "term": "encadenamiento de prompts",
+    "def": "El nombre oficial del patrón pipeline, que subraya que la tarea se descompone en una secuencia de pasos ejecutados en orden.",
+    "source": "[^S2]",
+    "pitfall": "Leer el encadenamiento de prompts como una técnica de escritura de prompts en lugar de un patrón de colaboración.",
+    "distractor_rationale": "«Encadenamiento» suena a un truco para enlazar instrucciones dentro de un solo prompt, pero nombra la estructura de varias llamadas en sí: una tarea partida en pasos ordenados donde cada llamada procesa la salida de la anterior."
+  },
+  {
+    "term": "productor-revisor",
+    "def": "Un patrón de colaboración donde una llamada al LLM genera una respuesta mientras otra aporta evaluación y retroalimentación en un bucle, repitiendo hasta converger.",
+    "source": "[^S2]",
+    "pitfall": "Suponer que el bucle debería correr sin más hasta que el revisor quede conforme, sin tope de rondas.",
+    "distractor_rationale": "«Hasta que quede suficientemente bien» suena a la condición de parada correcta, pero la cantidad de rondas no se sabe de antemano, así que un productor y un revisor enredados en un ida y vuelta pueden disparar el costo muy por encima de lo que esperabas: de ahí el tope máximo de rondas estándar."
+  },
+  {
+    "term": "evaluador-optimizador",
+    "def": "El nombre oficial del patrón productor-revisor, que subraya que una llamada genera mientras otra evalúa y da retroalimentación.",
+    "source": "[^S2]",
+    "pitfall": "Leer evaluador y optimizador como dos roles extra más allá del productor y el revisor.",
+    "distractor_rationale": "Las dos palabras del nombre sugieren dos participantes adicionales, pero evaluador-optimizador es solo el otro nombre del productor-revisor: los mismos dos roles, no cuatro."
+  },
+  {
+    "term": "votación multiperspectiva",
+    "def": "Un patrón de colaboración donde varios agentes juzgan cada uno el mismo contenido ya existente de forma independiente y en paralelo, y el contenido queda marcado en cuanto cualquiera de ellos encuentra un problema.",
+    "source": "[^S2]",
+    "pitfall": "Suponer que la votación, como el productor-revisor, es un bucle de borrador y corrección.",
+    "distractor_rationale": "Ambos implican juicio repetido, lo que los mezcla, pero la votación corre en paralelo sobre contenido que ya existe y nunca lo corrige: el objetivo es una cobertura más amplia frente a los descuidos, no mejorar el contenido."
+  },
+  {
+    "term": "handoff",
+    "def": "Un estilo de colaboración descentralizado donde agentes de igual rango ceden el control a un agente especializado que toma el relevo de la conversación.",
+    "source": "[^S4]",
+    "pitfall": "Suponer que el agente receptor de un handoff, como un subagente, arranca desde un contexto fresco y aislado.",
+    "distractor_rationale": "El mecanismo de subagentes se toma como el estándar universal, pero el handoff es su opuesto: el agente receptor ve por defecto todo el historial previo de la conversación, porque genuinamente toma el relevo en lugar de ser despachado a una tarea aislada."
+  },
+  {
+    "term": "Peer agents",
+    "def": "Agentes de igual rango en un montaje de estilo handoff, sin relación fija de superior a subordinado, que se pasan el control directamente entre ellos. La Lección 4 conserva el término en inglés dentro de la cita oficial; en español equivale a «agentes pares» o «agentes de igual rango».",
+    "source": "[^S4]",
+    "pitfall": "Tratar un handoff entre agentes pares como lo mismo que un orquestador despachando un subagente.",
+    "distractor_rationale": "Ambos parecen un agente dándole trabajo a otro, pero el orquestador mantiene el control y recibe de vuelta una conclusión, mientras que un handoff entre pares transfiere el control y la conversación completa de plano: el agente receptor conduce a partir de ahí."
+  },
+  {
+    "term": "decentralized",
+    "def": "El rasgo que define la colaboración de estilo handoff: el control no lo sostiene todo el tiempo un nodo central, sino que se pasa directamente entre agentes de igual rango. La Lección 4 conserva el término en inglés dentro de la cita oficial; en español, «descentralizado».",
+    "source": "[^S4]",
+    "pitfall": "Leer «descentralizado» como que ningún agente está al mando y varios agentes corren sueltos a la vez.",
+    "distractor_rationale": "«Sin centro» se escucha como «sin nadie al mando», pero en cualquier momento dado hay exactamente un agente que ha tomado el relevo de la conversación y la está dirigiendo: la descentralización va de que el control se mueva, no de que desaparezca."
+  },
+  {
+    "term": "el control de la conversación",
+    "def": "La autoridad para dirigir lo que viene después; el orquestador la retiene todo el tiempo en orquestador-subagente, mientras que un handoff se la transfiere al agente receptor.",
+    "source": "[^S4]",
+    "pitfall": "Tratar el control como una cuestión abstracta de contabilidad que no afecta a cuánta información puede ver de verdad cada agente.",
+    "distractor_rationale": "Quién está al mando suena separado de quién ve qué, pero aquí las dos cosas van atadas: el subagente que nunca recibe el control tampoco ve nunca el historial, mientras que el agente de un handoff que toma el control ve la conversación entera por defecto."
+  },
+  {
+    "term": "una sola ejecución",
+    "def": "El límite dentro del que se mantiene un handoff: la transferencia de control vale para esta ejecución y no se traslada a una ejecución posterior e independiente.",
+    "source": "[^S5]",
+    "pitfall": "Suponer que, una vez que ocurre un handoff, el agente receptor se queda para siempre con todas las conversaciones futuras.",
+    "distractor_rationale": "«Toma el relevo de la conversación» suena permanente, pero la documentación dice sin rodeos que los handoffs se mantienen dentro de una sola ejecución: la transferencia tiene el alcance de esa ejecución, no es una reasignación fija."
+  },
+  {
+    "term": "brecha de confiar-entonces-verificar",
+    "def": "El modo de fallo con nombre propio donde un modelo produce una implementación de apariencia plausible que no maneja los casos límite; el arreglo es proveer siempre verificación, y si no puedes verificarlo, no lo entregues.",
+    "source": "[^S6]",
+    "pitfall": "Suponer que esto solo aplica al código y no a la investigación o la escritura delegadas a un subagente.",
+    "distractor_rationale": "La redacción original habla de implementaciones, así que la lección parece específica de código, pero la misma lógica cubre cualquier delegación: una prosa fluida en el formato correcto sigue siendo solo «de apariencia plausible», que no es lo mismo que ser correcta."
+  },
+  {
+    "term": "estándar comprobable",
+    "def": "Un criterio de verificación concreto definido para la tarea específica, contra el que la salida se puede medir ítem por ítem en lugar de puntuarse por impresión.",
+    "source": "[^S1]",
+    "pitfall": "Contar «lo leí y me pareció bien» como una forma válida, aunque subjetiva, de verificación.",
+    "distractor_rationale": "Llamarlo subjetivo lo hace sonar como una versión más débil de lo mismo, pero «se lee bien» es la mitad de confiar de la brecha de confiar-entonces-verificar: el juicio por impresión no es verificación en absoluto, por honestamente que se aplique."
+  },
+  {
+    "term": "LLM juez",
+    "def": "El rol en el sistema en producción de Anthropic que evalúa cada salida de subagente contra los criterios de una rúbrica.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que al LLM juez le basta con devolver un aprobado o un rechazo global, sin justificar cada criterio.",
+    "distractor_rationale": "Un veredicto único es lo que daría de forma casual un revisor humano, pero la rúbrica son cinco dimensiones concretas y comprobables, y el valor del juez está precisamente en reportar contra cada una en lugar de colapsarlas en una sola palabra."
+  },
+  {
+    "term": "exactitud factual",
+    "def": "Uno de los criterios de la rúbrica del LLM juez: ¿las afirmaciones de la salida coinciden con las fuentes que cita?",
+    "source": "[^S1]",
+    "pitfall": "Dar por satisfecha la exactitud factual siempre que el subagente no haya fabricado un número de forma evidente.",
+    "distractor_rationale": "«Nada inventado de forma evidente» es una vara muy baja: el criterio pide una comprobación línea por línea de las afirmaciones contra las fuentes, y un número de apariencia plausible puede venir igual de una fuente mal leída o de la fuente equivocada."
+  },
+  {
+    "term": "exactitud de las citas",
+    "def": "Uno de los criterios de la rúbrica del LLM juez: ¿las fuentes citadas coinciden de verdad con las afirmaciones a las que van atadas?",
+    "source": "[^S1]",
+    "pitfall": "Suponer que, una vez que los hechos cuadran, las citas atadas a ellos también tienen que estar bien.",
+    "distractor_rationale": "Hechos correctos y atribución correcta se sienten como una sola comprobación, pero son distintas: una afirmación verdadera puede estar bajo una cita que no la sustenta, que es exactamente la atribución errónea que la etapa de integración tiene que cazar."
+  },
+  {
+    "term": "calidad de las fuentes",
+    "def": "Uno de los criterios de la rúbrica del LLM juez: ¿el subagente usó fuentes primarias en lugar de fuentes secundarias de menor calidad?",
+    "source": "[^S1]",
+    "pitfall": "Suponer que, mientras la información en sí sea correcta, da igual si vino de una fuente primaria o de una secundaria.",
+    "distractor_rationale": "La corrección superficial esconde el riesgo: una fuente secundaria puede ser una paráfrasis o una instantánea desactualizada, y cuando dos subagentes se contradicen, la autoridad de la fuente de cada lado suele ser lo único que zanja en qué conclusión confiar."
+  },
+  {
+    "term": "trabajo duplicado",
+    "def": "Varios subagentes cubriendo el mismo terreno y produciendo salidas que se solapan fuertemente, algo que normalmente solo aflora en el momento en que se agregan los resultados.",
+    "source": "[^S1]",
+    "pitfall": "Dar el trabajo duplicado por resuelto una vez que borras el contenido repetido.",
+    "distractor_rationale": "Borrar el solape trata el síntoma; la duplicación es una señal de que algunos límites de tarea no se trazaron con claridad, así que el arreglo que vale la pena hacer está de vuelta en el paso de despacho, en las descripciones de tarea mismas."
+  },
+  {
+    "term": "resultados en conflicto",
+    "def": "Dos subagentes investigando de forma independiente y devolviendo conclusiones que se contradicen, algo que no se puede zanjar eligiendo una al azar ni partiendo la diferencia.",
+    "source": "[^S1]",
+    "pitfall": "Tratar el promedio de dos números en conflicto como un compromiso seguro.",
+    "distractor_rationale": "Partir la diferencia se siente ecuánime, pero puede servir un número que ninguna de las dos fuentes sustenta; el movimiento correcto es comparar la credibilidad de la base de cada lado y, cuando eso no las ordena, marcar la contradicción para revisión humana."
+  },
+  {
+    "term": "atribución errónea",
+    "def": "El error de la etapa de integración de apuntar los datos que encontró un subagente como conclusión sobre la porción de la que se encargaba otro subagente.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que, si la investigación de cada subagente es exacta por su cuenta, la etapa de integración no puede introducir errores.",
+    "distractor_rationale": "Piezas exactas por separado no garantizan una atribución exacta una vez que se juntan en un pozo común: la atribución errónea solo se vuelve posible durante la fusión, que es por lo que comprobar la atribución de fuentes es un paso aparte."
+  },
+  {
+    "term": "etapa de integración",
+    "def": "El paso de cierre donde el orquestador fusiona el contenido duplicado, verifica o marca las conclusiones contradictorias y comprueba que cada afirmación se remonte a la fuente correcta.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que la etapa de integración consiste en ordenar las salidas de los subagentes y coserlas en un documento.",
+    "distractor_rationale": "La disposición secuencial es justo lo que la lección descarta: la integración deduplica, verifica conflictos y comprueba la atribución de fuentes todo a la vez, no la simple concatenación contra la que ya advirtió la Lección 2."
+  },
+  {
+    "term": "deduplicar",
+    "def": "La parte de la integración que fusiona el contenido solapado entre varias salidas de subagentes para que el resultado final no diga lo mismo dos veces.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que deduplicar solo significa borrar pasajes cuya redacción coincide, sin juicio sobre el fondo.",
+    "distractor_rationale": "El trabajo duplicado suele aflorar como el mismo hallazgo con palabras distintas, así que emparejar por redacción se lo pierde por completo: deduplicar tiene que juzgar si dos pasajes están haciendo el mismo planteo, no si se leen igual."
+  },
+  {
+    "term": "resultado de revisión estructurado",
+    "def": "Una revisión devuelta en campos fijos como `{approved, issues}` en lugar de un veredicto generalizado en lenguaje natural, para que el código que sigue pueda leerla y actuar sobre ella.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que una respuesta en lenguaje natural que dice con claridad si pasa o falla funciona más o menos igual de bien que los campos estructurados.",
+    "distractor_rationale": "Una frase clara es legible para ti pero no parseable de forma fiable por código: el valor de `approved` e `issues` es que un programa puede leerlos directamente y mover el bucle, algo que un veredicto en prosa no sostiene."
+  },
+  {
+    "term": "MAX_ROUNDS",
+    "def": "El techo de cuántas rondas de productor-revisor va a correr el pipeline, que impide que los dos agentes se pulan de ida y vuelta para siempre.",
+    "source": "[^S2]",
+    "pitfall": "Tratar `MAX_ROUNDS` como un ajuste opcional de rendimiento que se podría quitar sin afectar a la corrección.",
+    "distractor_rationale": "Parece una perilla de afinado, pero la cantidad de rondas es en principio genuinamente ilimitada: sin el tope el pipeline no lanza un error, simplemente nunca termina, así que esto es un mecanismo de seguridad y no una optimización."
+  },
+  {
+    "term": "válvula de seguridad",
+    "def": "El mecanismo que garantiza que un bucle termina; en el pipeline de esta lección, `MAX_ROUNDS` cumple ese papel.",
+    "source": "[^S2]",
+    "pitfall": "Tratar la válvula de seguridad como protección contra caídas, sin relación con que la cantidad de rondas sea impredecible.",
+    "distractor_rationale": "Los mecanismos de seguridad se asocian normalmente a atrapar errores, pero aquí nada lanza una excepción: sin la válvula el pipeline corre correctamente y para siempre, así que la válvula existe para acotar la cantidad de rondas en el origen, no para atrapar un fallo."
+  },
+  {
+    "term": "REVIEW_CRITERIA",
+    "def": "La lista de comprobación explícita que se le entrega al revisor en el código de esta lección, que enumera los estándares concretos contra los que tiene que comprobar el borrador uno por uno.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que los criterios de revisión quedan fijos una vez escritos en el código y no se pueden ajustar por tarea.",
+    "distractor_rationale": "Que los criterios vivan en el código fuente parece una decisión hardcodeada, pero la lista se inserta en el prompt del revisor vía una plantilla de cadena, así que agregar un elemento al arreglo es todo lo que hace falta para que el revisor empiece a comprobar un estándar nuevo."
+  },
+  {
+    "term": "runProducer",
+    "def": "La función del código de esta lección que genera o corrige el borrador; en una nueva ejecución lleva la versión anterior completa más las notas de revisión, para que el productor corrija en lugar de arrancar de cero.",
+    "source": "[^S8]",
+    "pitfall": "Suponer que `runProducer` recuerda el borrador que generó la ronda pasada, así que no haría falta volver a escribir la versión anterior en el prompt.",
+    "distractor_rationale": "El nombre de la función sugiere un trabajador con estado, pero la API de Messages es sin estado y no guarda nada entre peticiones: «corrige tu versión anterior» solo significa algo si esa versión está escrita de forma literal en el prompt de esta llamada."
+  },
+  {
+    "term": "runReviewer",
+    "def": "La función del código de esta lección que comprueba el borrador contra `REVIEW_CRITERIA` ítem por ítem y devuelve el resultado de la revisión.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que a `runReviewer` le basta con decir qué tal se ve el borrador en general, sin recorrer los criterios uno a uno.",
+    "distractor_rationale": "Una impresión global es lo que daría un revisor descuidado, pero el prompt exige explícitamente una comprobación por criterio y ningún veredicto vago, porque solo los criterios concretos le dan al productor algo específico contra lo que corregir."
+  },
+  {
+    "term": "parseReview",
+    "def": "La función del código de esta lección que convierte la respuesta de texto del revisor en un objeto estructurado, devolviendo un rechazo siempre que el parseo falla o la forma de los campos es incorrecta.",
+    "source": "[^S6]",
+    "pitfall": "Suponer que `parseReview` debería aprobar por defecto ante un fallo de parseo para que el pipeline siga en marcha.",
+    "distractor_rationale": "Dejarlo pasar por defecto mantiene viva la ejecución, que es por lo que resulta tentador, pero reempaqueta «el revisor no hizo su trabajo» como «revisión aprobada»: el respaldo correcto es el rechazo, ya que un fallo de parseo significa que no pudiste verificar nada."
+  },
+  {
+    "term": "extractJson",
+    "def": "El ayudante del código de esta lección que le quita a la respuesta del modelo la cerca de bloque de código markdown, si la hay, para que el JSON de dentro se pueda parsear.",
+    "source": "[^S9]",
+    "pitfall": "Suponer que cualquier respuesta que contenga JSON válido se le puede pasar directo a `JSON.parse` sin preprocesarla.",
+    "distractor_rationale": "El JSON dentro de la respuesta está bien formado, lo que hace que el preprocesamiento parezca innecesario, pero las comillas invertidas de alrededor y las líneas de explicación también son parte de la cadena, así que parsear el texto en bruto falla sobre contenido que por lo demás es perfectamente bueno."
+  },
+  {
+    "term": "approved",
+    "def": "El campo booleano del resultado de la revisión que dice si este borrador pasó los criterios de revisión.",
+    "source": "[^S9]",
+    "pitfall": "Suponer que, mientras `approved` esté presente en el JSON devuelto, no hace falta comprobar su tipo.",
+    "distractor_rationale": "La presencia parece comprobación suficiente, pero `parseReview` prueba a propósito `typeof parsed.approved !== \"boolean\"`: un campo que parsea bien pero contiene una cadena sigue contando como fallo de parseo, porque no se puede confiar en ese valor para mover el bucle."
+  },
+  {
+    "term": "issues",
+    "def": "El campo de tipo arreglo del resultado de la revisión que lista cada criterio fallido y su problema específico; vacío cuando todo pasa.",
+    "source": "[^S9]",
+    "pitfall": "Suponer que un arreglo `issues` no vacío significa por sí solo que la revisión falló.",
+    "distractor_rationale": "Los dos campos suelen coincidir en la práctica, así que es fácil leer cualquiera de los dos como el veredicto, pero el código se ramifica solo sobre `approved`: `issues` es detalle explicativo para que el productor corrija, no la señal de control."
+  },
+  {
+    "term": "parseo defensivo",
+    "def": "Escribir tus propias comprobaciones alrededor de la respuesta de un modelo —quitar cercas, atrapar errores de parseo, validar tipos de campo— en lugar de confiar en que va a coincidir con el formato acordado.",
+    "source": "[^S9]",
+    "pitfall": "Suponer que un prompt cuidadoso basta por sí solo para garantizar que la respuesta parsea, así que no hace falta manejo defensivo.",
+    "distractor_rationale": "Un prompt que dice «responde estrictamente en JSON» se siente como un contrato, pero sin una restricción a nivel de muestreo el modelo todavía puede emitir sintaxis inválida, dejar caer campos o envolver el JSON en prosa: la instrucción es una petición, no una garantía."
+  },
+  {
+    "term": "salidas estructuradas",
+    "def": "La función oficial que restringe la respuesta de un modelo para que coincida estrictamente con un esquema a nivel de muestreo, garantizando una salida válida y parseable.",
+    "source": "[^S9]",
+    "pitfall": "Suponer que las salidas estructuradas y pedir JSON con amabilidad en el prompt vienen a ser lo mismo.",
+    "distractor_rationale": "Ambas apuntan a un JSON bien formado, así que parecen intercambiables, pero solo las salidas estructuradas restringen la generación en sí: el prompt deja la puerta abierta a sintaxis mal formada y campos faltantes, que es por lo que un parseo hecho a mano sigue necesitando una ruta de rechazo."
+  },
+  {
+    "term": "sin estado",
+    "def": "La propiedad de la API de Messages por la que cada petición debe llevar el historial de conversación completo que necesita, porque la API no guarda estado entre peticiones.",
+    "source": "[^S8]",
+    "pitfall": "Suponer que el modelo retiene lo que pasó en la llamada anterior dentro de la misma ejecución del script.",
+    "distractor_rationale": "Las llamadas salen de un mismo programa en un mismo bucle, lo que las hace sentir como una sesión continua, pero nada se preserva del lado del servidor: cada ronda tiene que reenviar por completo la tarea, el borrador anterior y las notas de la ronda pasada."
+  },
+  {
+    "term": "runPipeline",
+    "def": "La función del código de esta lección que conecta productor, revisor y parser en un bucle acotado por `MAX_ROUNDS`, y entrega el último borrador con los problemas sin resolver si se llega al tope.",
+    "source": "[^S2]",
+    "pitfall": "Suponer que llegar al tope de rondas sin aprobación debería lanzar un error o forzar un veredicto de aprobado.",
+    "distractor_rationale": "Ambos extremos parecen un manejo decidido, pero la función retorna con normalidad con `approved: false` más el último borrador y los problemas restantes: cuando el paso automatizado no puede juzgar, escala a un humano en lugar de decidir por sí mismo en código."
+  }
+]

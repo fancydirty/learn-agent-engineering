@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Producir la variante en español del curso learn-multi-agent-collaboration para learn.agentmentor.dev, tomando como base la variante en inglés ya verificada. Es una traducción con pulido pedagógico a partir de en (no del zh): misma estructura de 6 lecciones, mismos slugs de lección, mismos ids de bloque interactivo y mismas posiciones de respuesta correcta, citas de las fuentes conservadas en su inglés original, código ejecutable con la lógica intacta y solo comentarios y cadenas visibles traducidos, y una prosa técnica natural en español, en tono profesional cercano y sin rigidez de traducción automática.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "El responsable ratificó el plan multilingüe: los seis idiomas en learn.agentmentor.dev, primero el inglés (ya completo, 12/12) y después el resto de idiomas como oleadas de traducción a partir de la base en inglés. La variante en inglés es la fuente de verdad verificada y corregida en su fundamentación, así que no hizo falta ninguna aclaración adicional."
+  },
+  "learnerModel": {
+    "targetReader": "Una persona desarrolladora que ha terminado los primeros cinco cursos de esta serie, sabe escribir prompts básicos, entiende el protocolo de tool calling, conoce la memoria y el estado de un agente y sabe leer JavaScript básico",
+    "knownConcepts": [
+      "Escribir prompts básicos",
+      "El protocolo de tool calling (tool_use / tool_result)",
+      "La memoria y el estado de un agente",
+      "JavaScript básico (variables, funciones, async/await, métodos de array)",
+      "Ejecutar scripts de Node.js en una terminal",
+      "Que un agente lee el contexto, decide, llama herramientas y repite en bucle"
+    ],
+    "unknownConcepts": [
+      "Cuándo vale la pena repartir una tarea entre varios agentes",
+      "La arquitectura orquestador-subagente y el aislamiento de contexto",
+      "Fan-out y agregación",
+      "Escribir prompts de delegación autónomos",
+      "Los patrones de pipeline, producer-reviewer y votación",
+      "Los modos de fallo multiagente (un «hecho» no verificable, trabajo duplicado, resultados en conflicto)",
+      "El trust-then-verify gap",
+      "El parseo defensivo del JSON de salida de un revisor"
+    ],
+    "assumedEnvironment": "Un entorno de Node.js, acceso a una terminal, un editor de texto y una API key de Claude en funcionamiento para el ejercicio de la lección 6",
+    "firstIndependentAction": "Tomar una tarea que estén pensando entregar a varios agentes y juzgar si el coste de coordinación supera al beneficio",
+    "noviceRamp": [
+      "La lección 1 motiva el trabajo multiagente a partir de los límites de un solo contexto (contaminación, dilución de la atención) antes de cualquier arquitectura",
+      "La lección 2 introduce orquestador-subagente con aislamiento de contexto y por qué un subagente devuelve solo su conclusión",
+      "La lección 3 enseña prompts de delegación autónomos (objetivo, formato de salida, herramientas, límites)",
+      "La lección 4 contrasta los patrones pipeline / producer-reviewer / votación y dónde encaja cada uno",
+      "La lección 5 cubre el fallo y la coordinación (el trust-then-verify gap) como una unidad relativamente independiente, y la lección 6 construye un pipeline producer-reviewer ejecutable"
+    ]
+  },
+  "learnerBrief": "El lector objetivo ha terminado los primeros cinco cursos, escribe prompts básicos, entiende el tool calling y la memoria del agente, y lee JavaScript. Todavía no sabe cuándo ni cómo repartir el trabajo entre agentes. El curso lo lleva a juzgar cuándo vale la pena lo multiagente, aplicar la arquitectura orquestador-subagente con aislamiento de contexto, escribir prompts de delegación autónomos, distinguir los patrones pipeline/producer-reviewer/votación, reconocer los modos de fallo multiagente y sus defensas, y por último construir un pipeline producer-reviewer ejecutable con la Claude API.",
+  "scope": "Se cubre: cuándo vale la pena repartir una tarea entre agentes y cuándo gana el coste de coordinación, la arquitectura orquestador-subagente y el aislamiento de contexto, el fan-out y la agregación, los prompts de delegación autónomos, los patrones pipeline / producer-reviewer / votación, los modos de fallo multiagente (un «hecho» no verificable, trabajo duplicado, resultados en conflicto) y el trust-then-verify gap, la integración de resultados y la atribución de citas, el coste en tokens y un pipeline producer-reviewer ejecutable. No se cubre: el código fuente de los frameworks multiagente, los algoritmos de consenso de sistemas distribuidos, ni construir desde cero una plataforma de orquestación de propósito general. Profundidad: desde cero hasta entender los patrones de colaboración y construir un pipeline de dos agentes ejecutable.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-multi-agent-collaboration/es/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Los diagramas se mantienen exactamente donde los usa el original (fan-out/agregación y las formas de los patrones de colaboración), con las etiquetas reescritas en español; no se añade ni se quita ninguno. La topología multiagente es justo el contenido que un diagram transmite mejor que la prosa, y la colocación heredada ya estaba validada en revisión.",
+    "weakestPoints": [
+      "La taxonomía de patrones de la lección 4 (pipeline / producer-reviewer / votación) es una simplificación; los sistemas reales los combinan, y se señala donde importa",
+      "Las cifras de coste en tokens de la lección 1 (4x, 15x) son datos reportados por Anthropic para un sistema concreto y se enmarcan como tales, no como constantes universales",
+      "El pipeline de la lección 6 es de nivel didáctico y de una sola ejecución; explícitamente no es un framework de orquestación productivo, y el JSON del revisor se parsea de forma defensiva en vez de darse por válido",
+      "Al ser una traducción al español de una variante en inglés verificada, la deriva idiomática es el riesgo residual: las citas de las fuentes se conservaron verbatim en inglés y el código ejecutable mantiene la lógica idéntica, pero la prosa se vertió a un español natural en lugar de traducirse palabra por palabra, así que la revisión debe comprobar la equivalencia de significado con la lección en inglés"
+    ],
+    "followUpChecks": [
+      "Pasada de renderizado en learn.agentmentor.dev /es/multi-agent-collaboration/... tras el despliegue: las 6 lecciones más el README, con las tarjetas interactivas hidratadas",
+      "Verificar que cada ancla [^Sn] de las lecciones en es tiene su bloque ## Sn correspondiente en el sources.md en es",
+      "Confirmar que los ids de los seis bloques de comprobación y las posiciones de respuesta correcta son idénticos byte a byte a la variante en inglés (c/b/b/a/b/c en orden de lección)",
+      "Volver a ejecutar el JS producer-reviewer del proyecto final y confirmar que el bucle, el parseo defensivo del JSON y las condiciones de parada coinciden con las salidas afirmadas"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "La persona que aprende puede decidir si una tarea justifica varios agentes, escribir un prompt de delegación autónomo con alcance y formato de salida, elegir el patrón de colaboración que encaja, y construir un pipeline producer-reviewer ejecutable con la Claude API que parsea de forma defensiva el JSON del revisor, verifica lo que afirma el subagente en vez de fiarse, y para en un bucle acotado.",
+    "interactionCheck": "Seis bloques agentmentor-check, uno por lección (cuándo repartir en la L1, visibilidad del subagente en la L2, instrucción vaga en la L3, pipeline frente a revisor en la L4, fiarse del subagente en la L5, JSON de revisión inválido en la L6), conservados desde la variante en inglés con ids, modos, número de opciones y posiciones de respuesta correcta idénticos; label, prompt, whyHere, el texto de las opciones y el feedback son traducciones al español ajustadas al malentendido propio de cada lección. Los ejercicios mantienen la estructura de niveles de la variante en inglés, con rubric, answer e hints en cada nivel.",
+    "learnerFitCheck": "El curso presupone los cinco cursos previos, el prompting básico, el protocolo de tool calling, la memoria y el estado del agente y la lectura de JavaScript. Cuándo repartir, la orquestación, los prompts de delegación, los patrones de colaboración y el modelo de fallo se enseñan desde cero en orden de dependencia; la persona construye por primera vez un pipeline completo en la lección 6, después de todos los prerrequisitos. El primer ejercicio de la lección 1 solo pide un juicio de si-vale-la-pena sobre la propia tarea.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "Traducción al español de la variante en inglés verificada: la estructura, la fundamentación y las posiciones de respuesta se heredan del original verificado",
+      "Todos los bloques interactivos conservan id, mode, número de opciones y respuesta correcta con paridad byte a byte respecto al inglés",
+      "Todas las citas de las fuentes se mantienen en su inglés original (política de citas ratificada por el responsable)",
+      "Las referencias entre cursos usan los títulos en español y el código del proyecto final mantiene la lógica idéntica"
+    ]
+  },
+  "nextSteps": [
+    "Ejecutar course-guard sobre la variante en es y corregir lo que señale",
+    "Desplegar learn.agentmentor.dev y comprobar que las páginas /es se renderizan con las tarjetas interactivas hidratadas",
+    "Producir las variantes de idioma restantes usando esta misma variante en inglés como base de traducción",
+    "Animar a quienes aprenden a construir un pipeline producer-reviewer para una tarea real de su propio proyecto como proyecto de consolidación tras el curso"
+  ],
+  "memoryBoundary": "Este agentmentor.json es un registro de estado local del curso (course-local state record), almacenado únicamente en el directorio del curso para las comprobaciones de calidad y el seguimiento de la ruta de aprendizaje. Nunca se escribe de vuelta en la memoria a largo plazo de Claude Code ni de ningún sistema de IA anfitrión, y no afecta a otros cursos ni a otras conversaciones."
+}
