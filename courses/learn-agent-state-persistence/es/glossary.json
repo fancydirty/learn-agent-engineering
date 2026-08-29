@@ -1,0 +1,422 @@
+[
+  {
+    "term": "memoria",
+    "def": "El contexto que le das al modelo; responde «¿qué ha visto el modelo?». Puede estar ya persistida en disco (como `NOTES.md`) o seguir viviendo en la memoria del proceso.",
+    "source": "[^S1]",
+    "pitfall": "Confundir la memoria con «lo que ya está en disco» e ignorar que el contenido generado por el modelo que todavía no se escribió en `NOTES.md` también es memoria y se puede perder.",
+    "distractor_rationale": "Como el ejemplo de `NOTES.md` de la Lección 1 ya está persistido, es fácil equiparar «memoria» con «salida en disco» y no ver que la memoria también puede vivir en la memoria del proceso."
+  },
+  {
+    "term": "estado de ejecución",
+    "def": "La escena en curso que sostiene el proceso del arnés: el arreglo `messages`, los contadores de turnos, `tokensUsed`, la llamada a herramienta todavía sin registrar. Por omisión vive en la memoria del proceso y se pierde cuando el proceso termina.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que si los archivos de salida en disco y la memoria están intactos, el estado de ejecución también está a salvo, ignorando que físicamente viven en lugares distintos.",
+    "distractor_rationale": "La salida en disco y el estado de ejecución suelen convivir en la misma tarea, lo que facilita tratarlos como una sola cosa en vez de reconocer que el estado de ejecución, por omisión, solo vive en la memoria del proceso."
+  },
+  {
+    "term": "messages",
+    "def": "El arreglo con el historial completo de la conversación que el arnés sostiene en memoria; es la única fuente para restaurarle el contexto al modelo y el campo más grande del punto de control.",
+    "source": "[^S1]",
+    "pitfall": "Creer que puedes reconstruir `messages` a partir de los archivos de salida en disco después de una caída, ignorando que esos archivos no registran lo que dijo el modelo en cada turno.",
+    "distractor_rationale": "Los archivos de salida y `messages` se refieren a la misma tarea, lo que tienta a creer que uno puede sustituir al otro, pero los archivos de salida son resultados, no anotaciones del proceso."
+  },
+  {
+    "term": "turns",
+    "def": "Contador de cuántos turnos se ejecutaron, usado para juzgar condiciones de parada como el tope máximo de turnos; al reanudar debe continuar desde el valor del punto de control, no volver a cero.",
+    "source": "[^S1]",
+    "pitfall": "Reiniciar `turns` en cero al reanudar, lo que hace que los chequeos de límite de turnos se disparen mal o que una tarea que se cae esquive el tope.",
+    "distractor_rationale": "La palabra «reiniciar» sugiere «empezar desde cero», así que es fácil suponer que los contadores asociados también deben reiniciarse, ignorando que `turns` cuenta el total de la tarea, no el de la sesión del proceso."
+  },
+  {
+    "term": "tokensUsed",
+    "def": "Contador acumulado de uso de tokens; al reanudar hay que arrastrarlo desde el punto de control para sostener las decisiones de umbral de compactación de contexto.",
+    "source": "[^S1]",
+    "pitfall": "Intentar reestimar el uso a partir del historial de `messages` en vez de usar el valor del punto de control, lo que hace que el momento de compactar se desfase.",
+    "distractor_rationale": "La mayoría de los escenarios no traen datos históricos de uso, así que reestimar parece la única salida, y se pierde de vista que el punto de control debería guardar este valor para reutilizarlo directo."
+  },
+  {
+    "term": "pendingToolUse",
+    "def": "Campo del punto de control que marca una llamada colgante (el modelo la nombró, el resultado todavía no se registró); vale `null` o un objeto como `{id, name, input}`.",
+    "source": "[^S1]",
+    "pitfall": "Tratarlo como opcional y dejarlo fuera del punto de control, con lo que pierdes la capacidad de distinguir «turno completo» de «turno a medias».",
+    "distractor_rationale": "Es el único campo del punto de control que no corresponde directo a una variable contadora del bucle, lo que lo hace parecer metadato complementario en vez de estado esencial."
+  },
+  {
+    "term": "llamada colgante",
+    "def": "Un bloque `tool_use` que el modelo nombró pero cuyo resultado no alcanzó a volver a `messages` cuando el proceso se cayó, y que queda sin su `tool_result` emparejado.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que las llamadas colgantes son casos raros de borde y no un desenlace garantizado cada vez que la caída aterriza entre nombrar la herramienta y registrar el resultado.",
+    "distractor_rationale": "La ventana es angosta, lo que hace sentir improbable la llamada colgante, pero en realidad es uno de los estados habituales que la recuperación tiene que manejar."
+  },
+  {
+    "term": "punto de control",
+    "def": "Serializar el estado de ejecución (`messages`, `turns`, `tokensUsed`, `pendingToolUse`) a disco para que el proceso pueda reanudar después de una caída; es una de las salvaguardas deterministas que se emparejan con la adaptabilidad del modelo.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que un punto de control significa volcar todo el contenido de la memoria sin criterio, en vez de anotar solo los campos que la reanudación de verdad necesita.",
+    "distractor_rationale": "«Guardar el estado» sugiere de forma intuitiva «guardar todo», así que guardar campos selectos parece incompleto en lugar de correcto por diseño."
+  },
+  {
+    "term": "checkpoint.json",
+    "def": "El archivo de punto de control que sostiene `version`, `task`, `turns`, `tokensUsed`, `messages` y `pendingToolUse`: una instantánea completa de la escena de ejecución.",
+    "source": "[^S1]",
+    "pitfall": "Guardar solo `messages` suponiendo que el historial de conversación alcanza, y dejar fuera `version`, `task` y los contadores que la reanudación necesita para ser correcta.",
+    "distractor_rationale": "`messages` es el campo más grande y con más información, lo que tienta a tratar los demás campos como metadatos opcionales."
+  },
+  {
+    "term": "version",
+    "def": "Número de versión del protocolo dentro de `checkpoint.json`; le permite a `loadCheckpoint` confirmar la compatibilidad de formato y negarse a cargar versiones que no coinciden.",
+    "source": "[^S1]",
+    "pitfall": "Tratar `version` como adorno y parsear puntos de control viejos con código nuevo (o al revés) sin verificar compatibilidad.",
+    "distractor_rationale": "Un archivo de punto de control no va a avisar por su cuenta «mi formato cambió», así que es fácil ignorar este campo hasta que una actualización de formato provoque una corrupción de estado sin explicación."
+  },
+  {
+    "term": "task",
+    "def": "La cadena con la tarea original del usuario, guardada en `checkpoint.json` para que el arnés reiniciado sepa a qué tarea pertenece esta escena y pueda reportar avance.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que el arnés recuerda por sí solo qué tarea está corriendo y omitir este campo, con lo que los escenarios de varias tareas quedan sin poder confirmar cuál reanudó.",
+    "distractor_rationale": "Las descripciones de tarea suelen llegar como parámetro de quien llama, lo que las hace sentir «entrada externa» y no «estado que hay que persistir»."
+  },
+  {
+    "term": "saveCheckpoint",
+    "def": "Función que escribe el estado actual a disco; las implementaciones correctas escriben primero un archivo temporal y después renombran de forma atómica, para no quedar con un archivo a medio escribir.",
+    "source": "[^S1]",
+    "pitfall": "Sobrescribir `checkpoint.json` directo con `fs.writeFileSync`, lo que deja un JSON a medio escribir si matan el proceso durante la escritura.",
+    "distractor_rationale": "«Quedarse solo con el más reciente» y «cómo escribir el contenido nuevo de forma segura» son asuntos separados, pero lo correcto del primero se puede confundir con una justificación para sobrescribir directo."
+  },
+  {
+    "term": "punto de guardado A",
+    "def": "Primer punto de control dentro de un turno, guardado después de que el modelo nombra una herramienta pero antes de que se ejecute; anota en `pendingToolUse` el bloque `tool_use` de ese turno.",
+    "source": "[^S1]",
+    "pitfall": "Creer que basta con el punto de guardado B y omitir el A, con lo que la ventana entre nombrar la herramienta y registrar el resultado queda invisible en el punto de control.",
+    "distractor_rationale": "El estado del punto de guardado B se ve «más completo» (el resultado de la herramienta ya está registrado), lo que tienta a suponer que puede cubrir la información del A, ignorando que anotan momentos distintos."
+  },
+  {
+    "term": "punto de guardado B",
+    "def": "Segundo punto de control dentro de un turno, guardado después de que los resultados de herramienta entran a `messages`; deja `pendingToolUse` de vuelta en `null`.",
+    "source": "[^S1]",
+    "pitfall": "Tratar el B como el único punto de guardado necesario por turno, ignorando que sin el A no puede cubrir la ventana de ejecución de la herramienta.",
+    "distractor_rationale": "«Guardar una vez al final del turno» es la cadencia más intuitiva, y eso tapa que el estado a mitad de turno también hay que anotarlo."
+  },
+  {
+    "term": "archivo temporal",
+    "def": "Archivo intermedio (por ejemplo, `checkpoint.json.tmp`) que se escribe primero durante una escritura atómica de punto de control; queda escrito por completo antes de renombrarse para reemplazar al archivo real.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que el paso del archivo temporal se puede saltar mientras el renombrado sea atómico, sin ver que el temporal es lo que garantiza que la escritura esté completa antes del reemplazo.",
+    "distractor_rationale": "La atención tiende a irse entera a «renombrar es atómico», lo que oscurece que el renombrado solo sirve si el archivo temporal ya está completo."
+  },
+  {
+    "term": "fs.renameSync",
+    "def": "Operación de renombrado atómico dentro del mismo sistema de archivos; la entrada de directorio apunta por completo al archivo nuevo o se queda en el viejo, sin estado intermedio a medio renombrar.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que el renombrado es atómico entre sistemas de archivos distintos o en unidades de red, y aplicar este patrón donde la atomicidad no está garantizada.",
+    "distractor_rationale": "La lección subraya «renombrar es atómico» como conclusión, lo que hace fácil pasar por alto la condición previa de estar en el mismo sistema de archivos."
+  },
+  {
+    "term": "sobrescribir en el lugar",
+    "def": "Sobrescribir directo el archivo de punto de control con `fs.writeFileSync`; no es atómico y puede dejar un JSON truncado si matan el proceso a mitad de escritura.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que el riesgo de sobrescribir es «el archivo crece demasiado» o «no queda historial», y perderte el riesgo real: una escritura interrumpida deja medio archivo ilegible.",
+    "distractor_rationale": "Sobrescribir funciona bien cuando los procesos terminan de forma normal, lo que enmascara su riesgo verdadero en escenarios de muerte inesperada."
+  },
+  {
+    "term": "reanudación",
+    "def": "Reiniciar el bucle desde un punto de control tras una caída: leer el estado de vuelta, reconstruir `messages` y seguir desde donde ocurrió el error en lugar de arrancar de nuevo en el turno 1.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que reanudar significa reconstruir un arreglo `messages` inicial y volver a reproducir el historial, en vez de tomar directo el `messages` completo del punto de control.",
+    "distractor_rationale": "«Reanudar» sugiere «reconstruir», lo que tienta a rearmar el historial de conversación en vez de reconocer que el punto de control ya sostiene un `messages` completo y usable."
+  },
+  {
+    "term": "loadCheckpoint",
+    "def": "Función que lee y parsea el archivo de punto de control; debe validar el campo `version` y fallar en voz alta ante una versión que no coincide o un parseo fallido, no caer en silencio a un estado vacío.",
+    "source": "[^S1]",
+    "pitfall": "Devolver un estado vacío ante un parseo fallido para «que el programa siga corriendo», perdiendo en silencio el avance de la tarea cuando un punto de control corrupto debería ser un error explícito.",
+    "distractor_rationale": "«Dejar que el programa siga» parece más amable que «lanzar un error», pero aceptar en silencio un punto de control corrupto es justo donde las tareas se pierden de verdad."
+  },
+  {
+    "term": "reconcile",
+    "def": "Función que maneja un `pendingToolUse` colgante al reanudar; decide, según la naturaleza de la herramienta (solo lectura frente a alto impacto) y el estado del registro, si volver a ejecutar, reutilizar o devolver `is_error`.",
+    "source": "[^S4]",
+    "pitfall": "Simplificar la conciliación a «volver a ejecutar todo», ignorando que volver a ejecutar herramientas de alto impacto arriesga efectos secundarios duplicados.",
+    "distractor_rationale": "Volver a ejecutar una herramienta de solo lectura es seguro, y esa seguridad se puede sobregeneralizar a «toda llamada colgante se puede volver a ejecutar»."
+  },
+  {
+    "term": "READ_ONLY_TOOLS",
+    "def": "Conjunto de nombres de herramientas (`read_file`, `grep`, `list_dir`, `web_search`) considerados libres de efectos secundarios; `reconcile` vuelve a ejecutar sin riesgo las herramientas de este conjunto al reanudar.",
+    "source": "[^S4]",
+    "pitfall": "Agregar herramientas cuyo nombre suena a solo lectura pero cuya implementación tiene efectos secundarios (caché o logging, por ejemplo), lo que provoca acciones duplicadas inesperadas.",
+    "distractor_rationale": "Algunos nombres de herramienta sugieren operaciones de pura consulta, lo que las hace fáciles de clasificar como de solo lectura por intuición y sin revisar los detalles de implementación."
+  },
+  {
+    "term": "herramienta de solo lectura",
+    "def": "Herramienta con cero efectos secundarios (leer archivos, buscar); se puede volver a ejecutar varias veces sin riesgo porque el mundo exterior queda igual.",
+    "source": "[^S4]",
+    "pitfall": "Confundir «suena a solo lectura» con «es de solo lectura de verdad», juzgando por el nombre en vez de por los detalles de implementación.",
+    "distractor_rationale": "Los criterios de solo lectura e idempotente se traslapan, lo que facilita mezclarlos, aunque «solo lectura» es un caso particular de «idempotente»."
+  },
+  {
+    "term": "herramienta de alto impacto",
+    "def": "Herramienta que cambia el estado externo (`send_email`, `create_ticket`, `delete_file`); hay que confirmar si ya se ejecutó antes de volver a correrla, para no duplicar efectos secundarios.",
+    "source": "[^S4]",
+    "pitfall": "Creer que la lógica de reintento por sí sola vuelve seguras a las herramientas de alto impacto, ignorando que el reintento es justo la operación peligrosa para ese tipo de herramienta.",
+    "distractor_rationale": "El reintento es un patrón de confiabilidad por omisión en muchos sistemas, lo que hace fácil aplicarlo sin criterio a herramientas de alto impacto, donde reintentar equivale a duplicar efectos secundarios."
+  },
+  {
+    "term": "is_error",
+    "def": "Campo opcional de `tool_result` que se pone en `true` para indicar que la herramienta falló o que su estado es desconocido, para que el modelo se entere y se adapte en vez de dar por hecho el éxito.",
+    "source": "[^S4]",
+    "pitfall": "Usar `is_error` como salida universal para toda situación incierta, en vez de distinguir los casos en que una herramienta de solo lectura simplemente se puede volver a ejecutar.",
+    "distractor_rationale": "`is_error` se siente «seguro» y es fácil de usar, lo que tienta a abusar de él como manejo por omisión de toda llamada colgante en vez de diferenciar según la naturaleza de la herramienta."
+  },
+  {
+    "term": "tool_result",
+    "def": "Bloque de contenido que se le devuelve al modelo por cada `tool_use`; el protocolo exige que todo `tool_use` tenga su `tool_result` emparejado, unidos por `tool_use_id` y todos en el mensaje de usuario siguiente.",
+    "source": "[^S4]",
+    "pitfall": "Borrar de `messages` el `tool_use` colgante al reanudar en vez de suministrarle un `tool_result` emparejado, lo que viola el protocolo de emparejamiento.",
+    "distractor_rationale": "«Borrarlo para que se vea limpio» tiene atractivo intuitivo, y hace que se pase por alto que el protocolo exige emparejar, no borrar."
+  },
+  {
+    "term": "tool_use",
+    "def": "Bloque de contenido en una respuesta del modelo que nombra una herramienta a llamar; contiene los campos `id`, `name` e `input`. Un `tool_use` colgante queda sin su `tool_result` emparejado cuando el proceso se cae.",
+    "source": "[^S4]",
+    "pitfall": "Suponer que cualquier entrada de `messages` con un `tool_use` significa que la herramienta ya se ejecutó, ignorando que `tool_use` solo representa la «solicitud» del modelo, no la ejecución real.",
+    "distractor_rationale": "`tool_use` aparece en los mensajes del asistente, lo que hace fácil confundir «el modelo dijo que se hiciera» con «se hizo»."
+  },
+  {
+    "term": "idempotente",
+    "def": "Operación que produce el mismo efecto final se ejecute una o muchas veces; el criterio es el efecto (el estado externo final), no el valor de retorno.",
+    "source": "[^S1]",
+    "pitfall": "Definir idempotente como «devuelve el mismo valor en cada llamada» en vez de «deja el mundo exterior en el mismo estado final sin importar cuántas veces se llame».",
+    "distractor_rationale": "La palabra «idempotente» sugiere literalmente «misma salida», lo que hace fácil fijarse en los valores de retorno en vez de en el efecto sobre el estado externo."
+  },
+  {
+    "term": "registro de efectos",
+    "def": "Anotación aparte en disco, indexada por `tool_use_id`, que rastrea qué efectos secundarios ocurrieron de verdad; se escribe en el instante en que una herramienta tiene éxito y le permite a la reanudación distinguir «se ejecutó» de «no se ejecutó».",
+    "source": "[^S1]",
+    "pitfall": "Fusionar el registro de efectos con el punto de control en un solo archivo, sin ver que responden preguntas distintas: «¿en qué paso vas?» frente a «¿ocurrió el efecto secundario de este paso?».",
+    "distractor_rationale": "Ambos anotan estado y ambos exigen escritura atómica, lo que los hace parecidos en la superficie y tienta a unirlos, tapando que sus momentos de anotación y sus propósitos son distintos."
+  },
+  {
+    "term": "effects.json",
+    "def": "El archivo del registro de efectos, indexado por `tool_use_id`, que anota el nombre de la herramienta, el resultado y la marca de tiempo; se escribe apenas la herramienta tiene éxito, antes del punto de guardado B.",
+    "source": "[^S1]",
+    "pitfall": "Demorar la escritura del registro hasta el punto de guardado B en vez de escribir apenas la herramienta tiene éxito, lo que deja una ventana irresoluble entre el fin de la herramienta y la escritura del registro.",
+    "distractor_rationale": "Escribir el registro «junto con» el punto de guardado B parece más ordenado, y eso tapa que los dos tienen que escribirse en momentos distintos justamente para cubrir la ventana que hay entre ellos."
+  },
+  {
+    "term": "tool_use_id",
+    "def": "Identificador único que el modelo le asigna a cada bloque `tool_use`; no cambia al reproducirse, lo que lo vuelve una clave de idempotencia natural para el registro de efectos.",
+    "source": "[^S4]",
+    "pitfall": "Pensar que necesitas inventar un esquema propio de deduplicación para reconocer «la misma llamada», sin ver que `tool_use_id` ya cumple esa función.",
+    "distractor_rationale": "En otros sistemas las claves de idempotencia suelen requerir reglas de generación propias, lo que hace fácil suponer lo mismo acá y pasar por alto que el protocolo ya entrega un identificador único."
+  },
+  {
+    "term": "at-least-once",
+    "def": "La semántica de ejecución inherente a la reanudación basada en puntos de control: una herramienta puede terminar y que el resultado no alcance a registrarse antes de la caída, con lo que se vuelve imposible distinguir «no se ejecutó» de «se ejecutó pero no quedó anotado».",
+    "source": "[^S1]",
+    "pitfall": "Tratar la reanudación como semántica de exactamente una vez y escribir código que da por hecho que cada acción ocurre una sola vez, ignorando que el punto de control no puede distinguir los dos estados.",
+    "distractor_rationale": "«Reanudar desde un punto de control» suena a continuación precisa, lo que hace fácil suponer que cada acción se ejecuta exactamente una vez y tapa la ventana angosta que genera la incertidumbre."
+  },
+  {
+    "term": "loadEffects",
+    "def": "Función que lee el registro de efectos; devuelve un objeto vacío si el archivo no existe o falla el parseo, tratándolo como «todavía no hay anotaciones» en vez de bloquear la reanudación.",
+    "source": "[^S1]",
+    "pitfall": "Aplicarle a `loadCheckpoint` el mismo manejo indulgente de «devolver vacío si falla», cuando los puntos de control exigen un manejo de error más estricto por ser la única anotación de la escena de la tarea.",
+    "distractor_rationale": "Las dos funciones tienen nombres y papeles parecidos, lo que tienta a darles un manejo de errores uniforme, pero el punto de control es la anotación autoritativa única y requiere validación estricta."
+  },
+  {
+    "term": "saveEffect",
+    "def": "Función que escribe el registro de efectos de vuelta a disco con escritura atómica de archivo temporal más renombrado; solo debe llamarse después de que la herramienta se ejecutó con éxito y hay un resultado real.",
+    "source": "[^S1]",
+    "pitfall": "Poner la llamada a `saveEffect` antes de la ejecución real de la herramienta, anotando un «listo» de mentira para algo que nunca corrió, lo que destruye la garantía de «ya ocurrió» del registro.",
+    "distractor_rationale": "«Anotar primero para no olvidarse» suena precavido, y tapa que anotar antes convierte en ficción la promesa de completitud del registro."
+  },
+  {
+    "term": "compuerta de aprobación",
+    "def": "Chequeo previo a la ejecución para herramientas de alto impacto que exige confirmación humana; pregunta «¿esto se debería hacer?» (distinto del «¿esto ya ocurrió?» del registro de efectos).",
+    "source": "[^S1]",
+    "pitfall": "Pensar que la compuerta de aprobación vuelve innecesario el registro de efectos, suponiendo que «el humano ya confirmó una vez» impide volver a ejecutar, e ignorando que las caídas igual pueden provocar repeticiones.",
+    "distractor_rationale": "Las dos compuertas se ubican antes de la ejecución, lo que las hace parecer dos nombres para la misma defensa, cuando en realidad protegen contra riesgos distintos."
+  },
+  {
+    "term": "ensureTicket",
+    "def": "Ejemplo de rediseñar «crear» como «asegurar que exista»: busca por título, devuelve el existente si lo encuentra y crea solo si falta; idempotente por diseño.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que cualquier función llamada «ensure» es idempotente de forma automática, sin verificar que su lógica de búsqueda sea de verdad confiable.",
+    "distractor_rationale": "La idempotencia depende de una deduplicación sólida; si el título trae contenido distinto cada vez, la búsqueda falla y la idempotencia queda solo de nombre, algo que el nombre tranquilizador de la función tapa con facilidad."
+  },
+  {
+    "term": "append",
+    "def": "Estilo de escritura acumulativa (`array.push`, agregar al final de un archivo de log); cada llamada suma de verdad un elemento más, así que el estado final varía con la cantidad de llamadas: por lo general no es idempotente.",
+    "source": "[^S1]",
+    "pitfall": "Tratar todo `append` como igual de riesgoso, ignorando que distintas operaciones de agregado tienen consecuencias de gravedad muy diferente (una línea de log frente a un correo duplicado).",
+    "distractor_rationale": "«No idempotente» se simplifica fácil a «todo es de alto riesgo», lo que tapa que agregar una línea de log y mandar correos duplicados difieren muchísimo en impacto real."
+  },
+  {
+    "term": "sobrescritura",
+    "def": "Estilo de escritura por reemplazo (fijar una línea en un valor fijo, `write_file` de archivo completo); llamarlo una vez o diez deja el mismo estado final: suele ser idempotente.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que las escrituras por sobrescritura son siempre idempotentes, ignorando los casos en que el contenido a sobrescribir depende del estado externo al momento de la llamada, lo que vuelve el resultado no determinista.",
+    "distractor_rationale": "«Sobrescribir» sugiere de forma intuitiva «resultado determinista», lo que hace fácil pasar por alto que la idempotencia de la sobrescritura tiene una condición previa: el contenido que escribes debe ser determinista en sí mismo."
+  },
+  {
+    "term": "runToolUses",
+    "def": "Función que ejecuta todos los bloques `tool_use` de un turno; una vez integrados el registro de efectos y la compuerta de aprobación, el orden queda: consultar el registro, después la aprobación, después ejecutar, después anotar en el registro.",
+    "source": "[^S1]",
+    "pitfall": "Invertir el orden entre la consulta al registro y la compuerta de aprobación, o poner la consulta después de la aprobación, lo que hace que se vuelvan a confirmar operaciones que ya se completaron.",
+    "distractor_rationale": "Ambos son chequeos previos a la ejecución, lo que hace que su orden parezca arbitrario, pero la consulta al registro tiene que ir primero para no preguntar «¿lo hacemos?» por algo que ya está hecho."
+  },
+  {
+    "term": "rebobinar",
+    "def": "Revertir la escena de decisión a un turno anterior para reintentar cuando la tarea se salió del camino (no por una caída); revierte el punto de control, no los efectos secundarios externos ya consumados.",
+    "source": "[^S2]",
+    "pitfall": "Creer que rebobinar puede deshacer efectos secundarios externos que ya ocurrieron, como traerse de vuelta un correo enviado, cuando solo restaura el estado de decisión en memoria.",
+    "distractor_rationale": "«Rebobinar» en control de versiones suele significar «deshacer», lo que hace fácil sobregeneralizar el rebobinado de puntos de control a acciones del mundo exterior, cuando los puntos de control nunca apuntaron a revertir efectos ya consumados."
+  },
+  {
+    "term": "bifurcar",
+    "def": "Copiar dos líneas temporales independientes a partir del mismo punto de control para explorar rutas distintas; cada línea temporal recibe su propia secuencia de puntos de control y un registro de efectos en blanco.",
+    "source": "[^S2]",
+    "pitfall": "Dejar que las dos líneas bifurcadas llamen sin control a la misma herramienta externa de alto impacto, con lo que una exploración pensada como paralela termina duplicando efectos secundarios.",
+    "distractor_rationale": "La atención al bifurcar se va de forma natural a «¿van a diferir las dos rutas de decisión?», y eso tapa que si ambas tocan la misma acción externa, duplicar puntos de control no evita duplicar efectos."
+  },
+  {
+    "term": "rewindTo",
+    "def": "Función que recupera el punto de control de un turno específico desde la secuencia conservada turno por turno; por omisión toma el último punto de guardado escrito en ese turno.",
+    "source": "[^S2]",
+    "pitfall": "Llamar a una lógica tipo `rewindTo` sobre una implementación de punto de control de archivo único que se sobrescribe, y encontrar que los turnos tempranos ya se sobrescribieron y no se pueden recuperar.",
+    "distractor_rationale": "`rewindTo` suena a «solo leer un archivo de punto de control», y eso tapa que presupone que los puntos de control se guardan como secuencia turno por turno, no sobrescritos en un solo archivo."
+  },
+  {
+    "term": "forkFrom",
+    "def": "Función que copia una línea temporal independiente desde el punto de control de un turno específico; la línea nueva trae su propia secuencia de puntos de control y un registro de efectos en blanco, aislada de la línea principal.",
+    "source": "[^S2]",
+    "pitfall": "Suponer que las líneas bifurcadas comparten el registro de efectos de la línea principal, lo que contamina entre líneas el juicio sobre «qué efectos secundarios ocurrieron».",
+    "distractor_rationale": "«Bifurcar desde el mismo punto de partida» sugiere de forma intuitiva un estado inicial compartido, lo que hace fácil caer por omisión en anotaciones compartidas, cuando la lección exige de forma explícita registros en blanco e independientes."
+  },
+  {
+    "term": "turn-014-A.json",
+    "def": "Ejemplo de nomenclatura para la secuencia de puntos de control turno por turno: mete el número de turno y la letra del punto de guardado en el nombre del archivo, para identificar con precisión el turno y el momento.",
+    "source": "[^S2]",
+    "pitfall": "Nombrar solo por turno y sin la letra del punto de guardado, con lo que los puntos de control A y B del mismo turno se sobrescriben entre sí y se pierde la distinción entre «antes de la herramienta» y «después del resultado».",
+    "distractor_rationale": "El número de turno parece suficiente para ubicar «cuál turno», y eso tapa que un mismo turno contiene dos momentos de guardado distintos que necesitan identificarse por separado."
+  },
+  {
+    "term": "pickLatestPoint",
+    "def": "Función que encuentra el último punto de guardado escrito dentro de un turno; se apoya en que el orden lexicográfico de A/B coincide de forma natural con el orden temporal «antes de la herramienta → después del resultado».",
+    "source": "[^S2]",
+    "pitfall": "Pensar que hacen falta marcas de tiempo para juzgar «cuál punto de guardado es posterior», sin ver que la nomenclatura A/B ya codifica el orden temporal por diseño.",
+    "distractor_rationale": "Determinar «cuál es posterior» pide de forma intuitiva comparar marcas de tiempo, y eso tapa que el propio esquema de nombres ya carga la información de orden."
+  },
+  {
+    "term": "escena de decisión",
+    "def": "Lo que los puntos de control rebobinan de verdad: `messages`, `turns`, `pendingToolUse` y los demás campos definidos dentro de la instantánea; no las acciones del mundo exterior ya consumadas.",
+    "source": "[^S2]",
+    "pitfall": "Confundir «rebobinar la escena de decisión» con «deshacer lo que pasó», cuando corresponden a estado interno frente a mundo exterior: dominios por completo distintos.",
+    "distractor_rationale": "Rebobinar sí cambia la ruta de razonamiento del modelo, lo que hace fácil suponer que los efectos del mundo exterior también «se reinician», cuando solo cambió la base de decisión, no las acciones externas ya consumadas."
+  },
+  {
+    "term": "modo de simulación",
+    "def": "Modo usado durante una bifurcación en el que las acciones externas no se ejecutan de verdad, para que las dos líneas temporales no disparen la misma herramienta de alto impacto y dupliquen efectos secundarios.",
+    "source": "[^S1]",
+    "pitfall": "Bifurcar con herramientas reales de alto impacto cableadas a las dos líneas, sin caer en que sin aislamiento ambas van a tocar la misma acción externa y duplicar efectos.",
+    "distractor_rationale": "El foco al bifurcar tiende a irse a «¿van a diferir las decisiones?», y eso tapa que si las dos líneas golpean la misma herramienta externa real, duplicar puntos de control no evita duplicar efectos."
+  },
+  {
+    "term": "secuencia de puntos de control",
+    "def": "Serie de archivos de punto de control conservados turno por turno en vez de sobrescribir para quedarse solo con el más reciente; es requisito previo para rebobinar y bifurcar, y cada línea bifurcada carga su propia copia independiente.",
+    "source": "[^S2]",
+    "pitfall": "Seguir con puntos de control de archivo único que se sobrescriben mientras esperas poder rebobinar a un turno cualquiera, y encontrar que los turnos tempranos hace rato se sobrescribieron.",
+    "distractor_rationale": "«Punto de control» por sí solo no implica «secuencia» ni «archivo único», lo que hace fácil pasar por alto que soportar el rebobinado exige cambiar el almacenamiento de sobrescritura a conservación."
+  },
+  {
+    "term": "Git",
+    "def": "Sistema de control de versiones que administra el historial permanente y colaborativo del código; distinto de los puntos de control (recuperación de sesión en escala de minutos) y del registro de efectos (anotación de efectos secundarios externos).",
+    "source": "[^S2]",
+    "pitfall": "Pensar que el rebobinado de puntos de control se parece tanto al historial de commits de Git que los puntos de control podrían reemplazar a Git para administrar cambios de código.",
+    "distractor_rationale": "Tanto el punto de control como Git ofrecen «volver a un estado anterior», lo que hace que sus capacidades parezcan equivalentes, pero los puntos de control ni siquiera rastrean los archivos que modificó bash y no tienen los mecanismos de commit, merge y colaboración de Git."
+  },
+  {
+    "term": "CRASH_AFTER",
+    "def": "Variable de entorno que controla el momento de la caída simulada (por ejemplo, `CRASH_AFTER=after-effect-write:3` dispara la caída después de la tercera escritura al registro).",
+    "source": "[^S1]",
+    "pitfall": "Tratar esta variable como mera configuración de depuración, sin ver que es el método clave para volver reproducible el momento de la caída y verificables las aserciones.",
+    "distractor_rationale": "Las variables de entorno suelen verse como configuración menor de ejecución, y eso tapa que acá cumple un papel central: convertir un momento de caída no determinista en un entero que puedes especificar con precisión."
+  },
+  {
+    "term": "SimulatedCrash",
+    "def": "Tipo de excepción dedicado a simular la muerte del proceso; `main()` atrapa solo esta, imprime un log y sale con código 137, para que las demostraciones se lean como muertes reales y no como trazas de pila.",
+    "source": "[^S1]",
+    "pitfall": "Mezclar el manejo de `SimulatedCrash` con el de errores reales de ejecución, lo que hace que bugs de verdad se confundan con caídas simuladas esperadas.",
+    "distractor_rationale": "Ambas son excepciones que se lanzan y se atrapan en algún lado, lo que hace fácil tratarlas igual, pero `SimulatedCrash` tiene que distinguirse estrictamente de los errores genuinos para no enmascarar bugs."
+  },
+  {
+    "term": "crashPoint",
+    "def": "Función disparadora de caída simulada controlada por variable de entorno; compara la etiqueta de la operación actual contra `CRASH_AFTER` y lanza `SimulatedCrash` cuando coinciden.",
+    "source": "[^S1]",
+    "pitfall": "Poner `crashPoint` en lugares del código que no coinciden con la ventana que quieres probar, lo que da un «momento de caída» que no corresponde al escenario que pensabas verificar.",
+    "distractor_rationale": "Los puntos de caída suenan a simples interruptores de encendido y apagado, y eso tapa que su posición exacta determina directamente qué ventana de recuperación se está probando de verdad."
+  },
+  {
+    "term": "--resume",
+    "def": "Bandera de línea de comandos que indica que este arranque debe llamar a `loadCheckpoint` y tomar la ruta de recuperación en vez de empezar de cero; sin ella, `main()` limpia de forma explícita los archivos viejos de punto de control y de registro.",
+    "source": "[^S1]",
+    "pitfall": "Suponer que sin `--resume` los archivos viejos de punto de control se ignoran solos, sin ver que `main()` tiene que limpiarlos de forma explícita o van a contaminar la corrida nueva.",
+    "distractor_rationale": "«No usar `--resume` significa empezar de cero» sugiere de forma intuitiva que los archivos viejos no se van a leer, pero sin lógica de limpieza explícita un `checkpoint.json` sobrante igual se puede cargar por error."
+  },
+  {
+    "term": "cola de respuestas",
+    "def": "Sustituto de verificación que reemplaza al cliente real del modelo y devuelve respuestas preescritas en orden fijo, para volver determinista la ejecución de la tarea y reproducible el momento de la caída.",
+    "source": "[^S1]",
+    "pitfall": "Después de verificar la recuperación con una cola de respuestas, suponer que el cliente real del modelo se va a comportar igual, ignorando que los modelos reales tienen contenido y tiempos de respuesta no deterministas.",
+    "distractor_rationale": "La cola de respuestas y el modelo real producen logs con el mismo formato, y eso tapa que la cola solo vuelve repetible la verificación, no que represente el comportamiento del mundo real."
+  },
+  {
+    "term": "makeStubClient",
+    "def": "Función fábrica que construye un cliente de modelo simulado a partir de una cola de respuestas, usada en la verificación para reemplazar las llamadas reales a `client.messages.create`.",
+    "source": "[^S1]",
+    "pitfall": "Tratar el sustituto y el cliente real como intercambiables en cualquier escenario, y pasar el código de verificación a producción sin integrar el cliente real.",
+    "distractor_rationale": "El sustituto y el cliente real comparten la misma interfaz, lo que tienta a suponerlos intercambiables, pero los sustitutos existen solo para volver predecibles las respuestas, no como reemplazo de producción."
+  },
+  {
+    "term": "main()",
+    "def": "Función de entrada del programa que toma un solo juicio: si está `--resume` o no, y a partir de ahí enruta a la vía de recuperación o a la de arranque limpio, atrapando de forma uniforme `SimulatedCrash` para imprimir y salir.",
+    "source": "[^S1]",
+    "pitfall": "Desparramar los chequeos de `--resume` y el manejo de excepciones por varios lugares, lo que fragmenta la lógica de entrada a la recuperación y vuelve más difícil garantizar consistencia.",
+    "distractor_rationale": "`main()` parece un despachador simple, lo que hace fácil subestimar su papel de «punto de entrada único» y repartir la lógica de recuperación por otros lados."
+  },
+  {
+    "term": "división en tres",
+    "def": "Las tres ramas de `reconcile` para una llamada colgante: acierto en el registro (reutilizar), fallo en el registro más solo lectura (volver a ejecutar), fallo en el registro más efectos secundarios (`is_error` al modelo).",
+    "source": "[^S4]",
+    "pitfall": "Simplificar a dos ramas (acierto y fallo), sin ver que el fallo mismo tiene que dividirse otra vez entre solo lectura y alto impacto para manejarse bien.",
+    "distractor_rationale": "«Acierto en el registro» y «fallo en el registro» parecen una lógica binaria completa, y eso tapa que los casos de fallo necesitan un chequeo más de solo lectura para decidir entre volver a ejecutar sin riesgo o caer a la vía conservadora."
+  },
+  {
+    "term": "ejecutar primero, anotar después",
+    "def": "Disciplina del registro de efectos: hay que obtener el resultado real de la ejecución de la herramienta antes de escribirlo en el registro; invertir ese orden anota «listo» para cosas que nunca corrieron.",
+    "source": "[^S1]",
+    "pitfall": "Anotar en el registro antes de ejecutar para «no olvidarse», lo que crea anotaciones falsas de «ya está hecho» que al reanudar habilitan errores de salto por duplicado.",
+    "distractor_rationale": "Anotar por adelantado suena precavido, como apartar un lugar, y eso tapa que fabrica falsos positivos de «existe la anotación pero la herramienta nunca corrió»: el desenlace más peligroso."
+  },
+  {
+    "term": "137",
+    "def": "Código de salida convencional para un proceso muerto por SIGKILL; las demostraciones de verificación lo usan para que las caídas simuladas se lean como muertes reales y no como excepciones.",
+    "source": "[^S1]",
+    "pitfall": "Interpretar el código de salida 137 como un código de error de negocio propio, sin ver que es una convención a nivel del sistema operativo para procesos matados a la fuerza.",
+    "distractor_rationale": "Los códigos de salida suelen ser marcadores de error definidos por la aplicación, lo que hace fácil pasar por alto que 137 tiene un significado convencional a nivel de sistema y no propio del curso."
+  },
+  {
+    "term": "arnés de verificación",
+    "def": "Método de prueba que usa una cola de respuestas fija más puntos de caída controlados para fijar los elementos no deterministas (respuestas del modelo, momento de la caída) y poder hacer aserciones línea por línea sobre el comportamiento de recuperación.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que observar una muerte de proceso real equivale al rigor de verificación de un montaje controlado con sustituto y puntos de caída, sin ver que un momento no controlado no puede apuntar a ramas específicas de recuperación.",
+    "distractor_rationale": "Las muertes de proceso reales se sienten «más cercanas a producción», y eso tapa que producen tiempos incontrolables e irrepetibles, lo que impide validar la recuperación rama por rama."
+  },
+  {
+    "term": "proporción",
+    "def": "Principio de que la maquinaria de puntos de control se agrega solo cuando la complejidad mejora los resultados de forma demostrable; no toda tarea corta necesita puntos de control completos.",
+    "source": "[^S3]",
+    "pitfall": "Tratar los puntos de control y el registro de efectos como imprescindibles por omisión para cualquier agente, en vez de evaluar si la tarea concreta es lo bastante larga o importante para justificar el mecanismo.",
+    "distractor_rationale": "Estos mecanismos sí mejoran la confiabilidad en tareas largas, lo que hace fácil confundir «útil» con «hay que incluirlo siempre», tapando el énfasis repetido del curso en juzgar según la escala real de la tarea."
+  }
+]

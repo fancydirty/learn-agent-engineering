@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Producir la variante en español del curso learn-agent-state-persistence para learn.agentmentor.dev, tomando como base la variante en inglés ya verificada. Es una traducción con pulido pedagógico a partir de en (no del zh): misma estructura de 6 lecciones, mismos slugs de lección, mismos ids de bloque interactivo y mismas posiciones de respuesta correcta, citas de las fuentes conservadas en su inglés original, código ejecutable con la lógica intacta y solo comentarios y cadenas visibles traducidos, referencias entre cursos apuntando a los títulos en español, y una prosa técnica natural en español, en tono profesional cercano y sin rigidez de traducción automática.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "El responsable ratificó el plan multilingüe de forma explícita: los seis idiomas en learn.agentmentor.dev, primero el inglés y después el resto de idiomas como oleadas de traducción a partir de la base en inglés, en lotes de 2-3 cursos y con un commit por curso. La variante en inglés es la fuente de verdad verificada y corregida en su fundamentación, así que no hizo falta ninguna aclaración adicional."
+  },
+  "learnerModel": {
+    "targetReader": "Una persona desarrolladora que ha terminado los primeros ocho cursos de esta serie, sabe escribir a mano el bucle del arnés y quiere que las tareas largas de un agente sobrevivan a una interrupción",
+    "knownConcepts": [
+      "Escribir a mano un bucle de arnés dirigido por stop_reason (curso 7)",
+      "La regla de emparejamiento uno a uno entre tool_use y tool_result",
+      "La gestión de la ventana de contexto y la compactación, incluido el contador tokensUsed (curso 8)",
+      "La memoria del agente frente a la ventana de contexto (curso 5)",
+      "Lectura y escritura de JavaScript / Node.js básico"
+    ],
+    "unknownConcepts": [
+      "El estado de ejecución como algo distinto de la memoria",
+      "Por qué los agentes tienen estado y los errores se acumulan",
+      "La anatomía del punto de control: qué campos entran en la instantánea, cuándo escribirla y la escritura atómica",
+      "La reanudación: reconstruir messages y los contadores y volver a entrar en el bucle",
+      "Las llamadas colgantes cuando un fallo cae entre la ejecución y la escritura en el registro de efectos",
+      "Los efectos secundarios y la idempotencia; las claves de idempotencia en las herramientas de alto impacto",
+      "Rebobinar y bifurcar como el segundo valor de los puntos de control",
+      "El reparto de tareas entre los puntos de control y el control de versiones"
+    ],
+    "assumedEnvironment": "Un entorno de Node.js, acceso a una terminal, un editor de texto y el código del arnés del curso 7 disponible para ampliarlo",
+    "firstIndependentAction": "Matar a mitad de tarea una de sus propias ejecuciones de agente y listar exactamente qué estado se perdió que un punto de control habría salvado",
+    "noviceRamp": [
+      "La lección 1 separa la memoria del estado de ejecución antes de cualquier maquinaria de persistencia",
+      "La lección 2 diseña la instantánea del punto de control (campos, momento de escritura, escritura atómica)",
+      "La lección 3 implementa la reanudación, incluido el caso de la llamada colgante que crea la regla de emparejamiento",
+      "La lección 4 añade idempotencia para que volver a ejecutar sea seguro, con claves en las herramientas de alto impacto",
+      "La lección 5 convierte los puntos de control en rebobinar y bifurcar, y la lección 6 conecta el mecanismo completo al arnés del curso 7 con una ejecución demostrada de interrupción y reanudación"
+    ]
+  },
+  "learnerBrief": "El lector objetivo ha terminado los primeros ocho cursos, escribe el bucle del arnés y lee JavaScript. Todavía no sabe cómo persistir y restaurar el estado de ejecución del propio arnés. El curso lo lleva a separar el estado de la memoria, diseñar instantáneas de punto de control seguras, implementar la reanudación incluida la reconciliación de llamadas colgantes, proteger las reejecuciones con idempotencia, usar rebobinar y bifurcar y, por último, conectar la persistencia por turno con recuperación mediante --resume al arnés del curso 7 y demostrar una tarea larga interrumpida a mitad y llevada hasta el final.",
+  "scope": "Se cubre: el estado de ejecución frente a la memoria, por qué los errores se acumulan en agentes con estado, la anatomía del punto de control (campos, momento, escrituras atómicas), la reanudación (reconstruir messages y contadores, reconciliar la llamada colgante), los efectos secundarios y la idempotencia con claves para las herramientas de alto impacto, rebobinar y bifurcar, los puntos de control frente al control de versiones, y un mecanismo práctico completo de punto de control y reanudación sobre el arnés del curso 7. No se cubre: la gestión de memoria y contexto (cursos 5 y 8), los motores de workflow externos (Temporal), ni la concurrencia entre procesos o la consistencia distribuida; los puntos de control de Claude Code aparecen solo como referencia de producto. Profundidad: desde cero hasta demostrar una tarea larga interrumpida y reanudada hasta el final.",
+  "status": {
+    "stage": "generated",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-state-persistence/es/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Los diagramas se mantienen exactamente donde los usa la variante en inglés (la separación entre estado y memoria y la línea temporal de la ventana de fallo), con las etiquetas reescritas en español; no se añade ni se quita ninguno. Dónde cayó exactamente el fallo es contenido de línea temporal que un diagram enuncia mejor que la prosa, y la colocación heredada ya estaba validada en revisión.",
+    "weakestPoints": [
+      "El diseño del registro de efectos de ejecutar y después registrar del proyecto final se endureció a propósito en la revisión del original (dos bloques try/catch para que un fallo al escribir en el registro de efectos tras un efecto secundario real nunca dispare un reintento del modelo imposible de deduplicar); la variante en español conserva esa estructura exacta y la revisión no debe «simplificarla» de vuelta a un solo bloque",
+      "Las claves de idempotencia se enseñan con ejemplos a nivel de archivo; los efectos secundarios en red (pagos, correos) necesitan garantías más fuertes, cosa que la lección señala pero no implementa",
+      "Los detalles de los puntos de control de Claude Code (los cambios de bash sin seguimiento, la semántica de /rewind) están ligados a una versión del producto y aparecen fechados en el texto",
+      "Al ser una traducción al español de una variante en inglés verificada, la deriva idiomática es el riesgo residual: las citas de las fuentes se conservaron verbatim en inglés y el código ejecutable mantiene la lógica idéntica, pero la prosa se vertió a un español natural en lugar de traducirse palabra por palabra, así que la revisión debe comprobar la equivalencia de significado con las lecciones en inglés"
+    ],
+    "followUpChecks": [
+      "Ejecutar course-guard sobre el directorio es y actualizar status.guardStatus con el resultado real (ahora está en pending)",
+      "Pasada de renderizado en learn.agentmentor.dev /es/agent-state-persistence/... tras el despliegue: las 6 lecciones más el README, con las tarjetas interactivas hidratadas",
+      "Verificar que cada ancla [^Sn] de las lecciones en es tiene su bloque ## Sn correspondiente en el sources.md en es",
+      "Confirmar que los ids de los seis bloques de comprobación y las posiciones de respuesta correcta son idénticos byte a byte a la variante en inglés (c/b/a/c/b/a en orden de lección)",
+      "Volver a ejecutar el JS del proyecto final (escritura del punto de control, --resume, reconciliación de la llamada colgante, guarda de idempotencia) y confirmar que la demostración de interrupción y reanudación coincide con las salidas afirmadas"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "La persona que aprende puede conectar a un arnés los puntos de control por turno, la recuperación con --resume que reconstruye messages y contadores, la reconciliación de llamadas colgantes que satisface la regla de emparejamiento tool_use/tool_result y la protección por idempotencia en las herramientas de alto impacto, y después matar el proceso a mitad de tarea y llevar la ejecución hasta el final desde el punto de control.",
+    "interactionCheck": "Seis bloques agentmentor-check, uno por lección (la ilusión del reinicio en la L1, el riesgo de la sobrescritura directa en la L2, el tool_use colgante en la L3, el reintento a ciegas en la L4, punto de control frente a git en la L5 y la necesidad del punto A en la L6), conservados desde la variante en inglés con ids, modos, número de opciones y posiciones de respuesta correcta idénticos; label, prompt, whyHere, el texto de las opciones y el feedback son traducciones al español ajustadas al malentendido propio de cada lección. Los ejercicios mantienen la estructura de niveles de la variante en inglés, con rubric, answer e hints en cada nivel.",
+    "learnerFitCheck": "El curso presupone los ocho cursos previos: el bucle del arnés, la regla de emparejamiento y la compactación. Estado frente a memoria, anatomía del punto de control, reanudación, idempotencia y rebobinar/bifurcar se enseñan desde cero en orden de dependencia; la persona construye por primera vez el mecanismo completo en la lección 6, después de todos los prerrequisitos. El primer ejercicio de la lección 1 solo pide auditar qué se perdió en una ejecución propia que se mató a mitad.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "Variante en español de la variante en inglés verificada: la estructura, la fundamentación y las posiciones de respuesta se heredan del original verificado",
+      "Todos los bloques interactivos conservan id, mode, número de opciones y respuesta correcta con paridad byte a byte respecto al inglés",
+      "Todas las citas de las fuentes se mantienen en su inglés original y se comprobaron byte a byte contra sources.md",
+      "Las referencias entre cursos usan los títulos en español y el código del proyecto final mantiene la lógica idéntica, incluido el endurecimiento del registro de efectos con dos try/catch"
+    ]
+  },
+  "nextSteps": [
+    "Ejecutar course-guard sobre la variante en es y corregir lo que señale",
+    "Actualizar status.guardStatus una vez que el guard se haya ejecutado de verdad",
+    "Desplegar learn.agentmentor.dev y comprobar que las páginas /es se renderizan con las tarjetas interactivas hidratadas",
+    "Producir las variantes de idioma restantes usando esta misma variante en inglés como base de traducción",
+    "Animar a quienes aprenden a añadir punto de control y reanudación a un agente real de larga duración de su propio proyecto como proyecto de consolidación tras el curso"
+  ],
+  "memoryBoundary": "Este agentmentor.json es un registro de estado local del curso (course-local state record), almacenado únicamente en el directorio del curso para las comprobaciones de calidad y el seguimiento de la ruta de aprendizaje. Nunca se escribe de vuelta en la memoria a largo plazo de Claude Code ni de ningún sistema de IA anfitrión, y no afecta a otros cursos ni a otras conversaciones."
+}
