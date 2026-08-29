@@ -1,0 +1,464 @@
+[
+  {
+    "term": "parece terminado",
+    "def": "Claude se detiene cuando el trabajo parece terminado; sin una comprobación que pueda ejecutar, «parece terminado» es la única señal que existe en todo el sistema.",
+    "source": "[^S4]",
+    "pitfall": "Tratarlo como que el modelo hace las cosas a medias o no da la talla, y cambiar a un modelo más fuerte en lugar de agregar una comprobación ejecutable que produzca un resultado objetivo.",
+    "distractor_rationale": "Se confunde seguido con «está terminado»: los dos se ven idénticos en el texto de la conversación, y leyendo el historial no puedes distinguirlos."
+  },
+  {
+    "term": "bucle de verificación",
+    "def": "El papel que te toca cuando no hay una comprobación ejecutable en el pipeline: cada error espera a que tú lo notes.",
+    "source": "[^S4]",
+    "pitfall": "Creer que solo estás «echándole un vistazo rápido», sin darte cuenta de que el agente no te ahorró atención, apenas aplazó la verificación.",
+    "distractor_rationale": "Se confunde fácil con la revisión de código: la revisión comprueba si el código está bien escrito; el bucle de verificación responde qué pasa cuando esta salida se encuentra con una entrada del mundo real."
+  },
+  {
+    "term": "brecha de confiar-y-después-verificar",
+    "def": "El nombre oficial de este fenómeno: Claude produce una implementación de apariencia plausible que no maneja los casos límite; tú confías primero, y la verificación o no ocurre o llega demasiado tarde.",
+    "source": "[^S4]",
+    "pitfall": "Acordarte solo de la primera mitad del arreglo («provee verificación») y perderte la segunda: si no lo puedes verificar, no lo lances — hay cosas que simplemente no puedes verificar, así que reduce el alcance o posterga.",
+    "distractor_rationale": "Se interpreta como «al modelo le gusta mentir»; en realidad el código que produce por lo general sí se ejecuta, lo que falta es alguien que pregunte qué pasa con una entrada del mundo real."
+  },
+  {
+    "term": "afirmación",
+    "def": "Enunciados que solo puedes elegir creer o no: «la lógica es correcta», «debería estar bien», «ya está optimizado», «sin errores durante la ejecución».",
+    "source": "[^S4]",
+    "pitfall": "Dejarte engañar por el tono seguro: «los cambios no afectaron el comportamiento existente» es un enunciado verificable presentado como afirmación, y se cuela más fácil que el puro relleno.",
+    "distractor_rationale": "«Sin errores» es lo que más se parece a evidencia y sin embargo es una afirmación: dice que las herramientas no lanzaron excepciones, no que la salida sea correcta; que todas las herramientas devuelvan éxito y que el resultado esté completamente mal pueden ser ciertas a la vez. Ojo con el término: este curso reserva «aserción» para las aserciones de código, y llama «afirmación» a lo que se declara sin respaldo."
+  },
+  {
+    "term": "evidencia",
+    "def": "Algo que una segunda persona puede volver a ejecutar exactamente igual: un comando con su salida en bruto, un código de salida, una lista de nombres de pruebas que fallaron, una captura de pantalla, una comparación numérica de antes y después.",
+    "source": "[^S4]",
+    "pitfall": "Pegar solo el número posterior y no el previo: un número solo no puede mostrar desde qué valor cambió.",
+    "distractor_rationale": "Es fácil suponer que «cuanto más largo el pegado, más se parece a evidencia»; el criterio es uno solo: ¿puedo confirmar esto sin leer código, usando solo lo que me mostró?"
+  },
+  {
+    "term": "sistema determinista",
+    "def": "En computación, los sistemas que producen la misma salida cada vez que reciben entradas idénticas; los verificadores de este curso son esa clase de cosa predeciblemente tonta: una cosa determinista que le pone una compuerta a una cosa no determinista.",
+    "source": "[^S3]",
+    "pitfall": "Interpretar «confiable» como «inteligente» y ponerte a agregarle flexibilidad al verificador; la calificación basada en código queda primera justamente porque no te aprueba hoy y te reprueba mañana por una formulación.",
+    "distractor_rationale": "Se confunde con «correcto»: un verificador determinista puede producir de forma estable la misma conclusión equivocada; estable no equivale a juzgar bien."
+  },
+  {
+    "term": "no determinista",
+    "def": "Los sistemas de agentes pueden generar respuestas variadas incluso con las mismas condiciones iniciales; aunque no cambies ni un carácter del prompt, no hay garantía de que las decisiones de dos ejecuciones coincidan.",
+    "source": "[^S3]",
+    "pitfall": "Tratarlo como «tiene errores y por eso es inestable» y ponerte a arreglar la estabilidad; así es como funciona, lo que hay que cambiar es el método de evaluación.",
+    "distractor_rationale": "Se trata como ruido aleatorio; la consecuencia real es que la premisa de la evaluación tradicional —«dada la entrada X, sigue el camino Y, produce la salida Z»— se derrumba por completo."
+  },
+  {
+    "term": "errores que se componen",
+    "def": "En los sistemas de agentes los errores hacen bola de nieve: que un paso falle lleva a los agentes a explorar trayectorias completamente distintas, y toman decisiones nuevas a partir de resultados malos, con resultados impredecibles.",
+    "source": "[^S2]",
+    "pitfall": "Buscar el error en la posición de la salida final: para cuando ves la salida, el error hace rato dejó su lugar original y creció hasta convertirse en otra cosa.",
+    "distractor_rationale": "Es fácil hacer la analogía con los programas tradicionales donde «una función devuelve un valor malo y se propaga hacia arriba», pero eso es propagación de valores; acá lo que se rehace son decisiones."
+  },
+  {
+    "term": "entorno de sandbox",
+    "def": "Donde Anthropic recomienda probar los agentes a fondo: la autonomía implica costos más altos y potencial de errores que se componen, así que prueba en sandboxes con los guardrails adecuados.",
+    "source": "[^S1]",
+    "pitfall": "Hacer el sandbox demasiado simple o superficial, incapaz de poner las herramientas bajo suficiente complejidad: las tareas de evaluación fuertes podrían requerir varias llamadas a herramientas, potencialmente decenas.",
+    "distractor_rationale": "Se entiende como apenas «no toques los datos de producción»; también carga con la prueba de esfuerzo: un sandbox demasiado limpio no puede revelar qué pasa en la séptima llamada."
+  },
+  {
+    "term": "ground truth",
+    "def": "La retroalimentación real que los agentes obtienen del entorno durante la ejecución —los resultados de las llamadas a herramientas o de la ejecución de código—, con la que evalúan su propio progreso. El curso conserva el término en inglés.",
+    "source": "[^S1]",
+    "pitfall": "Hacer que el agente saque las señales de progreso de su propio razonamiento: el razonamiento lo genera él mismo, los valores que devuelve el entorno no.",
+    "distractor_rationale": "Se confunde con la «respuesta de referencia» de las evaluaciones: acá se refiere a lo que devuelve el entorno en cada paso durante la ejecución, no a una respuesta correcta preparada de antemano."
+  },
+  {
+    "term": "mejora los resultados de manera demostrable",
+    "def": "La condición de admisión para agregar complejidad: habría que considerar agregar complejidad solo cuando mejora los resultados de manera demostrable.",
+    "source": "[^S1]",
+    "pitfall": "Usarlo al revés, como «verificar un poco más no hace daño», y montarle una suite completa de visto bueno a un script de una sola vez, donde escribir el verificador tarda más que mirar la salida a ojo.",
+    "distractor_rationale": "Se lee como «no hagas verificación»; en realidad gobierna las dos direcciones: bloquea la sobreingeniería y también explica por qué las tareas que se ejecutan repetidamente necesitan comprobaciones."
+  },
+  {
+    "term": "stop_reason",
+    "def": "El campo de las respuestas del modelo que mueve el bucle de arnés: cuando su valor es tool_use, sigues ejecutando herramientas y devolviendo resultados; cuando pasa a end_turn, el bucle sale.",
+    "source": "[^S6]",
+    "pitfall": "Tratar la salida del bucle como la finalización de la tarea: nada en la condición de salida tiene que ver con la calidad de la salida.",
+    "distractor_rationale": "Se toma como una «marca de terminado»; solo describe si el modelo quiere llamar más herramientas en este turno. Cambiar la condición de salida por «un pedazo de código determinista devolvió 0» sí es verificación."
+  },
+  {
+    "term": "end_turn",
+    "def": "Uno de los valores de stop_reason: significa que el modelo no piensa llamar más herramientas en este turno. Nada más.",
+    "source": "[^S6]",
+    "pitfall": "Declarar el trabajo terminado acá, en lugar de agregar una compuerta después de que el bucle sale para ejecutar tú mismo una comprobación.",
+    "distractor_rationale": "No representa que el trabajo esté bien hecho, ni siquiera que esté completo, pero se toma como la línea de meta porque el bucle de verdad se detiene ahí."
+  },
+  {
+    "term": "tool_result",
+    "def": "El bloque de mensaje que le devuelve al modelo los resultados de ejecutar herramientas, emparejado con su tool_use vía tool_use_id; la salida del verificador vuelve a fluir a la conversación por acá.",
+    "source": "[^S6]",
+    "pitfall": "Comprimir acá el código de salida y stdout a una sola oración de «falló»; cuando el modelo la recibe, solo le queda adivinar a ciegas qué arreglar.",
+    "distractor_rationale": "Se toma como un simple caño; en realidad es donde aterriza el requisito de que «la señal tiene que ser algo que Claude pueda leer en la conversación»: si escribes vago, la evidencia es vaga."
+  },
+  {
+    "term": "run_check",
+    "def": "Envolver un script de verificación como una herramienta que el modelo puede llamar, para que ejecute la comprobación él mismo dentro del bucle y lea el resultado, con el código de salida y stdout pasados tal cual.",
+    "source": "[^S4]",
+    "pitfall": "Poner las comprobaciones solo al final del bucle, olvidando que también se pueden convertir en herramientas para que el agente las consulte por su cuenta a mitad de camino.",
+    "distractor_rationale": "Se trata como mutuamente excluyente con la compuerta externa; en realidad las dos posiciones funcionan y sirven a propósitos distintos: una lo deja iterar solo, la otra no le cree su autorreporte."
+  },
+  {
+    "term": "código de salida",
+    "def": "Cómo expresan su veredicto los scripts de verificación: 0 es aprobado, distinto de cero es fallido; CI y el && de la shell lo pueden usar directo.",
+    "source": "[^S4]",
+    "pitfall": "Usar solo el código de salida sin detalles; los mensajes de falla sin «qué ítem, qué se esperaba, qué se obtuvo» hacen que el mismo aprobado/fallido difiera en un orden de magnitud de información.",
+    "distractor_rationale": "Se confunde con «las herramientas no dieron error»: que todas las herramientas devuelvan éxito y que la comprobación devuelva 0 son dos cosas completamente distintas."
+  },
+  {
+    "term": "aprobado/fallido",
+    "def": "El resultado binario objetivo que puede producir una comprobación; con él el bucle se cierra solo: Claude hace el trabajo, ejecuta la comprobación, lee el resultado e itera hasta que la comprobación pasa.",
+    "source": "[^S4]",
+    "pitfall": "Escribir una comprobación que casi siempre pasa, lo que equivale a volver al estado sin comprobación, donde «parece terminado» vuelve a ser la única señal.",
+    "distractor_rationale": "Se toma como sinónimo de «pruebas»; en realidad también cuentan los códigos de salida de una compilación, los linters, los scripts que comparan la salida con un fixture y las comparaciones de capturas de pantalla."
+  },
+  {
+    "term": "fixture",
+    "def": "Un archivo de respuesta de referencia que guardaste de antemano; después de ejecutar, comparas la salida con él. Es lo que usa el script del menú oficial de comprobaciones que «compara la salida con un fixture». El curso conserva el término en inglés.",
+    "source": "[^S4]",
+    "pitfall": "Usarlo en escenarios donde los datos de entrada van a cambiar: cambias un lote de datos y el archivo fixture queda inválido, más las falsas alarmas por fines de línea y formatos numéricos.",
+    "distractor_rationale": "La «comparación byte por byte con la línea base» se toma como respuesta universal; los enfoques más robustos suelen calcular una propiedad a partir de la salida y comprobar esa propiedad."
+  },
+  {
+    "term": "estado final",
+    "def": "El método de juicio por defecto: no juzgues si el agente siguió un proceso específico, juzga si alcanzó el estado final correcto.",
+    "source": "[^S2]",
+    "pitfall": "Escribir solo «los cambios esperados ocurrieron» y olvidar «los inesperados no»: dos archivos renombrados con el mismo nombre que se sobrescriben se ven perfectos desde «todos los nombres cumplen el formato».",
+    "distractor_rationale": "Se interpreta como «ignorar el proceso por completo», pero la oración inmediatamente siguiente da una salida: para los flujos de trabajo complejos, divide la evaluación en puntos de control discretos."
+  },
+  {
+    "term": "análisis turno por turno",
+    "def": "El enfoque que la evaluación del estado final reemplaza: revisar las acciones del agente turno por turno, intentando validar cada paso intermedio.",
+    "source": "[^S2]",
+    "pitfall": "La intuición de que «verificar más es más seguro» es la que rompe esta regla con más facilidad: cuanto más finas son las aserciones, más diferencias legítimas quedan penalizadas y más ruidosa se vuelve la evaluación, hasta que empiezas a ignorar el rojo.",
+    "distractor_rationale": "Se ve más riguroso que el estado final; en realidad los dos errores de juicio son fatales: camino distinto con resultado correcto se juzga mal como falla, y mismo camino con resultado incorrecto se deja pasar como aprobación."
+  },
+  {
+    "term": "punto de control de verificación",
+    "def": "Unas pocas posiciones de observación discretas dentro de los flujos de trabajo complejos, donde verificas que «deberían haber ocurrido cambios de estado específicos» en lugar de validar cada paso intermedio.",
+    "source": "[^S2]",
+    "pitfall": "Agregarlos después de cada llamada a herramienta en lugar de en las posiciones donde el estado sufre un cambio sustantivo, resbalando de vuelta a la validación paso por paso.",
+    "distractor_rationale": "Comparte el nombre con el punto de control del curso 9, que guarda estado para recuperarse de una caída: el propósito de uno es juzgar, el del otro es recuperar."
+  },
+  {
+    "term": "punto de control de recuperación",
+    "def": "El sentido del curso 9: escribir en disco el estado en ejecución del agente para que pueda retomar desde ahí después de una caída; el propósito es la recuperación, no el juicio.",
+    "source": "[^S2]",
+    "pitfall": "Mezclarlo con el punto de control de verificación al discutir: las posiciones se superponen seguido (que donde guardas estado también verifiques es natural), pero los problemas que resuelven no son la misma cosa.",
+    "distractor_rationale": "Las posiciones que se superponen son exactamente donde la colisión de términos ocurre con más facilidad."
+  },
+  {
+    "term": "criterios de éxito",
+    "def": "El conjunto de requisitos que convierte «el estado final correcto» en números concretos o juicios claros; si no logras escribirlos de ninguna manera, esta tarea no debería haberse entregado por completo al agente para que la ejecute solo.",
+    "source": "[^S5]",
+    "pitfall": "Fijar los umbrales después de la ejecución: mirar 0.82 y decir «con 0.8 debería alcanzar», y mirar 0.86 y decir «tiene que ser 0.85», son el mismo autoengaño.",
+    "distractor_rationale": "Es fácil quedarse en adjetivos como «la salida debe ser buena»; un solo adjetivo suele esconder tres o cuatro comprobaciones que no se superponen, y sin desarmarlo no puedes fijar números concretos."
+  },
+  {
+    "term": "medible",
+    "def": "El primer requisito duro de los criterios de éxito: usa métricas cuantitativas o escalas cualitativas bien definidas; los números aportan claridad y escalabilidad.",
+    "source": "[^S5]",
+    "pitfall": "Rechazar como no calificadas todas las medidas cualitativas; mientras se apliquen de manera consistente y vayan junto con las cuantitativas, siguen teniendo valor.",
+    "distractor_rationale": "Se simplifica a «tiene que ser un número», ignorando que las «escalas cualitativas bien definidas» también satisfacen este requisito."
+  },
+  {
+    "term": "alcanzable",
+    "def": "El segundo requisito duro de los criterios de éxito: basa tus objetivos en referencias de la industria, experimentos previos, investigación en IA o conocimiento experto; no deberían ser irreales para las capacidades actuales de los modelos de frontera.",
+    "source": "[^S5]",
+    "pitfall": "Fijarlo todo en 100%: cualquier dimensión puesta tan alto tiene que explicar por qué es puramente comprobable de manera mecánica y por qué basta con volver a ejecutar si falla.",
+    "distractor_rationale": "Se confunde con «fíjalo más bajo»; lo que exige es anclarse al estado actual y avanzar un paso chico, como una mejora del 5% sobre la línea base actual."
+  },
+  {
+    "term": "evaluación multidimensional",
+    "def": "La mayoría de los casos de uso necesitan una evaluación a lo largo de varios criterios de éxito: las dimensiones se socavan entre sí y dejan menos espacio para los atajos.",
+    "source": "[^S5]",
+    "pitfall": "Que las dimensiones se superpongan de manera sustancial: parecen cuatro dimensiones pero en realidad atrapan un solo modo de falla.",
+    "distractor_rationale": "Se toma como «escribe más aserciones»; la clave es que cada dimensión tiene que atrapar por sí sola una manera distinta de que las cosas salgan mal."
+  },
+  {
+    "term": "aserción de trayectoria",
+    "def": "Un agregado opcional: para un conjunto de prompts y respuestas, puedes especificar además qué herramientas esperas que el agente llame, para medir si capta el propósito de cada herramienta.",
+    "source": "[^S3]",
+    "pitfall": "Escribirla por defecto hasta que, en la décima, ya estás prescribiendo estrategia en lo sustancial y solo en lo formal lo sigues llamando «aserción».",
+    "distractor_rationale": "La frontera con grabar y reproducir es delgada: afirmar solo la pertenencia al conjunto, sin orden ni cantidad, cuenta como aserción; copiar la secuencia entera adentro es retroceder a la reproducción."
+  },
+  {
+    "term": "expectedTools",
+    "def": "El campo opcional de los casos de evaluación que carga la aserción de trayectoria: se espera que haya tocado al menos estas herramientas, sin importar el orden ni la cantidad de llamadas.",
+    "source": "[^S3]",
+    "pitfall": "Que la aserción de trayectoria falle y por eso juzgues como fallido el caso entero; lo correcto es registrar una observación, y que el estado final siga siendo el criterio por defecto.",
+    "distractor_rationale": "Agregarla es tan barato que escribes otra entrada sin esfuerzo, y así, sin darte cuenta, sobreajustas a una solución particular."
+  },
+  {
+    "term": "llamadas a herramientas redundantes",
+    "def": "Una métrica de diagnóstico: cuando la cantidad de llamadas es notoriamente alta, normalmente sugiere que conviene dimensionar mejor los parámetros de paginación o de límite de tokens.",
+    "source": "[^S3]",
+    "pitfall": "Ver una cuenta alta e irte a cambiar el prompt: estos problemas apuntan al diseño de las herramientas, y los cambios de prompt no los mueven.",
+    "distractor_rationale": "Se le echa la culpa a que el modelo es tonto; en realidad suele pasar que solo puede traer veinte ítems por vez y tiene que paginar por diez páginas, o que la interfaz de consulta no devuelve los campos que necesita."
+  },
+  {
+    "term": "errores de herramienta",
+    "def": "Una métrica de diagnóstico: muchos errores por parámetros inválidos normalmente sugieren que a esas herramientas les vendrían bien descripciones más claras o mejores ejemplos.",
+    "source": "[^S3]",
+    "pitfall": "Tratar esta columna como «cuanto más baja, mejor»: algunos errores son comportamiento probado a propósito en las tareas de evaluación, y que la cuenta llegue a 0 significa que la prueba no dio en el blanco.",
+    "distractor_rationale": "Dos clases de error suelen revolverse en un solo número: los de parámetros inválidos hay que arreglarlos, los de «el objeto consultado no existe» son lo esperado."
+  },
+  {
+    "term": "calificación basada en código",
+    "def": "El primer lugar del ranking de métodos de calificación: la más rápida, la más confiable y extremadamente escalable; su debilidad es que le falta matiz para los juicios complejos que necesitan menos rigidez de reglas.",
+    "source": "[^S5]",
+    "pitfall": "Agregarle flexibilidad para acomodar juicios complejos, con lo que pierdes confiabilidad sin ganar capacidad de juicio.",
+    "distractor_rationale": "Queda primera no porque sea inteligente, sino justamente porque es tonta: la misma entrada da la misma conclusión siempre."
+  },
+  {
+    "term": "calificación basada en LLM",
+    "def": "El segundo lugar del ranking: rápida, flexible, escalable y apta para el juicio complejo; el requisito previo es probar primero que es confiable y después escalar.",
+    "source": "[^S5]",
+    "pitfall": "Tratar el «primero prueba que es confiable y después escala» como un descargo de responsabilidad y no como una condición dura: el juez todavía no está validado y ya está desplegado sobre todos los casos.",
+    "distractor_rationale": "Se toma como «una comprobación más inteligente»; en realidad es una llamada al modelo: puede equivocarse, cuesta dinero, y podría puntuar la misma entrada distinto en ejecuciones sucesivas."
+  },
+  {
+    "term": "calificación humana",
+    "def": "El tercer lugar del ranking: la más flexible y de más alta calidad, pero lenta y cara; evítala si es posible.",
+    "source": "[^S5]",
+    "pitfall": "Por haber rechazado la autocalificación, saltar hasta «solo sirve la calificación humana»; lo que corresponde es cambiar a otra instancia con el contexto limpio para que haga de juez.",
+    "distractor_rationale": "El «evítala si es posible» se lee como «no hace falta gente»; pero los casos límite que las evaluaciones automatizadas no ven los siguen atrapando solo las personas."
+  },
+  {
+    "term": "coincidencia exacta",
+    "def": "La forma del borde izquierdo del espectro de verificadores: mide si la salida del modelo coincide con una respuesta correcta predefinida, normalmente después de normalizar los espacios en blanco y las mayúsculas y minúsculas.",
+    "source": "[^S5]",
+    "pitfall": "Saltarte la normalización y comparar directo byte por byte: un salto de línea al final puede reprobar una salida completamente correcta.",
+    "distractor_rationale": "Su aplicabilidad es más angosta de lo que se imagina: solo sirve para las tareas con respuestas categóricas y bien delimitadas, como las etiquetas de sentimiento en tres vías."
+  },
+  {
+    "term": "output == golden_answer",
+    "def": "La forma mínima de la coincidencia exacta, apenas una comprobación de igualdad; simple, sin ambigüedad, apta para las tareas con respuestas categóricas y bien delimitadas.",
+    "source": "[^S5]",
+    "pitfall": "Buscar un golden_answer para texto de forma libre: con el mismo material, dos resúmenes bien escritos pueden usar una redacción completamente distinta.",
+    "distractor_rationale": "La forma es tan simple que se supone primitiva; para las tareas del tipo «el formato de salida debe ser estable» es la comprobación más sin vueltas y más confiable."
+  },
+  {
+    "term": "normalización",
+    "def": "Antes de comparar, borrar las diferencias que no cargan significado: plegar los espacios consecutivos, recortar los extremos, unificar mayúsculas y minúsculas; para los montos, además lavar símbolos de moneda, separadores de miles y unidades.",
+    "source": "[^S5]",
+    "pitfall": "Creer que cuanto más agresiva, mejor: si además quitas la puntuación, errores reales como total: 48 frente a total: 4.8 también quedan alisados.",
+    "distractor_rationale": "Hasta dónde normalizar no se puede delegar a una biblioteca, solo tú lo puedes juzgar: ¿esta diferencia carga significado? Si carga, sé estricto; si no, normalízala."
+  },
+  {
+    "term": "verificador determinista",
+    "def": "La técnica central de este curso: usar código que da la misma conclusión siempre para ponerle una compuerta a la salida de un sistema no determinista, devolviendo aprobado/fallido y razones de falla legibles.",
+    "source": "[^S3]",
+    "pitfall": "Reportar solo «la validación no pasó» y no «qué ítem, qué se esperaba, qué se obtuvo»: es el productor de la evidencia, y si escribes vago, la evidencia es vaga.",
+    "distractor_rationale": "Suena a framework especializado; en realidad la vara está baja: las suites de pruebas, los códigos de salida de una compilación, los linters, los scripts de comparación y las comparaciones de capturas de pantalla cuentan todos."
+  },
+  {
+    "term": "espectro",
+    "def": "Los verificadores no son unas pocas opciones mutuamente excluyentes sino una banda continua: en un extremo está la comparación exacta de cadenas con un fixture, en el otro está pedirle a Claude que juzgue.",
+    "source": "[^S3]",
+    "pitfall": "Tratar los dos extremos como excluyentes, olvidando que un mismo caso puede pasar primero comprobaciones duras deterministas y después ir a un juez por una puntuación blanda.",
+    "distractor_rationale": "Es fácil suponer que cuanto más a la derecha, más avanzado; la regla real es que lo que se puede juzgar por código nunca va a un juez: los jueces solo van donde las comprobaciones deterministas no alcanzan."
+  },
+  {
+    "term": "strict: true",
+    "def": "Una línea que agregas a las definiciones de herramientas para asegurar que las llamadas a herramientas de Claude se ajusten estrictamente al esquema que declaraste, moviendo una clase de validación de estructura aguas arriba, a una garantía a nivel de plataforma.",
+    "source": "[^S6]",
+    "pitfall": "Suponer que puede garantizar la semántica: sobre si total de verdad es igual a la suma de los count, el esquema no tiene nada que decir.",
+    "distractor_rationale": "Maneja el «typo en el nombre del campo» y el «count pasado como cadena», no maneja los valores mal calculados; estas dos clases de problema se meten fácil en la misma bolsa de «validación de parámetros»."
+  },
+  {
+    "term": "falso negativo",
+    "def": "El verificador juzga como falla una salida correcta: no deja pasar errores, acusa injustamente a los que están bien.",
+    "source": "[^S3]",
+    "pitfall": "Suponer que las falsas alarmas son gratis y que basta con que las revise una persona; contaminan la tasa de aprobación y hacen que una mejora real parezca no haber tenido efecto.",
+    "distractor_rationale": "El costo más insidioso está aguas abajo: cuando este resultado se le devuelve al agente, va a gastar varios turnos «arreglando» algo que nunca estuvo roto."
+  },
+  {
+    "term": "verificador demasiado estricto",
+    "def": "La manera más común en que fallan las comprobaciones deterministas: por diferencias espurias como el formato, la puntuación o formulaciones alternativas válidas, juzgan como fallas respuestas correctas.",
+    "source": "[^S3]",
+    "pitfall": "Que baje la puntuación y por eso cambies el agente para acomodarlo al verificador: la puntuación cambió pero el sistema bajo prueba no; la culpa es del lado que califica.",
+    "distractor_rationale": "Lo laxo y lo estricto no son un único deslizador: sé estricto con la semántica y laxo con el formato irrelevante; «más estricto es más seguro» y «mientras no esté vacío, que pase» están los dos mal."
+  },
+  {
+    "term": "texto de forma libre",
+    "def": "Salidas como las de investigación y los resúmenes: de forma libre, rara vez con una única respuesta correcta, difíciles de evaluar por programa; los LLM encajan naturalmente para calificar esta clase de salida.",
+    "source": "[^S2]",
+    "pitfall": "Como los programas no lo pueden juzgar, no juzgarlo en absoluto; las comprobaciones deterministas igual pueden sostener el piso: el largo, que aparezcan las entidades requeridas, que no haya números de fuera del original.",
+    "distractor_rationale": "Se toma como «toda salida de texto»; en realidad el texto de formato fijo con valores enumerables (como las etiquetas de sentimiento) es justamente el terreno de la coincidencia exacta."
+  },
+  {
+    "term": "revisión humana",
+    "def": "Un paso que sigue siendo indispensable más allá de las pruebas automatizadas: las pruebas automatizadas verifican que la funcionalidad sea correcta, pero asegurar que las soluciones se alineen con los requisitos más amplios del sistema sigue necesitando ojos humanos.",
+    "source": "[^S1]",
+    "pitfall": "Todo en verde, entonces fusionar: un parche puede pasar todas las pruebas y aun así ser un diseño terrible que vuelve inmantenible el módulo entero.",
+    "distractor_rationale": "Se confunde con la «calificación humana»: acá se trata de si la solución encaja en el sistema, no de puntuar una salida."
+  },
+  {
+    "term": "juez LLM",
+    "def": "Usar una llamada al modelo para puntuar salidas de texto de forma libre, ubicado donde las comprobaciones deterministas no alcanzan, no como reemplazo de ellas.",
+    "source": "[^S2]",
+    "pitfall": "Mandarle al juez hasta las salidas con formato inválido y pagar por eso: esa clase de problema la primera capa de comprobaciones deterministas la atrapa en milisegundos.",
+    "distractor_rationale": "Se toma como un verificador más avanzado; tiene costo y ruido, y en el ranking oficial la calificación basada en código le gana en rápida, confiable y escalable."
+  },
+  {
+    "term": "rúbrica",
+    "def": "Descomponer el vago «¿esto está bien?» en varias preguntas concretas, respondiendo y puntuando cada una por separado; para las tareas de investigación la descomposición ya hecha son cinco dimensiones.",
+    "source": "[^S2]",
+    "pitfall": "Escribir las dimensiones como tres eslóganes sin aclarar «qué cuenta como descuento y qué no»; así el juez no puede puntuar de forma estable.",
+    "distractor_rationale": "No esperes que una sola rúbrica lo cubra todo: un caso de uso, o incluso un solo criterio de éxito dentro de él, puede necesitar varias rúbricas para evaluarse por completo."
+  },
+  {
+    "term": "primero razonar y después puntuar",
+    "def": "Una técnica decisiva para los prompts de juez: hazlo escribir primero el razonamiento y después producir la puntuación, y descarta el razonamiento después; mejora el desempeño de la calificación, en especial para los juicios complejos.",
+    "source": "[^S5]",
+    "pitfall": "Interpretar «descartar» como borrar sin mirar: el razonamiento debería persistirse y archivarse, para revisarlo cuando una puntuación se vea sospechosa; solo que no entra en las estadísticas aguas abajo.",
+    "distractor_rationale": "El orden se escribe al revés con facilidad: puntuar primero y después rellenar el razonamiento, con lo que el razonamiento pasa a ser una nota al pie de la puntuación y deja de ser el andamio del juicio."
+  },
+  {
+    "term": "contexto fresco",
+    "def": "Donde debería sentarse el revisor: solo ve la salida y los criterios que le diste, no puede ver el proceso de razonamiento que produjo ese cambio, así que juzga el resultado en sus propios términos.",
+    "source": "[^S4]",
+    "pitfall": "Creer que agregarle al prompt una línea de «puntúa con honestidad, no encubras» puede sustituirlo: el problema es el contexto compartido, no la actitud.",
+    "distractor_rationale": "La diferencia clave no es la capacidad del modelo sino el contexto; esto también explica por qué al prompt del juez hay que pegarle completos los requisitos de la tarea y la rúbrica."
+  },
+  {
+    "term": "autorreporte",
+    "def": "La descripción que el agente hace de su propio proceso («recuperé tres fuentes autorizadas y las contrasté antes de confirmar el porcentaje»); por sí sola no cuenta como evidencia.",
+    "source": "[^S3]",
+    "pitfall": "Tomar el atajo de pasarle al juez solo ese resumen; el juez lo lee, le parece que el proceso suena sólido y da una puntuación alta.",
+    "distractor_rationale": "Lo que omite suele ser más importante que lo que escribe: los LLM no siempre dicen lo que quieren decir, y ese reintento fallido que no mencionó es lo que más necesitas ver."
+  },
+  {
+    "term": "transcripción cruda",
+    "def": "El registro de ejecución que incluye las llamadas a herramientas y sus respuestas, usado para detectar comportamientos que no están descritos explícitamente en la cadena de pensamiento del agente.",
+    "source": "[^S3]",
+    "pitfall": "Que la entrada del juez tenga solo la salida y el autorreporte, sin la transcripción, con lo que la dimensión de «eficiencia de herramientas» queda en realidad sin poder juzgarse.",
+    "distractor_rationale": "Se mete fácil en la misma bolsa que los logs; su papel acá es ser entrada obligatoria del juez, no material para diagnosticar a posteriori."
+  },
+  {
+    "term": "encontrar problemas",
+    "def": "El primer modo de fallo del juez: un revisor al que se le pide encontrar huecos normalmente va a reportar algunos, incluso cuando el trabajo está sólido, porque eso es lo que le pediste.",
+    "source": "[^S4]",
+    "pitfall": "Perseguir cada hallazgo para arreglarlo; el agente entra en un bucle de autoescalada: la revisión levanta tres ítems, los arreglas, la re-revisión levanta tres más, y el problema real nunca se resuelve.",
+    "distractor_rationale": "Estas sugerencias, una por una, no están equivocadas; mezcladas en un reporte de revisión se ven idénticas a los problemas reales, así que son dificilísimas de distinguir en el momento."
+  },
+  {
+    "term": "sobreingeniería",
+    "def": "La consecuencia de perseguir cada hallazgo de la revisión: capas extra de abstracción, código defensivo y pruebas para casos que no pueden ocurrir.",
+    "source": "[^S4]",
+    "pitfall": "Tomar el código cada vez más abultado como una mejora de calidad, sin preguntar de vuelta «si me salteo esto, ¿afecta la corrección o los requisitos declarados?».",
+    "distractor_rationale": "Parece diligencia; la mitigación es que el revisor marque únicamente los problemas que afectan la corrección o los requisitos declarados, y trate el resto como sugerencias opcionales."
+  },
+  {
+    "term": "tamaño del efecto",
+    "def": "Qué tan grande es la brecha que produce un cambio: ¿es pasar de 71,2% a 72,4%, o un salto de 30% a 80%? Las brechas grandes requieren menos muestras.",
+    "source": "[^S2]",
+    "pitfall": "Tratarlo como una licencia permanente: cuando el agente ya llega a 80% o más y los cambios mueven uno o dos puntos, seguir sacando conclusiones de seis casos.",
+    "distractor_rationale": "Se toma como un término de estadística y se saltea; en realidad es puro sentido común: una diferencia de 30 grados es obvia al tacto, una de medio grado exige un termómetro."
+  },
+  {
+    "term": "conjunto de evaluación",
+    "def": "Un lote de tareas emparejadas con resultados verificables; la escala oficial de arranque es de unas 20 consultas que representan el uso real; no esperes a acumular cientos.",
+    "source": "[^S2]",
+    "pitfall": "Armar 5 casos y dejarlos ahí sin usar: pagas el costo de armar evaluaciones sin obtener ninguno de sus beneficios; los casos sin usar no aportan ni siquiera un valor de recordatorio.",
+    "distractor_rationale": "20 no es un umbral mágico, es apenas la escala de «lo puedes terminar en una tarde y empezar a usar ese mismo día»."
+  },
+  {
+    "term": "resultado verificable",
+    "def": "Con qué debería estar emparejado cada prompt de evaluación: un estado final juzgable, una cadena, un cambio de estado o una rúbrica; sin eso, el prompt no es una tarea de evaluación, es una demo.",
+    "source": "[^S3]",
+    "pitfall": "Escribir en las expectativas «en qué orden debería pensar el agente», lo que fija el camino en duro y retrocede a grabar y reproducir.",
+    "distractor_rationale": "«Una pila de prompts» se toma seguido por un conjunto de evaluación; la distinción está en si tiene esto: sin eso solo puedes mirar las salidas a ojo, y te cansas a la segunda lectura."
+  },
+  {
+    "term": "caso límite",
+    "def": "Situaciones de baja frecuencia pero que ocurren de verdad (información faltante, demandas mezcladas, errores de herramientas); son el seguro del conjunto de evaluación, no su cuerpo.",
+    "source": "[^S5]",
+    "pitfall": "Que el conjunto de evaluación entero sean casos límite, y así te pasas un mes arreglando un problema que aparece dos veces al mes.",
+    "distractor_rationale": "Se confunde con los «casos adversarios»: las entradas extremas puramente inventadas no cuentan; tiene que venir de esa porción chica que sí aparece en la distribución real."
+  },
+  {
+    "term": "prioriza cantidad sobre calidad",
+    "def": "Un principio de diseño de conjuntos de evaluación: más preguntas con calificación automatizada de señal levemente menor es mejor que menos preguntas con evaluaciones humanas de alta calidad calificadas a mano.",
+    "source": "[^S5]",
+    "pitfall": "Gastar el tiempo puliendo hasta la perfección los criterios de calificación de un caso en lugar de escribir diez casos más.",
+    "distractor_rationale": "Es el más contraintuitivo, porque contradice la estética de ingeniería de «mejor poco que mediocre», pero es el que te salva la vida."
+  },
+  {
+    "term": "distribución real",
+    "def": "A qué deberían ceñirse las evaluaciones: tus tareas de evaluación deberían estar ancladas en el uso del mundo real, al punto de poder señalar cualquier prompt y decir «tres usuarios preguntaron exactamente esto la semana pasada».",
+    "source": "[^S5]",
+    "pitfall": "Imaginar sentado en tu escritorio cómo podrían preguntar los usuarios, y escribir un lote de casos que se ven bien solo con muestras limpias y se derrumban cuando llega la entrada real.",
+    "distractor_rationale": "Se confunde con «cobertura exhaustiva»: lo exhaustivo suele inclinarse hacia los bordes, mientras que la distribución real exige que el cuerpo siga siendo lo que de verdad pasa a diario."
+  },
+  {
+    "term": "conjunto reservado",
+    "def": "Un lote de casos apartados desde el principio, que no miras, no ejecutas y no tocas durante el ajuste del día a día; te apoyas en él para asegurarte de no sobreajustar a las evaluaciones «de entrenamiento».",
+    "source": "[^S3]",
+    "pitfall": "Cambiar el prompt para arreglar un caso reservado específico: ese caso, desde ese momento, pasó a ser parte del conjunto de desarrollo.",
+    "distractor_rationale": "Es consumible, no una reliquia familiar: si de verdad se gastó, fusiónalo al conjunto de desarrollo y repón un lote fresco; conservarlo a la fuerza solo te hace creer que todavía tienes una regla limpia."
+  },
+  {
+    "term": "conjunto de desarrollo",
+    "def": "El lote de casos que ejecutas repetidamente cuando ajustas prompts a diario, cuanto más seguido mejor; sus puntuaciones son navegación, no veredicto.",
+    "source": "[^S3]",
+    "pitfall": "Tomar su puntuación como conclusión para reportar hacia afuera, sin validar ni una vez con el conjunto reservado en los hitos.",
+    "distractor_rationale": "Que las trayectorias de puntuación de los dos conjuntos diverjan (el de ajuste sube, el reservado queda plano o baja) es la señal más observable del sobreajuste."
+  },
+  {
+    "term": "sobreajuste",
+    "def": "Que el conjunto entero de prompt más configuración de herramientas aprenda las características del material de evaluación en vez de las regularidades de la tarea misma, como fijar en duro una oración en el prompt de sistema para un caso que falla siempre.",
+    "source": "[^S3]",
+    "pitfall": "Buscar señales solo a nivel de puntuación; otra comprobación más directa es leer el prompt de sistema completo y preguntar línea por línea «si quitara esta línea, ¿fallaría un solo caso de evaluación?».",
+    "distractor_rationale": "El proceso se siente idéntico: las puntuaciones suben y cada paso parece una mejora; la diferencia está solo en si lo que sube es la capacidad o las puntuaciones en estas pocas preguntas."
+  },
+  {
+    "term": "no está garantizado",
+    "def": "La formulación de la documentación oficial para ciertos comportamientos ideales (como que el modelo pida por su cuenta los parámetros requeridos que faltan); y más todavía para los prompts más ambiguos y los modelos menos capaces.",
+    "source": "[^S6]",
+    "pitfall": "Que la lógica de tu producto dependa de un comportamiento descrito solo en términos probabilísticos, sin unos pocos casos que lo vigilen de forma continua.",
+    "distractor_rationale": "El «muchas más probabilidades» se lee como certeza; son justamente estos comportamientos no garantizados los que deberían entrar al conjunto de evaluación: las cosas garantizadas no necesitan prueba."
+  },
+  {
+    "term": "circuito de evaluación",
+    "def": "El programa ejecutable que suelda conjuntos de evaluación, calificación estratificada y bucles de arnés: escribes un comando y las puntuaciones te dicen cuál mejoró, cuál no se movió y si se rompió algo que estaba bien.",
+    "source": "[^S3]",
+    "pitfall": "Seguir los reportes para cambiar prompts durante varias rondas: las puntuaciones sin duda van a subir, pero la subida podría ser solo de las puntuaciones sobre este lote de tareas.",
+    "distractor_rationale": "Se ocupa de «un agente, un lote de tareas, una ejecución en tu máquina, un reporte»; engancharlo a CI y bloquear merges es orquestación aparte."
+  },
+  {
+    "term": "cliente stub",
+    "def": "Un messages.create falso que devuelve respuestas prefijadas en el orden fijo de una cola, convirtiendo el comportamiento del modelo en una variable controlada y volviendo reproducible todo el circuito.",
+    "source": "[^S3]",
+    "pitfall": "Darle una respuesta de reserva: cuando la cola se agota debería lanzar un error de inmediato; si no, el bucle da una vuelta de más y se cuela un end_turn falso.",
+    "distractor_rationale": "Con un stub estás verificando la lógica de control que escribiste, no el desempeño del modelo ese día; cambia al cliente real y la estructura del circuito no cambia, lo que cambia es que las puntuaciones empiezan a temblar."
+  },
+  {
+    "term": "cola de respuestas",
+    "def": "La secuencia de respuestas preescrita detrás del cliente stub; la diferencia entre dos versiones del prompt queda fijada por dos juegos de colas, y «supongamos que el prompt nuevo hace efecto y el modelo responde así» queda codificado como datos.",
+    "source": "[^S3]",
+    "pitfall": "Compartir un solo cursor entre tareas, con lo que las respuestas consumidas por la tarea anterior se desalinean hacia la siguiente.",
+    "distractor_rationale": "Simula la salida del modelo, no su capacidad; usa la sintaxis de propagación para heredar de la versión vieja y lista solo las entradas que cambian, para que quien lea el código vea de un vistazo el alcance de la diferencia."
+  },
+  {
+    "term": "aislamiento entre tareas",
+    "def": "Una tarea de evaluación, un bucle independiente y un messages independiente; al terminar se descarta; la implementación es simplemente no sacar messages fuera de la función.",
+    "source": "[^S3]",
+    "pitfall": "Para ahorrar tokens, encadenar varias tareas en una sola sesión larga: con sesiones compartidas los tokens de entrada en realidad se acumulan linealmente, no se ahorra nada.",
+    "distractor_rationale": "Parece trabajo duplicado, pero en realidad es la precondición para que los resultados sean comparables: la contaminación sobreestima la capacidad y vuelve las tareas dependientes del orden."
+  },
+  {
+    "term": "is_error",
+    "def": "La marca que se le adosa al tool_result cuando le devuelves al modelo una excepción de herramienta: atrapas la excepción, la envuelves en un resultado con esta marca y se la devuelves, incrementando al mismo tiempo el contador de errores.",
+    "source": "[^S6]",
+    "pitfall": "Dejar que las excepciones de herramienta tumben directamente el bucle, con lo que tareas como «¿el agente reporta con honestidad después de un error de herramienta?» ni siquiera llegan al paso del juicio.",
+    "distractor_rationale": "Los errores de herramienta no son caídas: son una señal normal, pensada para volver a fluir a la conversación, ser leída por el modelo y provocar una reacción."
+  }
+]

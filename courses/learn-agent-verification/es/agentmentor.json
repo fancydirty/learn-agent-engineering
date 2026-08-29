@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Producir la variante en español del curso learn-agent-verification para learn.agentmentor.dev, tomando como base la variante en inglés ya verificada. Es una traducción con pulido pedagógico a partir de en (no del zh): misma estructura de 6 lecciones, mismos slugs de lección, mismos ids de bloque interactivo y mismas posiciones de respuesta correcta, citas de las fuentes conservadas en su inglés original, código ejecutable con la lógica intacta y solo comentarios y cadenas visibles traducidos, invariantes de la época de revisión conservados (recuentos y no porcentajes en conjuntos pequeños, execFile y no exec, aserciones con regex sin depender del orden), referencias entre cursos apuntando a los títulos en español, y una prosa técnica natural en español, en tono profesional cercano y sin rigidez de traducción automática.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "El responsable ratificó el plan multilingüe de forma explícita: los seis idiomas en learn.agentmentor.dev, primero el inglés y después el resto de idiomas como oleadas de traducción a partir de la base en inglés, en lotes de 2-3 cursos y con un commit por curso. La variante en inglés es la fuente de verdad verificada y corregida en su fundamentación, así que no hizo falta ninguna aclaración adicional."
+  },
+  "learnerModel": {
+    "targetReader": "Una persona desarrolladora que ha terminado los primeros nueve cursos de esta serie, hace correr un arnés con puntos de control y quiere una aceptación que separe «parece terminado» de «está terminado»",
+    "knownConcepts": [
+      "Escribir a mano un bucle de arnés dirigido por stop_reason y el emparejamiento tool_use/tool_result (curso 7)",
+      "Los puntos de control y el registro de efectos (curso 9)",
+      "La gestión de contexto (curso 8)",
+      "Lectura y escritura de JavaScript / Node.js básico"
+    ],
+    "unknownConcepts": [
+      "Por qué el no determinismo de los agentes rompe las pruebas basadas en el camino",
+      "Afirmaciones frente a evidencias; la trampa del «parece terminado»",
+      "La verificación del estado final frente a la auditoría de la trayectoria; puntos de control de estado en los nodos clave",
+      "Los verificadores deterministas y su jerarquía; las trampas de un verificador demasiado estricto",
+      "El diseño del juez LLM: rúbricas, formatos restringidos, razonar antes de puntuar, identidad del juez",
+      "La construcción de un conjunto de evaluación a partir de 20 tareas reales; la disciplina del conjunto reservado; el tamaño de efecto",
+      "Un circuito de evaluación: un bucle de arnés por tarea, puntuación por capas, métricas más allá de la tasa de aprobación"
+    ],
+    "assumedEnvironment": "Un entorno de Node.js, acceso a una terminal, un editor de texto y el código del arnés del curso 7 disponible para reutilizarlo como esqueleto del circuito de evaluación",
+    "firstIndependentAction": "Tomar uno de los reportes recientes de «terminado» de su agente y separar sus afirmaciones de sus evidencias",
+    "noviceRamp": [
+      "La lección 1 nombra la trampa (lo plausible no es lo correcto) antes de cualquier herramienta",
+      "La lección 2 decide qué verificar (primero el estado final, puntos de control en los nodos clave, la trayectoria solo como red de seguridad)",
+      "La lección 3 ordena los verificadores y pone por delante las comprobaciones deterministas de aprobado/fallido",
+      "La lección 4 trae al juez LLM solo para el texto libre, con disciplina de rúbrica e identidad",
+      "La lección 5 construye el conjunto de evaluación a partir de 20 tareas reales; la lección 6 ensambla el circuito de evaluación completo y mide un cambio de prompt"
+    ]
+  },
+  "learnerBrief": "El lector objetivo ha terminado los primeros nueve cursos, hace correr un arnés y lee JavaScript. Sabe conseguir que un agente termine una ejecución, pero todavía no sabe decir con fiabilidad si acertó. El curso lo lleva a separar las afirmaciones de las evidencias, verificar estados finales con comprobaciones deterministas en primer lugar, diseñar jueces LLM para la salida en texto libre sin que nadie se ponga la nota a sí mismo, construir un conjunto de evaluación de 20 tareas con disciplina de conjunto reservado y ensamblar un circuito de evaluación repetible que convierte un cambio de prompt en un cambio de puntuación.",
+  "scope": "Se cubre: la trampa del «parece terminado» bajo no determinismo, la verificación con el estado final por delante y puntos de control de estado, los verificadores deterministas (coincidencia exacta, comparación por script, suites de tests) y sus modos de fallo, el diseño del juez LLM (rúbricas, salida restringida, razonar antes de puntuar, identidad del juez), los conjuntos de evaluación a partir de 20 tareas reales con conjunto reservado y razonamiento sobre el tamaño de efecto, y un circuito de evaluación práctico con puntuación por capas y métricas más allá de la tasa de aprobación. No se cubre: la metodología general de pruebas de software, frameworks de eval concretos o API de plataformas, ni los benchmarks del lado del entrenamiento de modelos; la integración con CI se menciona solo como sentido común. Profundidad: desde cero hasta medir el impacto real de un cambio de prompt en el agente propio.",
+  "status": {
+    "stage": "generated",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-verification/es/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Sin diagramas mermaid, igual que la variante en inglés: el contenido del curso son comprobaciones, rúbricas, esquemas y código, y todo eso lo transmiten mejor los ejemplos reales que un diagram. El material de jerarquía de verificadores y de reparto del conjunto se lee con claridad como listas anotadas y JSON, tal como ya validó la revisión del original.",
+    "weakestPoints": [
+      "Los resultados sobre conjuntos pequeños se enuncian a propósito como recuentos (5/7) y nunca como porcentajes, un invariante de la época de revisión; quien más adelante los «mejore» convirtiéndolos en porcentajes reintroduciría el error exacto que la revisión quitó",
+      "El código del circuito de evaluación es de nivel didáctico y secuencial; en producción haría falta concurrencia y reintentos, cosa que la lección señala",
+      "La lección del juez LLM enseña disciplina de rúbrica pero no puede volver determinista a un juez; el texto dice de forma explícita que las puntuaciones del juez son a su vez ruidosas",
+      "Al ser una traducción al español de una variante en inglés verificada, la deriva idiomática es el riesgo residual: las citas de las fuentes se conservaron verbatim en inglés y el código ejecutable mantiene la lógica idéntica, pero la prosa se vertió a un español natural en lugar de traducirse palabra por palabra, así que la revisión debe comprobar la equivalencia de significado con las lecciones en inglés"
+    ],
+    "followUpChecks": [
+      "Ejecutar course-guard sobre el directorio es y actualizar status.guardStatus con el resultado real (ahora está en pending)",
+      "Pasada de renderizado en learn.agentmentor.dev /es/agent-verification/... tras el despliegue: las 6 lecciones más el README, con las tarjetas interactivas hidratadas",
+      "Verificar que cada ancla [^Sn] de las lecciones en es tiene su bloque ## Sn correspondiente en el sources.md en es",
+      "Confirmar que los ids de los seis bloques de comprobación y las posiciones de respuesta correcta son idénticos byte a byte a la variante en inglés (b/c/a/b/a/c en orden de lección)",
+      "Volver a ejecutar el JS del proyecto final (runTask con la constante MODEL, verificadores con execFile, puntuación por capas) y confirmar que las salidas coinciden con los logs afirmados"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "La persona que aprende puede construir un circuito de evaluación repetible para su propio agente (un bucle de arnés por tarea, verificadores deterministas primero y un juez LLM para la salida en texto libre, resultados como recuentos con métricas de duración y de número de llamadas) y usarlo para medir si un cambio de prompt ayudó de verdad.",
+    "interactionCheck": "Seis bloques agentmentor-check, uno por lección (lo plausible no es lo correcto en la L1, estado final frente a pasos en la L2, el verificador demasiado estricto en la L3, ponerse la nota a uno mismo en la L4, esperar a tener cientos de casos en la L5 y la sesión compartida en la L6), conservados desde la variante en inglés con ids, modos, número de opciones y posiciones de respuesta correcta idénticos; label, prompt, whyHere, el texto de las opciones y el feedback son traducciones al español ajustadas al malentendido propio de cada lección. Los ejercicios mantienen la estructura de niveles de la variante en inglés, con rubric, answer e hints en cada nivel.",
+    "learnerFitCheck": "El curso presupone los nueve cursos previos: el bucle del arnés, los puntos de control y JavaScript. La trampa del «parece terminado», los objetivos de verificación, la jerarquía de verificadores, la disciplina del juez y la construcción del conjunto de evaluación se enseñan desde cero en orden de dependencia; la persona ensambla por primera vez la vía completa en la lección 6, después de todos los prerrequisitos. El primer ejercicio de la lección 1 solo pide una lectura de afirmaciones frente a evidencias del reporte del propio agente.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "Variante en español de la variante en inglés verificada: la estructura, la fundamentación y las posiciones de respuesta se heredan del original verificado",
+      "Todos los bloques interactivos conservan id, mode, número de opciones y respuesta correcta con paridad byte a byte respecto al inglés",
+      "Todas las citas de las fuentes se mantienen en su inglés original y se comprobaron byte a byte contra sources.md",
+      "Se conservan los invariantes de la época de revisión: recuentos y no porcentajes, execFile y no exec, aserciones sin depender del orden, el reparto 6/3/1, la constante MODEL y el párrafo de correspondencia de campos de la L5 a la L6"
+    ]
+  },
+  "nextSteps": [
+    "Ejecutar course-guard sobre la variante en es y corregir lo que señale",
+    "Actualizar status.guardStatus una vez que el guard se haya ejecutado de verdad",
+    "Desplegar learn.agentmentor.dev y comprobar que las páginas /es se renderizan con las tarjetas interactivas hidratadas",
+    "Producir las variantes de idioma restantes usando esta misma variante en inglés como base de traducción",
+    "Animar a quienes aprenden a construir un conjunto de evaluación de 20 tareas para su propio agente como proyecto de consolidación tras el curso"
+  ],
+  "memoryBoundary": "Este agentmentor.json es un registro de estado local del curso (course-local state record), almacenado únicamente en el directorio del curso para las comprobaciones de calidad y el seguimiento de la ruta de aprendizaje. Nunca se escribe de vuelta en la memoria a largo plazo de Claude Code ni de ningún sistema de IA anfitrión, y no afecta a otros cursos ni a otras conversaciones."
+}
