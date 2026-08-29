@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Producir la variante en español del curso learn-claude-code-skills para learn.agentmentor.dev, tomando como base la variante en inglés ya verificada. Es una traducción con pulido pedagógico a partir de en (no del zh): misma estructura de 6 lecciones, mismos slugs de lección, mismos ids de bloque interactivo y mismas posiciones de respuesta correcta, citas de las fuentes conservadas en su inglés original, código ejecutable con la lógica intacta y solo comentarios y cadenas visibles traducidos, y una prosa técnica natural en español, en tono profesional cercano y sin rigidez de traducción automática.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "El responsable ratificó el plan multilingüe: los seis idiomas en learn.agentmentor.dev, primero el inglés (ya completo, 12/12) y después el resto de idiomas como oleadas de traducción a partir de la base en inglés. La variante en inglés es la fuente de verdad verificada y corregida en su fundamentación, así que no hizo falta ninguna aclaración adicional."
+  },
+  "learnerModel": {
+    "targetReader": "Una persona desarrolladora que ya usa las funciones básicas de Claude Code, maneja Markdown básico y la línea de comandos, y quiere personalizar sus flujos de trabajo con Skills",
+    "knownConcepts": [
+      "Interacción básica con Claude Code",
+      "Sintaxis básica de Markdown",
+      "Comandos básicos de terminal (cd, ls, mkdir, uso de un editor de texto)",
+      "Archivos y directorios",
+      "Fundamentos de al menos un lenguaje de programación",
+      "La idea general de la revisión de código"
+    ],
+    "unknownConcepts": [
+      "Cómo funcionan las Skills",
+      "La sintaxis del frontmatter YAML",
+      "La estructura del archivo SKILL.md",
+      "Cómo el campo description activa una skill",
+      "El principio de progressive disclosure",
+      "Cómo organizar los supporting files",
+      "Cómo depurar una Skill"
+    ],
+    "assumedEnvironment": "Claude Code instalado, acceso al directorio .claude/skills, un editor de texto (VS Code o similar) y una terminal para comandos básicos",
+    "firstIndependentAction": "Identificar una tarea repetitiva del propio proyecto que una Skill podría automatizar",
+    "noviceRamp": [
+      "La lección 1 parte de un dolor concreto (volver a explicar el mismo flujo una y otra vez) y usa el ejemplo de las notas de reunión para construir la intuición de por qué existen las Skills",
+      "La lección 2 disecciona un archivo SKILL.md real por partes (frontmatter, instructions) en vez de soltar todos los conceptos de golpe",
+      "La lección 3 construye desde cero una Skill completa pero sencilla (un organizador de tareas), con cada paso detallado y copiable",
+      "Las pruebas y la depuración tienen su propia lección (la 4), de modo que la complejidad de depurar no se filtra en la etapa de escritura"
+    ]
+  },
+  "learnerBrief": "El lector objetivo es una persona desarrolladora que ya usa Claude Code y quiere personalizar sus flujos de trabajo con Skills. Conoce Markdown básico y la línea de comandos y tiene experiencia programando, pero no sabe qué son las Skills, cómo funciona el frontmatter YAML ni cómo escribir una. El curso lo lleva a crear por su cuenta su primera Skill práctica: entender por qué importan las Skills, dominar la estructura de SKILL.md, aprender a probar y depurar, y estudiar patrones reales mediante un caso práctico de revisión de código.",
+  "scope": "Se cubre: el concepto de Skill y dónde aplica, la estructura de SKILL.md (frontmatter YAML + instructions en Markdown), la escritura de los campos name y description, el mecanismo de activación automática, la redacción de instrucciones ejecutables, la organización de los supporting files, las pruebas y la depuración (invocación directa, mejora iterativa), un caso práctico de Skill de revisión de código, y la diferencia entre personal skills y project skills. No se cubre: la instalación de Claude Code, la sintaxis YAML en profundidad, el scripting complejo, el conocimiento avanzado específico de un lenguaje, la distribución de Skills ni los detalles de integración con MCP. Profundidad: desde cero hasta publicar de forma autónoma una Skill lista para producción.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-claude-code-skills/es/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "No se usan diagramas mermaid, igual que en las variantes en inglés y en chino. El núcleo de aprender Skills es entender una estructura de texto (frontmatter YAML + instructions en Markdown) y escribir pasos concretos y ejecutables, así que los ejemplos reales de código SKILL.md enseñan mejor que un diagram abstracto. El único punto candidato a un diagram —el ciclo probar-corregir-probar de la lección 4— se lee con claridad como una lista anotada.",
+    "weakestPoints": [
+      "El ejercicio de la lección 1 sobre identificar la primera Skill candidata es abierto y quien empieza puede dudar de si la tarea elegida encaja. Se mitiga con criterios de juicio explícitos (repetitiva, de pasos fijos, verificable) e hints progresivos",
+      "La Skill de revisión de código de la lección 5 abarca varios archivos y es el ejemplo más largo del curso; puede resultar pesada, pero existe para mostrar la completitud de un proyecto real y está dividida en pasos modulares",
+      "Los campos avanzados del frontmatter (model, allowed-tools) solo se tocan de pasada en la lección 6, por diseño (progressive disclosure), así que quien los necesite debe consultar la documentación oficial",
+      "Al ser una traducción de la variante en inglés verificada, el riesgo residual es la deriva idiomática: cada cita de las fuentes se conservó verbatim en inglés y se comprobó byte a byte, y el código ejecutable mantiene la lógica idéntica, pero la prosa se vertió a un español natural en lugar de traducirse palabra por palabra, así que la revisión debe comprobar la equivalencia de significado con la lección en inglés y no la alineación frase a frase"
+    ],
+    "followUpChecks": [
+      "Pasada de renderizado completa en learn.agentmentor.dev /es/claude-code-skills/... tras el despliegue: las 6 lecciones más el README, con las tarjetas interactivas hidratadas",
+      "Verificar que cada término del glosario aparece verbatim en las lecciones en es (comprobación de attach)",
+      "Verificar que cada ancla [^Sn] de las lecciones en es tiene su bloque ## Sn correspondiente en el sources.md en es",
+      "Confirmar que los ids de los bloques de comprobación y las posiciones de respuesta correcta son idénticos byte a byte a la variante en inglés (b/b/b/b en las lecciones 1/2/4/5)"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "La persona que aprende puede escribir por su cuenta un SKILL.md completo (frontmatter correcto más instrucciones concretas y ejecutables) para una tarea repetitiva de su propio trabajo, invocarlo con éxito, probarlo e iterar sobre él, y decidir cuándo el sitio adecuado es una personal skill y cuándo una project skill.",
+    "interactionCheck": "Cuatro lecciones llevan un bloque agentmentor-check cada una (encaje del escenario en la lección 1, calidad de la description en la 2, diagnóstico de fallo de carga en la 4 y organización de archivos en la 5), conservados desde la variante en inglés con ids, modos, número de opciones y posiciones de respuesta correcta idénticos; label, prompt, whyHere, el texto de las opciones y el feedback son traducciones al español ajustadas al malentendido propio de cada lección. Los ejercicios mantienen la estructura de niveles de la variante en inglés, con rubric, answer e hints en cada nivel.",
+    "learnerFitCheck": "El curso no presupone conocimientos de YAML (la lección 2 enseña desde cero los dos campos obligatorios del frontmatter), ni programación compleja (los ejemplos son procesamiento de texto y auditoría de listas de comprobación), ni experiencia específica en un lenguaje o framework. El primer ejercicio de la lección 1 solo pide reflexionar sobre el propio historial de trabajo y no depende de nada de unknownConcepts. Los conceptos desconocidos se introducen por pasos y quien aprende construye su primera Skill en la lección 3, después de que se hayan enseñado todos los requisitos previos.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "Traducción al español de la variante en inglés verificada: la estructura, la fundamentación y las posiciones de respuesta se heredan del original verificado",
+      "Todos los bloques interactivos conservan id, mode, número de opciones y respuesta correcta con paridad byte a byte respecto al inglés",
+      "Todas las citas de las fuentes se mantienen en su inglés original (política de citas ratificada por el responsable)",
+      "Se verificó que los términos del glosario aparecen verbatim en las lecciones en es"
+    ]
+  },
+  "nextSteps": [
+    "Ejecutar course-guard sobre la variante en es y corregir lo que señale",
+    "Desplegar learn.agentmentor.dev y comprobar que las páginas /es se renderizan con las tarjetas interactivas hidratadas",
+    "Producir la variante restante (pt-BR) usando la misma variante en inglés como base de traducción",
+    "Animar a quienes aprenden a aplicar el curso publicando 2 o 3 Skills reales en sus propios proyectos durante la primera semana"
+  ],
+  "memoryBoundary": "Este agentmentor.json es un registro de estado local del curso (course-local state record), almacenado únicamente en el directorio del curso para las comprobaciones de calidad y el seguimiento de la ruta de aprendizaje. Nunca se escribe de vuelta en la memoria a largo plazo de Claude Code ni de ningún sistema de IA anfitrión, y no afecta a otros cursos ni a otras conversaciones."
+}

@@ -1,0 +1,345 @@
+[
+  {
+    "term": "Skill",
+    "def": "Un directorio más un archivo SKILL.md: un paquete reutilizable de instrucciones de flujo de trabajo que le dice a Claude cómo hacer una tarea específica.",
+    "source": "[^S3]",
+    "pitfall": "Suponer que una Skill es un trozo de código o un script. Es una instrucción en Markdown escrita para que Claude la lea, no un programa ejecutable.",
+    "distractor_rationale": "Los principiantes confunden una Skill con una función o script de la programación tradicional porque ambas 'empaquetan lógica reutilizable', pero una Skill es instrucción en lenguaje natural, no código."
+  },
+  {
+    "term": "SKILL.md",
+    "def": "El archivo central de una Skill, que contiene dos partes: frontmatter YAML (metadatos) e instrucciones en Markdown (las indicaciones que Claude sigue).",
+    "source": "[^S1]",
+    "pitfall": "Escribir solo el frontmatter o solo las instrucciones, de modo que Claude no pueda reconocer o ejecutar la Skill correctamente.",
+    "distractor_rationale": "Los recién llegados olvidan que SKILL.md debe contener ambas partes, porque otros archivos Markdown suelen tener solo contenido de cuerpo y no frontmatter."
+  },
+  {
+    "term": "frontmatter YAML",
+    "def": "El bloque de metadatos en la parte superior de SKILL.md, envuelto en marcadores de triple guion (---), que contiene campos como name y description.",
+    "source": "[^S1]",
+    "pitfall": "Olvidar el --- de cierre, o usar una indentación incorrecta dentro del frontmatter, de modo que el YAML no se parsee.",
+    "distractor_rationale": "YAML es estricto con la indentación y el formato, pero la gente acostumbrada a la flexibilidad de JSON suele producir frontmatter mal formado."
+  },
+  {
+    "term": "name",
+    "def": "Un campo obligatorio del frontmatter que define el identificador único de la Skill; se convierte en el comando y debe usar letras minúsculas, dígitos y guiones.",
+    "source": "[^S3]",
+    "pitfall": "Usar espacios, letras mayúsculas o camelCase en name (como taskOrganizer), de modo que la Skill no se pueda invocar correctamente.",
+    "distractor_rationale": "La gente acostumbrada a nombres de archivo o nombres de variable recurre a guiones bajos o camelCase, pero un nombre de Skill solo permite minúsculas y guiones."
+  },
+  {
+    "term": "description",
+    "def": "Un campo obligatorio del frontmatter que le dice a Claude qué hace la Skill y cuándo usarla. Es la única base para la activación automática.",
+    "source": "[^S6]",
+    "pitfall": "Escribir una description vaga como 'Ayuda con tareas', de modo que Claude nunca sepa cuándo aplica y nunca la cargue por su cuenta.",
+    "distractor_rationale": "Los recién llegados tratan description como texto de marketing para humanos, sin darse cuenta de que es el campo que Claude coteja para decidir si cargar la Skill."
+  },
+  {
+    "term": "activación automática",
+    "def": "Cuando lo que dice el usuario coincide con la description de una Skill, Claude carga y ejecuta esa Skill por su cuenta, sin comando manual.",
+    "source": "[^S6]",
+    "pitfall": "Esperar que Claude se active por 'intención' cuando la description no contiene ninguna de las palabras que el usuario realmente dice, de modo que la coincidencia nunca se dispare.",
+    "distractor_rationale": "Los usuarios asumen que Claude infiere sinónimos o contexto, pero la activación automática se apoya sobre todo en la coincidencia de palabras clave contra la description."
+  },
+  {
+    "term": "invocación manual",
+    "def": "Llamar a una Skill directamente con /skill-name, lo que obliga a Claude a cargarla sin depender de que la description coincida.",
+    "source": "[^S1]",
+    "pitfall": "Olvidar que el nombre de la Skill no puede contener espacios ni mayúsculas, y escribir /MySkill o /my skill de modo que la llamada falle.",
+    "distractor_rationale": "La gente acostumbrada a líneas de comando separa argumentos con espacios, pero un nombre de Skill en sí no puede contener espacios."
+  },
+  {
+    "term": "instrucciones en Markdown",
+    "def": "Todo lo que hay en SKILL.md después del frontmatter: las indicaciones concretas, paso a paso, que Claude sigue, escritas en Markdown.",
+    "source": "[^S1]",
+    "pitfall": "Escribir pasos vagos como 'analiza los datos' o 'procesa la tarea', de modo que Claude no tenga idea de qué hacer realmente y la salida falle.",
+    "distractor_rationale": "La gente acostumbrada a escribir abstracciones de alto nivel pasa por alto que Claude necesita pasos muy específicos, porque no va a 'entender lo que quieres decir' como lo haría una persona."
+  },
+  {
+    "term": "divulgación progresiva",
+    "def": "Darle a Claude solo lo que necesita ahora mismo en vez de volcar cada detalle de una vez, de modo que la Skill quede corta y cargue rápido.",
+    "source": "[^S2]",
+    "pitfall": "Intentar cubrir cada caso límite en la versión uno y producir un SKILL.md de 500 líneas que carga lento y es difícil de mantener.",
+    "distractor_rationale": "Los perfeccionistas escriben demasiado en la primera pasada, sin saber que la divulgación progresiva es central al diseño de Skills: conciso supera a exhaustivo."
+  },
+  {
+    "term": "archivos de apoyo",
+    "def": "Archivos en un directorio de Skill distintos de SKILL.md (checklists, configuración, scripts) que se cargan bajo demanda y no consumen contexto inicial.",
+    "source": "[^S2]",
+    "pitfall": "Meter cada regla de revisión en SKILL.md, haciendo el archivo enorme y quemando contexto en cada carga.",
+    "distractor_rationale": "La gente que no sabe que existen archivos de apoyo asume que todo debe vivir en SKILL.md, perdiendo el beneficio de la organización modular."
+  },
+  {
+    "term": "skills personales",
+    "def": "Skills almacenadas en ~/.claude/skills/, disponibles solo para ti pero utilizables en todos los proyectos. Buenas para hábitos personales y herramientas de propósito general.",
+    "source": "[^S9]",
+    "pitfall": "Poner una Skill estándar del equipo en skills personales, de modo que los compañeros no puedan usarla.",
+    "distractor_rationale": "La gente que no conoce la distinción personal contra proyecto asume que cada Skill pertenece a ~/.claude/skills/."
+  },
+  {
+    "term": "skills de proyecto",
+    "def": "Skills almacenadas en el directorio .claude/skills/ de un proyecto, commiteadas en Git para que los compañeros las reciban automáticamente al clonar el repo.",
+    "source": "[^S9]",
+    "pitfall": "Agregar las skills de proyecto a .gitignore, de modo que los compañeros no puedan sincronizarlas y se pierda el sentido de compartirlas.",
+    "distractor_rationale": "La gente habitualmente ignora los directorios con punto como configuración local, sin saber que .claude/skills/ está pensado para commitearse en control de versiones."
+  },
+  {
+    "term": "Repetición",
+    "def": "Uno de los tres rasgos que hacen que un escenario se adecue a una Skill: haces lo mismo a diario, semanalmente, a veces cada hora.",
+    "source": "[^S1]",
+    "pitfall": "Crear una Skill para una tarea de una sola vez, y luego nunca usarla de nuevo después de escribirla.",
+    "distractor_rationale": "La gente sobreestima cuán seguido se repite una tarea, o confunde un proceso que varía con contenido que varía; solo un proceso que se repite se adecua a una Skill."
+  },
+  {
+    "term": "Pasos fijos",
+    "def": "Uno de los tres rasgos que hacen que un escenario se adecue a una Skill: el proceso se puede escribir como pasos claros en vez de cambiar cada vez.",
+    "source": "[^S1]",
+    "pitfall": "Construir una Skill para trabajo creativo completamente abierto, que luego necesita intervención manual pesada en cada corrida.",
+    "distractor_rationale": "La gente asume que una Skill puede manejar cualquier tarea, sin saber que encaja con flujos de trabajo estructurados y repetibles mucho mejor que con los abiertos."
+  },
+  {
+    "term": "Verificable",
+    "def": "Uno de los tres rasgos que hacen que un escenario se adecue a una Skill: puedes saber si Claude obtuvo el resultado correcto.",
+    "source": "[^S1]",
+    "pitfall": "Construir una Skill para una llamada de juicio subjetiva (como 'es bueno este diseño'), donde no puedes verificar la calidad de la salida.",
+    "distractor_rationale": "La gente espera que una Skill maneje tareas que necesitan gusto o juicio de negocio, pero esas no tienen estándar objetivo para escribir en un checklist."
+  },
+  {
+    "term": "fórmula de la description",
+    "def": "La guía para escribir una description eficaz: qué hace + cuándo usarla + capacidades clave.",
+    "source": "[^S6]",
+    "pitfall": "Escribir solo 'qué hace' y dejar caer 'cuándo usarla', de modo que Claude no tenga señal para en qué escenario cargarla.",
+    "distractor_rationale": "La gente asume que una description más corta es mejor, sin darse cuenta de que dejar afuera el caso de uso rompe la activación automática."
+  },
+  {
+    "term": "palabras disparadoras",
+    "def": "Las palabras en una description que un usuario podría decir de forma plausible; Claude coteja sobre estas para decidir si auto-cargar la Skill.",
+    "source": "[^S6]",
+    "pitfall": "Escribir 'generar documentación' en la description mientras el usuario dice 'crear docs' o 'escribir docs', de modo que las palabras clave no coincidan y nunca se dispare.",
+    "distractor_rationale": "La gente asume que Claude entiende sinónimos, sin saber que deberías escribir las varias formulaciones que un usuario podría usar en la description."
+  },
+  {
+    "term": "Formato de entrada",
+    "def": "La sección de instrucciones que explica qué tipo de entrada acepta la Skill, incluyendo forma, fuente y un ejemplo concreto.",
+    "source": "[^S1]",
+    "pitfall": "Nunca declarar el formato de entrada, de modo que Claude no pueda manejar entrada que llegue en una forma inesperada.",
+    "distractor_rationale": "La gente asume que Claude auto-detecta cualquier formato, sin saber que declarar el formato de entrada explícitamente mejora agudamente la precisión."
+  },
+  {
+    "term": "Pasos de procesamiento",
+    "def": "Las operaciones ordenadas y concretas que ejecuta la Skill; el corazón de las instrucciones, donde cada paso debe ser lo bastante específico para ser inequívoco.",
+    "source": "[^S1]",
+    "pitfall": "Escribir pasos vagos como 'analiza la entrada' o 'juzga la prioridad' sin criterios declarados, de modo que Claude no sepa el estándar real que aplicar.",
+    "distractor_rationale": "La gente acostumbrada a escribir flujo de alto nivel pasa por alto que Claude necesita criterios de decisión explícitos, como 'contiene \"urgente\" → Urgente'."
+  },
+  {
+    "term": "Formato de salida",
+    "def": "La sección de instrucciones que define cómo debe verse el resultado, incluyendo estructura, símbolos y un ejemplo trabajado.",
+    "source": "[^S1]",
+    "pitfall": "Decir solo 'imprime una lista' sin ejemplo, de modo que el formato de salida de Claude salga diferente en cada corrida.",
+    "distractor_rationale": "La gente asume que Claude sabe qué es un 'formato estándar', sin saber que un ejemplo completo es lo que garantiza formateo consistente."
+  },
+  {
+    "term": "casos límite",
+    "def": "Entradas inusuales o anormales (entrada vacía, entrada mal formada, contenido demasiado largo) cuyo manejo debe explicarse explícitamente en las instrucciones.",
+    "source": "[^S1]",
+    "pitfall": "Probar solo entrada bien portada, de modo que la Skill se comporte mal o se trabe con una cadena vacía o formato corrupto.",
+    "distractor_rationale": "La gente se centra en el camino feliz y salta los casos límite, sin saber que esa es la razón principal por la que una Skill resulta inestable."
+  },
+  {
+    "term": "invocación directa",
+    "def": "La prueba más simple: llamar a la Skill con /skill-name y observar si la salida coincide con las expectativas.",
+    "source": "[^S1]",
+    "pitfall": "Probar una vez, ver que funciona y declarar que la Skill está bien, sin preparar múltiples casos en diferentes situaciones.",
+    "distractor_rationale": "La gente subestima la variabilidad del comportamiento de IA; un éxito no significa que cada corrida tenga éxito, y se necesitan varios casos para probar estabilidad."
+  },
+  {
+    "term": "casos de prueba",
+    "def": "Pares de entrada-y-salida-esperada preparados usados para probar una Skill sistemáticamente antes de depender de ella.",
+    "source": "[^S1]",
+    "pitfall": "Preparar solo pruebas de caso normal y nunca cubrir entrada límite o basura.",
+    "distractor_rationale": "Mentalidad de pruebas incompleta: la gente no se da cuenta de que los casos límite y anormales son donde los problemas reales afloran."
+  },
+  {
+    "term": "ciclo de iteración",
+    "def": "El ciclo probar-encontrar-arreglar-reprobar por el que pasa una Skill; el camino de 'funciona' a 'funciona bien'.",
+    "source": "[^S8]",
+    "pitfall": "Esperar que la versión uno sea perfecta y rendirse al primer problema, sin saber que cada buena Skill se itera hasta tomar forma.",
+    "distractor_rationale": "Los perfeccionistas no aceptan una primera versión con fallas, así que pierden la oportunidad de aprender y mejorar a partir del uso real."
+  },
+  {
+    "term": "Compáralo A/B",
+    "def": "Ejecutar la misma tarea con y sin la Skill y tomar el tiempo en ambos, para probar si la Skill es realmente más rápida y más consistente.",
+    "source": "[^S8]",
+    "pitfall": "Asumir que una Skill ahorra tiempo solo porque existe, sin medir, y luego encontrar que la versión con Skill es más lenta o de menor calidad.",
+    "distractor_rationale": "La gente deja que la impresión subjetiva sustituya la medición objetiva, sin saber que necesitas datos para confirmar el valor real de una Skill."
+  },
+  {
+    "term": "patrón de checklist",
+    "def": "Organizar una tarea compleja como una serie de ítems de revisión explícitos, cada uno de los cuales puede pasar o fallar de forma independiente.",
+    "source": "[^S1]",
+    "pitfall": "Escribir ítems de revisión demasiado vagos (como 'revisar calidad del código'), de modo que no haya forma clara de juzgar pasar o fallar.",
+    "distractor_rationale": "La gente pierde que el punto de un checklist es la medibilidad: cada ítem necesita un estándar explícito de pasar/fallar."
+  },
+  {
+    "term": "flujo de trabajo de varios pasos",
+    "def": "Una Skill que ejecuta varios pasos secuenciales para terminar una tarea compleja, donde la salida de un paso puede alimentar el siguiente.",
+    "source": "[^S1]",
+    "pitfall": "Dejar las dependencias entre pasos poco claras, de modo que Claude los ejecute fuera de orden o salte un paso intermedio.",
+    "distractor_rationale": "La gente asume que Claude infiere dependencias de pasos, sin saber que debes escribir 'el paso 2 usa el resultado del paso 1' explícitamente."
+  },
+  {
+    "term": "Graduar la salida",
+    "def": "Dividir los hallazgos de una Skill por severidad (pasó, vale la pena mirar, hay que arreglar) de modo que el lector sepa qué actuar primero.",
+    "source": "[^S1]",
+    "pitfall": "Listar cada problema plano, de modo que el usuario no pueda decir qué ítems deben arreglarse ahora y cuáles pueden esperar.",
+    "distractor_rationale": "La gente piensa que listar problemas es suficiente, sin saber que la graduación de severidad es lo que hace una Skill utilizable, permitiendo que el lector decida rápido."
+  },
+  {
+    "term": "control de versiones",
+    "def": "Gestionar skills de proyecto con Git para que puedas ver historial, revertir y comparar versiones, del mismo modo que gestionas código.",
+    "source": "[^S8]",
+    "pitfall": "Editar una Skill pero nunca commitearla, de modo que los compañeros sigan usando la versión vieja y la vara de revisión se separe.",
+    "distractor_rationale": "La gente trata una Skill como un archivo de configuración para ajustar libremente, sin saber que también necesita control de versiones y sincronización de equipo."
+  },
+  {
+    "term": "Revisar una Skill",
+    "def": "Revisar una Skill nueva o cambiada del modo en que revisas código: revisar la description, las instrucciones y las pruebas antes de mergear.",
+    "source": "[^S10]",
+    "pitfall": "Mergear la Skill de un compañero sin revisión, y luego encontrar que la description es demasiado vaga o las instrucciones están mal.",
+    "distractor_rationale": "La gente piensa que una Skill es solo documentación y no necesita revisión, sin saber que una Skill pobre arrastra la eficiencia de todo el equipo."
+  },
+  {
+    "term": "convención de nombres",
+    "def": "Un estilo acordado en todo el equipo para nombres de Skill: guiones, orden verbo-sustantivo o sustantivo-verbo, dos o tres palabras.",
+    "source": "[^S8]",
+    "pitfall": "Cada quien usando un estilo diferente (guiones bajos, camelCase, sufijos numéricos), lo que hace que las Skills sean difíciles de gestionar y encontrar.",
+    "distractor_rationale": "La gente no nota cuánto importa la convención de nombrado y cada uno nombra las cosas a su manera, produciendo un desorden."
+  },
+  {
+    "term": "hacer limpieza periódica",
+    "def": "Revisar todas las Skills una vez por trimestre y borrar o mejorar las que apenas se usan, de modo que una pila sin usar no llene las opciones de Claude.",
+    "source": "[^S8]",
+    "pitfall": "Crear muchas Skills pero nunca hacer limpieza, de modo que Claude tenga que buscar en una pila de Skills muertas al momento de la carga.",
+    "distractor_rationale": "La gente se centra solo en agregar nuevas Skills y pasa por alto que borrar las muertas es igual de importante."
+  },
+  {
+    "term": "anunciar los cambios",
+    "def": "Después de cambiar una Skill existente, publicar el cambio y su impacto en el canal del equipo de modo que la gente no opere la nueva Skill con suposiciones viejas.",
+    "source": "[^S1]",
+    "pitfall": "Cambiar calladamente los estándares de code-review, de modo que los compañeros aún lean los resultados con la vara vieja y se confundan.",
+    "distractor_rationale": "La gente piensa que editar un archivo no es gran cosa, sin saber que un cambio de Skill cambia directamente el flujo de trabajo y las expectativas del equipo."
+  },
+  {
+    "term": "Componer Skills",
+    "def": "Encadenar varias Skills de propósito único para manejar una tarea mayor, o referenciar una Skill desde dentro de otra.",
+    "source": "[^S3]",
+    "pitfall": "Construir una gran Skill todo-en-uno que intente hacerlo todo, lo que luego se vuelve difícil de mantener y reutilizar.",
+    "distractor_rationale": "La gente no capta que Skills chicas y enfocadas compuestas juntas superan a una Skill monolítica, lo que viola responsabilidad única."
+  },
+  {
+    "term": "allowed-tools",
+    "def": "Un campo opcional del frontmatter que restringe una Skill a un conjunto especificado de herramientas, trazando una frontera de permisos para casos sensibles a seguridad.",
+    "source": "[^S5]",
+    "pitfall": "Dejar las herramientas sin restringir, de modo que la Skill use inesperadamente una herramienta que no debería (editar archivos, ejecutar scripts).",
+    "distractor_rationale": "La gente no sabe que los permisos de herramienta pueden limitarse y asume que una Skill simplemente no hará nada peligroso por su cuenta."
+  },
+  {
+    "term": "disable-model-invocation",
+    "def": "Un campo opcional del frontmatter que, cuando se establece, impide que Claude auto-cargue la Skill, dejando solo invocación manual, para evitar activaciones accidentales.",
+    "source": "[^S5]",
+    "pitfall": "Construir una Skill costosa (una que llame a una API pagada) sin deshabilitar auto-invocación, de modo que se dispare por accidente y acumule costo.",
+    "distractor_rationale": "La gente no sabe que este campo existe y asume que la única forma de evitar activaciones accidentales es editar la description."
+  },
+  {
+    "term": "model",
+    "def": "Un campo opcional del frontmatter que fija un modelo específico para la Skill, por ejemplo un modelo de razonamiento más fuerte cuando la tarea lo necesita.",
+    "source": "[^S5]",
+    "pitfall": "Dejar cada Skill en el modelo por defecto, de modo que una Skill que necesita razonamiento cuidadoso salga inconsistente.",
+    "distractor_rationale": "La gente no sabe que un modelo se puede fijar por Skill y asume que es solo una configuración global."
+  },
+  {
+    "term": "servidor MCP",
+    "def": "Un servidor de Model Context Protocol que provee herramientas (acceso a base de datos, llamadas a API) a Claude; una Skill provee el conocimiento de flujo de trabajo para usarlas.",
+    "source": "[^S7]",
+    "pitfall": "Tener una herramienta MCP pero no saber cómo usarla, o escribir una Skill sin herramienta MCP que la respalde.",
+    "distractor_rationale": "La gente confunde MCP (provee herramientas) con Skills (proveen flujo de trabajo), perdiendo que ambos son complementarios."
+  },
+  {
+    "term": "Skills de la comunidad",
+    "def": "Skills construidas y compartidas por otros desarrolladores, encontrables en GitHub y otros lados.",
+    "source": "[^S1]",
+    "pitfall": "Copiar una Skill de la comunidad directo a un proyecto de producción sin primero vetearla por seguridad y adecuación.",
+    "distractor_rationale": "La gente sobre-confía en recursos de la comunidad, sin saber que deberías primero probarla en un proyecto de prueba y revisar cualquier cosa riesgosa."
+  },
+  {
+    "term": "Documentar las Skills",
+    "def": "Listar cada skill de proyecto, con uso y ejemplos, en el README del proyecto o .claude/README.md.",
+    "source": "[^S10]",
+    "pitfall": "Crear muchas skills de proyecto pero no documentar ninguna, de modo que los nuevos miembros no sepan qué Skills existen o cómo usarlas.",
+    "distractor_rationale": "La gente piensa que el archivo de Skill es su propia documentación, sin saber que necesitas un índice para que la gente pueda encontrar y entender qué está disponible."
+  },
+  {
+    "term": "un solo propósito",
+    "def": "Cada Skill debería hacer una cosa y hacerla bien, en vez de intentar resolver varios problemas no relacionados en una Skill.",
+    "source": "[^S3]",
+    "pitfall": "Construir una Skill 'asistente de todo' que intente manejar cada tarea y termina haciendo cada una pobremente.",
+    "distractor_rationale": "La gente persigue la conveniencia de 'una Skill para todo', sin captar que Skills chicas y enfocadas son más fáciles de mantener y componer."
+  },
+  {
+    "term": "contexto",
+    "def": "Cuando Claude carga una Skill, el contenido de SKILL.md ocupa la ventana de contexto; mientras más largo el archivo, más consume.",
+    "source": "[^S2]",
+    "pitfall": "Escribir un SKILL.md de 500 líneas, de modo que cada carga queme una cantidad grande de contexto y llene la habilidad de Claude de manejar otra información.",
+    "distractor_rationale": "La gente no se da cuenta de que el contexto es un recurso limitado y asume que más detalle es siempre mejor."
+  },
+  {
+    "term": "se cargan bajo demanda",
+    "def": "El contenido de archivo de apoyo se lee solo cuando Claude realmente lo necesita, de modo que no ocupe contexto en la carga inicial de la Skill.",
+    "source": "[^S2]",
+    "pitfall": "Escribir todo en SKILL.md y nunca usar la carga bajo demanda que proveen los archivos de apoyo.",
+    "distractor_rationale": "La gente no capta el mecanismo técnico detrás de la divulgación progresiva y asume que dividir archivos es solo sobre organizar código."
+  },
+  {
+    "term": "falsos positivos",
+    "def": "Cuando una Skill marca código o contenido normal como problema; arréglalo agregando una categoría 'necesita confirmación' o ajustando los criterios.",
+    "source": "[^S1]",
+    "pitfall": "Una tasa alta de falsos positivos obliga al usuario a filtrar a mano cada corrida, haciendo que la Skill sea más lenta que no usar una.",
+    "distractor_rationale": "Reglas de revisión escritas demasiado estrictamente, o que ignoran casos especiales, producen una inundación de falsos positivos."
+  },
+  {
+    "term": "Omisiones",
+    "def": "Cuando una Skill falla en capturar un problema que debería haber encontrado; arréglalo agregando reglas de revisión o ajustando la lógica de juicio.",
+    "source": "[^S1]",
+    "pitfall": "Una Skill de revisión de código omite un hueco obvio en el manejo de errores, y el usuario pierde confianza en ella.",
+    "distractor_rationale": "Las reglas de revisión no son lo bastante exhaustivas y no cubren escenarios de problema comunes."
+  },
+  {
+    "term": "falla de carga",
+    "def": "Cuando una Skill no se auto-carga o una llamada manual falla, el proceso de diagnóstico de revisar ruta de archivo, formato de frontmatter y ortografía de name en ese orden.",
+    "source": "[^S1]",
+    "pitfall": "El archivo de Skill existe pero no se invoca, y sin idea de por dónde empezar, la persona cambia cosas a ciegas y lo empeora.",
+    "distractor_rationale": "La gente carece de un método de diagnóstico sistemático y prueba cosas al azar, sin saber revisar ruta de archivo → formato de frontmatter → ortografía de name en orden."
+  },
+  {
+    "term": "Ejemplos",
+    "def": "Proveer ejemplos de entrada/salida de modo que Claude entienda el comportamiento esperado; un ejemplo trabajado hace más que descripción en prosa.",
+    "source": "[^S1]",
+    "pitfall": "Describir el formato solo en palabras, de modo que Claude lo lea mal y la salida diverja de lo que querías.",
+    "distractor_rationale": "La gente piensa que una descripción en prosa ya es clara, sin saber que Claude aprende mucho mejor de un ejemplo que de palabras."
+  },
+  {
+    "term": "rama de feature",
+    "def": "Crear o cambiar una Skill experimental en una rama de Git y mergear a main solo una vez que se lo gana, de modo que el equipo no se interrumpa.",
+    "source": "[^S1]",
+    "pitfall": "Editar una Skill directamente en main, romperla e interrumpir el trabajo de todo el equipo.",
+    "distractor_rationale": "La gente no sabe que una rama puede aislar cambios experimentales, o se preocupa de que la gestión de ramas sea demasiado compleja."
+  },
+  {
+    "term": "conocimiento de flujo de trabajo",
+    "def": "Conocimiento sobre cómo organizar pasos, cuándo usar qué herramienta y cómo juzgar el resultado; el valor central que provee una Skill.",
+    "source": "[^S7]",
+    "pitfall": "Proveer solo las herramientas (un servidor MCP) sin conocimiento de flujo de trabajo, de modo que Claude no sepa cómo usarlas para terminar la tarea.",
+    "distractor_rationale": "La gente asume que tener las herramientas es suficiente, sin saber que el conocimiento de flujo de trabajo es el puente entre las herramientas y el objetivo."
+  }
+]
