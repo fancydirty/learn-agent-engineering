@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Produzir a variante em português do Brasil do curso learn-agent-verification para o learn.agentmentor.dev, a partir da variante em inglês já verificada. É uma tradução com polimento pedagógico a partir do en (não do zh): mesma estrutura de 6 lições, mesmos slugs de lição, mesmos ids de bloco interativo e mesmas posições de resposta correta, citações das fontes mantidas no inglês original, código executável com a lógica intacta e apenas comentários e strings visíveis traduzidos, invariantes da era de revisão preservados (contagens em vez de porcentagens em conjuntos pequenos, execFile em vez de exec, asserções por regex sem ordem fixa), referências entre cursos apontando para os títulos em português, e uma prosa técnica natural em português, em tom profissional próximo e sem a rigidez de tradução automática.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "O responsável ratificou o plano multilíngue: os seis idiomas no learn.agentmentor.dev, primeiro o inglês (já completo) e depois os demais idiomas como ondas de tradução a partir da base em inglês. A variante em inglês é a fonte de verdade verificada e com a fundamentação corrigida, então nenhum esclarecimento adicional foi necessário."
+  },
+  "learnerModel": {
+    "targetReader": "Uma pessoa desenvolvedora que concluiu os nove primeiros cursos desta série, roda um harness com checkpoints e quer uma aceitação que separe “parece pronto” de “está pronto”",
+    "knownConcepts": [
+      "Escrever à mão um loop de harness dirigido por stop_reason e o emparelhamento tool_use/tool_result (curso 7)",
+      "Checkpoints e o livro-razão de efeitos (curso 9)",
+      "Gerenciamento de contexto (curso 8)",
+      "Leitura e escrita de JavaScript / Node.js básico"
+    ],
+    "unknownConcepts": [
+      "Por que o não determinismo dos agentes quebra o teste baseado em caminho",
+      "Afirmações vs evidências; a armadilha do “parece pronto”",
+      "Verificação de estado final vs auditoria de trajetória; checkpoints intermediários nos pontos-chave",
+      "Verificadores determinísticos e sua ordenação; as armadilhas do verificador rígido demais",
+      "Projeto do LLM juiz: rubricas, formatos restritos, raciocinar antes de pontuar, identidade do juiz",
+      "Construção do conjunto de eval a partir de 20 tarefas reais; disciplina de held-out; tamanho de efeito",
+      "Uma trilha de eval: um loop de harness por tarefa, pontuação em camadas, métricas além da taxa de aprovação"
+    ],
+    "assumedEnvironment": "Um ambiente Node.js, acesso ao terminal, um editor de texto e o código do harness do curso 7 disponível para ser reaproveitado como esqueleto da trilha de eval",
+    "firstIndependentAction": "Pegar um dos relatórios recentes de “pronto” do próprio agente e separar nele as afirmações das evidências",
+    "noviceRamp": [
+      "A lição 1 nomeia a armadilha — plausível não é correto — antes de qualquer ferramenta",
+      "A lição 2 decide o que verificar (o estado final primeiro, checkpoints intermediários nos pontos-chave, a trajetória apenas como rede de segurança)",
+      "A lição 3 ordena os verificadores e põe as checagens determinísticas de aprovado/reprovado em primeiro lugar",
+      "A lição 4 traz o LLM juiz apenas para texto livre, com disciplina de rubrica e de identidade",
+      "A lição 5 constrói o conjunto de eval a partir de 20 tarefas reais; a lição 6 monta a trilha de eval completa e mede uma mudança de prompt"
+    ]
+  },
+  "learnerBrief": "O leitor-alvo concluiu os nove primeiros cursos, roda um harness e lê JavaScript. Já consegue fazer um agente terminar uma execução; ainda não consegue dizer com confiança se ele acertou. O curso o leva a separar afirmações de evidências, verificar estados finais com checagens determinísticas em primeiro lugar, projetar LLMs juízes para saída em texto livre sem que o modelo dê nota a si mesmo, construir um conjunto de eval de 20 tarefas com disciplina de held-out, e montar uma trilha de eval repetível que transforma uma mudança de prompt em uma mudança de pontuação.",
+  "scope": "Coberto: a armadilha do “parece pronto” sob não determinismo, a verificação com o estado final em primeiro lugar e checkpoints intermediários, os verificadores determinísticos (correspondência exata, comparação por script, suítes de testes) e seus modos de falha, o projeto do LLM juiz (rubricas, saída restrita, raciocinar antes de pontuar, identidade do juiz), conjuntos de eval a partir de 20 tarefas reais com conjunto held-out e raciocínio sobre tamanho de efeito, e uma trilha de eval prática com pontuação em camadas e métricas além da taxa de aprovação. Não coberto: metodologia geral de teste de software, frameworks de eval específicos ou APIs de plataforma, benchmarks de treinamento de modelo; a integração com CI é mencionada apenas como bom senso. Profundidade: do zero até medir o impacto real de uma mudança de prompt no seu próprio agente.",
+  "status": {
+    "stage": "generated",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-verification/pt-BR/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Nenhum diagram mermaid, acompanhando a variante em inglês: o conteúdo do curso são checagens, rubricas, schemas e código — tudo carregado melhor por exemplos reais do que por um diagram. O material da ordenação de verificadores e do esquema de divisão do conjunto se lê com clareza como listas anotadas e JSON, como a revisão em inglês já validou.",
+    "weakestPoints": [
+      "Os resultados de conjuntos pequenos são declarados de propósito como contagens (5/7), nunca como porcentagens — um invariante da era de revisão; quem depois “melhorar” isso transformando em porcentagens reintroduz exatamente o defeito que a revisão removeu",
+      "O código da trilha de eval é de nível didático e sequencial; trilhas em produção precisam de concorrência e retry, o que a lição sinaliza",
+      "A lição do LLM juiz ensina a disciplina de rubrica, mas não consegue tornar um juiz determinístico; o texto é explícito ao dizer que as próprias notas do juiz são ruidosas",
+      "Por ser uma tradução da variante em inglês verificada, o risco residual é o desvio idiomático: as citações das fontes foram mantidas verbatim em inglês e o código executável manteve a lógica idêntica, mas a prosa foi vertida para um português natural em vez de traduzida palavra por palavra, então a revisão deve conferir a equivalência de sentido com as lições em inglês"
+    ],
+    "followUpChecks": [
+      "Passada de renderização no learn.agentmentor.dev /pt-BR/agent-verification/... após o deploy: as 6 lições mais o README, com os cards interativos hidratados",
+      "Verificar que cada termo do glossário aparece verbatim nas lições em pt-BR (checagem de attach)",
+      "Verificar que cada âncora [^Sn] das lições em pt-BR tem o bloco ## Sn correspondente no sources.md em pt-BR",
+      "Confirmar que os seis ids de bloco de checagem e as posições de resposta correta são idênticos byte a byte ao inglês (b/c/a/b/a/c na ordem das lições)",
+      "Rodar de novo o JS do capstone da trilha de eval (runTask com a const MODEL, verificadores com execFile, pontuação em camadas) e confirmar que as saídas batem com os logs afirmados"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "Quem aprende consegue construir uma trilha de eval repetível para o próprio agente — um loop de harness por tarefa, verificadores determinísticos primeiro e um LLM juiz para a saída em texto livre, resultados em contagens com métricas de duração e de número de chamadas — e usá-la para medir se uma mudança de prompt de fato ajudou.",
+    "interactionCheck": "Seis blocos agentmentor-check, um por lição (plausível-não-é-correto na L1; estado final vs passos na L2; verificador rígido demais na L3; dar nota a si mesmo na L4; esperar chegar a centenas na L5; sessão compartilhada na L6), preservados da variante em inglês com ids, modes, número de opções e posições de resposta correta idênticos; label, prompt, whyHere, o texto das opções e o feedback são traduções para o português ajustadas ao mal-entendido próprio de cada lição. Os exercícios mantêm a estrutura de níveis da variante em inglês, com rubric, answer e hints em cada nível.",
+    "learnerFitCheck": "O curso pressupõe os nove cursos anteriores: o loop do harness, os checkpoints e JavaScript. A armadilha do “parece pronto”, os alvos de verificação, a ordenação de verificadores, a disciplina do juiz e a construção do conjunto de eval são ensinados do zero em ordem de dependência; quem aprende só monta a trilha completa na lição 6, depois de todos os pré-requisitos. O primeiro exercício da lição 1 pede apenas uma leitura de afirmações vs evidências no relatório do próprio agente de quem lê.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "Tradução para o português do Brasil da variante em inglês verificada: estrutura, fundamentação e posições de resposta herdadas do original verificado",
+      "Todos os blocos interativos preservam id, mode, número de opções e resposta correta com paridade byte a byte em relação ao inglês",
+      "Todas as citações das fontes são mantidas no inglês original e conferidas byte a byte com o sources.md",
+      "Invariantes da era de revisão preservados: contagens em vez de porcentagens, execFile em vez de exec, asserções sem ordem fixa, divisão 6/3/1, a const MODEL, o parágrafo de mapeamento de campos da L5 para a L6"
+    ]
+  },
+  "nextSteps": [
+    "Rodar o course-guard na variante em pt-BR e corrigir o que ele apontar",
+    "Fazer o deploy do learn.agentmentor.dev e conferir que as páginas /pt-BR renderizam com os cards interativos hidratados",
+    "Fechar a onda de locales com uma passada de revisão cruzada entre ko, es e pt-BR contra a base em inglês",
+    "Incentivar quem aprende a construir um conjunto de eval de 20 tarefas para o próprio agente como projeto de consolidação pós-curso"
+  ],
+  "memoryBoundary": "Este agentmentor.json é um registro de estado local do curso (course-local state record), armazenado apenas no diretório do curso para as checagens de qualidade e o acompanhamento da trilha de aprendizado. Ele nunca é escrito de volta na memória de longo prazo do Claude Code ou de qualquer sistema de IA hospedeiro, e não afeta outros cursos nem outras conversas."
+}
