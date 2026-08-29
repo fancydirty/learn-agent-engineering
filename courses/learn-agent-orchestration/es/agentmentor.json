@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Producir la variante en español del curso learn-agent-orchestration (el cierre de la serie) para learn.agentmentor.dev, tomando como base la variante en inglés ya verificada. Es una traducción con pulido pedagógico a partir de en (no del zh): misma estructura de 6 lecciones, mismos slugs de lección, mismos ids de bloque interactivo y mismas posiciones de respuesta correcta, citas de las fuentes conservadas en su inglés original, código ejecutable con la lógica intacta y solo comentarios y cadenas visibles traducidos, todas las declaraciones de costura de la época de revisión conservadas, referencias entre cursos apuntando a los títulos en español, y una prosa técnica natural en español, en tono profesional cercano y sin rigidez de traducción automática.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "El responsable ratificó el plan multilingüe de forma explícita: los seis idiomas en learn.agentmentor.dev, primero el inglés y después el resto de idiomas como oleadas de traducción a partir de la base en inglés, en lotes de 2-3 cursos y con un commit por curso. La variante en inglés es la fuente de verdad verificada y corregida en su fundamentación, así que no hizo falta ninguna aclaración adicional."
+  },
+  "learnerModel": {
+    "targetReader": "Una persona desarrolladora que ha terminado los primeros once cursos de esta serie, escribe a mano el bucle del arnés y quiere el flujo de control en código: enrutamiento, fan-out, fusión y revisión a lo largo de varios bucles",
+    "knownConcepts": [
+      "Escribir a mano un bucle de arnés dirigido por stop_reason (curso 7)",
+      "El reparto del trabajo entre varios agentes y los prompts de delegación (curso 6)",
+      "La verificación basada en evaluaciones (curso 10) y la observabilidad (curso 11)",
+      "Los puntos de control y la reanudación (curso 9)",
+      "Lectura y escritura de JavaScript / Node.js básico"
+    ],
+    "unknownConcepts": [
+      "La distinción arquitectónica entre flujo de trabajo y agente, y el eje de quién tiene el plan",
+      "El encadenamiento con compuertas programáticas; el enrutamiento hacia prompts especializados",
+      "Las variantes de la paralelización (seccionamiento y votación) y el fan-out acotado",
+      "Orquestador-trabajadores: descomposición decidida por el modelo bajo una compuerta de concurrencia impuesta por el código",
+      "El bucle evaluator-optimizer y cuándo sale a cuenta",
+      "Componer los patrones en un script de orquestación determinista (el «grafo» de este curso)"
+    ],
+    "assumedEnvironment": "Un entorno de Node.js, acceso a una terminal, un editor de texto y el código del arnés del curso 7 disponible para ampliarlo",
+    "firstIndependentAction": "Tomar una tarea propia que se le haya quedado grande y nombrar cuál de los disparadores (ventana, repetición, coordinación) hace que un solo bucle no baste",
+    "noviceRamp": [
+      "La lección 1 traza la línea entre flujo de trabajo y agente, y los disparadores reales, antes de cualquier patrón",
+      "La lección 2 convierte el bucle único de siempre en una cadena de tres etapas con compuertas, y después añade el enrutamiento",
+      "La lección 3 añade la paralelización, con agregación en código y un tope de concurrencia explícito",
+      "La lección 4 vuelve dinámica la descomposición con orquestador-trabajadores y el prompt de delegación de cuatro elementos",
+      "La lección 5 añade el bucle de revisión y compone los patrones; la lección 6 sube el arnés del curso 7 al script determinista completo"
+    ]
+  },
+  "learnerBrief": "El lector objetivo ha terminado los primeros once cursos, escribe el bucle del arnés y lee JavaScript. Sabe hacer correr bien un bucle, pero todavía no sabe poner enrutamiento, fan-out, fusión y revisión alrededor de varios bucles con el plan sostenido en código. El curso lo lleva a situar sistemas en el espectro de determinismo, a implementar como código los cinco patrones probados en producción, a mirar de frente el libro de cuentas real (la mejora del 90.2% frente a los 15× de tokens, la concurrencia acotada, la disciplina del prompt de delegación) y a subir su propio arnés a un script de orquestación determinista con un rastro de auditoría paso a paso.",
+  "scope": "Se cubre: flujo de trabajo frente a agente y quién tiene el plan, el encadenamiento con compuertas, el enrutamiento, la paralelización (seccionamiento y votación) con fan-out acotado y una fusión que pasa referencias en vez de cargas útiles, orquestador-trabajadores con prompts de delegación de cuatro elementos, el bucle evaluator-optimizer, la composición de patrones bajo la metáfora del «grafo» propia de este curso, y un script de orquestación determinista y práctico sobre el arnés del curso 7. No se cubre: frameworks de orquestación de terceros (LangGraph y compañía no aparecen), los principios de colaboración multiagente (curso 6) ni los conceptos y el dibujo de flujos de trabajo (curso 2). Profundidad: de un solo bucle a un script de orquestación que se puede leer, ejecutar y volver a ejecutar.",
+  "status": {
+    "stage": "generated",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-orchestration/es/",
+    "guardStatus": "pending"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Los diagramas se mantienen exactamente donde los usa la variante en inglés, y sobre todo el diagrama de composición de la lección 5, cuya topología —incluidos el nodo de compuerta y la clasificación entendida como una llamada al modelo— venía validada por la revisión; las etiquetas se reescribieron en español y la topología quedó intacta. No se añadió ni se quitó ningún diagrama.",
+    "weakestPoints": [
+      "El «grafo» es de forma explícita una metáfora de ingeniería propia de este curso, no vocabulario oficial: el texto lo dice allí donde se apoya en el término, y la revisión tiene que mantener esa honestidad intacta",
+      "Las cifras del 90.2% y de 15× son los números que reportó un sistema en producción bajo su propia evaluación, y se presentan como tales y no como constantes",
+      "El proyecto final construye a propósito una VARIANTE del grafo de la lección 5, con todas las diferencias declaradas en una tabla de reconciliación en lugar de unificadas en el código: quien pase la tabla por encima puede no darse cuenta de que los nombres difieren por declaración y no por descuido",
+      "Al ser una traducción al español de una variante en inglés verificada, la deriva idiomática es el riesgo residual: las citas de las fuentes se conservaron verbatim en inglés y el código ejecutable mantiene la lógica idéntica, pero la prosa se vertió a un español natural en lugar de traducirse palabra por palabra, así que la revisión debe comprobar la equivalencia de significado con las lecciones en inglés"
+    ],
+    "followUpChecks": [
+      "Ejecutar course-guard sobre el directorio es y actualizar status.guardStatus con el resultado real (ahora está en pending)",
+      "Pasada de renderizado en learn.agentmentor.dev /es/agent-orchestration/... tras el despliegue: las 6 lecciones más el README, con las tarjetas interactivas hidratadas",
+      "Verificar que cada ancla [^Sn] de las lecciones en es tiene su bloque ## Sn correspondiente en el sources.md en es",
+      "Confirmar que los ids de los seis bloques de comprobación y las posiciones de respuesta correcta son idénticos byte a byte a la variante en inglés (b/c/a/b/c/a en orden de lección)",
+      "Volver a ejecutar los tres scripts (chain, fanout, orchestrate) y confirmar que la guarda de POOL_SIZE=0, los códigos de salida (crash 3 / needs_human 1), el comportamiento de STOP_AFTER que solo afecta a la fusión y las salidas pegadas siguen coincidiendo"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "La persona que aprende puede subir un arnés de un solo bucle a un script de orquestación determinista —enrutar, hacer fan-out a tres trabajadores bajo un pool impuesto por el código, fusionar por referencias, hacer correr un bucle de revisión que devuelve el mejor borrador y reportar con un rastro de auditoría— y reconciliarlo línea a línea con lo que prometieron las lecciones y los cursos anteriores.",
+    "interactionCheck": "Seis bloques agentmentor-check, uno por lección (una ventana más grande en la L1, la cadena frente a un solo prompt en la L2, el fan-out sin tope en la L3, la delegación vaga en la L4, el grafo es nuestro en la L5 y el LLM como pegamento en la L6), conservados desde la variante en inglés con ids, modos, número de opciones y posiciones de respuesta correcta idénticos; label, prompt, whyHere, el texto de las opciones y el feedback son traducciones al español ajustadas al malentendido propio de cada lección. Los ejercicios mantienen la estructura de niveles de la variante en inglés, con rubric, answer e hints en cada nivel.",
+    "learnerFitCheck": "El curso presupone los once cursos previos: el bucle del arnés, los prompts de delegación, las evaluaciones y la observabilidad. El eje del determinismo, las puertas, el fan-out acotado, la descomposición dinámica y el bucle de revisión se enseñan desde cero en orden de dependencia; la persona ensambla el script completo por primera vez en la lección 6, después de todos los prerrequisitos. El primer ejercicio de la lección 1 solo pide decidir qué disparador aplica a una tarea propia que se quedó grande.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "Variante en español de la variante en inglés verificada: la estructura, la fundamentación y las posiciones de respuesta se heredan del original verificado",
+      "Todos los bloques interactivos conservan id, mode, número de opciones y respuesta correcta con paridad byte a byte respecto al inglés",
+      "Todas las citas de las fuentes se mantienen en su inglés original y se comprobaron byte a byte contra sources.md",
+      "Se conserva en español la tabla de reconciliación de la variante declarada del proyecto final (renombrado de los campos de parada, semántica de las rondas, diferencias de observabilidad, orquestador-trabajadores sin implementar): declarada siempre, nunca unificada en silencio en el código"
+    ]
+  },
+  "nextSteps": [
+    "Ejecutar course-guard sobre la variante en es y corregir lo que señale",
+    "Actualizar status.guardStatus una vez que el guard se haya ejecutado de verdad",
+    "Desplegar learn.agentmentor.dev y comprobar que las páginas /es se renderizan con las tarjetas interactivas hidratadas",
+    "Producir las variantes de idioma restantes usando esta misma variante en inglés como base de traducción",
+    "Animar a quienes aprenden a orquestar una tarea real de su propia lista pendiente como proyecto de consolidación tras el curso"
+  ],
+  "memoryBoundary": "Este agentmentor.json es un registro de estado local del curso (course-local state record), almacenado únicamente en el directorio del curso para las comprobaciones de calidad y el seguimiento de la ruta de aprendizaje. Nunca se escribe de vuelta en la memoria a largo plazo de Claude Code ni de ningún sistema de IA anfitrión, y no afecta a otros cursos ni a otras conversaciones."
+}
