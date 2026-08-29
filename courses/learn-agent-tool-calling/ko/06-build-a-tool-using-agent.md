@@ -21,7 +21,7 @@ $ node agent.js "이 프로젝트에서 lodash를 쓰고 있나요? GitHub에서
 최종 답변:
 네, 이 프로젝트는 lodash를 사용합니다. package.json이 ^4.17.21로 고정하고
 있고, src/utils/format.js에서 직접 가져다 씁니다. GitHub에서 lodash/lodash는
-현재 스타가 6만 개를 넘고, 마지막 푸시는 두 달 전으로 저장소는 여전히
+현재 스타가 6만 개를 넘고, 마지막 푸시는 몇 주 전으로 저장소는 여전히
 관리되고 있습니다. ^4.17.21이 최신 릴리스인지 확인하려면 릴리스 목록에
 질의를 한 번 더 해야 합니다.
 ```
@@ -172,7 +172,7 @@ async function searchFiles({ pattern, dir = "." }) {
 }
 ```
 
-`readFile`은 한 가지 일을 합니다. 대상 경로가 프로젝트 루트를 벗어나지 않았는지 확인하는 것입니다. 레슨 5의 경계 개념이 여기서는 구분자를 붙인 접두사 검사 하나로 나타납니다. 맨 `startsWith(PROJECT_ROOT)`가 아니라는 점에 주목하세요. 프로젝트 루트가 `/Users/me/proj`이고 모델이 `../proj-backup/x`를 넘긴다고 해봅시다. resolve하면 `/Users/me/proj-backup/x`가 나오고, 맨 접두사 매칭이라면 그대로 통과합니다. `path.sep`을 붙이면 그제야 경계가 디렉터리 구분자에 착지합니다.
+`readFile`은 한 가지 일을 합니다. 대상 경로가 프로젝트 루트를 벗어나지 않았는지 확인하는 것입니다. 레슨 5의 경계 개념이 여기서는 구분자를 붙인 접두사 검사 하나로 나타납니다. 맨 `startsWith(PROJECT_ROOT)`가 아니라는 점에 주목하세요. 프로젝트 루트가 `/Users/me/proj`이고 모델이 `../proj-backup/x`를 넘긴다고 해 봅시다. resolve하면 `/Users/me/proj-backup/x`가 나오고, 맨 접두사 매칭이라면 그대로 통과합니다. `path.sep`을 붙이면 그제야 경계가 디렉터리 구분자에 맞춰집니다.
 
 ```js
 async function readFile({ path: relPath }) {
@@ -207,7 +207,7 @@ async function githubRepoInfo({ owner, repo }) {
 
   const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers });
   if (!res.ok) {
-    return `GitHub API가 오류를 반환했습니다: ${res.status} ${res.statusText}`;
+    return `GitHub API가 에러를 반환했습니다: ${res.status} ${res.statusText}`;
   }
   const data = await res.json();
   return JSON.stringify({
@@ -273,7 +273,7 @@ runAgent(question).then((answer) => console.log("\n최종 답변:\n" + answer));
 
 위 루프는 돌아가지만 보호 장치 두 개가 빠져 있습니다. 추가합시다.
 
-**보호 장치 하나: 도구 실패는 피드백되어야 하며 루프를 죽여서는 안 됩니다.** 날것의 호출을 `try/catch`로 감싸고, 실패해도 여전히 `tool_result`를 만들되 `is_error: true`로 표시하세요. 모델은 그 표시를 보면 같은 오류를 반복하는 대신 대개 인자를 조정해 재시도합니다.[^S11][^S5]
+**보호 장치 하나: 도구 실패는 피드백되어야 하며 루프를 죽여서는 안 됩니다.** 날것의 호출을 `try/catch`로 감싸고, 실패해도 여전히 `tool_result`를 만들되 `is_error: true`로 표시하세요. 모델은 그 표시를 보면 같은 에러를 반복하는 대신 대개 인자를 조정해 재시도합니다.[^S11][^S5]
 
 ```js
 let content, isError = false;
@@ -281,7 +281,7 @@ try {
   if (!handler) throw new Error(`${block.name} 이름으로 등록된 도구가 없습니다`);
   content = await handler(block.input);
 } catch (err) {
-  content = `도구 실행 오류: ${err.message}`;
+  content = `도구 실행 에러: ${err.message}`;
   isError = true;
 }
 toolResults.push({
@@ -320,8 +320,8 @@ if (last3.length === 3 && last3.every((s) => s === signature)) {
 {
   "id": "tool-zh-06-diagnose-loop",
   "label": "에이전트가 같은 도구를 계속 호출하는 이유 진단",
-  "prompt": "어떤 수강생이 searchFiles의 일치 없음 반환값을 빈 문자열로 바꿨다고 해봅시다(이 레슨의 '일치하는 내용을 찾지 못했습니다.' 대신에). '이 프로젝트가 moment.js를 쓰는지 확인해 줘'를 처리하면서 이 수정된 에이전트는 search_files를 5턴 연속 호출하고, 정규식만 'moment'에서 'Moment'로, 'MOMENT'로 바꾸다가 결국 MAX_TURNS에 도달해 종료됩니다. 이 프로젝트는 실제로 moment.js를 쓰지 않습니다. 이 루프의 가장 유력한 근본 원인은 무엇입니까?",
-  "whyHere": "실행 루프와 안전장치를 막 다룬 직후이므로, 학습자가 '모델이 같은 도구를 계속 호출한다'는 증상을 모델의 능력이나 턴 상한이 아니라 'tool_result 내용이 상태를 분명히 진술하는가'라는 근본 원인에 대응시킬 수 있는지 확인할 필요가 있다",
+  "prompt": "어떤 수강생이 searchFiles의 일치 없음 반환값을 빈 문자열로 바꿨다고 해 봅시다(이 레슨의 '일치하는 내용을 찾지 못했습니다.' 대신에). '이 프로젝트가 moment.js를 쓰는지 확인해 줘'를 처리하면서 이 수정된 에이전트는 search_files를 5턴 연속 호출하고, 정규식만 'moment'에서 'Moment'로, 'MOMENT'로 바꾸다가 결국 MAX_TURNS에 도달해 종료됩니다. 이 프로젝트는 실제로 moment.js를 쓰지 않습니다. 이 루프의 가장 유력한 근본 원인은 무엇입니까?",
+  "whyHere": "실행 루프와 안전장치를 막 다룬 직후이므로, 학습자가 '모델이 같은 도구를 계속 호출한다'는 증상을 모델의 능력이나 턴 상한이 아니라 'tool_result 내용이 상태를 분명히 진술하는가'라는 근본 원인에 대응시킬 수 있는지 확인하는 자리입니다",
   "mode": "single",
   "choices": [
     {
@@ -401,7 +401,7 @@ TOOLS.write_report = { ...writeReportSchema, handler: writeReport };
 
 ### 레벨 2: 실패를 만들어 낸 뒤 고치기
 
-아래 루프 코드에는 버그가 있습니다. 어떤 조건에서 다음 API 요청이 오류를 내는지 먼저 설명하고, 그다음 고친 코드를 제시하세요.
+아래 루프 코드에는 버그가 있습니다. 어떤 조건에서 다음 API 요청이 에러를 내는지 먼저 설명하고, 그다음 고친 코드를 제시하세요.
 
 ```js
 // 버그 있는 버전
@@ -417,7 +417,7 @@ if (block) {
 
 <!-- rubric -->
 - 버그를 정확히 짚음: `.find()`로 첫 번째 `tool_use` 블록만 가져오므로 모델이 한 턴에 여러 도구를 병렬로 요구하면 뒤의 호출들이 통째로 무시됨
-- 실제 증상을 설명: 앞선 assistant 메시지에 `tool_use` 블록이 몇 개 있었든 다음 턴에는 그만큼 대응되는 `tool_result` 블록이 있어야 하며, 부족하면 그대로 오류
+- 실제 증상을 설명: 앞선 assistant 메시지에 `tool_use` 블록이 몇 개 있었든 다음 턴에는 그만큼 대응되는 `tool_result` 블록이 있어야 하며, 부족하면 그대로 에러
 - 수정본은 `type === "tool_use"`인 모든 블록을 순회해 각각에 대응하는 `tool_result`를 만들고, 그것들을 하나의 `user` 메시지에 담도록 바꿈
 
 <!-- answer -->
@@ -445,8 +445,8 @@ API의 규칙은 이렇습니다. 앞선 assistant 메시지에 `tool_use` 블�
 
 - 도구의 스키마와 핸들러를 같은 테이블(`TOOLS`)에 등록하고 `toolSchemas`와 `toolHandlers`를 거기서 파생시키면, 한 곳을 고쳤는데 다른 곳이 그대로 남는 일이 없다
 - 실행 루프의 핵심은 이것이다: 요청을 보낸다 → `stop_reason`이 `tool_use`인지 확인한다 → 맞다면 **모든** 도구 호출 블록을 순회해 실행하고 `tool_result`를 다시 꿰어 넣는다 → 아니라면 텍스트를 반환하고 루프를 끝낸다
-- 한 턴에 병렬 도구 호출이 여럿일 수 있다. 모든 `tool_use`에는 고유하게 대응되는 `tool_result`가 필요하고, 하나라도 빠지면 다음 요청이 오류가 난다
+- 한 턴에 병렬 도구 호출이 여럿일 수 있다. 모든 `tool_use`에는 고유하게 대응되는 `tool_result`가 필요하고, 하나라도 빠지면 다음 요청이 에러가 난다
 - 세 안전장치는 각각 한 층을 지킨다. `MAX_TURNS`는 모델이 무한정 도구를 요구하는 것을 막고, 반복 호출 감지는 모델이 같은 인자 묶음에 갇혀 헛도는 것을 막으며, 도구 내부의 경로·형식 검사는 범위를 벗어난 인자를 막는다
-- `tool_result`의 내용은 "찾지 못함"과 "오류 발생"을 분명히 진술해야 한다. 모호한 빈 반환값은 모델이 몇 번이고 재시도하고 로그가 도구 오연결처럼 보이게 만드는 첫 번째 원인이다
+- `tool_result`의 내용은 "찾지 못함"과 "에러 발생"을 분명히 진술해야 한다. 모호한 빈 반환값은 모델이 몇 번이고 재시도하고 로그가 도구 오연결처럼 보이게 만드는 첫 번째 원인이다
 
 이제 "에이전트가 왜 도구를 필요로 하는가"에서 시작해 직접 동작하는 도구 실행 루프를 쓰기까지, 이 코스의 여섯 레슨을 모두 마쳤습니다. 다음에 할 가장 값어치 있는 일은 레슨을 하나 더 읽는 것이 아니라, 여러분 프로젝트에서 작고 실제적인 과제 하나를 골라 도구 두세 개로 쪼개고, 이 루프 골격을 조금 손봐 옮겨오는 것입니다. 한 번 돌려 보는 것이 설명 열 개를 더 읽는 것보다 낫습니다. 디버깅하다 특정 필드가 헷갈리면 `sources.md`로 돌아가 공식 문서 두 개인 S4와 S5를 확인하세요. 이 멀티턴 루프에 대해서는 그것이 가장 일차적인 명세 텍스트입니다.

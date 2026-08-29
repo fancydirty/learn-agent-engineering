@@ -15,7 +15,7 @@
 
 1. **코드 리팩터링 파이프라인**: 레거시 코드를 현대적인 패턴으로 리팩터링합니다. 분석, 계획, 실행, 테스트, 검증을 다룹니다
 2. **문서 생성 파이프라인**: 코드에서 API 문서를 자동 생성합니다. 추출, 예시 생성, 렌더링, 게시를 다룹니다
-3. **테스트 자동화 흐름**: 엔드투엔드 테스트 워크플로입니다. 환경 준비, 병렬 테스트, 결과 집계, 리포트 생성을 다룹니다
+3. **테스트 자동화 흐름**: 엔드투엔드 테스트 워크플로입니다. 환경 준비, 병렬 테스트, 결과 집계, 보고서 생성을 다룹니다
 
 **각 워크플로에서 보여 줄 것:**
 - 완전한 작업 분해
@@ -53,7 +53,7 @@ graph TD
     H --> J
     I --> J
     J --> K{테스트 통과?}
-    K -->|예| L[5단계: 리포트 생성]
+    K -->|예| L[5단계: 보고서 생성]
     K -->|아니오| M[6단계: 실패한 컴포넌트 수정]
     M --> J
     L --> N[종료]
@@ -106,7 +106,7 @@ async function refactoringWorkflow(componentPaths) {
       state.plan = await agent({
         task: '리팩터링 계획 생성',
         prompt: `
-          의존 관계 분석을 바탕으로 컴포넌트를 리팩터링할 순서를 만들어 주세요:
+          의존 관계 분석을 바탕으로 컴포넌트를 리팩터링할 순서를 만들라:
           1. 리프 컴포넌트부터 리팩터링(다른 컴포넌트에 의존하지 않는 것)
           2. 다음은 중간 계층(이미 리팩터링된 것에 의존하는 컴포넌트)
           3. 마지막으로 루트 컴포넌트
@@ -210,11 +210,11 @@ async function refactoringWorkflow(componentPaths) {
           const fixed = await agent({
             task: `컴포넌트 ${component.name} 수정`,
             prompt: `
-              이 컴포넌트는 리팩터링 후 테스트가 실패했습니다.
+              이 컴포넌트는 리팩터링 후 테스트가 실패했다.
               실패한 테스트: ${component.failedTests.join(', ')}
               에러 메시지: ${component.errors.join('\n')}
               
-              문제를 진단하고 코드를 고쳐 주세요.
+              문제를 진단하고 코드를 고쳐라.
             `,
             context: {
               originalCode: component.originalCode,
@@ -249,14 +249,14 @@ async function refactoringWorkflow(componentPaths) {
       }
     }
     
-    // 6단계: 리포트 생성
+    // 6단계: 보고서 생성
     if (state.phase === 'tested' && state.testResults.passed) {
-      console.log('\n📄 6단계: 리팩터링 리포트 생성 중...');
+      console.log('\n📄 6단계: 리팩터링 보고서 생성 중...');
       
       const report = await agent({
-        task: '리팩터링 리포트 생성',
+        task: '리팩터링 보고서 생성',
         prompt: `
-          리팩터링 프로젝트의 리포트를 생성해 주세요. 포함할 내용:
+          리팩터링 프로젝트의 보고서를 생성하라. 포함할 내용:
           - 리팩터링 통계(컴포넌트 몇 개, 배치별 분포)
           - 테스트 결과 요약
           - 마주친 문제와 해결 방법
@@ -281,7 +281,7 @@ async function refactoringWorkflow(componentPaths) {
       await store.save(workflowId, state);
       
       console.log('\n✅ 리팩터링 워크플로 완료!');
-      console.log(`   리포트 저장: refactoring-report.md`);
+      console.log(`   보고서 저장: refactoring-report.md`);
     }
     
     return state;
@@ -302,7 +302,7 @@ async function analyzeComponentsInParallel(components) {
       return await agent({
         task: `${path} 분석`,
         prompt: `
-          이 컴포넌트를 분석해 주세요:
+          이 컴포넌트를 분석하라:
           1. 클래스 컴포넌트인지 함수 컴포넌트인지
           2. 어떤 다른 컴포넌트에 의존하는지(import 문)
           3. 어떤 생명주기 메서드나 훅을 쓰는지
@@ -333,7 +333,7 @@ async function refactorComponent(componentPath) {
   return await agent({
     task: `${componentPath} 리팩터링`,
     prompt: `
-      이 클래스 컴포넌트를 함수 컴포넌트 + Hooks로 리팩터링해 주세요:
+      이 클래스 컴포넌트를 함수 컴포넌트 + Hooks로 리팩터링하라:
       1. 클래스와 constructor 제거
       2. state를 useState로 교체
       3. 생명주기 메서드를 useEffect로 교체
@@ -386,7 +386,7 @@ async function apiDocGenerationWorkflow(servicePath) {
       return await agent({
         task: `${endpoint.method} ${endpoint.path} 문서 생성`,
         prompt: `
-          이 API 엔드포인트의 문서를 생성해 주세요:
+          이 API 엔드포인트의 문서를 생성하라:
           
           ## ${endpoint.method} ${endpoint.path}
           
@@ -413,7 +413,7 @@ async function apiDocGenerationWorkflow(servicePath) {
   const toc = await agent({
     task: '문서 목차 생성',
     prompt: `
-      이 API 엔드포인트들의 목차를 생성해 주세요:
+      이 API 엔드포인트들의 목차를 생성하라:
       - 기능별로 묶기(사용자 관리, 주문 관리 등)
       - 각 묶음 아래에 엔드포인트 나열(앵커 링크 포함)
       - 서비스 개요 생성(이 서비스가 무엇을 하는지 한 문단)
@@ -455,7 +455,7 @@ async function apiDocGenerationWorkflow(servicePath) {
 
 ### 요구 사항
 
-여러 환경(로컬, 스테이징, 프로덕션)에서 엔드투엔드 테스트를 돌리고, 테스트 결과와 성능 지표를 모아 비교 리포트를 생성합니다.
+여러 환경(로컬, 스테이징, 프로덕션)에서 엔드투엔드 테스트를 돌리고, 테스트 결과와 성능 지표를 모아 비교 보고서를 생성합니다.
 
 ### 전체 구현
 
@@ -510,12 +510,12 @@ async function e2eTestingWorkflow(config) {
     
     state.phase = 'tests_completed';
     
-    // 3단계: 비교 리포트 생성
-    console.log('\n3️⃣ 테스트 리포트 생성 중...');
+    // 3단계: 비교 보고서 생성
+    console.log('\n3️⃣ 테스트 보고서 생성 중...');
     const report = await agent({
-      task: '환경 간 테스트 비교 리포트 생성',
+      task: '환경 간 테스트 비교 보고서 생성',
       prompt: `
-        환경 간 테스트 비교 리포트를 생성해 주세요:
+        환경 간 테스트 비교 보고서를 생성하라:
         
         비교 항목:
         1. 통과율(환경별)
@@ -541,7 +541,7 @@ async function e2eTestingWorkflow(config) {
         const analysis = await agent({
           task: `${env} 환경의 실패 분석`,
           prompt: `
-            테스트 실패를 진단하고 수정 제안을 제시해 주세요:
+            테스트 실패를 진단하고 수정 제안을 제시하라:
             
             실패한 테스트: ${result.failedTests?.map(t => t.name).join(', ')}
             에러 메시지: ${result.failedTests?.map(t => t.error).join('\n')}
@@ -566,7 +566,7 @@ async function e2eTestingWorkflow(config) {
     state.completedAt = Date.now();
     
     console.log('\n✅ 테스트 워크플로 완료!');
-    console.log(`   리포트: e2e-test-report.md`);
+    console.log(`   보고서: e2e-test-report.md`);
     console.log(`   총 소요 시간: ${((state.completedAt - state.startTime) / 1000).toFixed(1)}s`);
     
     return state;
@@ -601,7 +601,7 @@ async function runTestsWithRetry(env, options) {
 **핵심 특징:**
 - **병렬 테스트**: 여러 환경이 동시에 테스트를 돌려 총 시간을 크게 줄입니다
 - **장애 허용**: 한 환경의 실패가 다른 환경에 영향을 주지 않습니다
-- **똑똑한 재시도**: 실패한 테스트를 자동으로 재시도합니다(네트워크 딸꾹질과 일시적 결함은 흔합니다)
+- **똑똑한 재시도**: 실패한 테스트를 자동으로 재시도합니다(순간적인 네트워크 장애와 일시적 결함은 흔합니다)
 - **실패 분석**: 실패에 대한 수정 제안이 자동으로 생성됩니다[^S20]
 
 ## 워크플로의 관측 가능성
@@ -725,7 +725,7 @@ async function myWorkflow() {
 최근에 두 시간 넘게 걸렸던 반복 작업부터 시작해, 그것을 에이전트에게 넘긴다면 몇 개의 큰 단계로 쪼개질지 생각해 보세요.
 
 <!-- hint -->
-좋은 워크플로에는 대개 분명한 입력(파일, 설정, 데이터)과 출력(리포트, 수정된 코드, 배포 결과)이 있습니다. 입력과 출력에서 거꾸로 짚어 가면 그 사이에 어떤 변환이 필요한지 알 수 있습니다.
+좋은 워크플로에는 대개 분명한 입력(파일, 설정, 데이터)과 출력(보고서, 수정된 코드, 배포 결과)이 있습니다. 입력과 출력에서 거꾸로 짚어 가면 그 사이에 어떤 변환이 필요한지 알 수 있습니다.
 
 ### 레벨 2: 실패하는 워크플로 디버깅하기
 

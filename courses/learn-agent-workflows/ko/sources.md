@@ -19,7 +19,7 @@ URL: https://alexop.dev/posts/claude-code-workflows-deterministic-orchestration/
 
 - authority: authoritative-guide
 
-결정적 오케스트레이션 패턴을 꼼꼼히 읽어 냅니다. 스크립트가 반복과 분기를 소유하고, 각 `agent()` 호출이 새로운 서브에이전트에게 작업을 넘기며, 모델이 주도하는 부분은 작업 그 자체뿐이라는 구조를 다룹니다.
+결정론적 오케스트레이션 패턴을 꼼꼼히 읽어 냅니다. 스크립트가 루프와 분기를 쥐고 있고, 각 `agent()` 호출이 새로운 서브에이전트에게 작업을 넘기며, 모델이 주도하는 부분은 작업 그 자체뿐이라는 구조를 다룹니다.
 
 핵심 인용:
 > "A normal agent decides the control flow as it goes. A workflow inverts that. You write the control flow as plain code, and each individual step is delegated to a fresh subagent."
@@ -85,7 +85,7 @@ URL: https://www.augmentcode.com/guides/async-ai-agent-workflows
 
 - authority: authoritative-guide
 
-프로덕션 시스템이 사용하는 복구 시퀀스를 다룹니다. 일시적 에러에 대한 지터를 곁들인 지수 백오프, 프로바이더 전환, 보상 액션, 그리고 AWS Step Functions가 에러 처리를 구성하는 방식입니다.
+프로덕션 시스템이 사용하는 복구 시퀀스를 다룹니다. 일시적 에러에 대한 지터를 곁들인 지수 백오프, 프로바이더 전환, 보상 동작, 그리고 AWS Step Functions가 에러 처리를 구성하는 방식입니다.
 
 핵심 인용:
 > "Retry with exponential backoff and jitter for transient errors (5xx, network timeouts). AWS Step Functions provides error handling with configurable backoff and jitter for retries."
@@ -107,7 +107,7 @@ URL: https://www.xgrid.co/resources/temporal-ai-agent-orchestration-failure-patt
 
 - authority: authoritative-guide
 
-Temporal 위에 AI 에이전트를 배포할 때 나타나는 열한 가지 실패 패턴을 LLM 오케스트레이션, 재시도, 취소, 부하, 사람 개입 단계별 분석과 해결책과 함께 제시합니다.
+Temporal 위에 AI 에이전트를 배포할 때 나타나는 열한 가지 실패 패턴을 제시하고, LLM 오케스트레이션, 재시도, 취소, 부하, 사람이 개입하는 단계에 대한 분석과 해결책을 함께 싣습니다.
 
 핵심 인용:
 > "LLM activity retry policies should be defined per error class, not as a single catch-all policy on the activity registration."
@@ -118,7 +118,7 @@ URL: https://www.mindstudio.ai/blog/workflow-state-vs-session-state-ai-agents
 
 - authority: authoritative-guide
 
-두 종류의 상태를 구분합니다. 현재 대화의 일회성 컨텍스트인 세션 상태와, 그 대화보다 오래 남는 작업 이력인 워크플로 상태입니다. 그리고 후자를 모델링하는 가장 명료한 방법이 상태 머신이라고 주장합니다.
+두 종류의 상태를 구분합니다. 현재 대화의 일회성 컨텍스트인 세션 상태와, 그 대화보다 오래 남는 작업 이력인 워크플로 상태입니다. 그리고 후자를 모델링하는 가장 명료한 방법이 상태 기계라고 주장합니다.
 
 핵심 인용:
 > "Claude Code uses a file called CLAUDE.md in projects as a form of persistent workflow context — a place to store project-specific instructions, conventions, and state that survives across sessions."
@@ -195,7 +195,7 @@ URL: https://oneuptime.com/blog/post/2026-01-30-task-decomposition/view
 
 - authority: blog
 
-세 가지 분해 전략을 다룹니다. 단순한 순차, 조각이 서로 독립일 때의 병렬, 그리고 현실의 모든 것을 위한 하이브리드이며, 의존 관계를 명시한 원자적 하위 작업으로 조립합니다.
+세 가지 분해 전략을 다룹니다. 단순한 순차, 조각이 서로 독립일 때의 병렬, 그리고 현실의 모든 것을 위한 혼합이며, 의존 관계를 명시한 원자적 하위 작업으로 조립합니다.
 
 핵심 인용:
 > "Start with simple sequential decomposition, add parallelism where tasks are independent, and use hybrid approaches for real-world complexity."

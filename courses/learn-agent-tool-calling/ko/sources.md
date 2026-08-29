@@ -119,7 +119,7 @@ URL: https://modelcontextprotocol.io/docs/concepts/tools
 
 - authority: official-docs
 
-MCP 명세는 프로토콜 오류와 도구 실행 오류를 구분하고, 모델이 스스로 교정하고 재시도할 수 있도록 클라이언트가 실행 가능한 도구 실행 오류를 모델에 전달해야 한다고 요구합니다.
+MCP 명세는 프로토콜 에러와 도구 실행 에러를 구분하고, 모델이 스스로 교정하고 재시도할 수 있도록 클라이언트가 실행 가능한 도구 실행 에러를 모델에 전달해야 한다고 요구합니다.
 
 핵심 인용:
 > "Clients SHOULD provide tool execution errors to language models to enable self-correction."
