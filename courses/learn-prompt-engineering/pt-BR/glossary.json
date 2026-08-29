@@ -1,0 +1,464 @@
+[
+  {
+    "term": "prompt",
+    "def": "A instrução em texto que você dá a um modelo de IA para dizer o que você quer — uma pergunta, uma descrição, uma tarefa ou alguma mistura dos três. É o único canal pelo qual o modelo consegue entender qual é a sua tarefa.",
+    "source": "[^S13]",
+    "pitfall": "Tratar um prompt como uma consulta de busca e jogar três ou quatro palavras-chave para o modelo, depois culpar o modelo quando a resposta volta genérica.",
+    "distractor_rationale": "Quem aprendeu a formular coisas para mecanismos de busca presume que quanto mais curto, melhor, porque a busca recompensa palavras-chave concisas. Um prompt é uma instrução, não uma consulta, e tudo o que você deixar de fora o modelo tem que adivinhar."
+  },
+  {
+    "term": "modelo de linguagem grande (LLM)",
+    "def": "Um sistema de IA treinado com quantidades enormes de texto, capaz de entender linguagem natural e gerar texto novo em resposta; ChatGPT e Claude são exemplos.",
+    "source": "[^S14]",
+    "pitfall": "Presumir que um LLM procura uma resposta armazenada, quando na verdade ele gera texto novo a partir de padrões aprendidos durante o treinamento — é por isso que ele pode estar confiantemente errado.",
+    "distractor_rationale": "A caixa de chat parece uma caixa de busca, então iniciantes esperam a recuperação de um fato arquivado. Esse modelo mental também os faz confiar na saída que deveriam estar verificando."
+  },
+  {
+    "term": "engenharia de prompt",
+    "def": "A prática sistemática de projetar e refinar prompts para que um modelo consiga agir sobre o que você realmente precisa. É uma habilidade reutilizável, não uma coleção de truques pontuais.",
+    "source": "[^S13]",
+    "pitfall": "Caçar uma frase mágica ou um modelo universal para colar na frente de cada pedido, em vez de aprender a enunciar a tarefa, o formato e os limites.",
+    "distractor_rationale": "Posts virais de 'melhor prompt de todos' vendem a ideia de que existe um encantamento secreto. Iniciantes perseguem a redação e pulam a parte que de fato move a qualidade: dizer com clareza o que querem."
+  },
+  {
+    "term": "prompt vago",
+    "def": "Uma instrução que deixa de fora a informação que o modelo precisa — sem público, sem formato, sem escopo — então o modelo tem que adivinhar sua intenção.",
+    "source": "[^S2]",
+    "pitfall": "Confundir brevidade com clareza: 'resuma este artigo' parece limpo e direto, mas nunca diz quantos pontos, que tamanho, nem para quem.",
+    "distractor_rationale": "Prompts curtos leem como confiantes e eficientes, então as pessoas presumem que uma instrução concisa é uma instrução clara. O teste não é o comprimento — é se o modelo conseguiria reafirmar o que você quer."
+  },
+  {
+    "term": "prompt claro",
+    "def": "Uma instrução que fixa a tarefa, o formato de saída e o contexto que o modelo precisa, deixando pouco espaço para ele improvisar.",
+    "source": "[^S2]",
+    "pitfall": "Sobrecorrigir num prompt monstruoso de 500 palavras que lista todos os detalhes concebíveis, enterrando os requisitos que realmente importam.",
+    "distractor_rationale": "Uma vez que alguém aprende que prompts vagos falham, ele oscila para 'mais é mais seguro'. O objetivo é clareza suficiente para remover adivinhação, não cobertura exaustiva."
+  },
+  {
+    "term": "qualidade da saída",
+    "def": "O quão bem a resposta do modelo corresponde ao que você precisava — acurácia, relevância, completude e formato correto juntos, não apenas se o conteúdo está certo.",
+    "source": "[^S7]",
+    "pitfall": "Julgar a saída apenas se os fatos estão corretos, ignorando formato, tom e nível de detalhe — as dimensões que decidem se você consegue realmente usar o resultado.",
+    "distractor_rationale": "Certo-ou-errado é a coisa mais fácil de conferir, então as pessoas o tomam como padrão. Uma resposta factualmente correta na forma errada ainda te custa uma reescrita."
+  },
+  {
+    "term": "refinamentos de ida e volta",
+    "def": "As rodadas extras de conversa necessárias para consertar um prompt que foi subespecificado. Pesquisas sobre geração de código constataram que especificações explícitas cortam essas rodadas em 68%.",
+    "source": "[^S12]",
+    "pitfall": "Aceitar várias rodadas de esclarecimento como a forma normal de trabalhar com IA, em vez de como um sintoma de que o primeiro prompt estava faltando informação.",
+    "distractor_rationale": "Conversar parece natural, então iterar na conversa parece colaboração. Geralmente é apenas pagar, uma mensagem de cada vez, por detalhe que você poderia ter enunciado logo de cara."
+  },
+  {
+    "term": "instruções",
+    "def": "A capacidade de um modelo de absorver e agir sobre o que um prompt de fato pede. Em 2026 os modelos fazem isso bem através de orientações complexas, documentos longos e tarefas de múltiplas etapas.",
+    "source": "[^S6]",
+    "pitfall": "Concluir que, como os modelos modernos seguem instruções bem, o prompt importa menos — quando o modelo ainda só pode trabalhar a partir dos limites que seu prompt estabelece.",
+    "distractor_rationale": "Modelos fortes fazem prompts desleixados parecerem sobrevivíveis em tarefas fáceis, então as pessoas generalizam isso para as difíceis. Capacidade cuida da execução; o prompt ainda tem que fornecer a intenção."
+  },
+  {
+    "term": "token",
+    "def": "A unidade que um LLM usa para processar texto, aproximadamente um fragmento de palavra. Tanto o seu prompt quanto a resposta do modelo consomem tokens, que é o que você paga e pelo que espera.",
+    "source": "[^S2]",
+    "pitfall": "Encher um prompt com exemplos e instruções ilimitados presumindo que tokens são gratuitos, o que aumenta o custo e desacelera cada execução.",
+    "distractor_rationale": "Numa assinatura de chat o custo é invisível, então iniciantes nunca o sentem. Numa fatura de API, ou num prompt rodado milhares de vezes, o mesmo hábito é caro."
+  },
+  {
+    "term": "papel",
+    "def": "A identidade ou perspectiva a partir da qual você diz à IA para responder, como 'você é uma engenheira Python sênior' ou 'você é uma professora explicando através de analogias'. Ele estabelece nível de especialidade e tom.",
+    "source": "[^S3]",
+    "pitfall": "Escolher um papel que não combina com a tarefa — pedir a uma 'professora do ensino fundamental' que audite código de produção — ou adicionar um papel a uma tarefa onde ele não muda nada.",
+    "distractor_rationale": "Prompts de papel são o truque mais citado online, então as pessoas os tratam como decoração que devem sempre adicionar. Um papel molda perspectiva; ele não consegue suprir detalhe de tarefa ausente."
+  },
+  {
+    "term": "descrição da tarefa",
+    "def": "A parte do prompt que diz exatamente o que você quer feito. Ela tem três camadas: um verbo (resumir, analisar, gerar), um objeto (sobre o que ela age) e um objetivo (que resultado alcançar).",
+    "source": "[^S2]",
+    "pitfall": "Escrever uma tarefa que nomeia o objeto mas não o ângulo — 'analise este código' — deixando o modelo escolher entre desempenho, segurança, legibilidade e bugs.",
+    "distractor_rationale": "O autor já sabe qual ângulo quer dizer, então a instrução parece completa para ele. Esta é a falha de prompt individual mais comum."
+  },
+  {
+    "term": "formato de saída",
+    "def": "A estrutura e o estilo em que você quer a resposta — JSON, uma tabela, três tópicos, um conjunto fixo de seções — enunciados explicitamente em vez de deixados para o modelo.",
+    "source": "[^S2]",
+    "pitfall": "Deixar o formato não enunciado e receber uma forma diferente em cada execução: prosa numa vez, cinco tópicos na próxima, uma conclusão de uma linha depois disso.",
+    "distractor_rationale": "As pessoas presumem que o modelo vai escolher a apresentação 'melhor'. Sem restrição ele escolhe uma plausível diferente cada vez, o que quebra qualquer coisa a jusante."
+  },
+  {
+    "term": "restrições",
+    "def": "As regras de 'apenas...' e 'não...' que delimitam a resposta — comprimento, escopo, tom, exclusões, prioridades — impedindo o modelo de sair do trilho.",
+    "source": "[^S2]",
+    "pitfall": "Ir a um extremo em qualquer direção: nenhuma restrição, então a saída deriva; ou tantas que o modelo não tem espaço restante e a resposta fica dura.",
+    "distractor_rationale": "Restrições são o último elemento que iniciantes adicionam, então eles ou as esquecem inteiramente ou, uma vez queimados, as aplicam demais. Combine a quantidade à tarefa: tarefas exploratórias precisam de poucas, tarefas de execução precisam de mais."
+  },
+  {
+    "term": "contexto",
+    "def": "A informação de contexto que você fornece no prompt para que o modelo entenda a situação, o público e os limites específicos da tarefa.",
+    "source": "[^S3]",
+    "pitfall": "Despejar cada documento e detalhe que você tem, o que enterra as partes que importam e piora a saída em vez de melhorá-la.",
+    "distractor_rationale": "'Mais contexto é sempre melhor' parece seguro, e janelas de contexto longas o encorajam. Relevância vence volume — contexto irrelevante compete pela atenção do modelo."
+  },
+  {
+    "term": "perspectiva do público",
+    "def": "Um padrão de papel que molda a resposta em torno de quem vai lê-la, como 'você está explicando isto para liderança não técnica'. Ele controla profundidade e vocabulário.",
+    "source": "[^S3]",
+    "pitfall": "Nomear o público com um rótulo amplo ('pessoas técnicas') que não diz o que elas já sabem, então o modelo não consegue calibrar quão fundo ir.",
+    "distractor_rationale": "Um cargo parece específico o bastante para o autor. Mas 'engenheira' abrange alguém que nunca tocou nesta API e alguém que a escreveu — o modelo precisa do contexto, não do distintivo."
+  },
+  {
+    "term": "jargão",
+    "def": "Vocabulário específico do domínio cujo uso deve ser decidido por quem está lendo. Direcionado ao público errado, ele ou perde o leitor ou desperdiça o tempo dele em explicação que não precisa.",
+    "source": "[^S3]",
+    "pitfall": "Nunca dizer ao modelo o que fazer com jargão, então ele ou enterra um leitor não técnico em termos ou explica demais o básico para um especialista.",
+    "distractor_rationale": "As pessoas pensam que 'escreva com clareza' é um padrão objetivo que o modelo consegue aplicar sozinho. Clareza é relativa a um leitor, e o modelo só conhece o leitor que você descreve."
+  },
+  {
+    "term": "modelo",
+    "def": "Um prompt cuja parte variável é substituída por um marcador de posição, para que a mesma estrutura possa ser reutilizada através de execuções com apenas a entrada trocada.",
+    "source": "[^S3]",
+    "pitfall": "Forçar um modelo rígido em toda situação, então prompts que precisam de papéis, formatos ou restrições diferentes todos recebem a mesma forma e os resultados degradam.",
+    "distractor_rationale": "Um modelo que funcionou uma vez parece uma fórmula que vale a pena reutilizar em todo lugar. Modelos salvam a estrutura que você já validou; eles não removem a necessidade de encaixar a tarefa."
+  },
+  {
+    "term": "dimensões de revisão",
+    "def": "Os ângulos nomeados a partir dos quais você diz à IA para examinar algo — correção, desempenho, segurança, clareza — geralmente com uma ordem de prioridade.",
+    "source": "[^S12]",
+    "pitfall": "Pedir uma 'revisão' genérica e receber comentários sobre qualquer coisa que o modelo notou primeiro, tipicamente nomenclatura e estilo em vez dos bugs sobre os quais você se importava.",
+    "distractor_rationale": "'Revise isto' parece um pedido completo porque um revisor humano perguntaria o que você quer. O modelo não vai perguntar — ele escolhe uma dimensão e segue com ela."
+  },
+  {
+    "term": "few-shot learning",
+    "def": "Uma técnica que guia o modelo colocando um pequeno número de exemplos (geralmente 2-5) no prompt, para que ele infira o mapeamento de entrada-saída, o formato e o estilo a partir deles.",
+    "source": "[^S4]",
+    "pitfall": "Tratar qualquer punhado de exemplos como bom o bastante, quando o formato e a cobertura dos exemplos — não sua mera presença — são o que determinam a saída.",
+    "distractor_rationale": "A lição de manchete é 'adicione exemplos', então as pessoas adicionam dois fáceis e param. Qualidade dos exemplos é a técnica inteira; exemplos ruins ensinam um padrão ruim."
+  },
+  {
+    "term": "zero-shot",
+    "def": "Fazer prompts com uma instrução e nenhum exemplo, deixando o modelo aplicar seu próprio julgamento à tarefa.",
+    "source": "[^S15]",
+    "pitfall": "Usar zero-shot para uma tarefa com formato de saída estrito ou casos-limite ambíguos, depois receber uma forma diferente e um julgamento diferente em cada execução.",
+    "distractor_rationale": "Zero-shot funciona bem em tarefas simples como tradução, então as pessoas o generalizam para extração e classificação, onde o modelo não tem como saber seu padrão."
+  },
+  {
+    "term": "one-shot",
+    "def": "Fazer prompts com exatamente um exemplo — mais orientação que zero-shot, menos que few-shot.",
+    "source": "[^S11]",
+    "pitfall": "Presumir que um exemplo estabelece uma regra, quando o modelo pode lê-lo como um caso especial em vez de um padrão a partir do qual generalizar.",
+    "distractor_rationale": "Um exemplo é barato e parece suficiente quando você o vê funcionar numa entrada similar. Dois ou três são o que deixam o modelo ver o que varia e o que fica fixo."
+  },
+  {
+    "term": "aprendizado em contexto",
+    "def": "A capacidade de um LLM de inferir uma regra a partir de exemplos dentro da conversa atual e aplicá-la a uma nova entrada, sem nenhum retreinamento envolvido.",
+    "source": "[^S4]",
+    "pitfall": "Presumir que o modelo filtra seus exemplos por qualidade — ele aprende de todos eles, incluindo os desleixados ou não representativos que você deixou dentro.",
+    "distractor_rationale": "'Aprendizado' sugere julgamento, então as pessoas esperam que o modelo mantenha os bons exemplos e ignore os ruins. Ele não tem como saber quais você quis dizer seriamente."
+  },
+  {
+    "term": "diversidade",
+    "def": "Escolher exemplos few-shot que cobrem os diferentes tipos de entrada que a tarefa vai realmente ver, em vez de várias variações do mesmo caso.",
+    "source": "[^S4]",
+    "pitfall": "Usar três exemplos que são todos do mesmo tipo — três telefones num classificador de produtos — então o modelo nunca aprende como lidar com qualquer outra coisa.",
+    "distractor_rationale": "Exemplos similares parecem consistentes e bem-combinados, o que soa como virtude. Consistência pertence ao formato; o conteúdo deve abranger o espaço de entrada real."
+  },
+  {
+    "term": "consistência de formato",
+    "def": "Usar a mesma estrutura e marcadores exatos através de cada exemplo few-shot, para que o modelo aprenda uma forma de saída sem ambiguidade.",
+    "source": "[^S4]",
+    "pitfall": "Misturar uma seta num exemplo, dois-pontos no próximo e um bloco multilinha num terceiro, depois se perguntar por que o formato de saída continua mudando.",
+    "distractor_rationale": "Humanos leem através de diferenças cosméticas e veem o mesmo significado, então a variação parece inofensiva. O modelo imita a forma de superfície de perto e não tem forma única para copiar."
+  },
+  {
+    "term": "casos-limite",
+    "def": "As entradas ambíguas, incompletas ou incomuns que uma tarefa vai encontrar na realidade — campos ausentes, sinais mistos, valores extremos — em oposição ao caso ideal limpo.",
+    "source": "[^S11]",
+    "pitfall": "Construir exemplos e testes apenas de entradas limpas e óbvias, então o prompt parece perfeito até encontrar dados reais e travar.",
+    "distractor_rationale": "Exemplos limpos são mais rápidos de escrever e fazem o prompt parecer funcionar. Entradas reais carregam ruído e lacunas, e o modelo não viu nenhum padrão para lidar com eles."
+  },
+  {
+    "term": "JSON",
+    "def": "Um formato de dados estruturado comumente solicitado como saída para tarefas de extração, porque um programa consegue analisá-lo diretamente.",
+    "source": "[^S4]",
+    "pitfall": "Escrever 'devolva JSON' e nada mais, depois receber nomes de campos, aninhamento e unidades inconsistentes através de execuções.",
+    "distractor_rationale": "'JSON' soa como uma especificação completa porque nomeia um padrão. Ele fixa a sintaxe, não seu esquema — nomes de campos e formatos de valores ainda têm que ser mostrados ou enunciados."
+  },
+  {
+    "term": "chain-of-thought",
+    "def": "Uma técnica de prompt que faz o modelo expor etapas de raciocínio intermediárias antes de dar uma resposta final, o que eleva acurácia em tarefas que precisam de raciocínio de múltiplas etapas.",
+    "source": "[^S5]",
+    "pitfall": "Empacotar etapas de raciocínio em toda tarefa, incluindo tradução, formatação e trabalho criativo, onde elas adicionam comprimento e custo sem melhorar nada.",
+    "distractor_rationale": "Uma vez que alguém vê CoT elevar acurácia num problema difícil, 'sempre fazer ele pensar' parece qualidade gratuita. Em tarefas não-de-raciocínio só torna a saída mais longa e, para trabalho criativo, mais mecânica."
+  },
+  {
+    "term": "CoT",
+    "def": "A abreviação padrão para prompting chain-of-thought, usada intercambiavelmente com o termo completo.",
+    "source": "[^S5]",
+    "pitfall": "Ler CoT como uma configuração que você liga em vez de um padrão de prompt que você escreve — ele só existe porque seu prompt pediu as etapas.",
+    "distractor_rationale": "A sigla o faz soar como uma funcionalidade do modelo ou flag de API. É uma forma de escrever o prompt, e é por isso que a formulação e os exemplos ainda importam."
+  },
+  {
+    "term": "etapas de raciocínio",
+    "def": "O caminho visível passo a passo que o modelo mostra do problema à resposta, para que cada elo na lógica possa ser conferido em vez de tomado com fé.",
+    "source": "[^S10]",
+    "pitfall": "Ler as etapas como prova de que a resposta está certa, quando o próprio raciocínio pode conter um buraco e ainda chegar num número plausível.",
+    "distractor_rationale": "Trabalho visível parece autoritativo, do jeito que um cálculo mostrado faz no papel. O valor de CoT é que ele torna erros localizáveis, não que os previne."
+  },
+  {
+    "term": "vamos pensar passo a passo",
+    "def": "A frase de deixa padrão anexada a um prompt para acionar raciocínio passo a passo sem fornecer nenhum exemplo.",
+    "source": "[^S5]",
+    "pitfall": "Tratar a frase como uma correção universal, quando raciocínio altamente especializado ou rigidamente estruturado ainda precisa de exemplos trabalhados para controlar a forma das etapas.",
+    "distractor_rationale": "É uma linha e demonstravelmente funciona em problemas de enunciado de matemática, então lê como um encantamento mágico. Aciona raciocínio; não especifica quão detalhado ou quão estruturado esse raciocínio deve ser."
+  },
+  {
+    "term": "CoT zero-shot",
+    "def": "Chain-of-thought acionado apenas por uma frase de deixa, sem exemplos — a forma mais simples de fazer o modelo quebrar um problema.",
+    "source": "[^S5]",
+    "pitfall": "Alcançar CoT zero-shot numa tarefa que precisa de formato de raciocínio específico, depois receber etapas em qualquer granularidade que o modelo escolheu.",
+    "distractor_rationale": "Custa uma linha, então é a primeira tentativa óbvia — e funciona bem o bastante em problemas gerais que as pessoas nunca aprendem quando CoT few-shot é a chamada certa."
+  },
+  {
+    "term": "CoT few-shot",
+    "def": "Chain-of-thought guiado por um ou dois exemplos que mostram o processo de raciocínio completo, para que o modelo imite tanto as etapas quanto seu nível de detalhe.",
+    "source": "[^S5]",
+    "pitfall": "Escrever raciocínio de exemplo que pula do problema à resposta em duas linhas, então o modelo aprende a pular também e você perde o meio conferível.",
+    "distractor_rationale": "Escrever raciocínio completo é tedioso, então as pessoas comprimem seus exemplos e esperam que o modelo preencha o detalhe. Os exemplos estabelecem o padrão — exemplos abreviados produzem raciocínio abreviado."
+  },
+  {
+    "term": "etapas intermediárias",
+    "def": "Os cálculos ou inferências individuais entre a pergunta e a resposta final. Torná-los explícitos é para o que chain-of-thought serve.",
+    "source": "[^S5]",
+    "pitfall": "Aceitar etapas tão grosseiras que pulam direto do problema à conclusão, o que tecnicamente parece CoT mas não dá nada para você verificar.",
+    "distractor_rationale": "Qualquer lista numerada lê como 'mostrando o trabalho', então a forma é copiada sem a substância. Se você não consegue conferir uma etapa sozinha, ela não está fazendo seu trabalho."
+  },
+  {
+    "term": "múltiplas etapas",
+    "def": "Tarefas onde a resposta depende de uma cadeia de inferências ou cálculos dependentes — problemas de enunciado, análise de complexidade, análise de causa-raiz, decisões de planejamento.",
+    "source": "[^S10]",
+    "pitfall": "Falhar em reconhecer quais tarefas são realmente de múltiplas etapas, e então responder diretamente em problemas onde cada etapa alimenta a próxima e um único deslize corrompe o resultado.",
+    "distractor_rationale": "Uma pergunta com resposta numérica curta parece simples, escondendo a cadeia de etapas por trás dela. O teste: você alcançaria papel de rascunho para fazê-la sozinho?"
+  },
+  {
+    "term": "depuração de prompt",
+    "def": "Consertar um prompt que está falhando do jeito que você depura código: identificar o sintoma específico, diagnosticar qual parte causou isso, mudar uma coisa e verificar.",
+    "source": "[^S8]",
+    "pitfall": "Reformular várias partes do prompt de uma vez, então quando a saída melhora você não tem ideia de qual mudança fez o trabalho ou qual manter.",
+    "distractor_rationale": "Reescrever o prompt inteiro parece mais rápido que isolar uma variável. Converte depuração em busca aleatória — você não consegue reproduzir a vitória ou reverter a regressão."
+  },
+  {
+    "term": "ciclo de depuração",
+    "def": "O ciclo repetido de executar, conferir a saída, identificar o problema, diagnosticar, mudar uma coisa, verificar contra casos de teste e registrar a versão que funciona.",
+    "source": "[^S8]",
+    "pitfall": "Rodar o ciclo para sempre sem regra de parada, polindo um prompt muito além do ponto onde a próxima melhoria custa mais do que vale.",
+    "distractor_rationale": "Cada rodada produz um pequeno ganho visível, o que faz parar parecer acomodação. Recusar a aceitar iteração e esperar um primeiro rascunho perfeito é o mesmo erro do outro lado."
+  },
+  {
+    "term": "identificar o problema",
+    "def": "O primeiro passo de depuração: nomear exatamente o que está errado com a saída — formato errado, conteúdo fora do alvo, informação ausente, excesso, intenção mal-entendida ou instabilidade.",
+    "source": "[^S8]",
+    "pitfall": "Parar em 'a saída está ruim', que não nomeia dimensão e então não aponta para nenhuma correção.",
+    "distractor_rationale": "A sensação de que algo está errado chega antes da análise, e é tentador agir sobre ela. Até você conseguir dizer qual dos seis tipos de falha é, está adivinhando a causa."
+  },
+  {
+    "term": "diagnosticar a causa",
+    "def": "O segundo passo de depuração: descobrir qual parte do prompt — ou qual parte ausente — produziu o problema que você identificou.",
+    "source": "[^S8]",
+    "pitfall": "Pular direto de sintoma para edição, o que frequentemente muda a seção errada e introduz um novo problema ao lado do velho.",
+    "distractor_rationale": "Uma vez que você consegue ver o que está errado, uma correção se sugere imediatamente e diagnóstico parece formalidade. Sintomas e causas raramente ficam na mesma parte do prompt."
+  },
+  {
+    "term": "uma variável de cada vez",
+    "def": "A disciplina de depuração central: mudar exatamente uma coisa por iteração para que o efeito dessa mudança seja sem ambiguidade.",
+    "source": "[^S8]",
+    "pitfall": "Empacotar três correções numa edição para economizar tempo, depois ser incapaz de dizer se todas as três ajudaram, uma ajudou ou uma ajudou enquanto outra machucou.",
+    "distractor_rationale": "Empacotamento parece eficiente quando cada execução de teste individual custa tempo. Destrói o sinal — e com saída não determinística, você não consegue raciocinar de volta para recuperá-lo."
+  },
+  {
+    "term": "iteração",
+    "def": "Uma passada através do ciclo mudar-testar-avaliar. Prompts ficam bons através de uma série de passadas pequenas e verificadas, não através de um rascunho perfeito.",
+    "source": "[^S8]",
+    "pitfall": "Abrir com um prompt de 500 palavras que tenta antecipar tudo, em vez de começar simples e adicionar restrições conforme falhas reais aparecem.",
+    "distractor_rationale": "Escrever tudo logo de cara parece minucioso e economiza rodadas. Enterra você em restrições que nunca testou, então quando falha você não sabe qual delas é responsável."
+  },
+  {
+    "term": "casos de teste",
+    "def": "Um conjunto de 3-5 entradas representativas — casos claros, casos mistos e casos-limite — que você reexecuta após cada mudança de prompt para conferir se realmente melhorou.",
+    "source": "[^S8]",
+    "pitfall": "Construir o conjunto de teste apenas de entradas fáceis, então um prompt passa em tudo e depois desmorona na primeira entrada ambígua ou incompleta real.",
+    "distractor_rationale": "Entradas limpas são rápidas de escrever e produzem uma taxa de acerto satisfatória. As falhas que vale a pena pegar todas vivem nos casos que as pessoas deixam de fora."
+  },
+  {
+    "term": "versões de prompt",
+    "def": "Prompts gerenciados do jeito que código é: cada versão registrada com o que mudou e o que produziu, para que você possa comparar e reverter.",
+    "source": "[^S8]",
+    "pitfall": "Editar um prompt no lugar sem registro, então quando uma mudança piora as coisas a última versão boa está perdida.",
+    "distractor_rationale": "Um prompt parece uma mensagem de chat descartável, não um ativo. Uma vez que é reutilizado ou embarcado, é código — e merece a mesma disciplina de versão."
+  },
+  {
+    "term": "teste A/B",
+    "def": "Manter duas versões de prompt, executar cada uma cerca de 10 vezes e comparar taxas de sucesso para que dados decidam qual é melhor.",
+    "source": "[^S8]",
+    "pitfall": "Declarar um vencedor depois de uma ou duas execuções de cada, quando saída de modelo varia o bastante que uma amostra pequena não diz nada.",
+    "distractor_rationale": "Uma única execução impressionante parece prova. Saída de LLM é não determinística — o mesmo prompt dá resultados diferentes, então você precisa de repetição antes da diferença significar algo."
+  },
+  {
+    "term": "taxa de acerto",
+    "def": "A parcela dos seus casos de teste que produzem saída correspondendo a expectativas. Transforma 'este prompt parece melhor' num número que você consegue comparar através de versões.",
+    "source": "[^S8]",
+    "pitfall": "Rastrear apenas a porcentagem e nunca examinar o que as falhas têm em comum, o que deixa você sem ideia do que consertar depois.",
+    "distractor_rationale": "Um único número é fácil de comparar e parece rigoroso. O padrão de falha — sempre o mesmo campo, sempre a entrada ambígua — é de onde a próxima correção realmente vem."
+  },
+  {
+    "term": "formato instável",
+    "def": "Um modo de falha onde o mesmo prompt produz uma forma de saída diferente em cada execução — JSON numa vez, prosa na próxima, capitalização derivando entre elas.",
+    "source": "[^S8]",
+    "pitfall": "Culpar a aleatoriedade do modelo pela variação, quando a causa real é um prompt frouxo o bastante para deixar o modelo várias escolhas igualmente válidas.",
+    "distractor_rationale": "Como saída é não determinística, inconsistência parece uma limitação inerente. Geralmente é uma lacuna de especificação: em todo lugar que o prompt permite improvisação, você vai obtê-la."
+  },
+  {
+    "term": "introdução",
+    "def": "O enchimento introdutório que um modelo adiciona antes do conteúdo que você pediu — 'Aqui estão os pontos-chave:', 'Aqui está o e-mail:' — que tem que ser removido quando você quer saída limpa.",
+    "source": "[^S2]",
+    "pitfall": "Esquecer de descartá-la, então todo resultado precisa de limpeza manual antes de poder ser colado ou analisado.",
+    "distractor_rationale": "A introdução faz a resposta soar conversacional e educada, então não registra como um problema — até a saída estar alimentando um script ou um documento e você estar deletando a primeira linha toda vez."
+  },
+  {
+    "term": "bom o bastante",
+    "def": "A regra de parada prática para ajuste de prompt: cerca de 90% de sucesso nos seus casos de teste, formato estável e cada parte do prompt fazendo algo que você consegue explicar.",
+    "source": "[^S8]",
+    "pitfall": "Perseguir 100% e gastar horas nos últimos poucos por cento, quando um humano lidando com os casos-limite restantes é mais barato que o ajuste.",
+    "distractor_rationale": "Perfeccionismo lê como profissionalismo, e as últimas poucas falhas são as mais conspícuas. Retornos marginais colapsam perto do topo — esse tempo vale mais gasto em outro lugar."
+  },
+  {
+    "term": "prompt de geração de código",
+    "def": "Um prompt pedindo à IA que escreva código executável. Um bom cobre seis coisas: linguagem e versão, assinatura de função, lógica central, casos-limite, estilo de código e limites de dependências.",
+    "source": "[^S12]",
+    "pitfall": "Pedir 'uma função para processar dados de usuário' sem tipos de entrada e saída, então o modelo adivinha a forma dos dados e produz algo que você não consegue usar.",
+    "distractor_rationale": "O solicitante mantém a especificação inteira na cabeça, então o pedido parece completo. Especificações explícitas são o que cortam refinamentos de ida e volta em 68%."
+  },
+  {
+    "term": "assinatura de função",
+    "def": "O nome da função, seus tipos de parâmetro de entrada e seu tipo de retorno — o contrato de interface que um prompt de geração de código deve enunciar logo de cara.",
+    "source": "[^S12]",
+    "pitfall": "Deixar os tipos não enunciados, então o código gerado faz suas próprias presunções e não vai encaixar no código em volta dele.",
+    "distractor_rationale": "Em linguagens dinamicamente tipadas, tipos parecem opcionais, então as pessoas os pulam. A assinatura é o que torna o pedido sem ambiguidade — sem ela o modelo inventa uma interface."
+  },
+  {
+    "term": "casos especiais",
+    "def": "As condições de entrada específicas que você diz ao modelo como lidar: lista vazia, valor None, entrada duplicada, campo ausente.",
+    "source": "[^S12]",
+    "pitfall": "Nomear apenas o caminho feliz, então o código gerado quebra ou silenciosamente faz a coisa errada na primeira vez que vê uma entrada nula ou vazia.",
+    "distractor_rationale": "Iniciantes presumem que a IA vai lidar com casos óbvios sensivelmente sozinha. Sem regra enunciada ela escolhe uma — pular, erro ou padrão — e pode não ser a que você queria."
+  },
+  {
+    "term": "estilo de código",
+    "def": "As convenções de formatação, nomenclatura, comentário e tipagem que o código gerado deve seguir, enunciadas no prompt em vez de deixadas para o modelo.",
+    "source": "[^S12]",
+    "pitfall": "Não especificar estilo, então toda geração volta numa forma diferente e o código leva trabalho extra para encaixar numa base de código existente.",
+    "distractor_rationale": "Estilo parece cosmético perto de correção, então é a primeira coisa deixada de fora. Estilo inconsistente é exatamente o que torna código gerado por IA caro de manter através de uma equipe."
+  },
+  {
+    "term": "limites de dependências",
+    "def": "A regra enunciando quais bibliotecas o código gerado pode usar — apenas biblioteca padrão, ou uma lista de permissão nomeada de pacotes de terceiros.",
+    "source": "[^S12]",
+    "pitfall": "Deixar dependências abertas, então o modelo alcança um pacote pesado para fazer algo que a biblioteca padrão já lida.",
+    "distractor_rationale": "Mais bibliotecas parecem mais capacidade, e o código gerado de fato funciona. Toda importação é algo a instalar, proteger e manter atualizado em implantação."
+  },
+  {
+    "term": "biblioteca padrão",
+    "def": "Os módulos que uma linguagem embarca, não requerendo instalação. Restringir código gerado a ela mantém o resultado portável e livre de dependências.",
+    "source": "[^S12]",
+    "pitfall": "Não dizer nada sobre a biblioteca padrão e receber código que puxa pacotes de terceiros para uma tarefa que poderia lidar nativamente.",
+    "distractor_rationale": "A solução idiomática em tutoriais frequentemente usa um pacote popular, então é isso que o modelo alcança. Para utilitários pequenos a dependência geralmente custa mais do que economiza."
+  },
+  {
+    "term": "type hints",
+    "def": "Anotações de tipo explícitas em parâmetros e valores de retorno que tornam o contrato de interface visível no próprio código.",
+    "source": "[^S12]",
+    "pitfall": "Tratar type hints como decoração opcional e omiti-los do prompt, então a interface do código gerado permanece implícita e ambígua.",
+    "distractor_rationale": "Código roda bem sem eles, então parecem sobrecarga. São como o próximo leitor — humano ou IA — sabe o que a função aceita e retorna sem executá-la."
+  },
+  {
+    "term": "tratamento de erros",
+    "def": "A lógica do código para entrada inválida, exceções e condições de limite — algo a especificar no prompt, não empacotar depois.",
+    "source": "[^S12]",
+    "pitfall": "Pedir o caminho feliz com um plano de 'adicionar tratamento de erros depois', o que geralmente significa que o código vai para produção sem ele.",
+    "distractor_rationale": "'Fazer funcionar primeiro' é um princípio real em prototipagem, então é aplicado onde não deveria. Tratamento de erros muda a estrutura de uma função; retrofitar é uma reescrita."
+  },
+  {
+    "term": "programação defensiva",
+    "def": "Escrever código presumindo que entrada pode ser inválida, decidindo logo de cara como responder a dados ruins em vez de confiar no chamador.",
+    "source": "[^S12]",
+    "pitfall": "Presumir que dados a montante são sempre bem formados, então o código funciona nas suas entradas de teste e quebra em reais.",
+    "distractor_rationale": "Validar entrada pode parecer desconfiança de colegas ou linhas desperdiçadas. É um padrão de engenharia normal — dados reais têm lacunas, tipos errados e surpresas."
+  },
+  {
+    "term": "docstring",
+    "def": "O bloco de documentação dentro de uma função descrevendo o que ela faz, como usá-la e quaisquer características relevantes — um requisito de estilo de código que vale enunciar explicitamente.",
+    "source": "[^S12]",
+    "pitfall": "Pedir 'comentários' em geral e receber uma narração linha a linha de código óbvio, em vez de uma docstring explicando uso.",
+    "distractor_rationale": "'Adicione comentários' parece que deveria melhorar legibilidade. Reafirmar o que o código diz claramente adiciona ruído; uma docstring captura a parte que o código não consegue expressar."
+  },
+  {
+    "term": "escrita de documentos",
+    "def": "Trabalho de prompt direcionado a produzir ou remodelar prosa — documentação técnica, notas de reunião, resumos, relatórios — onde público, objetivo, tom e estrutura carregam a tarefa.",
+    "source": "[^S3]",
+    "pitfall": "Pedir um resumo sem dizer quem o lê, então o modelo aterrissa numa profundidade aleatória: técnico demais para um gerente, raso demais para um engenheiro.",
+    "distractor_rationale": "Autores presumem que 'resuma claramente' é uma instrução objetiva. Clareza depende inteiramente do leitor, e o modelo só conhece o leitor que você nomeia."
+  },
+  {
+    "term": "público-alvo",
+    "def": "O leitor pretendido de um documento, descrito por papel, conhecimento de contexto e objetivo de leitura — não apenas por cargo.",
+    "source": "[^S3]",
+    "pitfall": "Descrever o público com um rótulo amplo como 'equipe técnica' em vez do que sabem e o que vão fazer com o documento.",
+    "distractor_rationale": "Um título parece concreto porque é específico num organograma. Não diz nada sobre conhecimento prévio — que é a única coisa que diz ao modelo quão fundo lançar isso."
+  },
+  {
+    "term": "modelo de estrutura",
+    "def": "Uma organização predefinida para a saída — contexto, opções comparadas, recomendação, riscos — dada para que o modelo preencha uma forma fixa em vez de escolher uma.",
+    "source": "[^S3]",
+    "pitfall": "Deixar a estrutura aberta, então cada execução organiza o material diferentemente e saídas não podem ser comparadas ou reutilizadas.",
+    "distractor_rationale": "As pessoas esperam que o modelo escolha a estrutura mais adequada ao conteúdo. Ele escolhe uma plausível cada vez, o que sacrifica a consistência que torna documentos usáveis em escala."
+  },
+  {
+    "term": "tom",
+    "def": "O registro da escrita — formal ou casual, detalhado ou conciso, prático ou promocional — especificado para que o documento soe do jeito que a situação pede.",
+    "source": "[^S3]",
+    "pitfall": "Não especificar tom, então registro deriva dentro de um único documento e o resultado lê como não profissional mesmo quando o conteúdo está certo.",
+    "distractor_rationale": "Uma vez que os fatos estão corretos, tom parece polimento. Para um e-mail de cliente ou um resumo executivo, o tom errado pode desfazer o conteúdo inteiramente."
+  },
+  {
+    "term": "extração de dados",
+    "def": "Um prompt que puxa informação estruturada de texto não estruturado. Um confiável soletra quatro coisas: definições de campos, tratamento de valores ausentes, formato de saída e validação de dados.",
+    "source": "[^S4]",
+    "pitfall": "Pedir para 'extrair a informação chave', o que deixa o modelo decidir o que conta como chave — uma decisão diferente em cada execução.",
+    "distractor_rationale": "O solicitante sabe quais campos quer dizer, então listá-los parece redundante. Palavras subjetivas como 'chave' e 'importante' são exatamente o que torna extração instável."
+  },
+  {
+    "term": "definições de campo",
+    "def": "O significado, tipo e valores permitidos enunciados de cada campo que você quer extraído — por exemplo sentimento deve ser exatamente um de positivo, negativo ou neutro.",
+    "source": "[^S4]",
+    "pitfall": "Nomear os campos mas não seus valores permitidos, então um campo de sentimento volta como 'bom', 'animado' ou 'favorável' em vez das suas três categorias.",
+    "distractor_rationale": "O nome do campo parece autoexplicativo, então restringir seus valores parece sobreespecificação. Qualquer coisa que você não restringe, o modelo parafraseie."
+  },
+  {
+    "term": "tratamento de valores ausentes",
+    "def": "A regra explícita para o que dar de saída quando um campo não está presente na fonte — null, 'não fornecido' ou 'TBD' — mais uma instrução para não adivinhar.",
+    "source": "[^S4]",
+    "pitfall": "Não dizer nada sobre valores ausentes, então o modelo ou solta o campo inteiramente ou infere um, silenciosamente corrompendo o conjunto de dados.",
+    "distractor_rationale": "As pessoas esperam que o modelo lide com ausência sensivelmente. Seu padrão é ser útil, o que significa inferir um valor plausível — um palpite que parece exatamente como dados reais."
+  },
+  {
+    "term": "validação de dados",
+    "def": "Regras conferindo que dados extraídos têm a forma e faixa esperadas — um campo de salário deve conter um número, uma localização pode ser um valor ou null mas nunca uma string vazia.",
+    "source": "[^S4]",
+    "pitfall": "Aceitar saída extraída sem conferências, então valores malformados ou fora de faixa fluem direto para o que os consome.",
+    "distractor_rationale": "Saída que parece bem formada passa no teste de olho, e JSON que analisa parece validado. Sintaxe estar correta não diz nada sobre os valores estarem certos."
+  },
+  {
+    "term": "alucinação",
+    "def": "O hábito do modelo de confiantemente fabricar fatos — inventar informação que lê como plausível mas não está na fonte e não é verdade.",
+    "source": "[^S6]",
+    "pitfall": "Confiar na saída sem verificar os fatos-chave, especialmente em tarefas de extração onde um valor inventado é indistinguível de um real.",
+    "distractor_rationale": "Prosa fluente e confiante lê como confiável, e não há marcador visível separando um fato fabricado de um real. A defesa é uma instrução explícita para não adivinhar, mais verificação."
+  }
+]

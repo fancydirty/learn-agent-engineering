@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Produzir a variante em português do Brasil do curso learn-prompt-engineering para o learn.agentmentor.dev, a partir da variante em inglês já verificada. É uma tradução com polimento pedagógico a partir do en (não do zh): mesma estrutura de 6 lições, mesmos slugs de lição, mesmos ids de bloco interativo e mesmas posições de resposta correta, key-facts das fontes mantidos como citações verbatim em inglês vindas do sources.md, prosa técnica natural em português, em tom profissional próximo e sem a rigidez de tradução automática, e cada conceito preservando seu exemplo de contraste entre prompt ruim e prompt bom.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "O responsável ratificou o plano multilíngue: os seis idiomas no learn.agentmentor.dev, primeiro o inglês (já completo) e depois os demais idiomas como ondas de tradução a partir da base em inglês. A variante em inglês é a fonte de verdade verificada e com a fundamentação corrigida, então nenhum esclarecimento adicional foi necessário."
+  },
+  "learnerModel": {
+    "targetReader": "Pessoas que já experimentaram ferramentas de IA (ChatGPT, Claude) mas não entendem como funciona o design de prompts, além de quem desenvolve software e de profissionais do conhecimento que querem extrair mais da IA",
+    "knownConcepts": [
+      "Edição básica de texto",
+      "Experiência de uso de uma ferramenta de IA conversacional",
+      "Conseguir descrever os requisitos de uma tarefa",
+      "A ideia de entrada e saída"
+    ],
+    "unknownConcepts": [
+      "Design estruturado de prompts",
+      "Few-shot learning",
+      "Raciocínio em chain-of-thought",
+      "Estratégia de depuração e iteração de prompts",
+      "Padrões de prompt para diferentes tipos de tarefa"
+    ],
+    "assumedEnvironment": "Acesso a pelo menos uma ferramenta de IA conversacional (ChatGPT, Claude etc.); nenhum ambiente de programação necessário",
+    "firstIndependentAction": "Usar a estrutura básica de prompt aprendida para reescrever uma instrução vaga de modo que ela fique mais clara e mais específica",
+    "noviceRamp": [
+      "A lição 1 parte da experiência que quem lê já tem de conversar com IA e contrasta um prompt bom com um ruim para construir a intuição de como a qualidade do prompt afeta a saída",
+      "A lição 2 monta o modelo mental da estrutura de um prompt com quatro elementos (papel, tarefa, formato, restrições), cada um com um exemplo de contraste",
+      "A lição 3 apresenta o few-shot learning, indo do conceito aos princípios de design dos exemplos passo a passo",
+      "A lição 4 cobre o chain-of-thought, de um simples pedido de pensar passo a passo até exemplos de raciocínio mais complexos",
+      "A lição 5 ensina um método sistemático de depuração e monta uma rotina de otimização reaproveitável",
+      "A lição 6 fecha o curso com estratégias concretas para três tipos de tarefa comuns"
+    ]
+  },
+  "learnerBrief": "O leitor-alvo já usou ferramentas de IA conversacional mas não entende os princípios do design de prompts; inclui também quem desenvolve software e profissionais do conhecimento que querem trabalhar com IA de forma mais eficaz. Essa pessoa sabe editar texto e já conversou com IA, mas não conhece design estruturado de prompts, few-shot learning, chain-of-thought nem um método sistemático de depurar e iterar. O curso a leva a projetar prompts claros e eficazes, guiar a IA com exemplos, fazer a IA mostrar o próprio raciocínio, depurar e otimizar de forma sistemática e escolher a estratégia certa para cada tarefa.",
+  "scope": "Coberto: o que é um prompt e por que ele importa, os quatro elementos de um prompt (papel, tarefa, formato, restrições), few-shot learning (zero-shot versus one-shot versus few-shot, princípios de design dos exemplos), chain-of-thought (CoT zero-shot, CoT few-shot, quando ele se aplica), depuração de prompts (identificação do problema, diagnóstico, iteração, casos de teste, gestão de versões) e estratégias específicas por tarefa (boas práticas para geração de código, escrita e extração de dados). Cada conceito traz um exemplo de contraste entre prompt ruim e prompt bom. Não coberto: técnicas avançadas (cadeias de prompts, design de agentes, RAG), fine-tuning de modelos, configuração de parâmetros de API específicos de cada ferramenta ou habilidades de programação. Profundidade: do zero até projetar e otimizar sozinho prompts para uma variedade de tarefas.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-prompt-engineering/pt-BR/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Um único diagrama mermaid é mantido exatamente onde a variante em inglês o posiciona (o ciclo de depuração da lição 5), com os rótulos vertidos para o português. Nenhum diagram foi acrescentado ou removido: o posicionamento já passou por revisão no original, e o ciclo iterativo de depuração é o único ponto em que um diagram se lê mais rápido do que a prosa.",
+    "weakestPoints": [
+      "Os contrastes entre prompt bom e prompt ruim foram vertidos para o português em vez de traduzidos ao pé da letra, então a revisão precisa confirmar que o exemplo ruim continua convincentemente ruim e que o bom é de fato melhor para quem escreve em português",
+      "Os exemplos de few-shot e de chain-of-thought usam prompts curtos e ilustrativos; quem tem tarefas de um domínio específico precisa adaptar o formato dos exemplos",
+      "Técnicas avançadas (cadeias de prompts, RAG, design de agentes) estão fora de escopo, então quem quiser esses assuntos recebe indicações, não instrução",
+      "Por ser uma tradução da variante em inglês verificada, o risco residual é o desvio idiomático: os key-facts das fontes foram mantidos verbatim no original e conferidos byte a byte, mas a prosa foi vertida para um português natural em vez de traduzida palavra por palavra, então a revisão deve conferir a equivalência de sentido com a lição em inglês, e não o alinhamento frase a frase"
+    ],
+    "followUpChecks": [
+      "Passada de renderização completa no learn.agentmentor.dev /pt-BR/prompt-engineering/... após o deploy: as 6 lições mais o README, com os cards interativos hidratados e o ciclo de depuração em mermaid renderizando",
+      "Rodar o course-guard no diretório pt-BR e conferir o attach dos termos do glossário (o glossary.json é produzido por um agente posterior, então essa checagem ainda está pendente)",
+      "Verificar que cada âncora [^Sn] das lições em pt-BR tem o bloco ## Sn correspondente no sources.md em pt-BR",
+      "Confirmar que os ids dos blocos de checagem e as posições de resposta correta são idênticos byte a byte à variante em inglês (b/c/b/b/b/b nas lições 1 a 6, com 2/4/2/4/4/4 opções)"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "Quem aprende consegue pegar uma instrução vaga própria, reescrevê-la com papel, tarefa, formato e restrições explícitos, acrescentar exemplos few-shot ou um pedido de chain-of-thought quando a tarefa justificar, e rodar uma iteração de depuração que melhore a saída de forma mensurável.",
+    "interactionCheck": "As seis lições trazem um bloco agentmentor-check cada (claro versus vago na lição 1, identificar o elemento que falta na 2, qualidade dos exemplos na 3, adequação da tarefa ao CoT na 4, identificar a correção na 5 e casar estratégia com tarefa na 6), preservados da variante em inglês com ids, modes, número de opções (2/4/2/4/4/4) e posições de resposta correta (b/c/b/b/b/b) idênticos; label, prompt, whyHere, o texto das opções e o feedback são traduções para o português ajustadas ao mal-entendido próprio de cada lição. Os exercícios mantêm a estrutura de níveis da variante em inglês, com rubric, answer e hints em cada nível.",
+    "learnerFitCheck": "O curso pressupõe apenas experiência prévia de conversa com IA e edição básica de texto; não exige nenhum ambiente de programação. Design estruturado, few-shot, chain-of-thought, depuração e estratégias por tarefa são ensinados do zero e em ordem de dependência. O primeiro exercício da lição 1 pede apenas a reescrita de uma instrução vaga, não depende de nada de unknownConcepts, e cada conceito seguinte se apoia no anterior.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "Tradução para o português do Brasil da variante em inglês verificada: estrutura, fundamentação e posições de resposta herdadas do original verificado",
+      "Todos os blocos interativos preservam id, mode, número de opções e resposta correta com paridade byte a byte em relação ao inglês",
+      "Todos os key-facts das fontes são mantidos como citações verbatim no idioma original e conferidos byte a byte contra o sources.md",
+      "Os exemplos de contraste entre prompt ruim e prompt bom foram vertidos para o português mantendo o mesmo ponto pedagógico de cada lição em inglês"
+    ]
+  },
+  "nextSteps": [
+    "Rodar o course-guard na variante em pt-BR e corrigir o que ele apontar",
+    "Produzir o glossary.json em pt-BR (agente separado, despachado depois que as lições estiverem finalizadas) e conferir o attach de cada termo nas lições",
+    "Fazer o deploy do learn.agentmentor.dev e conferir que as páginas /pt-BR renderizam com os cards interativos hidratados",
+    "Fechar a onda de locales com uma passada de revisão cruzada entre ko, es e pt-BR contra a base em inglês"
+  ],
+  "memoryBoundary": "Este agentmentor.json é um registro de estado local do curso (course-local state record), armazenado apenas no diretório do curso para as checagens de qualidade e o acompanhamento da trilha de aprendizado. Ele nunca é escrito de volta na memória de longo prazo do Claude Code ou de qualquer sistema de IA hospedeiro, e não afeta outros cursos nem outras conversas."
+}
