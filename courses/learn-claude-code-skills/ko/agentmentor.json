@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "검증이 끝난 영어판을 기준으로 learn.agentmentor.dev용 learn-claude-code-skills 코스의 한국어 변형을 제작한다. 중국어판이 아니라 검증된 en 변형에서 번역하고 교육적으로 다듬는다: 동일한 6개 레슨 구조, 동일한 레슨 슬러그, 동일한 인터랙티브 블록 id와 정답 위치, 출처 인용문은 영어 원문 그대로 유지, 실행 가능한 코드는 로직을 그대로 두고 주석과 사용자 노출 문자열만 번역, 기계 번역 티가 나지 않는 자연스러운 합니다체 기술 문체.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "오너가 다국어 계획을 명시적으로 승인했습니다. learn.agentmentor.dev에 6개 로케일을 모두 싣고, 영어판을 먼저 완성한 뒤(12/12 완료) 나머지 로케일을 영어판 기반의 번역 웨이브로 전개합니다. 영어판은 검증과 근거 교정이 끝난 단일 기준이므로 추가 확인이 필요하지 않았습니다."
+  },
+  "learnerModel": {
+    "targetReader": "Claude Code의 기본 기능을 이미 사용하고 있고, 기본적인 Markdown과 명령줄 조작을 알며, Skill로 자신의 워크플로를 커스터마이즈하고 싶은 개발자",
+    "knownConcepts": [
+      "Claude Code의 기본적인 사용 방법",
+      "Markdown 기본 문법",
+      "기본 터미널 명령(cd, ls, mkdir, 텍스트 에디터 사용)",
+      "파일과 디렉터리",
+      "프로그래밍 언어 하나의 기초",
+      "코드 리뷰에 대한 일반적인 이해"
+    ],
+    "unknownConcepts": [
+      "Skill의 동작 원리",
+      "YAML frontmatter 문법",
+      "SKILL.md 파일 구조",
+      "description 필드가 Skill을 트리거하는 방식",
+      "progressive disclosure 원칙",
+      "supporting files 구성 방법",
+      "Skill 디버깅 방법"
+    ],
+    "assumedEnvironment": "Claude Code가 설치되어 있고, .claude/skills 디렉터리에 접근할 수 있으며, 텍스트 에디터(VS Code 등)와 터미널을 갖춘 환경",
+    "firstIndependentAction": "자기 프로젝트에서 Skill로 자동화할 만한 반복 작업 하나를 찾아내기",
+    "noviceRamp": [
+      "레슨1은 구체적인 통증(같은 워크플로를 매번 다시 설명하는 일)에서 출발해 회의록 예시로 Skill이 필요한 이유의 직관을 형성",
+      "레슨2는 실제 SKILL.md를 부분별(frontmatter, instructions)로 해부해 개념을 한꺼번에 쏟아내지 않음",
+      "레슨3은 완결되지만 단순한 Skill(작업 정리 도구)을 처음부터 만들며 모든 단계를 복사 가능한 형태로 제시",
+      "테스트와 디버깅은 레슨4로 분리해 작성 단계에 디버깅의 복잡도가 섞이지 않도록 구성"
+    ]
+  },
+  "learnerBrief": "대상 독자는 이미 Claude Code를 쓰고 있고 Skill로 워크플로를 커스터마이즈하고 싶은 개발자입니다. 기본적인 Markdown과 명령줄을 알고 프로그래밍 경험도 있지만, Skill이 무엇인지, YAML frontmatter가 어떻게 동작하는지, 어떻게 작성하는지는 모릅니다. 이 코스는 독자가 첫 번째 실용적인 Skill을 스스로 만들 수 있는 지점까지 데려갑니다. Skill이 왜 중요한지 이해하고, SKILL.md 구조를 익히고, 테스트와 디버깅을 배우고, 코드 리뷰 케이스 스터디로 실전 패턴을 학습합니다.",
+  "scope": "다루는 범위: Skill 개념과 적용 상황, SKILL.md 구조(YAML frontmatter + Markdown instructions), name과 description 필드 작성법, 자동 트리거 메커니즘, 실행 가능한 지시문 작성, supporting files 구성, 테스트와 디버깅(직접 호출, 반복 개선), 코드 리뷰 Skill 케이스 스터디, personal skills와 project skills의 차이. 다루지 않는 범위: Claude Code 설치, YAML 문법 심화, 복잡한 스크립팅, 특정 언어의 고급 지식, Skill 배포, MCP 연동 세부 사항. 깊이: 제로에서 프로덕션에 쓸 수 있는 Skill을 독자적으로 출시하는 수준까지.",
+  "status": {
+    "stage": "delivered",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-claude-code-skills/ko/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "mermaid diagram은 사용하지 않습니다(영어판·중국어판과 같은 판단). Skill 학습의 핵심은 텍스트 구조(YAML frontmatter + Markdown instructions)를 이해하고 구체적이고 실행 가능한 단계를 쓰는 일이므로, 추상적인 diagram보다 실제 SKILL.md 코드 예시가 더 잘 가르칩니다. diagram 후보가 될 만한 유일한 지점인 레슨4의 테스트·수정·테스트 루프도 주석이 달린 목록으로 충분히 명확합니다.",
+    "weakestPoints": [
+      "레슨1의 '첫 Skill 후보 찾기' 연습은 자유도가 높아 초보자가 고른 작업이 적절한지 망설이기 쉬움. 판단 기준(반복성, 고정된 절차, 검증 가능성)과 단계적 힌트로 완화",
+      "레슨5의 코드 리뷰 Skill은 여러 파일에 걸친 코스 최장 예제로 무겁게 느껴질 수 있으나, 실제 프로젝트의 완결성을 보이기 위한 것이며 모듈 단위 절차로 복잡도를 낮춤",
+      "고급 frontmatter 필드(model, allowed-tools)는 progressive disclosure 원칙에 따라 레슨6에서 가볍게만 언급하므로, 필요한 독자는 공식 문서를 참조해야 함",
+      "검증된 영어판의 번역이므로 잔여 리스크는 번역투: 출처 인용문은 영어 원문 그대로 byte 일치로 유지하고 실행 코드는 로직을 동일하게 두었으나, 본문은 축자 번역이 아니라 자연스러운 한국어로 옮겼으므로 리뷰는 문장 단위 정렬이 아니라 영어판과의 의미 등가성을 확인해야 함"
+    ],
+    "followUpChecks": [
+      "배포 후 learn.agentmentor.dev /ko/claude-code-skills/... 렌더 패스: 6개 레슨 전체와 README, 인터랙티브 카드 하이드레이션 확인",
+      "모든 glossary 용어가 ko 레슨 본문에 축자로 등장하는지 확인(attach 체크)",
+      "ko 레슨의 모든 [^Sn] 앵커가 ko sources.md의 ## Sn 블록과 일치하는지 확인",
+      "체크 블록 id와 정답 위치가 영어판과 byte 일치하는지 확인(레슨 1/2/4/5는 b/b/b/b)"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "학습자는 자기 업무의 반복 작업 하나에 대해 완전한 SKILL.md(올바른 frontmatter와 구체적이고 실행 가능한 instructions)를 스스로 작성하고, 성공적으로 호출하고, 테스트하며 반복 개선하고, personal skill과 project skill 중 어느 쪽이 적절한지 판단할 수 있습니다.",
+    "interactionCheck": "네 개 레슨에 agentmentor-check 블록이 하나씩 들어갑니다(레슨1은 상황 적합성 판단, 레슨2는 description의 품질, 레슨4는 로드 실패 진단, 레슨5는 파일 구성). 영어판에서 id·mode·선택지 수·정답 위치를 byte 일치로 보존했고, label·prompt·whyHere·선택지 텍스트·feedback은 각 레슨의 오해에 맞춘 한국어 번역입니다. 연습 문제는 영어판의 레벨 구성(레벨마다 rubric·answer·힌트)을 유지합니다.",
+    "learnerFitCheck": "이 코스는 YAML 지식을 전제하지 않고(레슨2가 필수 두 필드를 제로에서 가르침), 복잡한 프로그래밍도 전제하지 않으며(예시는 텍스트 처리와 체크리스트 감사), 특정 언어나 프레임워크 전문성도 요구하지 않습니다. 레슨1의 첫 연습은 자기 업무를 돌아보는 것만으로 충분하며 unknownConcepts 중 무엇에도 의존하지 않습니다. 미지의 개념은 단계적으로 도입되고, 학습자는 모든 선행 내용을 배운 뒤 레슨3에서 처음으로 Skill을 만듭니다.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "검증된 영어판의 한국어 번역: 구조·근거·정답 위치는 검증된 원본에서 계승",
+      "모든 인터랙티브 블록이 id/mode/선택지 수/정답을 영어판과 byte 일치로 보존",
+      "모든 출처 인용문을 영어 원문 그대로 유지(오너 승인 인용 정책)",
+      "glossary 용어가 ko 레슨 본문에 축자로 등장함을 확인"
+    ]
+  },
+  "nextSteps": [
+    "ko 변형에 course-guard를 실행하고 지적 사항이 있으면 수정",
+    "learn.agentmentor.dev를 배포하고 /ko 페이지가 인터랙티브 카드 하이드레이션까지 포함해 렌더되는지 점검",
+    "남은 로케일(es/pt-BR)을 같은 영어판 번역 베이스로 전개",
+    "학습자에게 코스 이후 첫 주에 자기 프로젝트에서 실제 Skill 2~3개를 만들어 정착시키도록 권장"
+  ],
+  "memoryBoundary": "이 agentmentor.json은 이 코스 변형의 로컬 상태 기록(course-local state record)으로, 품질 검사와 학습 경로 추적을 위해 코스 디렉터리 안에만 저장됩니다. Claude Code나 호스트 AI 시스템의 장기 기억에 다시 쓰이지 않으며, 다른 코스나 대화에 영향을 주지 않습니다."
+}
