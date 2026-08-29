@@ -1,0 +1,520 @@
+[
+  {
+    "term": "fluxo de trabalho (workflow)",
+    "def": "Um sistema em que LLMs e ferramentas são orquestrados através de caminhos de código predefinidos — as etapas são codificadas rigidamente, o modelo só é autônomo dentro de cada etapa individual. É uma metade de uma distinção arquitetural; os cinco padrões que este curso ensina pertencem todos a essa extremidade.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que 'usar padrões de fluxo de trabalho' significa 'sem agentes' — cada estágio em uma cadeia ainda é um loop de harness autônomo.",
+    "distractor_rationale": "Fácil de confundir com agente: a distinção é apenas 'quem detém o plano', não se você está usando modelos."
+  },
+  {
+    "term": "agente",
+    "def": "Um sistema em que LLMs direcionam dinamicamente seus próprios processos e mantêm controle sobre como realizam tarefas. A implementação geralmente é direta — tipicamente apenas LLMs usando ferramentas baseadas em feedback ambiental em um loop.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que agentes são 'mais avançados' do que fluxos de trabalho — eles apenas colocam o plano no modelo em vez de no código.",
+    "distractor_rationale": "Fácil de confundir com workflow: a distinção é apenas 'quem detém o plano', não se você está usando modelos."
+  },
+  {
+    "term": "encadeamento (chaining)",
+    "def": "Quebrar um prompt monolítico em uma sequência de etapas com estados intermediários persistidos. Cada etapa é um agente completo com sua própria janela de contexto, e a saída de uma etapa alimenta a próxima.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que encadeamento sempre melhora os resultados — só adicione complexidade quando isso comprovadamente melhorar os resultados.",
+    "distractor_rationale": "Parece sempre melhor do que um prompt único, mas frequentemente adiciona overhead sem benefício."
+  },
+  {
+    "term": "roteamento (routing)",
+    "def": "Classificar a entrada e despachá-la para prompts ou agentes especializados. A chamada de roteamento deve ser barata (pequena, sem ferramentas), e os ramos devem ter especializações genuínas.",
+    "source": "[^S1]",
+    "pitfall": "Forçar roteamento quando há apenas uma categoria — roteamento para uma categoria é puro overhead.",
+    "distractor_rationale": "Parece sofisticado, mas quando não há distinção genuína entre ramos, é complexidade desperdiçada."
+  },
+  {
+    "term": "paralelização (parallelization)",
+    "def": "Executar múltiplos agentes simultaneamente para aumentar a capacidade (seccionamento) ou melhorar a qualidade (votação). Os resultados retornam ao orquestrador e são agregados programaticamente.",
+    "source": "[^S1]",
+    "pitfall": "Esquecer que os resultados retornam ao orquestrador — você precisa agregar programaticamente ou o contexto explodir.",
+    "distractor_rationale": "Parece que 'em paralelo' resolve automaticamente o problema de escala, mas o merge é onde a complexidade aparece."
+  },
+  {
+    "term": "seccionamento (sectioning)",
+    "def": "Fan-out heterogêneo: dividir o trabalho em subtarefas independentes que podem ser executadas em paralelo. Cada seção pode ser diferente (módulos 1-10, 11-20, etc.).",
+    "source": "[^S1]",
+    "pitfall": "Não controlar o custo do merge — passar payloads completos de volta em vez de referências explode o contexto.",
+    "distractor_rationale": "Parece que dividir o trabalho sempre torna as coisas mais rápidas, mas se a agregação traz tudo de volta, você perdeu."
+  },
+  {
+    "term": "votação (voting)",
+    "def": "Fan-out homogêneo: executar a mesma tarefa N vezes e agregar os resultados (votação majoritária, fusão de consenso). Usado para melhorar qualidade através de perspectivas independentes.",
+    "source": "[^S1]",
+    "pitfall": "Subestimar o multiplicador de custo N× — votação significa N× tokens, N× latência.",
+    "distractor_rationale": "Parece que mais perspectivas sempre melhoram a qualidade, mas o custo pode não justificar."
+  },
+  {
+    "term": "orquestrador-workers (orchestrator-workers)",
+    "def": "Um agente líder decide dinamicamente quantas subtarefas criar e como dividi-las, depois despacha para workers. A diferença-chave em relação ao seccionamento: as subtarefas não são predefinidas.",
+    "source": "[^S1]",
+    "pitfall": "Confundir com seccionamento porque a topologia parece igual — a diferença está em quem decide a decomposição.",
+    "distractor_rationale": "Ambos têm fan-out e merge, mas orquestrador-workers move a decisão de decomposição para o runtime."
+  },
+  {
+    "term": "evaluator-optimizer (avaliador-otimizador)",
+    "def": "Padrão revisar-e-refinar: gerar um rascunho, avaliá-lo, revisar com base no feedback, repetir. Também chamado de 'laço de revisão'.",
+    "source": "[^S1]",
+    "pitfall": "Executar o laço até 'máximo de rodadas' em vez de parar quando não houver mais progresso ou quando passou.",
+    "distractor_rationale": "Parece que mais rodadas sempre melhoram, mas sem critério de parada inteligente, você queima tokens sem ganho."
+  },
+  {
+    "term": "gate (programmatic gate)",
+    "def": "Verificação determinística entre etapas — expressões regulares, análise sintática, contadores, validação de esquema. O gate decide se a saída está pronta para a próxima etapa ou se precisa ser refeita.",
+    "source": "[^S1]",
+    "pitfall": "Pular gates e deixar o modelo julgar a si mesmo — modelos são ruins em autoavaliação.",
+    "distractor_rationale": "Parece que você pode confiar no modelo para saber quando terminou, mas sem gates, loops nunca param."
+  },
+  {
+    "term": "loop de harness",
+    "def": "O laço fundamental de `stop_reason`: o modelo gera, você verifica stop_reason, executa ferramentas se TOOL_USE, retorna a saída da ferramenta, repete até END_TURN. Cada nó em um grafo multiagente é um desses.",
+    "source": "[^S1]",
+    "pitfall": "Pensar que workflows 'não têm loops' — cada estágio ainda é um loop de harness completo.",
+    "distractor_rationale": "A distinção workflow vs agente não é sobre ter loops, é sobre quem detém o plano."
+  },
+  {
+    "term": "stop_reason",
+    "def": "O campo que a API Messages retorna em cada turno: END_TURN (terminado), TOOL_USE (quer executar ferramenta), MAX_TOKENS (atingiu limite). Dirige a lógica do loop de harness.",
+    "source": "[^S1]",
+    "pitfall": "Não verificar stop_reason antes de retornar — se ignorar TOOL_USE, o agente não pode fazer o trabalho.",
+    "distractor_rationale": "Parece um detalhe de implementação, mas é o sinal de controle fundamental do loop."
+  },
+  {
+    "term": "máximo de rodadas (max rounds)",
+    "def": "Critério de parada para loops de revisão: pare após N rodadas mesmo se não passou no gate. Usado para evitar loops infinitos.",
+    "source": "[^S1]",
+    "pitfall": "Usar máximo de rodadas como único critério de parada — você queima tokens até N sem verificar se há progresso.",
+    "distractor_rationale": "Parece necessário para evitar loops infinitos, mas sem 'nenhum progresso' como critério adicional, você desperdiça tokens."
+  },
+  {
+    "term": "fusível (fuse)",
+    "def": "Salvaguarda determinística que mata o loop quando uma condição patológica é detectada — por exemplo, 10 rodadas sem mudança na saída. Mais esperto do que máximo de rodadas fixo.",
+    "source": "[^S1]",
+    "pitfall": "Confundir fusível (detecta condições patológicas) com máximo de rodadas (apenas conta).",
+    "distractor_rationale": "Ambos param loops, mas fusível é baseado em evidência de problema, não apenas contagem."
+  },
+  {
+    "term": "verificador determinístico (deterministic verifier)",
+    "def": "Código que verifica se a saída atende aos requisitos sem usar um modelo — regex, análise sintática, esquema JSON, testes unitários. Mais rápido e mais confiável do que julgamento por LLM.",
+    "source": "[^S1]",
+    "pitfall": "Usar um segundo LLM para verificar quando uma regex bastaria — verificadores determinísticos são baratos e confiáveis.",
+    "distractor_rationale": "Parece que você precisa de um modelo para julgar qualidade, mas para requisitos formais, código é melhor."
+  },
+  {
+    "term": "pontuação em camadas (layered scoring)",
+    "def": "Verificação em várias passagens: gates determinísticos primeiro (baratos, rápidos), depois LLM-as-judge para aspectos subjetivos. Também chamado de 'julgamento em camadas' ou 'alocação de julgamento em camadas'.",
+    "source": "[^S1]",
+    "pitfall": "Pular direto para LLM-as-judge sem gates determinísticos — você paga por julgamento de modelo em coisas que código poderia verificar.",
+    "distractor_rationale": "Parece que LLM-as-judge é a solução moderna, mas gates determinísticos filtram a maioria dos problemas mais barato."
+  },
+  {
+    "term": "comprovadamente melhorar os resultados (demonstrably improve outcomes)",
+    "def": "O limiar para adicionar complexidade: meça uma linha de base primeiro, adicione o padrão, meça novamente, só mantenha se os números melhoraram. Do Curso 10.",
+    "source": "[^S1]",
+    "pitfall": "Adicionar padrões porque parecem sofisticados, sem medir se eles ajudam.",
+    "distractor_rationale": "Todos os padrões deste curso parecem melhorias, mas só valem a complexidade se os evals mostrarem ganho."
+  },
+  {
+    "term": "quem detém o plano (who holds the plan)",
+    "def": "A distinção fundamental: workflows = plano no código (você escreveu if/else e loops), agentes = plano no modelo (o modelo decide os próximos passos). Este curso ensina a primeira.",
+    "source": "[^S5]",
+    "pitfall": "Pensar que esta é uma distinção binária — é um espectro, e você pode misturar (workflow com alguns nós autônomos).",
+    "distractor_rationale": "Parece workflow vs agente são categorias fixas, mas sistemas reais ficam em algum lugar no espectro."
+  },
+  {
+    "term": "o script de fluxo de trabalho detém o loop, ramificações e resultados intermediários",
+    "def": "A citação textual de fonte primária que ancora o uso de 'grafo' deste curso: o controle de fluxo vive no seu código, não nas decisões do modelo.",
+    "source": "[^S5]",
+    "pitfall": "Pensar que 'grafo' é terminologia oficial — é metáfora de engenharia deste curso ancorada nesta citação.",
+    "distractor_rationale": "Parece jargão de produto porque as lições usam, mas é construção pedagógica, não termo oficial."
+  },
+  {
+    "term": "dependência do caminho (path-dependent)",
+    "def": "Trabalho onde a próxima etapa depende dos resultados da etapa anterior de forma imprevisível. Trabalho dependente do caminho é melhor com agentes; trabalho independente do caminho é melhor com workflows.",
+    "source": "[^S5]",
+    "pitfall": "Usar workflows para trabalho de pesquisa dependente do caminho — você não consegue predefinir os caminhos.",
+    "distractor_rationale": "Parece que workflows são sempre melhores porque são mais controláveis, mas eles só funcionam quando você pode predefinir os caminhos."
+  },
+  {
+    "term": "fan-out",
+    "def": "Despachar múltiplos agentes em paralelo. Pode ser seccionamento (tarefas diferentes) ou votação (mesma tarefa N vezes). Sempre emparelhado com merge/agregação.",
+    "source": "[^S1]",
+    "pitfall": "Fazer fan-out sem planejar o merge — os resultados voltam ao orquestrador e podem explodir o contexto.",
+    "distractor_rationale": "Parece que fan-out resolve automaticamente problemas de escala, mas sem merge inteligente, você apenas moveu o gargalo."
+  },
+  {
+    "term": "merge (fusão)",
+    "def": "Agregar resultados de múltiplos agentes paralelos de volta ao orquestrador. Pode ser feito por código (concatenar, reduzir) ou por um modelo agregador.",
+    "source": "[^S1]",
+    "pitfall": "Trazer payloads completos de volta em vez de referências — isso explode o contexto e anula os ganhos do fan-out.",
+    "distractor_rationale": "Parece que você precisa trazer todos os dados de volta para agregá-los, mas referências leves funcionam melhor."
+  },
+  {
+    "term": "passe referências, não payloads (pass references, not payloads)",
+    "def": "Padrão de merge: escrever saídas do worker em disco/armazenamento, repassar apenas identificadores ao orquestrador. Mantém o contexto do orquestrador leve.",
+    "source": "[^S2]",
+    "pitfall": "Trazer megabytes de saída de volta no contexto — você ficou sem espaço para o próximo passo.",
+    "distractor_rationale": "Parece que você precisa dos dados no contexto para agregá-los, mas referências + leitura seletiva funciona melhor."
+  },
+  {
+    "term": "teto de concorrência (concurrency ceiling)",
+    "def": "Todos os produtos reais limitam quantos agentes podem rodar simultaneamente — 16 agentes concorrentes em produtos Anthropic. Planeje seu fan-out dentro desses limites.",
+    "source": "[^S2]",
+    "pitfall": "Assumir concorrência ilimitada — se você tentar despachar 100 workers, eles vão enfileirar.",
+    "distractor_rationale": "Parece que 'paralelo' significa ilimitado, mas infraestrutura real tem tetos."
+  },
+  {
+    "term": "pool de concorrência",
+    "def": "Implementação que limita quantas Promises podem rodar simultaneamente. Gerencia fan-out dentro do teto de concorrência do produto.",
+    "source": "[^S1]",
+    "pitfall": "Usar Promise.all sem limitar concorrência — você vai atingir o teto e obter erros.",
+    "distractor_rationale": "Promise.all parece a solução certa, mas sem pool, você não controla quantas rodam de uma vez."
+  },
+  {
+    "term": "4× (quatro vezes)",
+    "def": "Multiplicador observado pela Anthropic: agentes usam cerca de 4× mais tokens do que interações de chat, devido ao loop de ferramentas e múltiplos turnos.",
+    "source": "[^S2]",
+    "pitfall": "Não fazer as contas antes de construir — 4× pode tornar uma tarefa economicamente inviável.",
+    "distractor_rationale": "Parece que agentes sempre valem a pena, mas o multiplicador de custo precisa ser justificado pelo valor da tarefa."
+  },
+  {
+    "term": "15× (quinze vezes)",
+    "def": "Multiplicador observado pela Anthropic: sistemas multiagente usam cerca de 15× mais tokens do que chat. Isso é a outra metade da melhora de 90,2% — ambos vêm do mesmo mecanismo.",
+    "source": "[^S2]",
+    "pitfall": "Ver 15× como 'ineficiência' em vez de investimento — se a tarefa vale, o multiplicador se paga.",
+    "distractor_rationale": "Parece um custo proibitivo, mas para tarefas de alto valor, 15× tokens para 90% de melhora é um bom negócio."
+  },
+  {
+    "term": "90,2%",
+    "def": "Melhoria de desempenho relatada pela Anthropic no eval interno de pesquisa usando orquestrador-workers (agente líder Opus 4, workers Sonnet 4). O contexto: consultas de amplitude, não precisão.",
+    "source": "[^S2]",
+    "pitfall": "Esperar 90% de melhora em toda tarefa — esse número é de um eval específico (pesquisa), não universal.",
+    "distractor_rationale": "Parece um benchmark universal, mas é de um caso de uso específico (pesquisa de amplitude com subagentes)."
+  },
+  {
+    "term": "regras de escala (scaling rules)",
+    "def": "Instruções no prompt do orquestrador sobre quantos workers disparar e quanto cada um pode gastar. Controla custos em sistemas orquestrador-workers.",
+    "source": "[^S2]",
+    "pitfall": "Omitir regras de escala e deixar o orquestrador decidir — você pode obter 'disparar 50 subagentes para consultas simples'.",
+    "distractor_rationale": "Parece que o modelo saberá o número certo, mas sem limites explícitos, ele otimiza para qualidade, não custo."
+  },
+  {
+    "term": "quatro elementos de um despacho",
+    "def": "Todo despacho do orquestrador para workers precisa: (1) objetivo, (2) formato de saída, (3) orientação sobre ferramentas/fontes, (4) limites da tarefa. Omitir qualquer um leva a problemas.",
+    "source": "[^S2]",
+    "pitfall": "Despachar apenas com 'faça X' — workers sem limites ou formato vão entregar trabalho inutilizável.",
+    "distractor_rationale": "Parece que um objetivo claro é suficiente, mas sem os outros três, workers divagam ou extrapolam."
+  },
+  {
+    "term": "execução síncrona (synchronous execution)",
+    "def": "Fan-out onde o orquestrador aguarda todos os workers terminarem antes de prosseguir. Simples, mas pode ser um gargalo em grande escala.",
+    "source": "[^S2]",
+    "pitfall": "Assumir que síncrono sempre funciona — em escala grande, aguardar tudo vira gargalo.",
+    "distractor_rationale": "Síncrono é mais simples, mas quando você tem centenas de workers, o tempo de espera explode."
+  },
+  {
+    "term": "execução assíncrona (asynchronous execution)",
+    "def": "Fan-out onde workers rodam independentemente e o orquestrador consome resultados à medida que ficam prontos. Requer coordenação de resultados, consistência de estado e propagação de erros.",
+    "source": "[^S2]",
+    "pitfall": "Mudar para assíncrono sem planejar os três novos custos — você ganha velocidade mas perde simplicidade.",
+    "distractor_rationale": "Parece que assíncrono sempre é melhor, mas a complexidade de coordenação pode não valer a pena."
+  },
+  {
+    "term": "comportamento emergente (emergent behavior)",
+    "def": "Sistemas multiagente exibem comportamentos que surgem sem programação específica. Pequenas mudanças no líder podem mudar imprevisívelmente como workers se comportam.",
+    "source": "[^S2]",
+    "pitfall": "Tratar sistemas multiagente como código determinístico — pequenas mudanças cascateiam imprevisívelmente.",
+    "distractor_rationale": "Parece que você pode raciocinar sobre o sistema como funções compostas, mas interações de agente são não lineares."
+  },
+  {
+    "term": "salvaguardas determinísticas (deterministic safeguards)",
+    "def": "Lógica de retentativa, checkpoints regulares, timeouts no nível do nó — código que envolve agentes não determinísticos em comportamento previsível.",
+    "source": "[^S2]",
+    "pitfall": "Confiar apenas na lógica do agente sem salvaguardas — agentes falham de formas imprevisíveis.",
+    "distractor_rationale": "Parece overhead de engenharia, mas é o que torna sistemas multiagente confiáveis em produção."
+  },
+  {
+    "term": "rainbow deployments",
+    "def": "Deslocar tráfego gradualmente mantendo ambas as versões rodando, evitando perturbar agentes em execução. Específico para sistemas de agentes de longa duração.",
+    "source": "[^S2]",
+    "pitfall": "Fazer deploy como software tradicional — você pode interromper agentes no meio do trabalho.",
+    "distractor_rationale": "Parece que deploy padrão funciona, mas agentes mantêm estado em processos de longa duração."
+  },
+  {
+    "term": "grafo (graph)",
+    "def": "Metáfora visual deste curso para composição de padrões: nós (agentes individuais) conectados por arestas (fluxo de dados). Não é terminologia oficial — ancorada na citação 'o script detém o loop, ramificações e resultados intermediários'.",
+    "source": "[^S5]",
+    "pitfall": "Tratar 'grafo' como conceito oficial de produto — é construção pedagógica deste curso.",
+    "distractor_rationale": "Parece jargão de produto porque as lições usam consistentemente, mas não aparece em nenhum material primário."
+  },
+  {
+    "term": "nó (node)",
+    "def": "Na metáfora de grafo deste curso: um agente individual, tipicamente um loop de harness completo. Nós são conectados por arestas que representam fluxo de dados.",
+    "source": "[^S5]",
+    "pitfall": "Confundir nó (agente completo) com etapa (parte de uma cadeia) — nós são autônomos.",
+    "distractor_rationale": "Parece que nó e etapa são sinônimos, mas nó implica autonomia (loop de harness completo)."
+  },
+  {
+    "term": "aresta (edge)",
+    "def": "Na metáfora de grafo deste curso: a conexão de fluxo de dados entre nós. A saída de um nó alimenta a entrada de outro.",
+    "source": "[^S5]",
+    "pitfall": "Pensar que arestas são código — são representação visual de 'quem alimenta quem', o código real é variáveis sendo passadas.",
+    "distractor_rationale": "Parece uma estrutura de dados, mas é apenas metáfora para fluxo de dados entre etapas."
+  },
+  {
+    "term": "aresta de retorno (return edge)",
+    "def": "Aresta que retorna da saída de um nó para sua própria entrada, criando um loop. Usado para representar loops de revisão no grafo visual.",
+    "source": "[^S5]",
+    "pitfall": "Implementar literalmente como estrutura de dados recursiva — no código, é apenas um while loop.",
+    "distractor_rationale": "Parece que você precisa de uma estrutura de grafo real, mas o código é apenas controle de fluxo normal."
+  },
+  {
+    "term": "ponto de bifurcação (branch point)",
+    "def": "Nó que despacha para caminhos diferentes com base em uma decisão. Representa roteamento ou condicionais no grafo visual.",
+    "source": "[^S5]",
+    "pitfall": "Pensar que todo if vira um nó — bifurcações são apenas decisões de roteamento entre nós, não todo condicional.",
+    "distractor_rationale": "Parece que você precisa modelar toda lógica condicional como nós, mas apenas decisões de roteamento de alto nível contam."
+  },
+  {
+    "term": "laço de revisão (review loop)",
+    "def": "Padrão evaluator-optimizer: gerar rascunho → avaliar/verificar → revisar com base no feedback → repetir até passar ou atingir limite. Também chamado de revisar-e-refinar.",
+    "source": "[^S1]",
+    "pitfall": "Executar até máximo de rodadas sem verificar progresso — você queima tokens reescrevendo algo que já está bom o suficiente.",
+    "distractor_rationale": "Parece que mais rodadas sempre melhoram, mas sem critério de 'nenhum progresso', você desperdiça tokens."
+  },
+  {
+    "term": "revisar-e-refinar (revise-and-refine)",
+    "def": "Nome alternativo para o padrão evaluator-optimizer. Mesmo padrão: gerar, avaliar, revisar em loop.",
+    "source": "[^S1]",
+    "pitfall": "Confundir com 'verificar-corrigir-reverificar' — revisar-e-refinar é para qualidade iterativa, verificar-corrigir é para correção pontual.",
+    "distractor_rationale": "Ambos têm loops de feedback, mas revisar-e-refinar é sobre melhorar um rascunho, verificar-corrigir é sobre consertar erros."
+  },
+  {
+    "term": "verificar-corrigir-reverificar (check-fix-recheck)",
+    "def": "Padrão mais simples que o laço de revisão: detectar erro específico → corrigir pontualmente → verificar se foi consertado. Uma rodada, não loop completo.",
+    "source": "[^S5]",
+    "pitfall": "Usar verificar-corrigir-reverificar quando você precisa de melhorias iterativas — é para correções pontuais, não refinamento.",
+    "distractor_rationale": "Parece mais simples que revisar-e-refinar, mas só funciona para erros detectáveis deterministicamente."
+  },
+  {
+    "term": "nenhum progresso adicional (no additional progress)",
+    "def": "Critério de parada: se o loop de revisão produzir saída idêntica em duas rodadas consecutivas, pare — o modelo não consegue melhorar mais.",
+    "source": "[^S5]",
+    "pitfall": "Usar apenas máximo de rodadas sem 'nenhum progresso' — você pode queimar todas as rodadas sem ganho.",
+    "distractor_rationale": "Máximo de rodadas parece suficiente, mas sem detector de progresso, você desperdiça tokens em reescritas inúteis."
+  },
+  {
+    "term": "giro em falso (spinning)",
+    "def": "Loop patológico onde o agente reescreve repetidamente sem melhorar — output oscila sem convergir. Fusível deve detectar e abortar.",
+    "source": "[^S5]",
+    "pitfall": "Não detectar giro em falso — você queima tokens até máximo de rodadas sem produzir trabalho útil.",
+    "distractor_rationale": "Parece que o modelo eventualmente converge, mas sem detecção, ele pode oscilar indefinidamente."
+  },
+  {
+    "term": "needs_human",
+    "def": "Marcador de resultado quando o loop não consegue produzir saída qualificada: exit code 1 indica 'parou aqui, entregue a um humano'.",
+    "source": "[^S5]",
+    "pitfall": "Misturar needs_human (exit 1) com crash de script (exit 3) — CI deve distinguir 'rodou mas precisa de handoff' de 'travou'.",
+    "distractor_rationale": "Parece um erro, mas é um dos três resultados de parada (passou/handoff humano/sem progresso), não um bug."
+  },
+  {
+    "term": "STOP_AFTER",
+    "def": "Switch de crash controlado do script deste curso: definir como 'merge' para antes da revisão, exit code 2, usado para verificar se o estado de fan-out/merge persistiu. Só reconhece 'merge' como valor.",
+    "source": "[^S5]",
+    "pitfall": "Pensar que é configuração universal — é o botão de debug do próprio script deste curso, não um campo de API.",
+    "distractor_rationale": "Completamente diferente do stop_reason retornado pelo modelo; não misture porque os nomes parecem similares."
+  },
+  {
+    "term": "espectro de determinismo (determinism spectrum)",
+    "def": "Eixo de controle de fluxo: totalmente determinístico (código decide tudo) ↔ totalmente autônomo (modelo decide tudo). Sistemas reais ficam em algum lugar no meio.",
+    "source": "[^S1]",
+    "pitfall": "Tratar workflow vs agente como binário — é um espectro, e você pode misturar (workflow com alguns nós autônomos).",
+    "distractor_rationale": "Parece que você precisa escolher um lado, mas sistemas práticos são híbridos."
+  },
+  {
+    "term": "máquina de estados (state machine)",
+    "def": "Modelo onde o sistema move entre estados discretos baseado em transições. Mencionado na Lição 5 como alternativa conceitual a 'grafo', mas não usado como vocabulário do curso.",
+    "source": "[^S5]",
+    "pitfall": "Pensar que 'máquina de estados' é a terminologia oficial — foi citada mas não adotada pelo curso.",
+    "distractor_rationale": "Parece o termo técnico correto, mas o curso optou por 'grafo' como metáfora pedagógica."
+  },
+  {
+    "term": "rastro de execução (execution trace)",
+    "def": "Log estruturado de cada etapa do grafo: qual nó rodou, quando, quanto custou, quantas rodadas. Escrito em run.jsonl e resumido em run-state.json.",
+    "source": "[^S5]",
+    "pitfall": "Não persistir rastros — quando algo falha, você não tem como reproduzir ou debugar.",
+    "distractor_rationale": "Parece overhead de logging, mas é essencial para entender comportamento de sistemas multiagente."
+  },
+  {
+    "term": "run-state.json",
+    "def": "Arquivo de checkpoint do estado do grafo: quais nós completaram, resultados intermediários, onde parou. Escrito atomicamente (.tmp + rename) seguindo o Curso 9.",
+    "source": "[^S4]",
+    "pitfall": "Escrever diretamente sem atomicidade — crash durante escrita corrompe o estado.",
+    "distractor_rationale": "Parece que fs.writeFileSync é suficiente, mas você precisa de .tmp + rename para atomicidade."
+  },
+  {
+    "term": "run.jsonl",
+    "def": "Log de execução passo a passo em formato JSON Lines: cada linha é um evento (nó iniciado, nó completado, gate rodado). Usado para auditar e debugar.",
+    "source": "[^S5]",
+    "pitfall": "Usar JSON array em vez de JSONL — você precisa reescrever o arquivo inteiro a cada evento.",
+    "distractor_rationale": "JSON array parece mais limpo, mas JSONL permite append eficiente sem ler o arquivo inteiro."
+  },
+  {
+    "term": "classificador (classifier)",
+    "def": "Modelo ou lógica que decide o roteamento. Para roteamento por LLM, mantenha o prompt apertado (sem ferramentas, saída estruturada).",
+    "source": "[^S1]",
+    "pitfall": "Fazer o classificador também executar parte do trabalho — ele só deve decidir o ramo, não fazer a tarefa.",
+    "distractor_rationale": "Parece eficiente fazer ambos em uma chamada, mas você quer que a decisão de roteamento seja barata e rápida."
+  },
+  {
+    "term": "fallback",
+    "def": "Ramo padrão para quando a entrada não bate com nenhuma categoria do roteamento. Todo roteamento precisa de um fallback.",
+    "source": "[^S1]",
+    "pitfall": "Omitir fallback — quando o classificador retorna categoria inesperada, o sistema trava.",
+    "distractor_rationale": "Parece que você pode cobrir todos os casos, mas classificadores sempre têm edge cases."
+  },
+  {
+    "term": "specialization",
+    "def": "Padrão de roteamento por domínio: despachar para agentes com prompts e ferramentas dedicados. Vocabulário de primeira mão atual.",
+    "source": "[^S6]",
+    "pitfall": "Criar especialização quando não há distinção genuína — se os ramos são 90% iguais, você não precisa de specialization.",
+    "distractor_rationale": "Parece sofisticado ter agentes especializados, mas sem diferença real, é complexidade desperdiçada."
+  },
+  {
+    "term": "escalation",
+    "def": "Padrão de roteamento por dificuldade: consultar um agente ou modelo mais capaz para subconjunto de subtarefas complexas. Vocabulário de primeira mão atual.",
+    "source": "[^S6]",
+    "pitfall": "Fazer escalation em toda tarefa 'por precaução' — o modelo mais capaz é mais caro, use apenas quando necessário.",
+    "distractor_rationale": "Parece que usar sempre o modelo mais forte garante qualidade, mas a maioria das tarefas não precisa."
+  },
+  {
+    "term": "conversa principal (main conversation)",
+    "def": "A conversa do usuário onde o trabalho é solicitado. Subagentes são despachados a partir daqui e retornam resultados de volta.",
+    "source": "[^S4]",
+    "pitfall": "Confundir a conversa principal com um nó do grafo — a conversa principal é o orquestrador, não um worker.",
+    "distractor_rationale": "Parece apenas terminologia de UI, mas define a distinção entre o agente que você está falando e os que ele despacha."
+  },
+  {
+    "term": "20 subagentes",
+    "def": "Limite referenciado de quantos subagentes podem ser despachados de uma única conversa em produtos Anthropic. Planeje sua decomposição dentro desse limite.",
+    "source": "[^S4]",
+    "pitfall": "Assumir que você pode despachar centenas de subagentes — produtos reais têm limites.",
+    "distractor_rationale": "Parece que 'multiagente' significa ilimitado, mas infraestrutura real impõe tetos."
+  },
+  {
+    "term": "subagentes sequencialmente (subagents sequentially)",
+    "def": "Despachar subagentes um após o outro em vez de em paralelo. Relevante quando há dependências ou quando você quer controlar custos.",
+    "source": "[^S4]",
+    "pitfall": "Sempre usar paralelo assumindo que é mais rápido — quando há dependências, sequencial é necessário.",
+    "distractor_rationale": "Paralelo parece sempre melhor, mas quando a etapa 2 precisa dos resultados da etapa 1, você não tem escolha."
+  },
+  {
+    "term": "25 threads concorrentes (25 concurrent threads)",
+    "def": "Outro limite de concorrência mencionado em contextos de produto — varia por produto e nível de assinatura. Sempre verifique os limites atuais.",
+    "source": "[^S2]",
+    "pitfall": "Codificar números de concorrência sem verificar limites atuais — eles variam e mudam.",
+    "distractor_rationale": "Parece um número confiável para planejar, mas limites de produto evoluem."
+  },
+  {
+    "term": "lote (batch / batching)",
+    "def": "Agrupar múltiplos itens e processá-los juntos. Pode ser processamento de lote (todos de uma vez) ou lotes menores para controlar concorrência.",
+    "source": "[^S1]",
+    "pitfall": "Processar um lote gigante de uma vez sem dividir — você atinge limites de concorrência ou memória.",
+    "distractor_rationale": "Parece mais eficiente processar tudo junto, mas lotes menores dão melhor controle."
+  },
+  {
+    "term": "Promise.all",
+    "def": "Primitiva JavaScript para executar múltiplas Promises em paralelo e aguardar todas. Base para implementar fan-out simples.",
+    "source": "[^S1]",
+    "pitfall": "Usar Promise.all sem pool de concorrência — você não controla quantas rodam simultaneamente.",
+    "distractor_rationale": "Parece a solução perfeita para paralelo, mas sem limitar, você atinge tetos de concorrência."
+  },
+  {
+    "term": "queda controlada (controlled crash)",
+    "def": "Abortar deliberadamente com exit code específico para sinalizar estado. STOP_AFTER é exemplo: exit code 2 para parar depois do merge.",
+    "source": "[^S5]",
+    "pitfall": "Tratar toda saída não-zero como erro — quedas controladas são intencionais e sinalizam estados válidos.",
+    "distractor_rationale": "Parece um hack, mas é forma legítima de sinalizar estados intermediários em scripts."
+  },
+  {
+    "term": "escrita atômica (atomic write)",
+    "def": "Padrão de escrever em arquivo .tmp primeiro, depois renomear para o nome real. Garante que crashes deixam o arquivo antigo intacto ou o novo completo, nunca corrompido.",
+    "source": "[^S1]",
+    "pitfall": "Usar fs.writeFileSync diretamente — crash durante escrita deixa arquivo corrompido.",
+    "distractor_rationale": "fs.writeFileSync parece suficiente, mas sem .tmp + rename você não tem atomicidade."
+  },
+  {
+    "term": "stub client (cliente stub)",
+    "def": "Implementação falsa da API que retorna dados mockados. Usado na Lição 6 para testar o grafo sem chamar a API real e gastar tokens.",
+    "source": "[^S5]",
+    "pitfall": "Testar diretamente contra a API real — você queima tokens debugando o controle de fluxo.",
+    "distractor_rationale": "Parece que você precisa da API real para testar, mas um stub permite iterar no grafo barato."
+  },
+  {
+    "term": "revisão cruzada adversarial (adversarial cross-review)",
+    "def": "Padrão de qualidade onde múltiplos agentes revisam o trabalho uns dos outros buscando problemas. Requer independência real entre revisores.",
+    "source": "[^S5]",
+    "pitfall": "Fazer revisão cruzada com contexto compartilhado — revisores precisam ser independentes para encontrar problemas diferentes.",
+    "distractor_rationale": "Parece que compartilhar contexto melhora a revisão, mas isso remove a independência que torna revisão cruzada valiosa."
+  },
+  {
+    "term": "esboçar de múltiplos ângulos e pesar (draft from multiple angles and weigh)",
+    "def": "Padrão de votação para trabalho criativo: gerar N rascunhos independentes, depois sintetizar os melhores elementos. Requer agregação inteligente.",
+    "source": "[^S5]",
+    "pitfall": "Gerar múltiplos rascunhos sem plano de sintetização — você fica com N opções e nenhuma forma de combiná-las.",
+    "distractor_rationale": "Parece que múltiplas perspectivas automaticamente melhoram o resultado, mas sem agregação, você apenas tem mais trabalho para revisar."
+  },
+  {
+    "term": "separação de responsabilidades (separation of concerns)",
+    "def": "Princípio de engenharia: cada nó/agente deve ter um trabalho claro e limitado. Facilita debug, reutilização e melhora a qualidade de cada parte.",
+    "source": "[^S2]",
+    "pitfall": "Fazer um nó que 'faz um pouco de tudo' — você perde a vantagem de especialização e torna debug mais difícil.",
+    "distractor_rationale": "Parece mais eficiente fazer múltiplas coisas em um nó, mas separação limpa melhora manutenibilidade."
+  },
+  {
+    "term": "janelas de contexto paralelas (parallel context windows)",
+    "def": "Benefício do fan-out: cada worker tem sua própria janela de contexto, então você pode processar mais total do que caberia em uma janela.",
+    "source": "[^S2]",
+    "pitfall": "Pensar que fan-out é só sobre velocidade — a capacidade de contexto em paralelo é igualmente importante.",
+    "distractor_rationale": "Parece que paralelo é sobre tempo, mas para tarefas grandes, a capacidade de contexto é o verdadeiro ganho."
+  },
+  {
+    "term": "consultas de amplitude vs. precisão (breadth vs. precision queries)",
+    "def": "Distinção de tipos de pesquisa: amplitude = explorar território vasto, precisão = encontrar fato específico. O número 90,2% vem de consultas de amplitude.",
+    "source": "[^S2]",
+    "pitfall": "Esperar ganhos de 90% em consultas de precisão — orquestrador-workers brilha em amplitude, não precisão.",
+    "distractor_rationale": "Parece um benchmark universal, mas é específico para pesquisas de amplitude com múltiplos subagentes."
+  },
+  {
+    "term": "aninhar até três camadas (nest up to three layers)",
+    "def": "Limite de profundidade de subagentes: conversa principal → subagentes → subagentes dos subagentes → terceiro nível. Referência de produto Anthropic.",
+    "source": "[^S4]",
+    "pitfall": "Planejar hierarquias profundas de agentes — produtos reais limitam a profundidade.",
+    "distractor_rationale": "Parece que você pode ter recursão ilimitada, mas há limites práticos de aninhamento."
+  },
+  {
+    "term": "coordenação de resultados (result coordination)",
+    "def": "Um dos três custos da execução assíncrona: rastrear quais workers terminaram, quais ainda estão rodando, e compor resultados parciais.",
+    "source": "[^S2]",
+    "pitfall": "Assumir que assíncrono é apenas 'adicionar await' — coordenação é trabalho significativo.",
+    "distractor_rationale": "Parece que async/await resolve tudo, mas rastrear múltiplos workers requer estado compartilhado."
+  },
+  {
+    "term": "consistência de estado (state consistency)",
+    "def": "Segundo custo da execução assíncrona: garantir que múltiplos workers não corrompam estado compartilhado. Requer locks, transações ou design sem estado compartilhado.",
+    "source": "[^S2]",
+    "pitfall": "Compartilhar estado mutável entre workers assíncronos — condições de corrida corrompem dados.",
+    "distractor_rationale": "Parece que variáveis locais são seguras, mas workers concorrentes precisam de coordenação cuidadosa."
+  },
+  {
+    "term": "propagação de erros entre subagentes (error propagation across subagents)",
+    "def": "Terceiro custo da execução assíncrona: decidir o que fazer quando um worker falha — abortar tudo, continuar com parciais, retentar. Requer política explícita.",
+    "source": "[^S2]",
+    "pitfall": "Não ter estratégia de erro — quando um worker falha, o sistema trava ou produz resultados incompletos silenciosamente.",
+    "distractor_rationale": "Parece que try/catch resolve, mas com múltiplos workers, você precisa decidir políticas de recuperação."
+  }
+]

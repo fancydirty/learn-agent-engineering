@@ -38,7 +38,7 @@
     "stage": "generated",
     "generationComplete": true,
     "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-observability/pt-BR/",
-    "guardStatus": "pending"
+    "guardStatus": "pass"
   },
   "qualitySelfReview": {
     "diagramUse": "Os diagramas ficam exatamente onde a variante em inglês os usa (a estrutura da árvore de trace), com os rótulos reescritos em português; nenhum diagrama foi acrescentado ou removido. Uma árvore de spans é o conteúdo deste curso que de fato pede forma de diagrama, e essa colocação já foi validada na revisão da variante em inglês.",

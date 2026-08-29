@@ -1,0 +1,548 @@
+[
+  {
+    "term": "no determinista",
+    "def": "Propiedad de un sistema donde entradas idénticas pueden producir respuestas distintas; los agentes son sistemas de este tipo, y eso rompe la intuición tradicional de depuración de «reprodúcelo y pon un punto de interrupción».",
+    "source": "[^S3]",
+    "pitfall": "Creer que si lo ejecutas unas cuantas veces más vas a caer en el mismo camino — vas a caer en un camino distinto pero igual de válido, quemando tokens.",
+    "distractor_rationale": "Se confunde seguido con los bugs intermitentes de concurrencia, pero esos al menos se ejecutan sobre el mismo código determinista; los agentes toman decisiones en cada paso."
+  },
+  {
+    "term": "divergencia de trayectoria",
+    "def": "Cuando un paso falla y hace que el agente explore una trayectoria completamente distinta, con todos los turnos siguientes creciendo sobre la rama equivocada, llevando a resultados impredecibles.",
+    "source": "[^S1]",
+    "pitfall": "Mirar solo la salida final buscando el problema — la lesión real suele estar decenas de turnos atrás, en un timeout o un error.",
+    "distractor_rationale": "Se trata seguido como «alucinación del modelo», cuando el punto de partida suele ser un tropiezo pequeño que en un servicio tradicional apenas ameritaría una línea de log de reintento."
+  },
+  {
+    "term": "acumulación entre turnos",
+    "def": "Los agentes tienen estado y los errores se acumulan; pueden ejecutarse durante períodos largos manteniendo estado a lo largo de muchas llamadas a herramientas, así que los errores se van sumando turno a turno.",
+    "source": "[^S1]",
+    "pitfall": "Reiniciar desde el principio cuando ocurren errores — es caro y frustrante para los usuarios, y si el estado al momento del fallo no quedó registrado, no hay manera de reanudar.",
+    "distractor_rationale": "Se confunde fácil con «el contexto se hace más largo»: eso es solo un problema de costo; la acumulación es el error mismo amplificándose."
+  },
+  {
+    "term": "comportamiento emergente",
+    "def": "Comportamientos de los sistemas multiagente que surgen sin haber sido programados específicamente — por ejemplo, cambios pequeños en el agente líder que cambian de forma impredecible el comportamiento de los subagentes.",
+    "source": "[^S1]",
+    "pitfall": "Probar solo el comportamiento de agentes individuales y creer que ya lo cubriste — lo que de verdad necesitas entender son los patrones de interacción.",
+    "distractor_rationale": "Suena místico, pero se refiere a fenómenos observables concretos: lanzar 50 subagentes para consultas simples, distraerse entre sí con actualizaciones excesivas."
+  },
+  {
+    "term": "vía de evaluación",
+    "def": "La calificación del estado final, los validadores y los conjuntos de evaluación que construiste en el curso anterior — responde solo «¿se rompió?», no «por qué».",
+    "source": "[^S1]",
+    "pitfall": "Usar una sola línea de `fail` como conclusión diagnóstica; el calificador se queda en la meta levantando una tarjeta de puntuación, no tiene manera de que le importe el tramo del medio.",
+    "distractor_rationale": "Se trata seguido como sustituto de la observabilidad, cuando en realidad son los dos extremos de la misma vara de carga: la evaluación juzga si está bien o mal, la observación investiga la causa."
+  },
+  {
+    "term": "pensar como tus agentes",
+    "def": "Construir una simulación usando exactamente los mismos prompts y herramientas de tu sistema, y después observar a los agentes trabajar paso a paso.",
+    "source": "[^S1]",
+    "pitfall": "Suavizar los prompts «para que queden más claros» y poder observar mejor — ahí ya estás observando un sistema distinto.",
+    "distractor_rationale": "Se lee mal seguido como «reproducir la misma ejecución», cuando el punto real es «ver cada paso»."
+  },
+  {
+    "term": "capas de abstracción",
+    "def": "Las capas intermedias que agregan los frameworks para simplificar el llamado a los LLM, la definición de herramientas y el encadenado de llamadas — ocultan los prompts y las respuestas subyacentes.",
+    "source": "[^S2]",
+    "pitfall": "Las suposiciones incorrectas sobre lo que hay debajo del capó son una fuente común de error del cliente; usar frameworks exige entender el código subyacente.",
+    "distractor_rationale": "Se parece a «no hay registros», pero las causas son opuestas: una está obstruida, la otra nunca se retuvo — y las dos duelen igual cuando necesitas evidencia después del hecho."
+  },
+  {
+    "term": "entorno aislado",
+    "def": "Entorno separado donde los agentes que pueden tomar acciones pasan por pruebas extensivas, usado junto con los guardrails apropiados.",
+    "source": "[^S2]",
+    "pitfall": "Pensar «es apenas un scriptcito» y saltártelo — la naturaleza autónoma de los agentes implica costos más altos y potencial de errores acumulativos.",
+    "distractor_rationale": "Se trata seguido como algo solo para incidentes de seguridad, cuando es igualmente un medio para controlar el costo y la acumulación de errores."
+  },
+  {
+    "term": "frontera de herramienta",
+    "def": "La superficie de contrato entre los sistemas deterministas y los agentes no deterministas; la única posición que deja rastro en los registros.",
+    "source": "[^S2]",
+    "pitfall": "Querer que algo sea auditable sin empujarlo hasta la frontera de herramienta — que el modelo compare dos conjuntos de datos en su cabeza no deja rastro; llamar a una herramienta `diff` sí.",
+    "distractor_rationale": "Se entiende fácil como «firma de la API», cuando en realidad se trata de «la frontera de la observabilidad»."
+  },
+  {
+    "term": "ground truth",
+    "def": "La retroalimentación real que el agente obtiene del entorno en cada paso durante la ejecución, como los resultados de llamadas a herramientas y de ejecución de código.",
+    "source": "[^S2]",
+    "pitfall": "Los errores también son ground truth — si le das un código de error críptico, el agente solo puede avanzar adivinando.",
+    "distractor_rationale": "Se confunde con «la respuesta correcta», cuando esto se refiere a los hechos que devuelve el entorno, no a etiquetas de evaluación."
+  },
+  {
+    "term": "transcripción cruda",
+    "def": "Por cada llamada a herramienta de una ejecución, el nombre de la herramienta y los parámetros completos; por cada respuesta de herramienta, el valor de retorno completo o el error — evidencia de primera mano.",
+    "source": "[^S3]",
+    "pitfall": "Usar el resumen del agente en lugar de la transcripción — el resumen borra calladamente los errores y las llamadas que nunca ocurrieron.",
+    "distractor_rationale": "Se trata fácil como «logs», cuando los logs son su formato de almacenamiento estructurado; la transcripción en sí es el texto original de la ida y vuelta."
+  },
+  {
+    "term": "autorreporte",
+    "def": "Lo que el agente escribe sobre sí mismo: resúmenes de cierre, tramos de razonamiento, autoevaluaciones después de ejecutar una herramienta — material secundario.",
+    "source": "[^S3]",
+    "pitfall": "Lo que omite suele ser más importante que lo que incluye, y las piezas faltantes no levantan la mano.",
+    "distractor_rationale": "Se lee profesional y medido, así que es lo más fácil de tratar como evidencia de proceso; el método real es rastrear cada número del autorreporte de vuelta a la transcripción."
+  },
+  {
+    "term": "cadena de pensamiento (CoT)",
+    "def": "El razonamiento que el modelo escribe antes de dar una respuesta, abreviado CoT.",
+    "source": "[^S3]",
+    "pitfall": "Tratar el CoT como evidencia — es una pista; para atrapar comportamiento no mencionado en el CoT tienes que volver a la transcripción cruda.",
+    "distractor_rationale": "Se trata seguido como «el proceso interno real del modelo», cuando también es texto generado y puede omitir cosas."
+  },
+  {
+    "term": "las cuatro preguntas (para leer transcripciones)",
+    "def": "Lista de verificación para leer transcripciones: llamó a la herramienta equivocada, llamó a la correcta con parámetros equivocados, llamó a muy pocas herramientas, procesó mal la respuesta de la herramienta.",
+    "source": "[^S3]",
+    "pitfall": "La evidencia de «muy pocas llamadas» es la ausencia y no va a saltar sola — tienes que usar los requisitos de la tarea como plantilla y contar.",
+    "distractor_rationale": "Era originalmente una taxonomía de diseño de herramientas y se trata fácil como una clasificación de bugs; su uso real es apuntar cada pregunta a un lugar concreto de la transcripción para verificarla."
+  },
+  {
+    "term": "tool_use",
+    "def": "Bloque de contenido donde el modelo nombra qué herramienta llamar; contiene el nombre de la herramienta y un objeto de parámetros completo que el modelo generó.",
+    "source": "[^S3]",
+    "pitfall": "Mirarlo solo a él y sacar conclusiones — solo muestra qué quería hacer el modelo; si lo logró hay que revisarlo en el `tool_result` emparejado.",
+    "distractor_rationale": "Los parámetros son largos y se ven plausibles, así que es fácil pasarlos por arriba; bugs como agregarle cuatro caracteres de más a los términos de búsqueda viven acá."
+  },
+  {
+    "term": "tool_result",
+    "def": "El bloque que el arnés devuelve después de ejecutar realmente la herramienta — si tuvo éxito, el valor de retorno completo; si falló, el contenido del error más un marcador de error.",
+    "source": "[^S3]",
+    "pitfall": "Anotar solo «dio error» y seguir de largo — la información real está en el mensaje de asistente inmediatamente posterior.",
+    "distractor_rationale": "Se trata fácil como «los logs de la herramienta», cuando es al mismo tiempo entrada que vuelve al contexto del modelo y determina el paso siguiente."
+  },
+  {
+    "term": "is_error",
+    "def": "Marcador de error sobre los resultados de herramienta, usado para distinguir «la herramienta devolvió contenido» de «la herramienta lanzó un error».",
+    "source": "[^S3]",
+    "pitfall": "Que el arnés se trague la excepción y solo meta de vuelta una cadena vacía — el modelo va a seguir fabricando sobre su suposición previa.",
+    "distractor_rationale": "Que esté marcado en true no significa que la ejecución se detenga: los errores típicamente se envuelven de vuelta en el contexto y el bucle continúa."
+  },
+  {
+    "term": "granjas de contenido",
+    "def": "Fuentes optimizadas para SEO y bien rankeadas pero de poca autoridad; las pruebas manuales encontraron que los agentes tempranos las preferían de forma consistente por encima de PDF académicos y blogs personales.",
+    "source": "[^S1]",
+    "pitfall": "Este sesgo en la selección de fuentes es casi invisible en las evaluaciones — las respuestas no son necesariamente incorrectas y las puntuaciones se siguen viendo bien.",
+    "distractor_rationale": "Se trata seguido como un problema de calidad de contenido, cuando en realidad está escrito en esa ristra de URL que la transcripción muestra que realmente eligió."
+  },
+  {
+    "term": "transcripción de sesión",
+    "def": "Los mensajes de la conversación persistidos en disco, como los registros de sesión JSONL que Claude Code escribe a disco.",
+    "source": "[^S4]",
+    "pitfall": "El formato de transcripción de otros es su implementación interna y cambia entre versiones; las tuberías que dependen de esos campos pueden romperse en cualquier release.",
+    "distractor_rationale": "Parece un registro crudo estructurado y ya hecho, pero además se escribe de forma asíncrona — en el instante en que un hook se dispara puede no contener los mensajes más recientes."
+  },
+  {
+    "term": "logs estructurados",
+    "def": "Convertir cada paso en registros JSON con campos, para que la evidencia no solo la puedan leer humanos sino que también se pueda filtrar, agregar y analizar por distribución.",
+    "source": "[^S3]",
+    "pitfall": "No comprimas una iteración entera del bucle en un solo registro — nunca vas a poder calcular el reparto entre tiempo de modelo y tiempo de herramienta; tampoco escribas un único registro resumen cuando la tarea termine.",
+    "distractor_rationale": "No están en conflicto con las transcripciones crudas — es la misma evidencia guardada en otro formato, para pasar de «una ejecución» a «doscientas ejecuciones»."
+  },
+  {
+    "term": "logs en prosa",
+    "def": "Escritura de logs que codifica la estructura dentro del lenguaje natural; se lee bien pero solo lo pueden decodificar humanos.",
+    "source": "[^S3]",
+    "pitfall": "Depender de expresiones regulares para extraer números — cuando alguien cambia «tardó» por «demoró», la regex empieza a devolver cero en silencio.",
+    "distractor_rationale": "Dan mejor experiencia de lectura humana, así que se los considera seguido «más amigables», pero el costo es la incapacidad total de agregar."
+  },
+  {
+    "term": "JSON Lines",
+    "def": "Un archivo donde cada línea es un objeto JSON completo, sin comas entre líneas y sin arreglo envolvente — comúnmente escrito JSONL.",
+    "source": "[^S3]",
+    "pitfall": "Cuando matan el proceso la última línea puede quedar a medio escribir — los parseadores tienen que reportar las líneas malas sin detener todo el lote.",
+    "distractor_rationale": "Se toma seguido como un «formato atajo de haragán», cuando sus ventajas reales son las escrituras solo-append, el procesamiento por streaming y que cada línea sea autocontenida."
+  },
+  {
+    "term": "session_id",
+    "def": "Identificador de una sesión de conversación, constante entre múltiples turnos, usado para responder «cuánto costó esta sesión en total, si cambió de modo de permisos».",
+    "source": "[^S4]",
+    "pitfall": "Usarlo como clave de agrupamiento para juzgar «si hubo acción posterior a un error» — el siguiente prompt de la misma sesión va a tapar el estancamiento anterior.",
+    "distractor_rationale": "Es de granularidad distinta al `prompt_id` pero se los mezcla seguido: la sesión es una conversación entera, el prompt es un disparo dentro de ella."
+  },
+  {
+    "term": "prompt_id",
+    "def": "Identificador de un prompt del usuario; todas las solicitudes al modelo y llamadas a herramientas que dispara comparten este valor.",
+    "source": "[^S4]",
+    "pitfall": "Construir el logger con el ciclo de vida equivocado — crearlo dentro de cada turno hace que `session_id` quede como un duplicado de `prompt_id`.",
+    "distractor_rationale": "Es el campo menos llamativo al escribir logs, pero su valor real solo aparece cuando hilvanas los registros dispersos en un árbol."
+  },
+  {
+    "term": "ID de correlación",
+    "def": "Un número de ID que se le da a «un evento disparador», y cada evento que ese disparador engendra lo copia — no hace falta infraestructura de ningún tipo, es apenas un campo.",
+    "source": "[^S4]",
+    "pitfall": "Te da un borde pero no una estructura — después de filtrar te quedan filas paralelas; quién es hijo de quién requiere campos padre-hijo.",
+    "distractor_rationale": "Se trata seguido como si fuera el trazado entero, cuando es apenas el primer paso para agregar relaciones."
+  },
+  {
+    "term": "duration_ms",
+    "def": "Milisegundos que tomó un paso, usados para encontrar cuellos de botella de rendimiento y también para revisar «¿está trabado?».",
+    "source": "[^S3]",
+    "pitfall": "Dónde arrancas y dónde detienes el cronómetro determina qué significa este número — si incluye o no los reintentos y el backoff propios de la herramienta hay que definirlo y escribirlo.",
+    "distractor_rationale": "Los milisegundos de ejecución de los payloads de hook excluyen la espera de permiso y el tiempo de `PreToolUse` — usarlos para responder «cuánto esperó el usuario» va a quedar sistemáticamente bajo."
+  },
+  {
+    "term": "tool_input",
+    "def": "Los parámetros enviados a la herramienta, provistos directamente en los payloads de `PostToolUse` como una mitad del registro completo de la llamada.",
+    "source": "[^S5]",
+    "pitfall": "Por defecto no escribas el texto completo en los logs de producción, registra solo forma y longitud; activa el texto completo solo para una revisión puntual y después de confirmar que el destino de los logs está aprobado para almacenar ese tipo de datos.",
+    "distractor_rationale": "Se cree seguido que hay que reconstruirlo a mano desde la transcripción, cuando está ahí mismo en el payload y es más confiable que las transcripciones de escritura asíncrona."
+  },
+  {
+    "term": "tool_response",
+    "def": "El resultado que devolvió la herramienta, parte del registro completo de ida y vuelta que `tool_input` y `tool_response` forman juntos en un solo disparo.",
+    "source": "[^S5]",
+    "pitfall": "Para conseguir «un contexto más completo», leer la ruta de transcripción que da el payload — eso te va a dar datos intermitentemente incompletos que no dan error.",
+    "distractor_rationale": "Solo está presente tras la ejecución exitosa de la herramienta — para cubrir «los parámetros se generaron pero no se ejecutó», empareja `PreToolUse` con él y compara ambos lados."
+  },
+  {
+    "term": "error (campo del registro)",
+    "def": "El campo `error` de los registros, presente solo cuando falla; el primer campo por el que filtrar al localizar.",
+    "source": "[^S3]",
+    "pitfall": "Los campos faltantes que no atrapas se vuelven `NaN` y contaminan toda la columna de agregación sin lanzar ninguna excepción.",
+    "distractor_rationale": "«No está en el registro» no significa «no ocurrió»: la semántica de reintentos puede hacer que todo un día de hipos no aterrice jamás en disco."
+  },
+  {
+    "term": "métricas",
+    "def": "Un conjunto de números: tiempo de ejecución de llamadas a herramientas individuales y de tareas completas, conteo total de llamadas a herramientas, consumo total de tokens, errores de herramienta.",
+    "source": "[^S3]",
+    "pitfall": "La duración promedio casi siempre miente — 99 llamadas de 80ms más 1 de 30 segundos promedian un número que se ve aceptable, pero la realidad son 99 rápidas y una completamente estancada.",
+    "distractor_rationale": "Es el mismo conjunto que usa la evaluación; la única diferencia es contra qué los comparas: antes frente a después, u hoy frente a los últimos siete días."
+  },
+  {
+    "term": "llamadas redundantes",
+    "def": "Muchas llamadas repetidas a herramientas, que suelen sugerir que hay que ajustar los parámetros de paginación o de límite de tokens.",
+    "source": "[^S3]",
+    "pitfall": "Cada una de esas llamadas es legal y cada una tiene éxito, las métricas no muestran ningún «error», pero todas son desperdicio.",
+    "distractor_rationale": "No mires solo «el conteo de llamadas más alto» — el conteo alto en sí no es el problema; la misma herramienta con solo el `offset` avanzando sí lo es."
+  },
+  {
+    "term": "errores de parámetro inválido",
+    "def": "Muchos errores por parámetros inválidos, que apuntan a que a las descripciones de herramientas les falta claridad o mejores ejemplos.",
+    "source": "[^S3]",
+    "pitfall": "Cuando los errores se agrupan en el mismo parámetro la señal es fortísima, pero un caso aislado no constituye un patrón; no cambies descripciones por eso.",
+    "distractor_rationale": "La dirección de investigación es la descripción de la herramienta, no el modelo; los timeouts de ejecución y errores parecidos no pertenecen a esta categoría."
+  },
+  {
+    "term": "tasa de error",
+    "def": "Métrica de proporción, conteo de errores dividido por conteo de llamadas, usada en lugar de números absolutos para ver la salud.",
+    "source": "[^S3]",
+    "pitfall": "Cambiar el denominador cuando el numerador no cambió — si el conteo mismo nunca cubrió los reintentos, dividirlo por lo que sea te sigue dando cero.",
+    "distractor_rationale": "Se trata seguido como arreglo universal, cuando en realidad si la semántica no cubre algo, ninguna fórmula lo rescata."
+  },
+  {
+    "term": "señal terminal",
+    "def": "El evento de error que se emite solo después de que los reintentos internos se rinden por completo, y que representa «esta solicitud falló en última instancia».",
+    "source": "[^S4]",
+    "pitfall": "Leer «3 errores hoy» como «3 hipos de red» — debajo se esconden cuantos reintentos exitosos haya habido; esta señal no dice ni una palabra sobre ellos.",
+    "distractor_rationale": "Este diseño es correcto, si no la curva de errores quedaría inundada de hipos transitorios que la autorrecuperación resolvió; el costo es que tienes que escribir la semántica."
+  },
+  {
+    "term": "estancamiento sospechoso",
+    "def": "Estado donde el último registro de un prompt tiene error y no le siguen registros posteriores — frente a «se recuperó del error».",
+    "source": "[^S4]",
+    "pitfall": "La condición tiene que ser «el último registro tiene error»; escribir «existe error» va a etiquetar mal las ejecuciones que dieron error y después se recuperaron y siguieron.",
+    "distractor_rationale": "Elegir la clave de agrupamiento equivocada causa detecciones perdidas: el siguiente prompt de la misma sesión se va a tomar como «acción posterior» al error anterior."
+  },
+  {
+    "term": "umbral",
+    "def": "La línea que juzga «cuánto cuenta como anormal»; no hay números en los materiales de primera mano — ni presupuesto de error ni SLO.",
+    "source": "[^S4]",
+    "pitfall": "Escribir «después de 3 errores seguidos manda un correo» dentro del arnés — esa lógica se despliega con el agente, se reinicia con el agente y se rompe con el agente.",
+    "distractor_rationale": "La documentación menciona que habría que hacer alertas, lo que se lee fácil como «la documentación dio valores recomendados»."
+  },
+  {
+    "term": "SIEM",
+    "def": "Sistema de Security Information and Event Management; la detección de anomalías, el cálculo de líneas base, la correlación entre sesiones y las alertas son todas responsabilidad de su lado.",
+    "source": "[^S4]",
+    "pitfall": "Hacer que el sistema observado emita sus propios juicios — no tiene datos históricos contra los cuales comparar y se rompe junto con el flujo principal.",
+    "distractor_rationale": "Se trata seguido como puro producto de seguridad, cuando acá carga con «todo el procesamiento más allá del flujo de eventos crudo»."
+  },
+  {
+    "term": "rastro de auditoría",
+    "def": "Con los atributos de identidad del usuario final adjuntos, las decisiones de herramientas, los resultados de herramientas, las conexiones MCP y los cambios de modo de permisos forman un registro por usuario.",
+    "source": "[^S6]",
+    "pitfall": "Creer que hace falta construir un sistema de recolección aparte — es el mismo lote de eventos que usas para depurar, apenas cortado de otra manera.",
+    "distractor_rationale": "Al depurar cortas horizontalmente por prompt, al auditar cortas verticalmente por usuario; el mismo lote de datos leído de dos formas se trata seguido como dos cosas distintas."
+  },
+  {
+    "term": "span",
+    "def": "El registro de un trabajo con un principio y un final: tiene nombre, hora de inicio, hora de fin, varios atributos, y puede identificar a su span padre.",
+    "source": "[^S4]",
+    "pitfall": "Los spans de herramienta tienen que separar «esperando el permiso» y «ejecutando» en dos tramos — los mismos 40 segundos, partidos, te dicen si arreglar la configuración o arreglar la implementación.",
+    "distractor_rationale": "Se equipara fácil con una línea de log, cuando la diferencia es que lleva un rango de tiempo y relaciones padre-hijo."
+  },
+  {
+    "term": "traza",
+    "def": "Todo un árbol de spans conectados por relaciones padre-hijo; todo lo que ocurrió en una solicitud completa de principio a fin, leído como árbol.",
+    "source": "[^S4]",
+    "pitfall": "Es lo más caro y lo más detallado; en el orden de adopción va después de las métricas y los eventos de log.",
+    "distractor_rationale": "Se trata seguido como «logs más detallados», cuando lo que de verdad te da por encima de los logs son relaciones de pertenencia y anidamiento temporal."
+  },
+  {
+    "term": "claude_code.interaction",
+    "def": "El nombre del span raíz que corresponde a cada prompt del usuario en el trazado de primera mano.",
+    "source": "[^S4]",
+    "pitfall": "Las ejecuciones de hooks también se registran debajo de él — el mecanismo de observabilidad es él mismo un objeto observado.",
+    "distractor_rationale": "El nombre suena a «una interacción», pero su frontera es un prompt, no una conversación entera."
+  },
+  {
+    "term": "subagente",
+    "def": "Agente de nivel inferior despachado a través de la herramienta Agent; sus solicitudes al modelo y sus spans de herramienta se anidan bajo el span de herramienta del agente padre.",
+    "source": "[^S6]",
+    "pitfall": "Hacer el recuento «contando solo las solicitudes al modelo emitidas por el bucle principal» — el costo de un prompt puede quedar subreportado en más de la mitad.",
+    "distractor_rationale": "Los registros de las ejecuciones concurrentes se intercalan con los del bucle principal en la línea de tiempo; partirlos por ventana temporal es casi imposible."
+  },
+  {
+    "term": "exportador",
+    "def": "El código dentro del proceso encargado de empaquetar los spans y mandarlos afuera.",
+    "source": "[^S6]",
+    "pitfall": "Cuando ejecutes a través del SDK, no pongas `console` como valor de exportador.",
+    "distractor_rationale": "Las tres señales tienen cada una su propio exportador; que las métricas funcionen no significa que las trazas funcionen."
+  },
+  {
+    "term": "colector",
+    "def": "La estación de relevo o servicio backend que recibe los spans; el exportador le manda los datos y tú ves el árbol en su panel.",
+    "source": "[^S6]",
+    "pitfall": "Cuando responde lento, el flush previo a la salida del proceso se corta por un timeout corto y los spans de la cola igual se pierden.",
+    "distractor_rationale": "Los colectores autoalojados también son backends OTLP; no necesitas elegir un producto comercial antes de empezar."
+  },
+  {
+    "term": "fallo silencioso de exportación",
+    "def": "El comportamiento por defecto donde, si el endpoint es inalcanzable o el backend rechaza los datos, el agente sigue ejecutándose con normalidad, la telemetría se descarta y no aparece ningún error en tu aplicación.",
+    "source": "[^S6]",
+    "pitfall": "Un pipeline roto y todo-funcionando se ven idénticos desde tu lado; cero datos no se puede leer como «no hay problemas».",
+    "distractor_rationale": "El diseño en sí es correcto —el pipeline de observabilidad no debería tumbar el flujo principal—, pero el costo es que al investigar tienes que verificar primero la sonda."
+  },
+  {
+    "term": "exportación por lotes",
+    "def": "El mecanismo de acumular la telemetría en lotes y mandarla a intervalos — por defecto las métricas cada 60 segundos, las trazas y los logs cada 5 segundos.",
+    "source": "[^S6]",
+    "pitfall": "Si matan el proceso antes de que la CLI termine su apagado, lo que quede en el búfer del lote se pierde; las ejecuciones de vida corta necesitan intervalos bastante más cortos que su duración.",
+    "distractor_rationale": "Ante una cola faltante es fácil pensar «agrandemos el lote» — la dirección es exactamente la contraria; cuanto más grande el lote, peor la pérdida cuando el último se cae."
+  },
+  {
+    "term": "service.name",
+    "def": "Atributo de recurso que identifica de qué servicio vinieron los datos; la CLI por defecto lo reporta como `claude-code`.",
+    "source": "[^S6]",
+    "pitfall": "Varios agentes exportando al mismo colector sin sobrescribirlo termina en que estás mirando una sopa.",
+    "distractor_rationale": "«No veo datos» también puede significar que los datos llegaron pero están mezclados bajo el nombre de servicio de otro — esta sospecha va después del pipeline."
+  },
+  {
+    "term": "claude_code.session.count",
+    "def": "Métrica de conteo que se emite apenas arranca una sesión; la sonda más barata para verificar que la configuración de exportación funcionó.",
+    "source": "[^S4]",
+    "pitfall": "Poder consultarla solo significa que la ruta de datos está viva; después vienen las sospechas sobre las expresiones de consulta y la configuración de los paneles.",
+    "distractor_rationale": "Su valor no está en la métrica en sí, sino en partir «¿tiene un problema el agente?» y «¿está funcionando el pipeline?» en dos preguntas que se responden por separado."
+  },
+  {
+    "term": "TRACEPARENT",
+    "def": "Variable de entorno en formato estándar que lleva el id de traza y el id del span actual; los subprocesos de Bash y PowerShell la heredan automáticamente.",
+    "source": "[^S4]",
+    "pitfall": "Los subprocesos de hook no reciben la configuración de exportación `OTEL_*`; no esperes colgarte del pipeline de telemetría del arnés heredando variables de entorno en los hooks.",
+    "distractor_rationale": "Resuelve «a quién me engancho», no «adónde van los datos» — esas dos cosas se confunden seguido."
+  },
+  {
+    "term": "contexto de traza W3C",
+    "def": "Cadena en formato estándar que contiene el id de traza y el id del span actual; quien la reciba sabe dónde engancharse.",
+    "source": "[^S6]",
+    "pitfall": "Al reconstruir árboles está escondida en un campo distinto al de los demás; después de partirla por guiones, el tercer segmento es el id del span padre.",
+    "distractor_rationale": "Parece una cabecera de autenticación, cuando en realidad solo lleva información de pertenencia, sin contenido."
+  },
+  {
+    "term": "CLAUDE_CODE_ENHANCED_TELEMETRY_BETA",
+    "def": "El interruptor que, al activarse, hace que cada paso del bucle del agente se vuelva un span inspeccionable en tu backend de trazado.",
+    "source": "[^S6]",
+    "pitfall": "Sin el interruptor vas a ver una vista de trazas flaca o directamente vacía, fácil de juzgar mal como que el pipeline no funciona.",
+    "distractor_rationale": "Es distinto del «interruptor de activación de la señal de trazas en sí» — hay que confirmar los dos."
+  },
+  {
+    "term": "hooks",
+    "def": "Comandos de shell, endpoints HTTP o prompts de LLM definidos por el usuario que se ejecutan automáticamente en puntos específicos del ciclo de vida de Claude Code.",
+    "source": "[^S5]",
+    "pitfall": "Los hooks de comando se ejecutan con todos tus permisos de usuario; revísalos y pruébalos antes de agregarlos a tu configuración.",
+    "distractor_rationale": "Para la observabilidad, su valor no es «puede cambiar el comportamiento» sino «puede ver sin cambiar el comportamiento»."
+  },
+  {
+    "term": "matcher",
+    "def": "La regla de coincidencia que determina cuándo se dispara un hook; omitido o puesto en comodín significa un-hook-registra-todo.",
+    "source": "[^S5]",
+    "pitfall": "Cuando el log está vacío, revisa primero el log de depuración en busca de registros de coincidencia — si está mal escrito no da error, simplemente no se dispara.",
+    "distractor_rationale": "En escenarios de observabilidad no lo angostes: no sabes de antemano qué herramienta se va a romper."
+  },
+  {
+    "term": "PreToolUse",
+    "def": "Evento que se ejecuta después de que el modelo crea los parámetros de la herramienta y antes de procesar la llamada.",
+    "source": "[^S5]",
+    "pitfall": "El tiempo que consume no se cuenta en los milisegundos de ejecución del payload; no los sumes como duración de un mismo paso.",
+    "distractor_rationale": "El valor de este hueco es que los parámetros están finalizados pero la herramienta todavía no se ejecutó — bugs como agregarle un año a los términos de búsqueda viven en esos parámetros."
+  },
+  {
+    "term": "PostToolUse",
+    "def": "Evento que se dispara tras la ejecución exitosa de una herramienta; la entrada lleva tanto `tool_input` como `tool_response`.",
+    "source": "[^S5]",
+    "pitfall": "Su condición de disparo es «ejecución exitosa» — para cubrir los casos donde los parámetros se generaron pero la ejecución no tuvo éxito, empareja con `PreToolUse` y compara ambos lados.",
+    "distractor_rationale": "Un disparo es una ida y vuelta completa; se cree seguido que hay que emparejar solicitud y respuesta uno mismo."
+  },
+  {
+    "term": "SessionStart",
+    "def": "Evento de la cadencia una-vez-por-sesión; se dispara cuando se abre una sesión nueva y también cuando se reanuda una existente.",
+    "source": "[^S5]",
+    "pitfall": "Escribir un manejador que «inicializa un log nuevo cuando arranca la sesión» va a sobrescribir el tramo anterior la primera vez que uses resume.",
+    "distractor_rationale": "Desde la perspectiva del bucle, reanudar no es «empezar de cero», pero igual toca la campana de este evento."
+  },
+  {
+    "term": "Stop",
+    "def": "Evento de fin de turno en la cadencia una-vez-por-turno; emparejado con `UserPromptSubmit` permite calcular la duración de un turno.",
+    "source": "[^S5]",
+    "pitfall": "Engancharlo sin enganchar la salida excepcional significa que los turnos terminados de forma anormal nunca reciben hora de fin y los registros de inicio quedan colgados para siempre.",
+    "distractor_rationale": "Elegir mal la cadencia da números difíciles de explicar: querer contar «cuántas herramientas usó una tarea» enganchándose a la compuerta por turno solo te da cero."
+  },
+  {
+    "term": "payload",
+    "def": "El contexto JSON que se le entrega a tu manejador cuando un evento se dispara y el matcher coincide.",
+    "source": "[^S5]",
+    "pitfall": "Para conseguir «un contexto más completo», pasarse a leer la ruta del archivo de transcripción que provee — ese archivo se escribe de forma asíncrona y puede no contener los mensajes más recientes del turno actual.",
+    "distractor_rationale": "Los hooks de comando lo reciben por stdin y responden con código de salida, stdout y stderr — no hay magia involucrada."
+  },
+  {
+    "term": "OTEL_*",
+    "def": "Conjunto de variables de entorno relacionadas con la exportación de telemetría; Claude Code las elimina de cada subproceso que lanza, incluidos los hooks.",
+    "source": "[^S5]",
+    "pitfall": "Para emitir telemetría desde un hook tienes que llevar tu propia configuración de exportación completa, o hacer que escriba logs estructurados y alinearlos con la telemetría usando el prompt id.",
+    "distractor_rationale": "El fallo es silencioso — los datos no se exportan pero tampoco dan error, así que vas a creer que están esperando en el backend."
+  },
+  {
+    "term": "log de depuración",
+    "def": "Archivo de log que registra qué hooks coincidieron, sus códigos de salida y el stdout y stderr completos.",
+    "source": "[^S5]",
+    "pitfall": "Para ver líneas de granularidad más fina, como los conteos del matcher, tienes que poner el nivel de log en verbose.",
+    "distractor_rationale": "Cuando los hooks no funcionan, es el único lugar que puede separar «no se disparó», «no coincidió» y «el script se cayó»."
+  },
+  {
+    "term": "flujo de cinco pasos",
+    "def": "La disposición de depuración que armó este curso: acotar por prompt id, encontrar la primera divergencia, reproducir y observar, machacar repetidamente el mismo componente, recuperar desde el punto de fallo después de arreglar.",
+    "source": "[^S1]",
+    "pitfall": "Recorrer los cinco pasos tiene un costo; para el ruido inofensivo de baja frecuencia sale más barato registrar y acumular primero, e investigar cuando aparezca un patrón.",
+    "distractor_rationale": "Es una disposición propia de este curso, no la metodología oficial de nadie — solo la base de cada paso tiene fuentes."
+  },
+  {
+    "term": "acotar",
+    "def": "Paso uno: filtrar por prompt id para encoger el alcance de «el agente se rompió» a «estos diez y pico de eventos bajo este id».",
+    "source": "[^S4]",
+    "pitfall": "Sin este paso ninguna pregunta posterior puede arrancar — ni siquiera puedes encerrar qué líneas pertenecen a esta ejecución.",
+    "distractor_rationale": "La importancia de este paso no es técnica, es psicológica: convierte una proposición indepurable en una depurable."
+  },
+  {
+    "term": "primera divergencia",
+    "def": "El paso donde el comportamiento empieza a desviarse de lo esperado; los absurdos del final son en su mayoría ruido de río abajo.",
+    "source": "[^S1]",
+    "pitfall": "Arreglar el último paso suele ser limpiar lo que ensució un error de río arriba; cambia el método del fallo y van a crecer otros nuevos.",
+    "distractor_rationale": "El tipo de divergencia más difícil de reconocer es «procesó mal la respuesta de la herramienta» — ese paso está verde en los logs."
+  },
+  {
+    "term": "contagio",
+    "def": "Los pasos posteriores al punto de divergencia que se ven igual de absurdos pero apenas siguen empujando hacia adelante sobre la premisa equivocada.",
+    "source": "[^S1]",
+    "pitfall": "Con solo la salida final en la mano, la gente suele ir a cambiar el prompt para agregarle «no inventes» — eso le pega al contagio, no le pega a la lesión.",
+    "distractor_rationale": "Los pasos de contagio están genuinamente mal por sí mismos, así que es facilísimo tratarlos como bugs independientes y arreglarlos uno por uno."
+  },
+  {
+    "term": "reproducir y observar",
+    "def": "Construir simulaciones usando prompts y herramientas idénticas, y mirar paso a paso para forzar de inmediato la salida de los modos de fallo.",
+    "source": "[^S1]",
+    "pitfall": "Dos restricciones que no se pueden aflojar: la entrada copiada tal cual y la observación paso a paso — dejarlo ejecutarse hasta el final y revisar solo la salida final vuelve esto inútil.",
+    "distractor_rationale": "Los mismos bugs son invisibles en las métricas agregadas (la tasa de éxito es alta) y exigen lectura línea por línea en los logs a posteriori, pero mirando paso a paso el ojo humano los detecta en segundos."
+  },
+  {
+    "term": "cliente stub",
+    "def": "Un reemplazo que no manda solicitudes de red y devuelve en orden objetos de respuesta preescritos de un arreglo fijo, volviendo reproducible el lado del modelo.",
+    "source": "[^S1]",
+    "pitfall": "Fija el lado del entorno; el comportamiento del modelo sigue siendo no determinista en las ejecuciones reales — esto es reducción de ruido, no una garantía de reproducción.",
+    "distractor_rationale": "Se dice seguido que «vuelve deterministas a los agentes», cuando en realidad apenas convierte dos variables moviéndose en una."
+  },
+  {
+    "term": "cola de respuestas",
+    "def": "El arreglo del que el cliente stub va sacando en orden, con cada elemento llevando su `stop_reason`, sus bloques de contenido y su `usage` completos.",
+    "source": "[^S1]",
+    "pitfall": "Cuando la cola se agota, lanza un error explícito y registra uno; si no, la última ronda no tiene su registro correspondiente y el conteo de rondas no va a cuadrar con el de llamadas al modelo.",
+    "distractor_rationale": "El bucle del arnés no cambia ni una palabra — lo que recibe tiene la misma forma que lo que devuelve un cliente real."
+  },
+  {
+    "term": "agente de prueba de herramientas",
+    "def": "Agente al que le das una herramienta defectuosa, intenta usarla repetidamente y después reescribe la descripción de la herramienta para evitar los fallos; al probarla docenas de veces encuentra matices clave y bugs.",
+    "source": "[^S1]",
+    "pitfall": "Las «docenas de veces» son el punto — ejecutándolo tres o cinco veces, bugs como «a veces inventa» podrían no aparecer ni una vez.",
+    "distractor_rationale": "Es machacar el comportamiento de un componente en sus entradas límite, no vagamente «ejecutarlo unas cuantas veces más»."
+  },
+  {
+    "term": "trace_id",
+    "def": "Un id por ejecución, que hilvana los registros dispersos del mismo flujo de vuelta a la misma ejecución.",
+    "source": "[^S4]",
+    "pitfall": "Que se llame así o `prompt_id` no importa; lo que importa es que ese id exista y que cada registro lo lleve.",
+    "distractor_rationale": "Solo encierra el alcance; reconstruir los registros en un árbol sigue requiriendo campos padre-hijo."
+  },
+  {
+    "term": "span_id",
+    "def": "El id propio de este registro; otros registros lo apuntan para declarar «estoy debajo tuyo».",
+    "source": "[^S4]",
+    "pitfall": "Los logs se escriben en orden de hora de fin, así que los hijos suelen aparecer antes que los padres — no dejes que el orden del archivo te confunda al reconstruir.",
+    "distractor_rationale": "Es de granularidad distinta al `trace_id`: un `trace_id` por ejecución, un `span_id` por paso."
+  },
+  {
+    "term": "parent_id",
+    "def": "Campo que apunta al id del registro padre; los árboles se reconstruyen con él desde el JSONL en disco.",
+    "source": "[^S4]",
+    "pitfall": "Si algo falta en el árbol, no es un problema del código que imprime, es un problema del código que registra — lo que no se registró no va a aparecer en el árbol.",
+    "distractor_rationale": "Las relaciones padre-hijo no dependen de la pila de llamadas en memoria sino de campos persistidos; ese punto es lo que las hace funcionar entre procesos."
+  },
+  {
+    "term": "MAX_ROUNDS",
+    "def": "Compuerta dura sobre la cantidad de iteraciones del bucle; superarla lanza un error, registra una interrupción y sale con código distinto de cero.",
+    "source": "[^S2]",
+    "pitfall": "Un bucle sin condiciones de parada es renunciar al control; la cantidad máxima de iteraciones es la compuerta más barata.",
+    "distractor_rationale": "Gobierna «¿se descontroló?», no «¿es correcta la salida?» — lo segundo es trabajo del validador."
+  },
+  {
+    "term": "stop_reason",
+    "def": "El campo de las respuestas del modelo que hace que el bucle del arnés continúe o termine.",
+    "source": "[^S2]",
+    "pitfall": "Al terminar, que sea `end_turn` no significa que la tarea haya tenido éxito — el agente puede creer que la completó sin problemas mientras le falta un pedazo de datos.",
+    "distractor_rationale": "Es una señal de flujo de control, no una señal de calidad; se trata fácil como evidencia de «éxito»."
+  },
+  {
+    "term": "HEAD_CHARS",
+    "def": "La línea que define cuántos caracteres como máximo conserva cada fragmento de contenido en los logs; ponlo en 0 y ni una palabra toca el disco.",
+    "source": "[^S6]",
+    "pitfall": "Antes de ajustarlo para registrar el texto completo, el prerrequisito es que tu pipeline de observabilidad esté aprobado para almacenar el tipo de datos que maneja tu agente — primero pasa la aprobación, después cambia el código.",
+    "distractor_rationale": "«El disco es barato, registrar todo no puede hacer daño» solo se sostiene en la dimensión del disco; el cumplimiento normativo y la buscabilidad se llevan un golpe cada uno."
+  },
+  {
+    "term": "shape",
+    "def": "Campo de los registros que describe el tipo y la escala de un valor: si es string u objeto, qué tan largo, qué claves.",
+    "source": "[^S6]",
+    "pitfall": "Contar solo la cantidad de llamadas sin siquiera registrar la forma significa que no puedes responder «por qué camino pasó esa lectura que dio error».",
+    "distractor_rationale": "La línea divisoria no es «registrar o no» sino «registrar estructura o registrar contenido»: la forma permite localizar, el texto completo por defecto no aterriza en disco."
+  },
+  {
+    "term": "resumen de métricas",
+    "def": "Una línea que saca rondas totales, cantidad de llamadas a herramientas, tokens, cantidad de errores y duración total — una de las tres piezas del kit de observabilidad.",
+    "source": "[^S3]",
+    "pitfall": "La cantidad de rondas, de llamadas y los tokens de la ejecución que falló pueden ser casi idénticos a los de las normales; lo único que cambió es la cantidad de errores.",
+    "distractor_rationale": "Responde «¿esta ejecución se ve normal?», no «¿es correcta la salida?» — lo segundo hay que verificarlo aparte."
+  },
+  {
+    "term": "compare-runs.mjs",
+    "def": "Script de comparación que lee los logs de dos ejecuciones, los compara lado a lado por tipo de registro y nombre de herramienta, y sale con código distinto de cero si hay errores.",
+    "source": "[^S3]",
+    "pitfall": "Las compuertas recién cableadas primero hay que ejecutarlas comparando una ejecución limpia consigo misma, para confirmar que genuinamente deja pasar cuando «debería pasar» — si no, cada código de salida es poco confiable.",
+    "distractor_rationale": "La compuerta pregunta «¿esta ejecución todavía tiene errores de herramienta?», no «¿es correcto el artefacto final?»."
+  },
+  {
+    "term": "compuerta",
+    "def": "Un juicio cableado a códigos de salida; el distinto de cero lo puede atrapar CI, cron o cualquier lugar donde «distinto de cero dispara alerta».",
+    "source": "[^S3]",
+    "pitfall": "Un script de verificación que siempre devuelve 0 es lo mismo que no tener script de verificación — hay que construir un contraejemplo para verificar que sabe distinguir.",
+    "distractor_rationale": "Solo emite la señal hacia afuera; la detección de anomalías y las alertas siguen siendo responsabilidad del backend."
+  }
+]

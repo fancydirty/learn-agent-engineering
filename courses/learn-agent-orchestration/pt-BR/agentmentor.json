@@ -38,7 +38,7 @@
     "stage": "generated",
     "generationComplete": true,
     "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-orchestration/pt-BR/",
-    "guardStatus": "pending"
+    "guardStatus": "pass"
   },
   "qualitySelfReview": {
     "diagramUse": "Os diagramas ficam exatamente onde a variante em inglês os usa — o mais importante é o diagrama de composição da lição 5, cuja topologia (incluindo o nó de portão e a classificação tratada como chamada ao modelo) foi validada na revisão; os rótulos foram reescritos em português e a topologia ficou intocada. Nenhum diagrama foi acrescentado ou removido.",

@@ -38,7 +38,7 @@
     "stage": "generated",
     "generationComplete": true,
     "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-orchestration/ko/",
-    "guardStatus": "pending"
+    "guardStatus": "pass"
   },
   "qualitySelfReview": {
     "diagramUse": "영어판이 diagram을 쓰는 자리를 그대로 지킵니다. 무엇보다 레슨5의 조합 diagram이 그러한데, 그 토폴로지(관문 노드와 분류를 모델 호출로 두는 처리를 포함합니다)는 리뷰가 이미 검증했습니다. 레이블만 한국어로 옮겼고 토폴로지는 손대지 않았으며, diagram을 더하지도 빼지도 않았습니다.",

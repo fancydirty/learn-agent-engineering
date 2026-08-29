@@ -1,0 +1,520 @@
+[
+  {
+    "term": "flujo de trabajo",
+    "def": "Un sistema donde los LLM y las herramientas se orquestan a través de caminos de código predefinidos: los pasos están fijados en duro, y el modelo solo es autónomo dentro de cada paso individual. Es una de las dos mitades de una distinción arquitectónica; los cinco patrones que enseña este curso pertenecen todos a este extremo.",
+    "source": "[^S1]",
+    "pitfall": "Creer que «usar patrones de flujo de trabajo» significa «sin agentes»: cada etapa de una cadena sigue siendo un bucle de arnés autónomo.",
+    "distractor_rationale": "Fácil de confundir con agente: la distinción es solo «quién tiene el plan», no si estás usando modelos."
+  },
+  {
+    "term": "agente",
+    "def": "Un sistema donde los LLM dirigen dinámicamente sus propios procesos y mantienen el control sobre cómo cumplen las tareas. La implementación suele ser sencilla: típicamente solo LLM que usan herramientas basándose en la retroalimentación del entorno, dentro de un bucle.",
+    "source": "[^S1]",
+    "pitfall": "Creer que los agentes son «más avanzados» que los flujos de trabajo: solo ponen el plan en manos del modelo, lo que no es necesariamente mejor.",
+    "distractor_rationale": "Contrasta con flujo de trabajo; también es fácil confundirlo con «sistema multiagente», que son varios agentes trabajando juntos."
+  },
+  {
+    "term": "encadenamiento",
+    "def": "Encadenamiento de prompts: descomponer una tarea en una secuencia de pasos donde cada llamada al LLM procesa la salida de la anterior, con comprobaciones programáticas insertables entre pasos. Encaja cuando las tareas se pueden descomponer limpiamente en subtareas fijas.",
+    "source": "[^S1]",
+    "pitfall": "Forzar la descomposición cuando la tarea no se parte limpiamente: la información queda atascada entre etapas y se pierde.",
+    "distractor_rationale": "Contrasta con enrutamiento: el encadenamiento es una cosa partida en pasos, el enrutamiento son varias cosas tomando cada una su propio camino."
+  },
+  {
+    "term": "enrutamiento",
+    "def": "Clasificar primero una entrada y después despacharla hacia tareas de seguimiento especializadas, a cambio de separación de responsabilidades y prompts más especializados. Prerrequisito: que las categorías sean distintas y que la clasificación misma se pueda resolver con precisión.",
+    "source": "[^S1]",
+    "pitfall": "Añadir enrutamiento cuando en realidad solo hay una categoría: pagas una llamada de clasificación y latencia, y sumas un punto más de fallo.",
+    "distractor_rationale": "Contrasta con encadenamiento; la clasificación puede usar un modelo o un clasificador tradicional, y es fácil suponer que tiene que ser un modelo."
+  },
+  {
+    "term": "paralelización",
+    "def": "Un flujo de trabajo donde los LLM manejan varias subtareas de forma simultánea y las salidas se agregan programáticamente, con dos variantes: seccionamiento y votación.",
+    "source": "[^S1]",
+    "pitfall": "Entregarle también la «agregación» a un modelo: eso es orquestador-trabajadores, no paralelización. La agregación de la paralelización la hace el código.",
+    "distractor_rationale": "Topográficamente parecida a orquestador-trabajadores; la diferencia es si las subtareas están predefinidas y quién hace la agregación."
+  },
+  {
+    "term": "seccionamiento",
+    "def": "Partir una tarea en subtareas mutuamente independientes y ejecutarlas en paralelo, como revisar 12 documentos uno por cada camino.",
+    "source": "[^S1]",
+    "pitfall": "Las subtareas en realidad tienen dependencias pero fuerzas el fan-out igual: cada camino escribe lo suyo y después limas las contradicciones a mano en la fusión.",
+    "distractor_rationale": "Tanto el seccionamiento como la votación pertenecen a la paralelización: el seccionamiento son subtareas distintas, la votación es la misma tarea ejecutada varias veces."
+  },
+  {
+    "term": "votación",
+    "def": "Ejecutar la misma tarea varias veces para obtener salidas diversas, y después agregar por código.",
+    "source": "[^S1]",
+    "pitfall": "Creer que la votación compra «corrección por mayoría»: compra independencia y diversidad, no una garantía de que el resultado votado sea correcto.",
+    "distractor_rationale": "A menudo se malentiende como «manda la mayoría»; las reglas de agregación pueden ser umbrales o selección de la mejor."
+  },
+  {
+    "term": "orquestador-trabajadores",
+    "def": "Un flujo de trabajo donde un LLM central descompone dinámicamente las tareas, las delega a LLM trabajadores y sintetiza sus resultados. La clave es que las subtareas no están predefinidas: las determina el orquestador a partir de la entrada concreta.",
+    "source": "[^S1]",
+    "pitfall": "Confundirlo con paralelización: las subtareas de la paralelización quedan cerradas cuando escribes el código, las de orquestador-trabajadores las computa el modelo.",
+    "distractor_rationale": "Topológicamente idéntico a la paralelización (repartir en abanico y luego fusionar); la diferencia es quién decide cuántos despachos hay."
+  },
+  {
+    "term": "evaluator-optimizer",
+    "def": "Un LLM genera una respuesta mientras otro aporta evaluación y retroalimentación en un bucle, repitiendo hasta que pase o deje de progresar. Encaja cuando los criterios de evaluación son claros y el refinamiento iterativo aporta valor medible.",
+    "source": "[^S1]",
+    "pitfall": "Construir el bucle antes de definir los criterios de evaluación: el juez da retroalimentación que apunta en direcciones distintas cada ronda, y las rondas se agotan sin mejora.",
+    "distractor_rationale": "Este curso lo llama bucle de revisión, el curso 6 de esta serie lo llama productor-revisor, y la documentación de Claude Code lo llama revisión cruzada adversarial: tres nombres, una sola forma."
+  },
+  {
+    "term": "compuerta",
+    "def": "Una comprobación programática (no otra llamada al modelo) dentro de una cadena o un bucle, que usa código para hacer chequeos deterministas —la misma entrada da siempre la misma conclusión—, usada para bloquear resultados intermedios que no califican.",
+    "source": "[^S1]",
+    "pitfall": "Tratar «que el modelo juzgue si este esquema es lo bastante bueno» como una compuerta: eso es el bucle de revisión, no un chequeo determinista.",
+    "distractor_rationale": "Complementa a los jueces LLM: las compuertas son gratis y deterministas, y van antes que los jueces."
+  },
+  {
+    "term": "bucle de arnés",
+    "def": "El bucle while guiado por stop_reason: enviar el mensaje, revisar el motivo de parada, si es tool_use ejecutar las herramientas y devolver el resultado, si no devolver el texto. Todo «nodo» de este curso ejecuta este bucle por dentro.",
+    "source": "[^S1]",
+    "pitfall": "Creer que la orquestación reemplaza este bucle: el bucle no cambió ni una línea, solo se le envolvió por fuera una capa de control de flujo escrita en código.",
+    "distractor_rationale": "Bucle y «grafo» son dos niveles: el bucle está dentro de los nodos, el grafo está entre los nodos."
+  },
+  {
+    "term": "stop_reason",
+    "def": "El campo de cada respuesta del modelo que declara «por qué se detuvo este turno», del que depende el bucle de arnés para decidir si sigue llamando herramientas o cierra.",
+    "source": "[^S1]",
+    "pitfall": "Manejar solo tool_use y end_turn y olvidar los demás motivos de parada: el cliente real se colgará o dará error.",
+    "distractor_rationale": "Distinto de STOP_AFTER: el primero es un campo que devuelve el modelo, el segundo es el interruptor de depuración del propio script de este curso."
+  },
+  {
+    "term": "máximo de rondas",
+    "def": "El techo de iteraciones fijado para un bucle, un fusible: garantiza que el código se detenga bajo cualquier circunstancia. Mantiene el control, no juzga la calidad.",
+    "source": "[^S1]",
+    "pitfall": "Usar el máximo de rondas como mecanismo de parada principal: solo debería dispararse cuando falla el más inteligente «no hay más progreso».",
+    "distractor_rationale": "«Máximo de rondas» y «no hay más progreso» son dos condiciones de parada: una cuenta rondas, la otra vigila si las cosas mejoraron."
+  },
+  {
+    "term": "fusible",
+    "def": "La metáfora de este curso para las condiciones de parada de repliegue del tipo «máximo de rondas»: normalmente no debería dispararse, y que se dispare significa que otros mecanismos de parada no lo atraparon.",
+    "source": "[^S1]",
+    "pitfall": "Fijar el fusible demasiado bajo: el bucle normal todavía no convergió y queda cortado.",
+    "distractor_rationale": "Es un repliegue, no el mecanismo de parada principal; el principal suele ser «no hay más progreso»."
+  },
+  {
+    "term": "verificador determinista",
+    "def": "Un comprobador que puede juzgar correcto o incorrecto por código: si el código lo puede juzgar, no gastes dinero preguntándole al modelo. Este curso lo movió del «estado final» a «entre los eslabones de la cadena».",
+    "source": "[^S1]",
+    "pitfall": "Hacer que el modelo lo juzgue todo, tercerizando incluso chequeos que podrían ser deterministas: costo extra más no determinismo añadido.",
+    "distractor_rationale": "División del trabajo con los jueces LLM: los verificadores juzgan lo que se puede escribir como regla, los jueces juzgan cosas como «¿el tono es apropiado?»."
+  },
+  {
+    "term": "puntuación por capas",
+    "def": "Usa código para juzgar lo que el código puede juzgar primero, y entrégale al modelo solo lo que el código no puede. Este curso copió esta disciplina tal cual al ordenamiento de los nodos del bucle (compuerta antes del juez).",
+    "source": "[^S1]",
+    "pitfall": "Saltarte la capa determinista e ir directo a un juez: gastar dinero para que el modelo haga lo que el código podía hacer gratis.",
+    "distractor_rationale": "Es la formulación del curso 10 de esta serie, que este curso continúa; no es un concepto exclusivo de la orquestación."
+  },
+  {
+    "term": "demostrablemente",
+    "def": "Solo considera añadir complejidad cuando mejora demostrablemente los resultados: cada nodo o capa de patrón que agregues tiene que pasar por esta compuerta.",
+    "source": "[^S1]",
+    "pitfall": "Tener los cinco patrones desplegados y usarlos todos, sin preguntar antes «si lo quito, ¿bajan las métricas?».",
+    "distractor_rationale": "Lo opuesto a «empezar con la solución más compleja»: los materiales primarios abogan consistentemente por empezar con la solución más simple."
+  },
+  {
+    "term": "quién tiene el plan",
+    "def": "El eje para juzgar en qué extremo del espectro de determinismo cae un sistema: ¿el plan está en manos del código (flujo de trabajo) o en manos del modelo (agente)?",
+    "source": "[^S5]",
+    "pitfall": "Fijarte solo en «¿usaste un modelo?» sin mirar «¿quién cuenta, quién bifurca?»: así no distingues un flujo de trabajo de un agente.",
+    "distractor_rationale": "Es la pregunta central que este curso usa para juzgar la arquitectura, no terminología oficial."
+  },
+  {
+    "term": "el script del flujo de trabajo retiene él mismo el bucle, las bifurcaciones y los resultados intermedios",
+    "def": "La oración de los materiales primarios que describe el flujo de trabajo, y también el único ancla primaria de la metáfora del «grafo» de este curso: el plan está en el script, y el contexto del modelo retiene solo la respuesta final.",
+    "source": "[^S5]",
+    "pitfall": "Usar esta oración para probar que «los grafos le ganan a los bucles»: solo dice que el plan está en el script, no compara quién es más fuerte.",
+    "distractor_rationale": "Grafo, nodo y arista se paran todos sobre esta única oración; sin ella, esta visualización se vuelve jerga inventada."
+  },
+  {
+    "term": "rastreo incremental",
+    "def": "El runtime rastrea incrementalmente el resultado de cada agente a medida que avanza la ejecución. Esto es lo que hace que una ejecución sea reanudable dentro de la misma sesión; la reanudación entre procesos todavía exige que persistas tú mismo el estado a disco.",
+    "source": "[^S5]",
+    "pitfall": "Tratar «reanudable dentro de la misma sesión» como «reanudable después de que muere el proceso»: la oración original solo garantiza lo primero.",
+    "distractor_rationale": "Fácil de confundir con los puntos de control: el rastreo es un registro continuo, los puntos de control son instantáneas en momentos específicos."
+  },
+  {
+    "term": "revisar-corregir-revisar",
+    "def": "La forma de producto del bucle de revisión: ejecutar un verificador, corregir lo que falló, y repetir hasta que pase o deje de haber progreso.",
+    "source": "[^S5]",
+    "pitfall": "Olvidar la mitad de «o deje de haber progreso»: el bucle seguirá revisando sin parar hasta chocar con el máximo de rondas.",
+    "distractor_rationale": "Es la formulación de producto de evaluator-optimizer, lo mismo que el nombre del patrón primario."
+  },
+  {
+    "term": "no hay más progreso",
+    "def": "Un mecanismo de parada más inteligente que el máximo de rondas: vigila si esta ronda superó a la anterior (el puntaje no subió, la cantidad de ítems que fallan no bajó); si no mejoró, corta pérdidas.",
+    "source": "[^S5]",
+    "pitfall": "Definirlo como «el modelo parece no haber mejorado» —algo no juzgable—: el bucle no sabrá cuándo parar.",
+    "distractor_rationale": "Coexiste con el máximo de rondas: uno vigila los cambios de calidad, el otro cuenta rondas como repliegue."
+  },
+  {
+    "term": "revisión cruzada adversarial",
+    "def": "Hacer que agentes independientes revisen de forma adversarial los hallazgos de los demás antes de reportar. Es una revisión cruzada única antes de reportar, sin arista de retorno ni iteración; meterla dentro del bucle de revisión es una categorización de esta lección, no que el texto original describa la misma topología.",
+    "source": "[^S5]",
+    "pitfall": "Creer que tiene la misma topología en bucle que revisar-corregir-revisar: en realidad es una sola evaluación cruzada.",
+    "distractor_rationale": "«Revisión cruzada adversarial» es la abreviatura de este curso para esa oración de la fuente, no terminología primaria."
+  },
+  {
+    "term": "componer patrones en un grafo",
+    "def": "La metáfora de ingeniería propia de este curso, no terminología oficial: un sistema de visualización usado para aclarar relaciones al combinar los cinco patrones. Su único ancla primaria es «el script del flujo de trabajo retiene él mismo el bucle, las bifurcaciones y los resultados intermedios».",
+    "source": "[^S5]",
+    "pitfall": "Escribir «grafo» como categoría oficial en la documentación de arquitectura: quien lo lea creerá que es el concepto formal de la orquestación.",
+    "distractor_rationale": "Grafo, nodo, arista, DAG y máquina de estados aparecen cero veces en todas las fuentes primarias de este curso; no los trates como categorías oficiales."
+  },
+  {
+    "term": "nodo",
+    "def": "Un punto en la visualización de este curso: por dentro es o bien un bucle runAgent completo o bien un trozo de código puro.",
+    "source": "[^S5]",
+    "pitfall": "Creer que los nodos son una unidad de ejecución nueva: es apenas el bucle de arnés que ya sabes escribir.",
+    "distractor_rationale": "Emparejado con «arista»: los nodos son los puntos que hacen el trabajo, las aristas son de quién alimenta la salida a quién."
+  },
+  {
+    "term": "arista de retorno",
+    "def": "La línea de un bucle de revisión que manda la salida de vuelta al nodo de generación. Los primeros cuatro patrones son todos líneas rectas; el bucle de revisión es el primero con una arista de retorno.",
+    "source": "[^S5]",
+    "pitfall": "Dibujarla como línea recta pierde la esencia del bucle: lo que no califica tiene que poder patearse de vuelta para rehacerse.",
+    "distractor_rationale": "La arista de retorno corresponde a continue/loop en el código, uno de los pocos términos propios del «grafo»."
+  },
+  {
+    "term": "punto de bifurcación",
+    "def": "Un punto en la visualización de este curso para el enrutamiento, donde se «recorren aristas distintas según el resultado del juicio»: corresponde a la bifurcación en el código.",
+    "source": "[^S5]",
+    "pitfall": "Confundir el punto de bifurcación con el fan-out: la bifurcación elige una arista, el fan-out recorre varias aristas a la vez.",
+    "distractor_rationale": "Bifurcación = ramificación (enrutamiento), fan-out = paralelo (paralelización): dos cosas distintas."
+  },
+  {
+    "term": "16 agentes concurrentes",
+    "def": "El techo de concurrencia del runtime de flujos de trabajo de Claude Code, menor cuando la CPU está limitada; tope total de 1000 agentes por ejecución.",
+    "source": "[^S5]",
+    "pitfall": "Creer que más concurrencia siempre es más rápido: tres productos reales fijan todos techos modestos.",
+    "distractor_rationale": "Distinto de los 20 subagentes por defecto de Claude Code y los 25 hilos de Managed Agents: tres implementaciones distintas, tres números distintos."
+  },
+  {
+    "term": "90,2 %",
+    "def": "La mejora del sistema multiagente sobre el de agente único, que solo se sostiene con el contexto completo: su evaluación interna de investigación, con un agente principal Opus 4 y subagentes Sonnet 4, destacando especialmente en consultas de amplitud primero.",
+    "source": "[^S2]",
+    "pitfall": "Usarlo para argumentar que «los grafos le ganan a los bucles» o que «el multiagente es universalmente mejor»: compara multiagente frente a agente único, no orquestación frente a bucles.",
+    "distractor_rationale": "Distinto del 90 % (número de aceleración): uno es mejora de calidad, el otro es reducción de latencia."
+  },
+  {
+    "term": "4×",
+    "def": "Según sus propios datos, los agentes consumen unas 4× los tokens de las interacciones de chat.",
+    "source": "[^S2]",
+    "pitfall": "Tratarlo como una línea base universal para aplicar en todas partes: es una observación de su sistema, no una constante de la industria.",
+    "distractor_rationale": "Aparece emparejado con el 15× del multiagente; no mezcles los dos multiplicadores."
+  },
+  {
+    "term": "15×",
+    "def": "Según sus propios datos, los sistemas multiagente consumen unas 15× los tokens de las interacciones de chat; para ser económicamente viable, el valor de la tarea tiene que ser lo bastante alto como para justificar esa mejora.",
+    "source": "[^S2]",
+    "pitfall": "Multiplicar 15× por 3 otra vez para calcular el costo de la votación: el 15× ya incluye la factura del fan-out.",
+    "distractor_rationale": "Mide el multiagente respecto al chat, no la etiqueta de precio de «mover el plan al código» en sí."
+  },
+  {
+    "term": "90 %",
+    "def": "Tras introducir dos niveles de paralelismo (el agente principal levanta 3 a 5 subagentes en paralelo, los subagentes usan 3 o más herramientas en paralelo), el porcentaje máximo en que se recortó el tiempo de investigación para consultas complejas. Es un número de latencia, no de calidad.",
+    "source": "[^S2]",
+    "pitfall": "Tratarlo como mejora de calidad, o aplicarlo a consultas simples: está limitado a la latencia de las consultas complejas.",
+    "distractor_rationale": "Un carácter de diferencia con el 90,2 %, pero dos cosas distintas: este es aceleración, aquel es calidad de multiagente frente a agente único."
+  },
+  {
+    "term": "prompts de delegación",
+    "def": "La descripción de tarea que el orquestador le entrega a cada trabajador. Los prompts de delegación deben ser autocontenidos, con los cuatro elementos completos; si no, los trabajadores duplican trabajo, dejan huecos o no logran encontrar la información necesaria.",
+    "source": "[^S2]",
+    "pitfall": "Despachar con una sola frase («ayúdame a revisar el rendimiento de esta biblioteca»), con los cuatro elementos ausentes, y varios trabajadores adivinando cada uno a partir de la misma frase.",
+    "distractor_rationale": "Distinto de los prompts generales en lo de «autocontenido»: los trabajadores no pueden ver el contexto entre tú y el orquestador."
+  },
+  {
+    "term": "cuatro elementos",
+    "def": "Las cuatro secciones que un despacho que califica tiene que escribir completas: objetivo, formato de salida, guía sobre herramientas y fuentes, y límites claros de la tarea.",
+    "source": "[^S2]",
+    "pitfall": "Escribir solo el objetivo sin los límites: los trabajadores invaden el territorio ajeno o duplican el trabajo del otro.",
+    "distractor_rationale": "El punto de los límites es el más fácil de omitir; tiene que declarar explícitamente «qué no hacer»."
+  },
+  {
+    "term": "reglas de cuota",
+    "def": "La calibración de escala escrita en el prompt del orquestador: especificar la cantidad de subagentes y el techo de llamadas a herramientas por subagente según la complejidad de la tarea, porque a los agentes les cuesta juzgar por sí mismos el esfuerzo apropiado.",
+    "source": "[^S2]",
+    "pitfall": "Escribir solo las cuotas en el prompt creyendo que es infalible: para modelos no deterministas es solo un consejo, del lado del código todavía hacen falta techos duros.",
+    "distractor_rationale": "Es la restricción blanda de la capa del prompt, usada junto con el LIMIT del pool de concurrencia (la compuerta dura de la capa del código)."
+  },
+  {
+    "term": "reglas de escalado",
+    "def": "Las reglas de escalado de ejemplo que ellos incrustaron en los prompts: búsqueda simple de datos 1 agente 3-10 llamadas; comparaciones directas 2-4 subagentes 10-15 llamadas cada uno; investigación compleja más de 10 subagentes con división clara.",
+    "source": "[^S2]",
+    "pitfall": "Tratar estos números como estándares de la industria para copiarlos al pie de la letra: son la escala de sus propios prompts.",
+    "distractor_rationale": "Son los valores concretos de las reglas de cuota, no una configuración universal."
+  },
+  {
+    "term": "ejecución síncrona",
+    "def": "El modo de ejecución donde el orquestador espera a que todos los trabajadores terminen antes de continuar. Cuello de botella: un paso estanca a toda la tanda en espera, y los resultados vuelven todos al orquestador.",
+    "source": "[^S2]",
+    "pitfall": "Creer que lo síncrono siempre es lento y correr a lo asíncrono: lo asíncrono exige cargar tres costos nuevos: coordinación, consistencia de estado y propagación de errores.",
+    "distractor_rationale": "Contrasta con lo asíncrono: lo síncrono es simple pero tiene cuellos de botella, lo asíncrono es flexible pero la complejidad explota."
+  },
+  {
+    "term": "pasa referencias, no cargas útiles",
+    "def": "Los trabajadores guardan sus salidas en sistemas externos y le pasan al orquestador solo referencias ligeras (ruta de archivo + resumen de una línea), en vez de embutir los resultados detallados de vuelta en la conversación principal.",
+    "source": "[^S2]",
+    "pitfall": "Hacer que cada trabajador pase el texto completo de vuelta al lado de la fusión: el tiempo que ahorró el fan-out se gasta de vuelta en la fusión.",
+    "distractor_rationale": "La carga útil es la salida detallada, la referencia es la ruta que apunta a ella; al revés, el contexto explota."
+  },
+  {
+    "term": "sistemas de artefactos",
+    "def": "Hacer que agentes especializados creen sus salidas como cosas que persisten de forma independiente (archivos, registros externos), en vez de retransmitirlo todo a través del agente principal. «Pasa referencias, no cargas útiles» se apoya en esto.",
+    "source": "[^S2]",
+    "pitfall": "Sin un lugar externo donde aterrizar, toda la salida solo puede pasar por la conversación principal, que se llena rápido.",
+    "distractor_rationale": "Los artefactos y las «referencias ligeras» son dos caras de la misma moneda: el artefacto es lo que se guarda afuera, la referencia es el asa que apunta a él."
+  },
+  {
+    "term": "referencias ligeras",
+    "def": "El registro corto que se le pasa de vuelta al orquestador: id, ruta de archivo, resumen de una línea. Quien quiera el texto completo lo lee por la ruta.",
+    "source": "[^S2]",
+    "pitfall": "Creer que las referencias tienen que cargar suficiente info para que el orquestador no tenga que volver a mirar: las referencias deben ser ligeras, lo pesado se queda en los artefactos.",
+    "distractor_rationale": "Es el sustituto de la carga útil, no una versión comprimida de ella."
+  },
+  {
+    "term": "comportamiento emergente",
+    "def": "En los sistemas multiagente, el comportamiento global que no se puede predecir mirando paso a paso, producido por el apilamiento de las pequeñas decisiones de cada subagente; los cambios diminutos se amplifican a lo largo de la cadena.",
+    "source": "[^S2]",
+    "pitfall": "Creer que afinar cada trabajador vuelve controlable el conjunto: la emergencia significa que el comportamiento global hay que observarlo por separado.",
+    "distractor_rationale": "Es parte de la complejidad de coordinación del multiagente, no un bug de un trabajador en particular."
+  },
+  {
+    "term": "separación de responsabilidades",
+    "def": "Cada subagente lleva herramientas, prompts y trayectorias de exploración distintas, naturalmente sin contaminarse, lo que además reduce la dependencia del camino. Es lo que compra el fan-out además de la velocidad.",
+    "source": "[^S2]",
+    "pitfall": "Tratar el fan-out solo como una técnica de velocidad, ignorando sus ganancias de calidad (perspectivas independientes).",
+    "distractor_rationale": "Se lista junto a la «capacidad de ventana», uno de los tres beneficios del lado del contexto de la paralelización."
+  },
+  {
+    "term": "dependencia del camino",
+    "def": "Dentro de un mismo bucle, los juicios de los pasos posteriores quedan sesgados por la redacción de los pasos anteriores. Varias trayectorias independientes no comparten el mismo sesgo, y por eso reducen la dependencia del camino.",
+    "source": "[^S2]",
+    "pitfall": "Creer que el mismo modelo ejecutado varias veces es lo bastante independiente: varios pasos en el mismo contexto comparten el mismo sesgo de partida.",
+    "distractor_rationale": "Relacionado con la separación de responsabilidades: separar herramientas/prompts es para cortar la dependencia del camino."
+  },
+  {
+    "term": "contexto compartido",
+    "def": "Un escenario en el que el multiagente hoy no es bueno: el trabajo que requiere que todos los agentes vean el mismo contexto o con muchas dependencias entre agentes (como la mayoría de las tareas de programación), con menos porciones verdaderamente paralelizables que la investigación.",
+    "source": "[^S2]",
+    "pitfall": "Aplicar directamente la experiencia de paralelismo de las tareas de investigación a la programación: el fan-out suma confusión en vez de ayudar.",
+    "distractor_rationale": "Es una condición inversa del multiagente, opuesta a las condiciones positivas de «paralelización pesada, información que excede las ventanas»."
+  },
+  {
+    "term": "salvaguardas deterministas",
+    "def": "Los mecanismos deterministas que envuelven a los agentes no deterministas: lógica de reintento, puntos de control periódicos. El esqueleto del grafo es determinista, el interior de los nodos es no determinista.",
+    "source": "[^S2]",
+    "pitfall": "Tratar el reintento/tiempo límite a nivel de nodo como diseño oficial: las fuentes primarias ofrecen solo una oración subordinada de «lógica de reintento y puntos de control periódicos», y más detalle es práctica de ingeniería corriente.",
+    "distractor_rationale": "Distinto de las compuertas: las salvaguardas manejan «¿qué pasa si se cae?», las compuertas manejan «¿está calificado?»."
+  },
+  {
+    "term": "sistemas deterministas",
+    "def": "Sistemas que producen la misma salida cada vez ante entradas idénticas. Las compuertas, los verificadores y la agregación escritos en código pertenecen todos a esta categoría.",
+    "source": "[^S3]",
+    "pitfall": "Creer que «escrito en código» siempre es determinista: si por dentro llama a un modelo, es no determinista.",
+    "distractor_rationale": "Contrasta con los sistemas no deterministas, la base de vocabulario de todo el curso."
+  },
+  {
+    "term": "no determinista",
+    "def": "La propiedad de poder dar respuestas distintas incluso con las mismas condiciones iniciales: los agentes son de este tipo.",
+    "source": "[^S3]",
+    "pitfall": "Investigarlo con la intuición del depurado tradicional de «reproduce una vez y pon un punto de interrupción»: no se puede reproducir.",
+    "distractor_rationale": "Fácil de confundir con los bugs ocasionales de concurrencia: estos últimos al menos corren en el mismo código determinista."
+  },
+  {
+    "term": "un bucle por tarea de evaluación",
+    "def": "Recomendación oficial para ejecutar evaluaciones: llamar directamente a la API del LLM, usar bucles agénticos while simples, un bucle por tarea de evaluación. Este curso lo toma prestado para ilustrar que «una etapa de la cadena es un bucle completo».",
+    "source": "[^S3]",
+    "pitfall": "Olvidar que esta cita original está en un contexto de evaluación y citarla como consejo general de orquestación.",
+    "distractor_rationale": "Argumenta que «etapa = bucle completo» como componente, no el método de evaluación en sí."
+  },
+  {
+    "term": "subagente",
+    "def": "Un agente despachado desde la conversación principal, que trabaja en su propia ventana de contexto independiente y solo devuelve un resumen. Se usa para mantener la exploración y la implementación fuera de la conversación principal, preservando el contexto.",
+    "source": "[^S4]",
+    "pitfall": "Despachar muchos subagentes que devuelven cada uno resultados detallados: los retornos pesan demasiado y agotan igual el contexto de la conversación principal.",
+    "distractor_rationale": "A menudo se usa de forma intercambiable con «trabajador» en este curso, pero subagente enfatiza el aislamiento de contexto."
+  },
+  {
+    "term": "conversación principal",
+    "def": "El contexto de la línea principal del orquestador. Cuando los subagentes terminan, los resultados vuelven aquí, así que los retornos tienen que ser ligeros o la protección se vuelve carga.",
+    "source": "[^S4]",
+    "pitfall": "Creer que los subagentes ahorran contexto por naturaleza: que ahorren depende de qué tan pesados sean los retornos.",
+    "distractor_rationale": "Contrasta con la ventana de contexto propia de cada subagente: la conversación principal es el punto de fusión, fácil de llenar."
+  },
+  {
+    "term": "20 subagentes",
+    "def": "El techo de concurrencia por defecto de Claude Code: cuando hay 20 subagentes ejecutándose en una sesión, generar otro falla y le dice explícitamente al modelo que no reintente.",
+    "source": "[^S4]",
+    "pitfall": "Ver la falla y hacer que el modelo reintente: el propio mensaje de error dice que no reintente.",
+    "distractor_rationale": "Distinto de los 16 del runtime de flujos de trabajo y los 25 de Managed Agents: tres implementaciones distintas, tres números distintos."
+  },
+  {
+    "term": "subagentes de forma secuencial",
+    "def": "La sugerencia de Claude Code para flujos de trabajo de varios pasos: que Claude use subagentes de forma secuencial, cada uno termina y devuelve los resultados, y después se le pasa el contexto relevante al siguiente. Es la forma de producto del encadenamiento.",
+    "source": "[^S4]",
+    "pitfall": "Creer que «qué pasarle al siguiente» es automático: en el producto lo decide Claude, cuando escribes el script lo decide tu código.",
+    "distractor_rationale": "Contrasta con el fan-out paralelo: esto es uno tras otro, no simultáneo."
+  },
+  {
+    "term": "Especialización",
+    "def": "Enrutar el trabajo hacia agentes con prompts de sistema y herramientas centrados en un dominio (agente de seguridad, agente de documentación), en vez de embutir todas las capacidades en un solo agente. El nombre del enrutamiento en el vocabulario actual de primera mano.",
+    "source": "[^S6]",
+    "pitfall": "Confundirla con el escalamiento: la especialización divide por tema, el escalamiento divide por dificultad.",
+    "distractor_rationale": "Corresponde a la tabla HANDLERS en el código, despacho por tema."
+  },
+  {
+    "term": "Escalamiento",
+    "def": "Consultar a un agente o modelo más capaz para un subconjunto de subtareas complejas. Nota que es «consultar» (el coordinador conserva el control), no una entrega completa.",
+    "source": "[^S6]",
+    "pitfall": "Leer «consultar» como «entregar»: el escalamiento es pedirle a la parte más fuerte, no tirar la tarea.",
+    "distractor_rationale": "Despacha por dificultad, mientras que la especialización despacha por tema: dos variantes de enrutamiento."
+  },
+  {
+    "term": "Parallelization",
+    "def": "En la documentación actual de orquestación multiagente de la plataforma Claude: repartir en abanico subtareas independientes a la vez (buscar en varias fuentes, analizar archivos separados), y que el coordinador sintetice los resultados.",
+    "source": "[^S6]",
+    "pitfall": "Nota que la síntesis de esta versión la hace el coordinador (modelo), distinta de la versión de «agregación programática» de este curso.",
+    "distractor_rationale": "Misma palabra, pero quién hace la agregación (modelo frente a código) son dos cosas distintas."
+  },
+  {
+    "term": "25 hilos concurrentes",
+    "def": "El techo de concurrencia que soporta Managed Agents; el coordinador puede llamar a varias copias del mismo agente, cada una abriendo un hilo.",
+    "source": "[^S6]",
+    "pitfall": "Creer que los techos de concurrencia de distintos productos son universales: 20/16/25 son los números respectivos de tres implementaciones distintas.",
+    "distractor_rationale": "Se lista junto a los 20 de Claude Code y los 16 del runtime de flujos de trabajo; no los mezcles."
+  },
+  {
+    "term": "pool de concurrencia",
+    "def": "Abre N carriles fijos, cada uno termina su ítem actual y toma el siguiente de un cursor compartido, siempre con N en vuelo. Tiene menos efecto cubeta que el agrupamiento en lotes. El script de este curso lo llama runPool.",
+    "source": "[^S5]",
+    "pitfall": "Abrir otra capa de concurrencia dentro del pool: la concurrencia total pasa a LIMIT×2, rompiendo el techo en silencio.",
+    "distractor_rationale": "Contrasta con el agrupamiento en lotes: el lote espera al más lento de cada tanda, el pool no."
+  },
+  {
+    "term": "techo de concurrencia",
+    "def": "El tope duro de tareas simultáneas en vuelo. Tres productos reales (Claude Code 20, runtime de flujos de trabajo 16, Managed Agents 25) fijan todos uno: el fan-out ilimitado es un accidente, no una optimización.",
+    "source": "[^S4]",
+    "pitfall": "Escribir Promise.all(arr.map(...)) y que la concurrencia sea en silencio la longitud del arreglo; el arreglo se alarga y choca con el techo.",
+    "distractor_rationale": "Las cuotas en los prompts son restricciones blandas, el LIMIT del pool de concurrencia es el techo duro."
+  },
+  {
+    "term": "agrupamiento en lotes",
+    "def": "Un enfoque de regulación de tasa: N por lote, lotes en serie. Funciona pero tiene efecto cubeta: cada lote espera a que termine el más lento de esa tanda antes de arrancar el siguiente.",
+    "source": "[^S5]",
+    "pitfall": "Usar el agrupamiento en lotes para regular la tasa y después quejarte de que es lento: habría que cambiar a un pool de concurrencia, no culpar a la paralelización.",
+    "distractor_rationale": "El agrupamiento en lotes y el pool de concurrencia son ambos medios de regulación de tasa; el lote es más simple pero desperdicia espera."
+  },
+  {
+    "term": "Promise.all",
+    "def": "El patrón para ejecutar un grupo de tareas asíncronas de forma concurrente, que retorna cuando todas se completan. Temperamento: si un solo camino se rechaza, se rechaza el conjunto, y aunque los demás hayan terminado, no puedes obtener sus resultados.",
+    "source": "[^S1]",
+    "pitfall": "Hacer Promise.all(docs.map(...)) directo, un camino da 500 y pierdes todos los demás resultados ya completados.",
+    "distractor_rationale": "Contrasta con Promise.allSettled: este último no deja que una falla arrastre al resto."
+  },
+  {
+    "term": "fan-out",
+    "def": "Repartir una pieza de trabajo entre varios agentes/nodos para ejecutarla a la vez. Compra velocidad, perspectivas independientes y capacidad de contexto en paralelo; el costo es que los resultados vuelven al orquestador, y los productos reales fijan todos techos.",
+    "source": "[^S5]",
+    "pitfall": "Creer que la independencia significa fan-out ilimitado: el fan-out sin tope agota a la vez los límites de tasa, la memoria y el riesgo de falla en lote.",
+    "distractor_rationale": "Emparejado con la fusión: el fan-out es mandar hacia afuera, la fusión es recolectar de vuelta; el paso de recolección es el que más probablemente falla."
+  },
+  {
+    "term": "fusión",
+    "def": "Después de que los resultados del fan-out vuelven, el código hace filtrado, agregación y juicio. Este curso hace que solo lea de vuelta las referencias desde los archivos, sin embutir el texto completo en el contexto.",
+    "source": "[^S1]",
+    "pitfall": "Hacer que el modelo lea toda la salida y escriba un resumen: eso es orquestador-trabajadores, no agregación programática.",
+    "distractor_rationale": "Emparejada con el fan-out; si la agregación la hace el código (paralelización) o el modelo (orquestador-trabajadores) es la distinción clave."
+  },
+  {
+    "term": "carga útil",
+    "def": "El contenido detallado de la salida del trabajador en sí. El reflujo de la carga útil en la fusión explota el contexto, así que pasa referencias, no cargas útiles.",
+    "source": "[^S2]",
+    "pitfall": "Confundir la carga útil con la referencia, pasando el texto completo de vuelta como «referencia».",
+    "distractor_rationale": "La carga útil es el contenido, la referencia es la ruta que apunta al contenido."
+  },
+  {
+    "term": "clasificador",
+    "def": "El primer paso del enrutamiento: juzgar a qué categoría pertenece la entrada, con la salida apretada a una sola palabra. Puede ser un modelo o un modelo/algoritmo de clasificación tradicional.",
+    "source": "[^S1]",
+    "pitfall": "Creer que la clasificación tiene que usar un modelo: cuando el correo tiene formato fijo o viene de puntos de entrada dedicados, una expresión regular alcanza y es más rápida.",
+    "distractor_rationale": "El clasificador juzga «qué categoría», la compuerta juzga «si está calificado»: dos clases de chequeos deterministas distintas."
+  },
+  {
+    "term": "repliegue",
+    "def": "La rama que se recorre cuando la clasificación no encaja en la tabla de etiquetas legales (como caer a «other»). El modelo devuelve ocasionalmente una oración entera en vez de una palabra, y el repliegue contiene ese no determinismo en una sola línea.",
+    "source": "[^S1]",
+    "pitfall": "No dejar una rama de repliegue: el modelo devuelve algo fuera de la tabla, HANDLERS[esa cadena] es undefined y la línea siguiente se cae.",
+    "distractor_rationale": "Es para defenderte del no determinismo de la clasificación, no perfeccionismo defensivo."
+  },
+  {
+    "term": "espectro de determinismo",
+    "def": "La formulación propia de este curso, no terminología oficial: tratar ese eje de «quién tiene el plan», del flujo de trabajo al agente, como un rango continuo de determinista a autónomo.",
+    "source": "[^S5]",
+    "pitfall": "Buscar «espectro» en la documentación oficial: no lo vas a encontrar, es la visualización de este curso.",
+    "distractor_rationale": "Como «grafo», es una metáfora propia de este curso; las fuentes primarias solo dieron las definiciones de los dos extremos más la pregunta de «quién tiene el plan»."
+  },
+  {
+    "term": "caída controlada",
+    "def": "La práctica del curso 9 de esta serie: detener deliberadamente el proceso en un punto especificado para verificar que el estado de verdad cayó a disco. El STOP_AFTER de este curso es su versión simplificada.",
+    "source": "[^S5]",
+    "pitfall": "Creer que las caídas solo pueden ser accidentales: las caídas controladas son deliberadas, usadas para probar la recuperabilidad.",
+    "distractor_rationale": "Distinta de las caídas reales en lo de «controlada»: eliges tú el momento de detenerte, para poder revisar la persistencia."
+  },
+  {
+    "term": "giro en falso",
+    "def": "El estado donde un bucle hace lo mismo durante varias rondas consecutivas sin ningún progreso. La válvula 3 (detección de giro en falso) del curso 7 de esta serie es para bloquear esto.",
+    "source": "[^S1]",
+    "pitfall": "Sin detección de giro en falso: el modelo se atasca y quema dinero girando en círculos.",
+    "distractor_rationale": "Relacionado pero distinto de «no hay más progreso»: el giro en falso es repetición de acción, «no hay más progreso» es la calidad que no sube."
+  },
+  {
+    "term": "escritura atómica",
+    "def": "El método de persistencia a disco de escribir primero un .tmp y después renombrarlo para reemplazar: matado en cualquier momento, en disco está o el estado completo anterior o el nuevo estado completo, nunca medio JSON.",
+    "source": "[^S5]",
+    "pitfall": "Escribir directo al archivo destino, matado a mitad deja un medio archivo corrupto.",
+    "distractor_rationale": "Es la regla de la casa del curso 9 de esta serie, que el run-state.json de este curso continúa."
+  },
+  {
+    "term": "run-state.json",
+    "def": "El archivo de rastreo de ejecución del script de este curso (persistido una vez tras completarse cada nodo, y otra vez tras cada juicio en la revisión), donde la escritura atómica garantiza que es legible en cualquier momento. Registra el progreso de ejecución, no «las variables de estado del grafo».",
+    "source": "[^S5]",
+    "pitfall": "Tratarlo como lo mismo que «el estado del grafo = las variables del script»: uno es una instantánea del progreso en disco, el otro son los resultados intermedios en memoria.",
+    "distractor_rationale": "División del trabajo con run.jsonl: uno es la instantánea del estado más reciente, el otro es el flujo de eventos línea por línea."
+  },
+  {
+    "term": "run.jsonl",
+    "def": "El log estructurado del script de este curso: un evento JSON por línea, llevando ts y run_id, y registra solo id/categoría/nombre de archivo/contadores, no el cuerpo de la respuesta.",
+    "source": "[^S5]",
+    "pitfall": "Creer que coincide con el logger del curso 11: este no tiene árbol de spans, se limpia en cada ejecución y tiene granularidad más gruesa.",
+    "distractor_rationale": "División del trabajo con run-state.json: el jsonl es flujo, el state es instantánea."
+  },
+  {
+    "term": "cliente stub",
+    "def": "Un doble de prueba que usa una cola fija de respuestas para hacerse pasar por la API real: client.messages.create() devuelve respuestas preestablecidas en orden, dejando que toda la orquestación corra sin dependencias y de forma reproducible.",
+    "source": "[^S3]",
+    "pitfall": "La longitud de la cola del stub es fija, y agotarla lanza directamente; antes de conectar el cliente real, no olvides reinstalar las válvulas que no se movieron.",
+    "distractor_rationale": "Reemplaza el lado del modelo, así que cuando los stubs quedan clavados, las reejecuciones completas no introducen no determinismo."
+  },
+  {
+    "term": "STOP_AFTER",
+    "def": "El interruptor de caída controlada del script de este curso: fijado en merge, para antes de la revisión, con código de salida 2, usado para verificar que el estado del fan-out/fusión de verdad se persistió. Solo reconoce merge como único valor.",
+    "source": "[^S5]",
+    "pitfall": "Creerlo configuración universal: es la perilla de depuración del propio script de este curso, no un campo de la API.",
+    "distractor_rationale": "Completamente distinto del stop_reason que devuelve el modelo; no los mezcles porque los nombres se parezcan."
+  },
+  {
+    "term": "needs_human",
+    "def": "El marcador de desenlace cuando el bucle no puede producir una salida calificada: los tickets con código de salida 1 se detienen aquí, entregados a una persona.",
+    "source": "[^S5]",
+    "pitfall": "Mezclar needs_human (salida 1) con la caída del script (salida 3): CI tiene que distinguir «se ejecutó pero algunos necesitan traspaso» de «se cayó».",
+    "distractor_rationale": "Es uno de los tres desenlaces de parada (pasa/traspaso a persona/sin progreso), no un error."
+  }
+]

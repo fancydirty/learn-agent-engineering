@@ -38,7 +38,7 @@
     "stage": "generated",
     "generationComplete": true,
     "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-observability/ko/",
-    "guardStatus": "pending"
+    "guardStatus": "pass"
   },
   "qualitySelfReview": {
     "diagramUse": "영어판이 diagram을 쓰는 자리를 그대로 지킵니다(트레이스 트리 구조). 레이블만 한국어로 옮겼고 토폴로지는 손대지 않았으며, diagram을 더하지도 빼지도 않았습니다. 스팬 트리야말로 이 코스에서 diagram 꼴을 한 내용이고, 그 배치는 영어판 리뷰가 이미 검증했습니다.",

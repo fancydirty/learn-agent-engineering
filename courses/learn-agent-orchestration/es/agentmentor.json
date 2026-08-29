@@ -38,7 +38,7 @@
     "stage": "generated",
     "generationComplete": true,
     "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-orchestration/es/",
-    "guardStatus": "pending"
+    "guardStatus": "pass"
   },
   "qualitySelfReview": {
     "diagramUse": "Los diagramas se mantienen exactamente donde los usa la variante en inglés, y sobre todo el diagrama de composición de la lección 5, cuya topología —incluidos el nodo de compuerta y la clasificación entendida como una llamada al modelo— venía validada por la revisión; las etiquetas se reescribieron en español y la topología quedó intacta. No se añadió ni se quitó ningún diagrama.",
