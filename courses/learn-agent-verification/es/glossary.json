@@ -414,9 +414,9 @@
   },
   {
     "term": "sobreajuste",
-    "def": "Que el conjunto entero de prompt más configuración de herramientas aprenda las características del material de evaluación en vez de las regularidades de la tarea misma, como fijar en duro una oración en el prompt de sistema para un caso que falla siempre.",
+    "def": "Que el conjunto entero de prompt más configuración de herramientas aprenda las características del material de evaluación en vez de las regularidades de la tarea misma, como fijar en duro una oración en el prompt del sistema para un caso que falla siempre.",
     "source": "[^S3]",
-    "pitfall": "Buscar señales solo a nivel de puntuación; otra comprobación más directa es leer el prompt de sistema completo y preguntar línea por línea «si quitara esta línea, ¿fallaría un solo caso de evaluación?».",
+    "pitfall": "Buscar señales solo a nivel de puntuación; otra comprobación más directa es leer el prompt del sistema completo y preguntar línea por línea «si quitara esta línea, ¿fallaría un solo caso de evaluación?».",
     "distractor_rationale": "El proceso se siente idéntico: las puntuaciones suben y cada paso parece una mejora; la diferencia está solo en si lo que sube es la capacidad o las puntuaciones en estas pocas preguntas."
   },
   {

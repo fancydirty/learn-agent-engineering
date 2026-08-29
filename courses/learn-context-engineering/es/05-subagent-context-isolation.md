@@ -103,19 +103,19 @@ Mira la `description` del campo `task`: «Una descripción de tarea autocontenid
       "id": "a",
       "text": "Lo tiene al revés: el valor vive en el aislamiento. Una ventana limpia gasta todo el presupuesto de atención en la tarea, y compartir el historial completo hace que ambas ventanas sostengan el mismo montón, con lo que el beneficio cae a cero.",
       "correct": true,
-      "feedback": "Correcto. La clave está en ver de dónde viene el beneficio: una ventana limpia mantiene el presupuesto de atención del subagente enteramente sobre la tarea, y el resumen de vuelta hace que la ventana principal cargue solo la conclusión. En cuanto ambas ventanas sostienen el mismo contenido, estás pagando dos facturas de tokens para mantener un solo contexto, y el aislamiento desapareció."
+      "feedback": "La clave está en ver de dónde viene el beneficio: una ventana limpia mantiene el presupuesto de atención del subagente enteramente sobre la tarea, y el resumen de vuelta hace que la ventana principal cargue solo la conclusión. En cuanto ambas ventanas sostienen el mismo contenido, estás pagando dos facturas de tokens para mantener un solo contexto, y el aislamiento desapareció."
     },
     {
       "id": "b",
       "text": "El único problema es el costo de transferencia: el historial completo son demasiados tokens, así que comprímelo primero y pásalo después, y te quedas con lo mejor de ambos.",
       "correct": false,
-      "feedback": "No exactamente. Eso solo ve la superficie. Incluso comprimido, el subagente arranca cargando historial que no tiene relación con su tarea acotada, así que su ventana no está limpia desde el primer turno y su atención queda dividida: la pérdida cae sobre la calidad de razonamiento del subagente, no sobre la factura de transferencia."
+      "feedback": "Eso solo ve la superficie. Incluso comprimido, el subagente arranca cargando historial que no tiene relación con su tarea acotada, así que su ventana no está limpia desde el primer turno y su atención queda dividida: la pérdida cae sobre la calidad de razonamiento del subagente, no sobre la factura de transferencia."
     },
     {
       "id": "c",
       "text": "La sugerencia está bien: más contexto significa que el modelo entiende más del conjunto, así que el resultado solo puede mejorar.",
       "correct": false,
-      "feedback": "No exactamente. «Más contexto siempre es mejor» es justo la intuición que este curso viene desarmando desde la Lección 1: más tokens empeoran el recuerdo preciso del modelo desde el contexto, y el presupuesto de atención es un recurso finito. Darle a un subagente historial sin relación con su tarea gasta su presupuesto, no lo ayuda."
+      "feedback": "«Más contexto siempre es mejor» es justo la intuición que este curso viene desarmando desde la Lección 1: más tokens empeoran el recuerdo preciso del modelo desde el contexto, y el presupuesto de atención es un recurso finito. Darle a un subagente historial sin relación con su tarea gasta su presupuesto, no lo ayuda."
     }
   ]
 }
@@ -180,7 +180,7 @@ Tu agente principal toma tres tareas:
 
 - **Tarea A**: En un repositorio de unos cientos de miles de líneas, encontrar todos los puntos de llamada que todavía usan la API obsoleta `LegacyLedgerReader` y sugerir un orden de migración.
 - **Tarea B**: El agente principal acaba de leer una función de 80 líneas al contexto; el usuario señala un bug off-by-one (error por uno) y pide arreglarlo.
-- **Tarea C**: Para una decisión de elección de librería, investigar tres librerías de parseo candidatas — leer la documentación de cada una, escarbar en su rastreador de issues y hacer una comparación lado a lado.
+- **Tarea C**: Para una decisión de elección de biblioteca, investigar tres bibliotecas de parseo candidatas — leer la documentación de cada una, escarbar en su rastreador de issues y hacer una comparación lado a lado.
 
 Para cada tarea, anota tu decisión — aislar (despachar un subagente) o no (hacerlo en la ventana principal) — señalando el paralelismo donde aplique, y da una o dos frases de razonamiento usando los criterios de esta lección.
 
@@ -192,7 +192,7 @@ Para cada tarea, anota tu decisión — aislar (despachar un subagente) o no (ha
 <!-- answer -->
 - **Tarea A: aislar.** El proceso significa una docena de greps y decenas de archivos leídos, con contenido intermedio que posiblemente llegue a decenas de miles de tokens; la conclusión es apenas una lista de puntos de llamada más un orden de migración, unos cientos de tokens como mucho. La proporción entre proceso y conclusión es muy despareja: el caso de manual de «el proceso se queda dentro del subagente, la conclusión vuelve a la ventana principal».
 - **Tarea B: no aislar.** La función ya está en la ventana principal y el arreglo es un cambio de un solo paso con casi ningún proceso intermedio; un subagente fresco solo significaría retransferir la función cruda y el trasfondo de la tarea. El aislamiento tiene un costo propio, y una tarea cuyo beneficio es menor que ese sobrecosto no merece despacharse.
-- **Tarea C: aislar, y ejecutar las tres en paralelo.** La investigación de las tres librerías no tiene dependencias cruzadas, así que cada una toma una ventana separada avanzando al mismo tiempo, y cada una devuelve solo los puntos que la comparación necesita (estilo de interfaz, estado de mantenimiento, características de rendimiento). El agente principal hace luego su comparación lado a lado sobre tres resúmenes en vez de sobre tres juegos de documentación cruda.
+- **Tarea C: aislar, y ejecutar las tres en paralelo.** La investigación de las tres bibliotecas no tiene dependencias cruzadas, así que cada una toma una ventana separada avanzando al mismo tiempo, y cada una devuelve solo los puntos que la comparación necesita (estilo de interfaz, estado de mantenimiento, características de rendimiento). El agente principal hace luego su comparación lado a lado sobre tres resúmenes en vez de sobre tres juegos de documentación cruda.
 
 <!-- hint -->
 Estima primero qué tan grande es el «contenido intermedio» de cada tarea — cuántos archivos hay que leer, cuántas búsquedas hay que ejecutar — luego estima si la conclusión final cabe en unas pocas frases, y pon los dos números lado a lado.

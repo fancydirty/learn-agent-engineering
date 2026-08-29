@@ -26,7 +26,7 @@ Ao final deste curso você será capaz de:
 - Separar a memória de um agente (o contexto entregue ao modelo) do seu estado de execução (a cena em andamento que o harness segura) e explicar por que “agentes têm estado e os erros se acumulam” torna uma queda especialmente letal para tarefas longas
 - Projetar checkpoints para um loop de harness: que campos precisam entrar no instantâneo, quando gravá-lo e como gravá-lo sem corromper o próprio arquivo de checkpoint
 - Implementar a retomada: reconstruir `messages` e os contadores a partir de um checkpoint, reentrar no loop e tratar corretamente a chamada órfã que sobra quando a queda acontece entre a execução da ferramenta e a gravação no livro-razão
-- Dar à recuperação uma rede de segurança com idempotência: julgar quais ferramentas são inofensivas de reexecutar e quais precisam ser protegidas de uma execução dupla, e equipar as ferramentas de alto impacto com chaves de idempotência
+- Dar à recuperação uma rede de proteção com idempotência: julgar quais ferramentas são inofensivas de reexecutar e quais precisam ser protegidas de uma execução dupla, e equipar as ferramentas de alto impacto com chaves de idempotência
 - Usar checkpoints para além da recuperação de desastre: rebobinar para uma cena anterior e tentar de novo, bifurcar uma tentativa alternativa, e enunciar a divisão de trabalho entre checkpoints e controle de versão
 - Soldar no harness do curso 7 o mecanismo completo — persistência a cada turno, recuperação com --resume, reconciliação de chamada órfã, proteção idempotente contra reexecução — e demonstrar uma tarefa longa interrompida no meio e levada até o fim
 

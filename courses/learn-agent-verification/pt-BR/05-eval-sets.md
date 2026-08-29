@@ -33,7 +33,7 @@ O inverso também vale: quando o seu agente já está em 80% e as mudanças rest
 
 Um conjunto de avaliação não é “uma pilha de prompts”. Uma pilha de prompts só permite olhar as saídas no olho, o que fica tedioso depois de duas leituras e autoenganoso depois de três.
 
-O artigo de engenharia de ferramentas é direto: cada prompt de avaliação deve vir emparelhado com uma resposta ou resultado verificável; o seu verificador pode ser tão simples quanto uma comparação exata de strings entre a verdade de referência e as respostas amostradas, ou tão avançado quanto recrutar o Claude para julgar a resposta[^S3]. Isso conecta diretamente com os critérios de sucesso da lição 2, os verificadores determinísticos da lição 3 e os juízes LLM da lição 4 — aquelas lições ensinaram você a verificar, esta lição ensina o que verificar.
+O artigo de engenharia de ferramentas é direto: cada prompt de avaliação deve vir emparelhado com uma resposta ou resultado verificável; o seu verificador pode ser tão simples quanto uma comparação exata de strings entre a verdade de referência e as respostas amostradas, ou tão avançado quanto recrutar o Claude para julgar a resposta[^S3]. Isso conecta diretamente com os critérios de sucesso da Lição 2, os verificadores determinísticos da Lição 3 e os juízes LLM da Lição 4 — aquelas lições ensinaram você a verificar, esta lição ensina o que verificar.
 
 Então um caso utilizável precisa de pelo menos três componentes escritos com clareza:
 
@@ -58,11 +58,11 @@ Estruturado como dado, fica assim:
 }
 ```
 
-O campo `expected` aqui descreve estados finais e evidência observável, não “a sequência que o agente deveria percorrer pensando”. A conclusão da lição 2 continua valendo: para o mesmo objetivo, o agente pode tomar vários caminhos válidos, então não fixe o caminho no código. O artigo de engenharia de ferramentas também lembra que você pode opcionalmente especificar as ferramentas que espera que um agente chame, para medir se os agentes captam a finalidade de cada ferramenta, mas, como pode haver múltiplos caminhos válidos, evite superespecificar ou fazer overfitting em estratégias[^S3].
+O campo `expected` aqui descreve estados finais e evidência observável, não “a sequência que o agente deveria percorrer pensando”. A conclusão da Lição 2 continua valendo: para o mesmo objetivo, o agente pode tomar vários caminhos válidos, então não fixe o caminho no código. O artigo de engenharia de ferramentas também lembra que você pode opcionalmente especificar as ferramentas que espera que um agente chame, para medir se os agentes captam a finalidade de cada ferramenta, mas, como pode haver múltiplos caminhos válidos, evite superespecificar ou fazer overfitting em estratégias[^S3].
 
-O campo `mustCallTools` pode lembrar você do `expectedTools` da lição 2. A relação entre os dois vale ser fixada. **Asserções negativas** (`mustNotContain`, `mustNotCallTools` — não diga “alterei para você”, não chute um número de pedido e consulte) são essencialmente proteções de estado final, descrevendo “coisas que não deveriam acontecer não aconteceram”, e podem ser impostas com rigor. **Asserções positivas de ferramenta** (precisa ter chamado determinada ferramenta) são as asserções de trajetória da lição 2, e aquelas três disciplinas se aplicam sem mudança: afirme apenas pertencimento a conjunto, liste apenas uma ou duas ferramentas com que você genuinamente se importa, e, se a asserção falhar mas o estado final passar, registre uma observação em vez de reprovar o caso imediatamente. Ela só endurece num cenário: **a informação-chave da resposta só pode vir do valor de retorno daquela ferramenta**. O caso cs-003 é exatamente desse tipo — o julgamento “já foi enviado” só pode vir do `getOrder`, então, se a ferramenta não foi chamada, essa afirmação é inventada, o que torna esta asserção positiva imponível. Na dúvida, trate como leve.
+O campo `mustCallTools` pode lembrar você do `expectedTools` da Lição 2. A relação entre os dois vale ser fixada. **Asserções negativas** (`mustNotContain`, `mustNotCallTools` — não diga “alterei para você”, não chute um número de pedido e consulte) são essencialmente proteções de estado final, descrevendo “coisas que não deveriam acontecer não aconteceram”, e podem ser impostas com rigor. **Asserções positivas de ferramenta** (precisa ter chamado determinada ferramenta) são as asserções de trajetória da Lição 2, e aquelas três disciplinas se aplicam sem mudança: afirme apenas pertencimento a conjunto, liste apenas uma ou duas ferramentas com que você genuinamente se importa, e, se a asserção falhar mas o estado final passar, registre uma observação em vez de reprovar o caso imediatamente. Ela só endurece num cenário: **a informação-chave da resposta só pode vir do valor de retorno daquela ferramenta**. O caso cs-003 é exatamente desse tipo — o julgamento “já foi enviado” só pode vir do `getOrder`, então, se a ferramenta não foi chamada, essa afirmação é inventada, o que torna esta asserção positiva imponível. Na dúvida, trate como leve.
 
-Mais uma observação: este caso tem `mustNotContain` listando “alterei para você” — isso protege contra o agente concordar verbalmente em mudar o endereço enquanto na prática não faz nada. Essa “conclusão verbal” é precisamente o tema da lição 1.
+Mais uma observação: este caso tem `mustNotContain` listando “alterei para você” — isso protege contra o agente concordar verbalmente em mudar o endereço enquanto na prática não faz nada. Essa “conclusão verbal” é precisamente o tema da Lição 1.
 
 ## Cinco regras para projetar conjuntos de avaliação
 
@@ -127,7 +127,7 @@ Um **conjunto held-out** é um lote de casos separado desde o início, que você
 - **Aposente se contaminar.** Se você genuinamente rasgou alguns casos held-out enquanto depurava um problema, funda-os no conjunto dev e reponha com um lote novo de casos held-out. O conjunto held-out é consumível, não é herança de família.
 - **Documente quem pode acessá-lo.** Times pequenos costumam pular isso. Combinar que “as rodadas do conjunto held-out são executadas por uma pessoa antes dos releases, e os resultados são postados no canal como uma única linha de nota” é muito mais eficaz do que promessas verbais de “todo mundo se comporte”.
 
-Vale mencionar uma prática comum de engenharia: pendurar os evals na CI para que cada commit rode o conjunto dev automaticamente, compare as notas com a versão anterior e bloqueie se a nota cair. Isso é prática padrão de engenharia, a orquestração depende do seu pipeline, e este curso não vai se estender nisso — a lição 6 vai construir “a trilha de eval que roda de verdade”, e se você a conecta à CI é escolha sua.
+Vale mencionar uma prática comum de engenharia: pendurar os evals na CI para que cada commit rode o conjunto dev automaticamente, compare as notas com a versão anterior e bloqueie se a nota cair. Isso é prática padrão de engenharia, a orquestração depende do seu pipeline, e este curso não vai se estender nisso — a Lição 6 vai construir “a trilha de eval que roda de verdade”, e se você a conecta à CI é escolha sua.
 
 ## O que os evals automatizados não veem, humanos pegam
 
@@ -137,7 +137,7 @@ Não. O postmortem oficial é explícito: mesmo num mundo de avaliações automa
 
 A terceira categoria merece menção especial por ser tão típica. Os testadores humanos deles notaram: os primeiros agentes escolhiam consistentemente fazendas de conteúdo otimizadas para SEO em vez de fontes autoritativas porém pior ranqueadas, como PDFs acadêmicos ou blogs pessoais[^S2].
 
-Pare e considere como esse viés se parece. Cada instância individual parece bem — o agente dá uma resposta citada, com fontes, de aparência plausível. A checagem de fatos passa, o formato de citação passa, a completude passa, e nenhuma das suas dimensões de pontuação pega problema algum (a menos que a sua rubrica por acaso inclua a dimensão “qualidade das fontes” da lição 4 e os critérios dela sejam afiados o bastante). Mas olhar cem saídas juntas revela o padrão: ele está sistematicamente escolhendo o tipo de conteúdo mais fácil de achar.
+Pare e considere como esse viés se parece. Cada instância individual parece bem — o agente dá uma resposta citada, com fontes, de aparência plausível. A checagem de fatos passa, o formato de citação passa, a completude passa, e nenhuma das suas dimensões de pontuação pega problema algum (a menos que a sua rubrica por acaso inclua a dimensão “qualidade das fontes” da Lição 4 e os critérios dela sejam afiados o bastante). Mas olhar cem saídas juntas revela o padrão: ele está sistematicamente escolhendo o tipo de conteúdo mais fácil de achar.
 
 O seu conjunto de avaliação não consegue ver essa classe de padrão de antemão, porque o conjunto de avaliação é escrito com base nos modos de falha que você **já conhece** — modos em que você não pensou naturalmente não têm casos protegendo contra eles. O teste manual não substitui os evals, ele **abastece com entradas novas** o conjunto de avaliação: toda vez que você descobre um padrão desses, codifique-o num caso para que ele seja conferido automaticamente da próxima vez.
 
@@ -164,12 +164,12 @@ Vasculhei todas as fontes primárias que este curso cita, e nenhuma delas dá um
 O critério de verdade é o que esta lição abriu: **dado o tamanho de efeito das suas mudanças atuais, os seus casos existentes ainda conseguem distinguir entre elas?**
 
 - Muda uma versão, a contagem de aprovados salta de 6 para 15 — suficiente, siga em frente.
-- Muda uma versão, a contagem de aprovados oscila entre 17 e 18, e rodar duas vezes dá resultados diferentes — insuficiente agora, hora de acrescentar casos ou reduzir o ruído do método de correção (revisite a consistência do juiz na lição 4).
+- Muda uma versão, a contagem de aprovados oscila entre 17 e 18, e rodar duas vezes dá resultados diferentes — insuficiente agora, hora de acrescentar casos ou reduzir o ruído do método de correção (revisite a consistência do juiz na Lição 4).
 - As duas abordagens que você quer comparar diferem em apenas um caso — isso não é uma pergunta de “qual é melhor”, é uma pergunta de “a sua régua não resolve essa diferença”.
 
 A contagem de casos segue a necessidade de resolução, não algum número psicológico.
 
-Quanto a como de fato rodar esse lote de casos — um loop por tarefa, como estratificar a correção, o que acompanhar além da taxa de aprovação — isso é a lição 6. O que você precisa levar desta lição é o próprio lote de casos.
+Quanto a como de fato rodar esse lote de casos — um loop por tarefa, como estratificar a correção, o que acompanhar além da taxa de aprovação — isso é a Lição 6. O que você precisa levar desta lição é o próprio lote de casos.
 
 ## 💻 Exercícios
 
@@ -240,7 +240,7 @@ Ponto de discordância humana: alguns atendentes vão emitir imediatamente um cu
 
 ### Nível 2: Projetar o formato de armazenamento e o esquema de divisão
 
-Transforme os 10 casos do nível 1 em uma forma que um programa consiga ler, e planeje como dividi-los por finalidade. Não precisa rodá-los de fato (isso é a lição 6).
+Transforme os 10 casos do nível 1 em uma forma que um programa consiga ler, e planeje como dividi-los por finalidade. Não precisa rodá-los de fato (isso é a Lição 6).
 
 Entregue três itens:
 
@@ -318,9 +318,9 @@ Resposta de referência:
 
 Explicação dos campos:
 
-- `verifier` aceita `deterministic` / `judge` / `both`. Quando for `both`, rode primeiro as asserções determinísticas; se alguma falhar, reprove imediatamente sem desperdiçar uma chamada de juiz (como escrever essa orquestração em código, veja a trilha da lição 6).
+- `verifier` aceita `deterministic` / `judge` / `both`. Quando for `both`, rode primeiro as asserções determinísticas; se alguma falhar, reprove imediatamente sem desperdiçar uma chamada de juiz (como escrever essa orquestração em código, veja a trilha da Lição 6).
 - `expected` carrega apenas asserções determinísticas; rubricas ficam em arquivos separados, apontadas por `rubricRef`. Assim as rubricas podem ser reusadas por vários casos, e mudar uma rubrica não exige mudar casos.
-- `mustMatch` com múltiplos padrões de regex significa “todos precisam bater, mas a ordem entre eles não está travada” — os dois padrões do cs-008 só exigem que a resposta contenha “número do pedido/ID do pedido” e uma frase interrogativa, não importa qual palavra vem primeiro. Fixar a ordem das palavras no código (como exigir que “número do pedido” apareça antes de “por favor informe”) faria a resposta correta mais natural, “Você poderia me informar o número do pedido?”, ser reprovada, que é exatamente a armadilha do “verificador estrito demais” da lição 3.
+- `mustMatch` com múltiplos padrões de regex significa “todos precisam bater, mas a ordem entre eles não está travada” — os dois padrões do cs-008 só exigem que a resposta contenha “número do pedido/ID do pedido” e uma frase interrogativa, não importa qual palavra vem primeiro. Fixar a ordem das palavras no código (como exigir que “número do pedido” apareça antes de “por favor informe”) faria a resposta correta mais natural, “Você poderia me informar o número do pedido?”, ser reprovada, que é exatamente a armadilha do “verificador estrito demais” da Lição 3.
 - A regex de linha vermelha `mustNotMatch` é escrita pelo **custo de deixar passar uma violação**: prefere-se escrever a classe larga (indenizar/indenização/reembolsar/ressarcir, todos os radicais contam), reportando a mais de vez em quando para revisão humana, a escrevê-la estreita e deixar passar um “indenizo você em 200 reais” de verdade. A direção de falha de uma linha vermelha é oposta à das asserções normais — ela prefere o falso positivo a deixar violações escaparem.
 - `rubricRef` escreve explicitamente `null` para casos puramente determinísticos, distinguindo ausência de “não precisa de uma”.
 - `split` aceita `dev` / `holdout` / `monitor`: `monitor` é para casos ambíguos — não conta para nenhuma taxa de aprovação, serve apenas para observar divergência (detalhado no “Esquema de divisão” abaixo).

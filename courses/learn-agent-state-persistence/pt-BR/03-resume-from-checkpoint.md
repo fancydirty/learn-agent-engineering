@@ -182,7 +182,7 @@ Dois contadores são fáceis de o caminho de retomada bagunçar, e vale explicit
 
 `turns` não zera na retomada. Ele conta o total de turnos da tarefa desde o começo até agora, não “quantos turnos esta instância do processo rodou” — o `turns` do checkpoint deve continuar sendo incrementado de onde parou, que é a única forma de o teto `MAX_TURNS` definido na Lição 2 seguir fazendo seu trabalho. Zere `turns` na retomada e uma tarefa que vive caindo e se recuperando pode driblar o teto de turnos e rodar para sempre.
 
-`tokensUsed` funciona da mesma forma — carregado adiante a partir do checkpoint, não recalculado. Quando "Context Engineering: Spending Finite Attention Where It Counts" cobre compactação de contexto, `tokensUsed` significa “o uso da janela atual”, e o que o checkpoint armazenou é exatamente o uso dessa janela no instante da queda. Os dois carregam o mesmo sentido, então na retomada você o pega e segue, sem conversão extra nenhuma.
+`tokensUsed` funciona da mesma forma — carregado adiante a partir do checkpoint, não recalculado. Quando “Context Engineering: gastando a atenção finita onde ela conta” cobre compactação de contexto, `tokensUsed` significa “o uso da janela atual”, e o que o checkpoint armazenou é exatamente o uso dessa janela no instante da queda. Os dois carregam o mesmo sentido, então na retomada você o pega e segue, sem conversão extra nenhuma.
 
 <!-- exercises -->
 ## 💻 Exercícios

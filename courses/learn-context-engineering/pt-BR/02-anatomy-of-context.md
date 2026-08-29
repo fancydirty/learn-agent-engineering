@@ -159,7 +159,7 @@ Por fim, o próprio manifesto de ferramentas precisa de subtração. Dez ferrame
 
 ## Exemplos: escolha os canônicos, não empilhe uma lista
 
-Exemplos (few-shot) são o terceiro custo estático. O apodrecimento típico deles é assim: cada caso ruim que aparece em produção ganha um exemplo correspondente acrescentado ao prompt, e seis meses depois você é dono de um catálogo de 30 casos de borda. A Anthropic é direta a respeito — não "stuff a laundry list of edge cases into a prompt"[^S1] (enfie uma lista de lavanderia de casos de borda em um prompt); em vez disso, "curate a set of diverse, canonical examples that effectively portray the expected behavior of the agent"[^S1] (cure um conjunto de exemplos diversos e canônicos que retratem com eficácia o comportamento esperado do agente).
+Exemplos (few-shot) são o terceiro custo estático. O apodrecimento típico deles é assim: cada caso ruim que aparece em produção ganha um exemplo correspondente acrescentado ao prompt, e seis meses depois você é dono de um catálogo de 30 casos de borda. A Anthropic é direta a respeito — não "stuff a laundry list of edge cases into a prompt"[^S1] (enfie uma lista interminável de casos de borda em um prompt); em vez disso, "curate a set of diverse, canonical examples that effectively portray the expected behavior of the agent"[^S1] (cure um conjunto de exemplos diversos e canônicos que retratem com eficácia o comportamento esperado do agente).
 
 “Canônico” significa que um exemplo representa uma **classe** de comportamento, não uma situação específica. De volta ao agente de suporte: três exemplos bastam para emoldurar todo o espaço de comportamento.
 
@@ -298,7 +298,7 @@ Comece contando quantas ferramentas conseguem realizar o mesmo trabalho, depois 
 - Um system prompt tem dois extremos de falha — ramos hardcoded e frágeis, e palavras de ordem vagas que não carregam sinal. A altitude certa é específica o bastante para guiar o comportamento e ainda flexível o bastante para deixar heurísticas fortes ao modelo[^S1], e “princípios mais limites rígidos” é a estrutura prática para chegar lá.
 - Conteúdo sempre carregado como o CLAUDE.md é lido no início de cada conversa: inclua apenas o que se aplica de forma ampla, e rode o teste de remoção em cada linha, porque arquivos inchados fazem o modelo ignorar as suas instruções de verdade[^S4].
 - Ferramentas gastam orçamento nas duas pontas, definição e retorno: mantenha o uso pretendido extremamente claro, a sobreposição mínima e os retornos eficientes em tokens[^S1]; ferramentas que nunca são chamadas continuam sendo cobradas por inteiro a cada turno.
-- Cure alguns exemplos diversos e canônicos em vez de enfiar uma lista de lavanderia de casos de borda[^S1]; a maioria dos casos de borda pertence de volta à camada de princípios.
+- Cure alguns exemplos diversos e canônicos em vez de enfiar uma lista interminável de casos de borda[^S1]; a maioria dos casos de borda pertence de volta à camada de princípios.
 - Antes de acrescentar qualquer complexidade ao contexto, lembre o senso de proporção da Anthropic: acrescente apenas quando ela comprovadamente melhora os resultados[^S2].
 
 [>> Lição 3: Recuperação just-in-time: deixando o agente buscar o próprio contexto](./03-just-in-time-context.md)

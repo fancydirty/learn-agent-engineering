@@ -7,11 +7,11 @@
 >
 > Pré-requisitos: Lições 1–3, com o entendimento da avaliação “estado final primeiro” e da prioridade dos verificadores determinísticos | Anterior: [<< Lição 3](./03-deterministic-checks.md) | Próxima: [Lição 5 >>](./05-eval-sets.md)
 
-## Onde a lição 3 encontra seu teto, e onde os juízes LLM se encaixam
+## Onde a Lição 3 encontra seu teto, e onde os juízes LLM se encaixam
 
 Você passou uma tarefa ao seu agente de pesquisa: resumir como os subsídios domésticos para recarga de veículos elétricos mudaram nos últimos três anos e produzir um relatório de duas páginas. Ele rodou por quinze minutos, chamou ferramentas de busca, baixou PDFs, escreveu 1.800 palavras. A leitura é plausível.
 
-Agora você quer verificar. Nenhuma das verificações determinísticas da lição 3 se aplica aqui: não há suíte de testes para rodar, não há código de saída de build para ler, não há `golden_answer` para `output == golden_answer` porque você não consegue escrever um — coloque dois analistas humanos no mesmo relatório e eles não vão produzir textos idênticos.
+Agora você quer verificar. Nenhuma das verificações determinísticas da Lição 3 se aplica aqui: não há suíte de testes para rodar, não há código de saída de build para ler, não há `golden_answer` para `output == golden_answer` porque você não consegue escrever um — coloque dois analistas humanos no mesmo relatório e eles não vão produzir textos idênticos.
 
 Isso não é falta de imaginação. É assim que essas saídas são. Quando a Anthropic refletiu sobre seu sistema de pesquisa multiagente, foi direta: saídas de pesquisa são texto livre, raramente têm uma única resposta correta e por isso são difíceis de avaliar programaticamente — LLMs são um encaixe natural para corrigir saídas desse tipo[^S2].
 
@@ -33,7 +33,7 @@ O agente de pesquisa da Anthropic usou uma rubrica de cinco dimensões[^S2], cad
 - **Precisão de citação — as fontes citadas batem com as afirmações?** Direção oposta à dimensão anterior; muita gente confunde as duas. A primeira pergunta “esta afirmação tem respaldo”, esta pergunta “o link anexado a esta frase realmente discute este assunto?”. Uma falha comum de agente: a afirmação está certa, mas vem etiquetada com uma fonte cujo título apenas pareceu relevante.
 - **Completude — todos os aspectos pedidos foram cobertos?** Você disse “últimos três anos” e ele só escreveu sobre o ano passado; você disse “mudanças” e ele só escreveu o estado atual. Confira cada requisito, não avalie o quanto a prosa ficou bonita.
 - **Qualidade das fontes — fontes primárias ou secundárias de baixa qualidade?** Esta dimensão pega os problemas mais sorrateiros. Os testadores humanos da Anthropic descobriram: os primeiros agentes escolhiam consistentemente fazendas de conteúdo otimizadas para SEO em vez de fontes autoritativas porém pior ranqueadas, como PDFs acadêmicos ou blogs pessoais[^S2]. A saída lê como perfeitamente normal, mas o alicerce está podre.
-- **Eficiência de ferramentas — as ferramentas certas, um número razoável de chamadas?** Chegar à mesma resposta com três buscas ou com trinta difere em uma ordem de grandeza de custo. Esta dimensão avalia a economia do processo, não “ele seguiu as etapas que prescrevi” — isso não funciona, como a lição 2 explicou.
+- **Eficiência de ferramentas — as ferramentas certas, um número razoável de chamadas?** Chegar à mesma resposta com três buscas ou com trinta difere em uma ordem de grandeza de custo. Esta dimensão avalia a economia do processo, não “ele seguiu as etapas que prescrevi” — isso não funciona, como a Lição 2 explicou.
 
 Essas cinco dimensões são para tarefas de pesquisa. Tarefas diferentes precisam de conjuntos diferentes. O que dá para levar é o método de decomposição: comece de “se esta saída quebrar, como ela quebra”, derive as dimensões disso, um modo de falha por dimensão. E não deixe passar: um dado caso de uso, ou mesmo um critério de sucesso específico desse caso, pode exigir várias rubricas para uma avaliação holística[^S5]. Não espere que um único boletim cubra tudo.
 
@@ -92,7 +92,7 @@ Leia de trás para frente para ver por que a autocorreção falha: a cadeia de r
     },
     {
       "id": "c",
-      "text": "A autocorreção definitivamente não funciona, então esse tipo de saída em texto livre só pode usar revisão humana. juízes LLM não são confiáveis nesse cenário.",
+      "text": "A autocorreção definitivamente não funciona, então esse tipo de saída em texto livre só pode usar revisão humana. Juízes LLM não são confiáveis nesse cenário.",
       "correct": false,
       "feedback": "A primeira metade está correta, a segunda salta longe demais. A correção humana é a mais flexível e de maior qualidade, mas lenta e cara; a orientação oficial é evitá-la se possível. O problema dos juízes LLM não é “não dá para usar”, é que você precisa de uma instância diferente com contexto limpo para rodá-lo, e precisa validar que ele é confiável antes de escalar. A autocorreção falha especificamente por causa do contexto compartilhado, não porque juízes LLM sejam intrinsecamente pouco confiáveis."
     }
@@ -124,7 +124,7 @@ Use essas duas condições como testes de admissão. A abordagem é direta: seja
 
 ## Proporcionalidade: um juiz também é uma chamada de modelo
 
-Volte à ordenação da lição 3. O princípio para escolher um método de correção é o mais rápido, mais confiável e mais escalável[^S5]; a correção por código fica à frente da correção por LLM nos três[^S5]. Então os juízes vão onde as verificações determinísticas não alcançam, não como substitutas delas. Para o mesmo relatório, a estratificação correta fica assim:
+Volte à ordenação da Lição 3. O princípio para escolher um método de correção é o mais rápido, mais confiável e mais escalável[^S5]; a correção por código fica à frente da correção por LLM nos três[^S5]. Então os juízes vão onde as verificações determinísticas não alcançam, não como substitutas delas. Para o mesmo relatório, a estratificação correta fica assim:
 
 ```text
 Camada 1 (determinística, milissegundos, custo zero)
@@ -143,7 +143,7 @@ Camada 3 (humano, lento e caro, apenas amostragem)
 
 Não mande para a camada 2 pagar o que a camada 1 já pega — uma saída que nem sequer é formato válido não precisa de uma chamada de modelo para lhe dizer que é inaceitável. A camada 3 não pode ser pulada: pessoas testando agentes encontram casos extremos que os evals deixam passar[^S2]; o viés anterior de “preferir consistentemente fazendas de conteúdo” foi pego por teste humano[^S2].
 
-**A fronteira desta lição**: como organizar conjuntos de avaliação, com quantos casos rodar este juiz — isso é a lição 5. Ligar o juiz a uma trilha de eval repetível que produz relatórios — isso é a lição 6. Esta lição só resolve como tornar um único julgamento confiável.
+**A fronteira desta lição**: como organizar conjuntos de avaliação, com quantos casos rodar este juiz — isso é a Lição 5. Ligar o juiz a uma trilha de eval repetível que produz relatórios — isso é a Lição 6. Esta lição só resolve como tornar um único julgamento confiável.
 
 ## 💻 Exercícios
 

@@ -3,15 +3,15 @@
 > Objetivos de aprendizaje:
 > - Unir conjuntos de evaluación, calificación estratificada y bucles de arnés en un `eval-runner.mjs` ejecutable — una tarea de evaluación por bucle independiente
 > - Hacer que los reportes capturen no solo la tasa de aprobación, sino también la duración por tarea, el número de llamadas a herramientas, el consumo de tokens y los errores de herramienta, y usar esas columnas para diagnosticar problemas
-> - Usar este circuito para medir el impacto real de un cambio en el prompt de sistema, y atrapar un verificador demasiado estricto que rechaza salidas correctas
+> - Usar este circuito para medir el impacto real de un cambio en el prompt del sistema, y atrapar un verificador demasiado estricto que rechaza salidas correctas
 >
 > Requisitos: Leer las lecciones 1–5, tener a mano el bucle de arnés del curso 7 y poder ejecutarlo | Anterior: [Lección 5 <<](./05-eval-sets.md)
 
 Las primeras cinco lecciones fueron todas componentes: verifica el estado final y no paso por paso (lección 2), verificaciones deterministas primero y ojo con los verificadores demasiado estrictos (lección 3), el texto de forma libre solo admite jueces LLM (lección 4), los conjuntos de evaluación arrancan con unas veinte tareas reales (lección 5). Cada uno tiene sentido por su cuenta, pero después de cambiar tu prompt sigues sin tener algo que puedas ejecutar con un solo comando para que los números te digan «mejor o peor».
 
-Esta lección suelda los componentes. Lo que obtienes es un archivo de trescientas líneas que corre en menos de dos segundos. La guía oficial sobre «cómo ejecutar evaluaciones» es directa: usa llamadas programáticas y directas a la API del LLM; usa bucles agénticos simples — bucles `while` que alternan llamadas al LLM y llamadas a herramientas — **una tarea de evaluación por bucle**[^S3]. Ese es exactamente el bucle guiado por `stop_reason` del curso 7 de esta serie. Puedes trasplantarlo tal cual.
+Esta lección suelda los componentes. Lo que obtienes es un archivo de trescientas líneas que se ejecuta en menos de dos segundos. La guía oficial sobre «cómo ejecutar evaluaciones» es directa: usa llamadas programáticas y directas a la API del LLM; usa bucles agénticos simples — bucles `while` que alternan llamadas al LLM y llamadas a herramientas — **una tarea de evaluación por bucle**[^S3]. Ese es exactamente el bucle guiado por `stop_reason` del curso 7 de esta serie. Puedes trasplantarlo tal cual.
 
-## Cómo se ve cuando corre
+## Cómo se ve cuando se ejecuta
 
 Guarda el `eval-runner.mjs` completo que aparece más adelante en esta lección y después `node eval-runner.mjs`:
 
@@ -56,7 +56,7 @@ t5-missing-order     1.00   1.00  sin cambio
 Tasa de aprobación 3/5 -> 5/5
 ```
 
-Esto no es un ejemplo hecho a mano — está copiado textualmente de una ejecución real en un directorio temporal. Copia el código completo y córrelo una vez; todo excepto la columna «Duración» (tiempo real de reloj, que varía con la carga de la máquina) va a coincidir hasta el milisegundo. Los números son los mismos porque el cliente stub devuelve respuestas prefijadas.
+Esto no es un ejemplo hecho a mano — está copiado textualmente de una ejecución real en un directorio temporal. Copia el código completo y ejecútalo una vez; todo excepto la columna «Duración» (tiempo real de reloj, que varía con la carga de la máquina) va a coincidir hasta el milisegundo. Los números son los mismos porque el cliente stub devuelve respuestas prefijadas.
 
 Esta salida contiene todo lo que enseña esta lección: cinco tareas ejecutando cada una su propio bucle, dos modos de calificación mezclados en una sola tabla, tasa de aprobación más cuatro columnas de diagnóstico, y la diferencia entre dos versiones colapsada en una tabla comparativa. El resto de la lección lo desempaqueta.
 
@@ -68,7 +68,7 @@ Esta salida contiene todo lo que enseña esta lección: cinco tareas ejecutando 
 4. **Calificación**: lo que se puede calificar de forma determinista va a una función `verify`; el texto de forma libre va al juez.
 5. **Bucle y reporte**: una tarea, un bucle `while`; al terminar, agrega las métricas en una tabla.
 
-Una cosa que conviene dejar clara desde ya: **las tareas no comparten `messages`**. El `messages` de cada tarea arranca solo con el prompt de usuario de esa tarea, corre su propio bucle y después se descarta[^S3]. Por qué esto importa tanto — el cuestionario del medio lo va a preguntar directamente.
+Una cosa que conviene dejar clara desde ya: **las tareas no comparten `messages`**. El `messages` de cada tarea arranca solo con el prompt de usuario de esa tarea, ejecuta su propio bucle y después se descarta[^S3]. Por qué esto importa tanto — el cuestionario del medio lo va a preguntar directamente.
 
 ## Pieza uno: las herramientas y los datos detrás de ellas
 
@@ -112,7 +112,7 @@ function stubClient(script, label) {
 
 Cuando la cola se agota lanza un error, sin respuesta de reserva — si el bucle da una vuelta de más lo ves de inmediato: `Error: [stub] cola de respuestas de v1/t2-pending agotada (1 solicitudes emitidas)` (ese es el texto de error real después de que borré la última respuesta de la cola de t2), y no un `end_turn` falso colándose. Cada respuesta carga su propio `latency_ms`; el stub duerme realmente ese tiempo, así que la columna «Duración» mide cuántos turnos tomó el bucle. Cada tarea recibe un cliente fresco con su propio script; los cursores no se cruzan entre tareas.
 
-**La diferencia entre las dos versiones del prompt está fijada en las dos colas de respuestas del stub.** En un escenario real cambias el prompt de sistema y el comportamiento del modelo lo sigue; acá no tengo modelo, así que preescribí `SCRIPT_V1` y `SCRIPT_V2`, dejando que v2 devuelva respuestas distintas en dos tareas — «supongamos que el prompt v2 hace efecto y el modelo responde así» queda codificado como datos:
+**La diferencia entre las dos versiones del prompt está fijada en las dos colas de respuestas del stub.** En un escenario real cambias el prompt del sistema y el comportamiento del modelo lo sigue; acá no tengo modelo, así que preescribí `SCRIPT_V1` y `SCRIPT_V2`, dejando que v2 devuelva respuestas distintas en dos tareas — «supongamos que el prompt v2 hace efecto y el modelo responde así» queda codificado como datos:
 
 ```javascript
 // v2 solo cambia las respuestas de dos tareas — la diferencia entre versiones está fijada aquí
@@ -177,7 +177,7 @@ Cada punto tiene su fuente: haz que el juez primero razone y después puntúe, y
 
 El juez acá también es un stub: la respuesta de v1 no tiene el tiempo de acreditación, dos de tres ítems dan 0.67 y se califica fallido; v2 lo agregó, los tres aciertan y dan 1.00, calificado aprobado. La puntuación es autoconsistente con la rúbrica — tres ítems binarios promediados solo pueden caer en 0, 0.33, 0.67 o 1.00; una puntuación de 0.85 significaría que el juez no siguió la aritmética de la rúbrica. El juez mismo quema tokens; su consumo se suma a los tokens de esa tarea, y por eso `t4` llama una sola herramienta pero sus tokens no son bajos.
 
-Una disciplina más de la lección 4: el modelo que trabajó no debería calificarse a sí mismo. Lo oficial dice que hagas que una instancia fresca del modelo intente refutar el resultado — el que hace el trabajo no es el que lo califica[^S4]. En código: el juez usa su propio cliente, su propio prompt de sistema, su propio arreglo de messages, solo ve el prompt de la tarea y la respuesta a calificar, y no ve la transcripción de llamadas a herramientas del agente.
+Una disciplina más de la lección 4: el modelo que trabajó no debería calificarse a sí mismo. Lo oficial dice que hagas que una instancia fresca del modelo intente refutar el resultado — el que hace el trabajo no es el que lo califica[^S4]. En código: el juez usa su propio cliente, su propio prompt del sistema, su propio arreglo de messages, solo ve el prompt de la tarea y la respuesta a calificar, y no ve la transcripción de llamadas a herramientas del agente.
 
 ## Pieza cinco: bucle y reporte
 
@@ -205,7 +205,7 @@ Que el reporte sea legible para humanos tiene valor intrínseco. La sugerencia o
 {
   "id": "vq-zh-06-shared-session",
   "label": "Todas las tareas de evaluación comparten una sola sesión larga: ¿funciona?",
-  "prompt": "Un colega miró eval-runner.mjs y sugirió una optimización: ahora mismo cada tarea crea un arreglo messages nuevo y corre un bucle independiente — un desperdicio. ¿Por qué no hacer que las cinco tareas compartan una sola sesión larga y corran en secuencia? Da dos razones: los datos de pedidos ya consultados se pueden reutilizar después (ahorra tokens), y el modelo se «calienta», así que las tareas posteriores obtienen mejores respuestas. ¿Cuál es el problema de fondo de esta propuesta?",
+  "prompt": "Un colega miró eval-runner.mjs y sugirió una optimización: ahora mismo cada tarea crea un arreglo messages nuevo y ejecuta un bucle independiente — un desperdicio. ¿Por qué no hacer que las cinco tareas compartan una sola sesión larga y se ejecuten en secuencia? Da dos razones: los datos de pedidos ya consultados se pueden reutilizar después (ahorra tokens), y el modelo se «calienta», así que las tareas posteriores obtienen mejores respuestas. ¿Cuál es el problema de fondo de esta propuesta?",
   "whyHere": "En la estructura de este circuito, lo que más probablemente se «optimice» hasta desaparecer es el aislamiento entre tareas. Parece trabajo duplicado, pero en realidad es la precondición para poder comparar resultados.",
   "mode": "single",
   "choices": [
@@ -223,7 +223,7 @@ Que el reporte sea legible para humanos tiene valor intrínseco. La sugerencia o
     },
     {
       "id": "c",
-      "text": "El problema es que las tareas se contaminan entre sí: una tarea de evaluación debería correr un bucle independiente; con una sesión compartida, el contexto que deja la tarea anterior se arrastra a la siguiente — el modelo podría usar directamente los datos de pedidos ya consultados en la tarea previa para responder, y la prueba deja de medir la capacidad propia de esta tarea; además, cambiar el orden de las tareas cambia los resultados, y dos ejecuciones dejan de ser comparables.",
+      "text": "El problema es que las tareas se contaminan entre sí: una tarea de evaluación debería ejecutar un bucle independiente; con una sesión compartida, el contexto que deja la tarea anterior se arrastra a la siguiente — el modelo podría usar directamente los datos de pedidos ya consultados en la tarea previa para responder, y la prueba deja de medir la capacidad propia de esta tarea; además, cambiar el orden de las tareas cambia los resultados, y dos ejecuciones dejan de ser comparables.",
       "correct": true,
       "feedback": "Correcto. La guía oficial es «una tarea de evaluación por bucle»; el aislamiento no es desperdicio, es precondición. La contaminación tiene dos capas: una es que cambia lo que estás probando — los datos que trajo la tarea anterior siguen en el contexto, y si la siguiente tarea toca contenido relacionado podría responder directo desde el contexto previo sin llamar herramientas, o dejarse desviar por contexto viejo irrelevante hacia una respuesta equivocada; entonces estás probando «si sabe hojear el contexto previo» y no «si sabe usar herramientas». La otra capa es que las tareas quedan dependientes del orden; cambia el orden o borra una tarea del medio, y las puntuaciones de las tareas restantes se corren todas, con lo que el circuito pierde su único propósito: hacer comparables dos ejecuciones."
     }
@@ -577,7 +577,7 @@ async function runSuite(version) {
 
 // ============ 7. Reporte ============
 
-const CJK = /[ᄀ-ᅟ⺀-꓏가-힣豈-﫿︰-﹏＀-｠￠-￦]/;
+const CJK = /[ᄀ-ᅟ⺀-꓏가-힣豈-﫿︰-﹏＀-｠￠-￦]/;
 const width = (s) => [...String(s)].reduce((n, ch) => n + (CJK.test(ch) ? 2 : 1), 0);
 const pad = (s, n) => String(s) + " ".repeat(Math.max(0, n - width(s)));
 const padL = (s, n) => " ".repeat(Math.max(0, n - width(s))) + String(s);
@@ -684,7 +684,7 @@ Un comentario al margen sobre el alcance: normalizar no es «cuanto más flojo m
 
 ## Cambia un solo lugar del prompt y mira moverse la puntuación
 
-Circuito calibrado, listo para trabajo real. Cambié un solo lugar — el prompt de sistema, agregándole dos reglas después de v1:
+Circuito calibrado, listo para trabajo real. Cambié un solo lugar — el prompt del sistema, agregándole dos reglas después de v1:
 
 ```javascript
 const SYSTEM_PROMPTS = {
@@ -709,13 +709,13 @@ Mira otra vez las columnas de métricas: las llamadas a herramientas de v2 bajar
 
 **Qué administra**: un agente, un lote de tareas, una ejecución en tu máquina, un reporte legible para humanos.
 
-**Cambiar a un modelo real** — la estructura del circuito no cambia. Reemplaza `stubClient(...)` por el cliente real de `@anthropic-ai/sdk`; el bucle `while` de `runTask` no cambia ni una línea — ya está escrito con la forma de `stop_reason` / `tool_use` / `tool_result` de la API real; los parámetros requeridos `model` y `max_tokens` ya están ahí (el stub los ignora, el cliente real los usa). Después del cambio dos cosas se mueven: las puntuaciones van a temblar porque los agentes no son deterministas entre ejecuciones ni siquiera con prompts idénticos[^S2], así que no leas de más una sola ejecución; y correr una ronda cuesta dinero y tiempo, con cinco tareas da igual, pero con doscientas ya conviene pensar en concurrencia y costo.
+**Cambiar a un modelo real** — la estructura del circuito no cambia. Reemplaza `stubClient(...)` por el cliente real de `@anthropic-ai/sdk`; el bucle `while` de `runTask` no cambia ni una línea — ya está escrito con la forma de `stop_reason` / `tool_use` / `tool_result` de la API real; los parámetros requeridos `model` y `max_tokens` ya están ahí (el stub los ignora, el cliente real los usa). Después del cambio dos cosas se mueven: las puntuaciones van a temblar porque los agentes no son deterministas entre ejecuciones ni siquiera con prompts idénticos[^S2], así que no leas de más una sola ejecución; y ejecutar una ronda cuesta dinero y tiempo, con cinco tareas da igual, pero con doscientas ya conviene pensar en concurrencia y costo.
 
 **Qué no administra**: enganchar las evaluaciones a CI, ejecutarlas en cada commit, compararlas contra versiones históricas, bloquear merges cuando las puntuaciones bajan de cierto umbral — todas son prácticas de ingeniería comunes y sí funcionan bien, pero esta lección no las desarrolla. El Nivel 2 de los ejercicios te va a llevar por «comparar dos reportes», y el resto de la orquestación es trabajo de tu CI.
 
-Una disciplina más de la lección 5 para repetir: **no ajustes contra el conjunto reservado**. Sigues los reportes para cambiar prompts; después de varias rondas las puntuaciones definitivamente van a subir, pero la subida podría ser solo «puntuaciones en estas cinco tareas». La práctica oficial es apoyarse en conjuntos de prueba reservados para asegurar que no hay sobreajuste a las evaluaciones «de entrenamiento»[^S3]. Así que en un montaje real las tareas deberían dividirse en dos pilas: una corre a diario para orientarte, la otra queda bajo llave y solo se abre cuando piensas «esta versión debería funcionar» — las puntuaciones de la primera pila son navegación, las de la segunda son veredicto.
+Una disciplina más de la lección 5 para repetir: **no ajustes contra el conjunto reservado**. Sigues los reportes para cambiar prompts; después de varias rondas las puntuaciones definitivamente van a subir, pero la subida podría ser solo «puntuaciones en estas cinco tareas». La práctica oficial es apoyarse en conjuntos de prueba reservados para asegurar que no hay sobreajuste a las evaluaciones «de entrenamiento»[^S3]. Así que en un montaje real las tareas deberían dividirse en dos pilas: una se ejecuta a diario para orientarte, la otra queda bajo llave y solo se abre cuando piensas «esta versión debería funcionar» — las puntuaciones de la primera pila son navegación, las de la segunda son veredicto.
 
-Último recordatorio viejo: las evaluaciones automáticas se van a perder cosas. Los evaluadores humanos siempre dan con casos límite que las evaluaciones no ven — alucinaciones ante consultas inusuales, fallos sistémicos, sesgos sutiles de selección de fuentes[^S2]. Que el circuito corra sin problemas no significa que dejes de usarlo tú mismo.
+Último recordatorio viejo: las evaluaciones automáticas se van a perder cosas. Los evaluadores humanos siempre dan con casos límite que las evaluaciones no ven — alucinaciones ante consultas inusuales, fallos sistémicos, sesgos sutiles de selección de fuentes[^S2]. Que el circuito se ejecute sin problemas no significa que dejes de usarlo tú mismo.
 
 ## 💻 Ejercicios
 
@@ -978,7 +978,7 @@ Dos detalles de implementación que vale la pena conservar. Uno es alinear por `
 
 Mirando hacia atrás, el hilo principal es en realidad corto. La lección 1 separó «parece terminado» de «está terminado» — sin verificaciones ejecutables, «parece terminado» es la única señal disponible y tú te conviertes en el paso de verificación[^S4]. La lección 2 fijó qué verificar: los agentes podrían recorrer caminos razonables completamente distintos hacia el mismo objetivo, así que evalúa el estado final, no revises la trayectoria paso por paso[^S2]. La lección 3 convirtió las «verificaciones» en verificadores deterministas ejecutables que emiten aprobado/fallido, y también advirtió que los verificadores demasiado estrictos rechazan respuestas correctas[^S3]. La lección 4 se ocupó del texto de forma libre — rúbricas, formato de salida, y que el modelo que trabajó no debería calificarse a sí mismo[^S2][^S4]. La lección 5 resolvió «con cuántos casos verificar»: unas veinte tareas reales alcanzan para arrancar, no esperes a acumular cientos para empezar[^S2]. Esta lección soldó las primeras cinco en un archivo de trescientas líneas.
 
-Ese archivo no es complejo, corre en menos de dos segundos, pero lo que cambia es concreto: desde hoy, cuando cambies una versión del prompt, no dependes de «leer unos párrafos de salida y sentir que está mejor» para juzgar — ejecutas un comando y la tabla de diferencias de v1 a v2 habla por ti, igual que esta vez, cuando `t3` y `t4` se pusieron en verde mientras las otras tres se quedaron sin cambio. La próxima vez que tu agente diga «listo», tienes dos comandos y un código de salida para verificar esa afirmación.
+Ese archivo no es complejo, se ejecuta en menos de dos segundos, pero lo que cambia es concreto: desde hoy, cuando cambies una versión del prompt, no dependes de «leer unos párrafos de salida y sentir que está mejor» para juzgar — ejecutas un comando y la tabla de diferencias de v1 a v2 habla por ti, igual que esta vez, cuando `t3` y `t4` se pusieron en verde mientras las otras tres se quedaron sin cambio. La próxima vez que tu agente diga «listo», tienes dos comandos y un código de salida para verificar esa afirmación.
 
 La próxima vez que tu agente diga «listo», tienes un circuito ejecutable para verificarlo.
 

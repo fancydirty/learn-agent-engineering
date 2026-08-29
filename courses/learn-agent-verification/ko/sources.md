@@ -72,7 +72,7 @@ URL: https://www.anthropic.com/engineering/writing-tools-for-agents
 
 - authority: authoritative-guide
 
-Anthropic의 도구 엔지니어링 아티클로(2025-09), 이 코스는 '평가 트랙을 어떻게 세우는가'에 관한 1차 실무 지침으로 씁니다. 결정론적 시스템과 비결정론적 에이전트의 정의적 대비, 평가 과제는 실제 사용에 뿌리를 두고 충분한 복잡도를 갖춰야 한다는 점, 평가 프롬프트마다 검증 가능한 결과를 짝지어야 하며 검증기는 '정확한 문자열 일치'부터 'Claude를 판정자로 세우기'까지 스펙트럼 위에 놓인다는 점, 평가는 '에이전틱 while 루프 하나에 과제 하나'로 프로그램에서 실행한다는 점, 통과율 말고도 실행 시간·호출 수·토큰 소비·도구 오류 같은 지표를 모은다는 점, 오버피팅을 막기 위해 홀드아웃 세트를 쓴다는 점입니다.
+Anthropic의 도구 엔지니어링 아티클로(2025-09), 이 코스는 '평가 트랙을 어떻게 세우는가'에 관한 1차 실무 지침으로 씁니다. 결정론적 시스템과 비결정론적 에이전트의 정의적 대비, 평가 과제는 실제 사용에 뿌리를 두고 충분한 복잡도를 갖춰야 한다는 점, 평가 프롬프트마다 검증 가능한 결과를 짝지어야 하며 검증기는 '정확한 문자열 일치'부터 'Claude를 판정자로 세우기'까지 스펙트럼 위에 놓인다는 점, 평가는 '에이전틱 while 루프 하나에 과제 하나'로 프로그램에서 실행한다는 점, 통과율 말고도 실행 시간·호출 수·토큰 소비·도구 에러 같은 지표를 모은다는 점, 오버피팅을 막기 위해 홀드아웃 세트를 쓴다는 점입니다.
 
 핵심 인용:
 > "In computing, deterministic systems produce the same output every time given identical inputs, while non-deterministic systems—like agents—can generate varied responses even with the same starting conditions."

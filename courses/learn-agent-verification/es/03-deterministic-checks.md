@@ -158,7 +158,7 @@ Dos extensiones cómodas. **Primero, las comprobaciones no tienen que ir solo al
 
 Con esa sola línea, los problemas estructurales como «typo en el nombre del campo» o «count pasado como cadena» dejan de ser «algo para lo que escribes código de comprobación» y pasan a ser una garantía a nivel de plataforma. Las herramientas son un contrato entre los sistemas deterministas y los agentes no deterministas[^S3], y `strict` es la manera de escribir ese contrato dentro de la interfaz.
 
-Pero vigila la estructura, no la semántica. Si `total` de verdad es igual a la suma de todos los valores de `count`, el esquema no tiene nada que decir: esa parte la sigues verificando tú.
+Pero solo vigila la estructura, no la semántica. Si `total` de verdad es igual a la suma de todos los valores de `count`, el esquema no tiene nada que decir: esa parte la sigues verificando tú.
 
 ```agentmentor-check
 {

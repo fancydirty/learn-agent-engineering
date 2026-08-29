@@ -5,13 +5,13 @@
 > - Nomear pelo menos três motivos concretos para “uma queda é especialmente fatal para uma tarefa longa”, e dizer para qual parte da execução cada um aponta
 > - Dada uma lista de coisas que um harness em execução está manejando, decidir se cada uma é memória, estado de execução ou saída em disco — e se ela sobrevive ao processo ser morto
 >
-> Pré-requisitos: Conclua os cursos anteriores desta série e entenda o loop de harness dirigido pelo `stop_reason` de "Agent Harness Fundamentals: Loops and Control" e o gerenciamento de contexto de "Context Engineering: Spending Finite Attention Where It Counts" | Próxima: [Lição 2 >>](./02-checkpoint-anatomy.md)
+> Pré-requisitos: Conclua os cursos anteriores desta série e entenda o loop de harness dirigido pelo `stop_reason` de “Fundamentos do Harness de Agente: Laços e Controle” e o gerenciamento de contexto de “Context Engineering: gastando a atenção finita onde ela conta” | Próxima: [Lição 2 >>](./02-checkpoint-anatomy.md)
 
 ## Turno 23, e o processo é morto
 
-Imagine o harness que você escreveu em "Agent Harness Fundamentals: Loops and Control" rodando uma tarefa longa que leva 40 turnos: ler um lote de arquivos, analisá-los um a um e ir acrescentando conclusões a um relatório conforme avança. No turno 23, o processo é morto — talvez uma atualização de deploy, talvez o servidor tenha perdido energia, talvez você tenha errado o dedo no Ctrl+C.
+Imagine o harness que você escreveu em “Fundamentos do Harness de Agente: Laços e Controle” rodando uma tarefa longa que leva 40 turnos: ler um lote de arquivos, analisá-los um a um e ir acrescentando conclusões a um relatório conforme avança. No turno 23, o processo é morto — talvez uma atualização de deploy, talvez o servidor tenha perdido energia, talvez você tenha errado o dedo no Ctrl+C.
 
-Você confere o disco: os arquivos de relatório dos primeiros 22 turnos estão todos lá; o `NOTES.md` (aquele resumo de progresso da tarefa que você montou em "Context Engineering: Spending Finite Attention Where It Counts") ainda registra “até qual arquivo eu analisei, e qual foi a conclusão”. Parece que não se perdeu muita coisa — é só reiniciar o processo e continuar de onde parou.
+Você confere o disco: os arquivos de relatório dos primeiros 22 turnos estão todos lá; o `NOTES.md` (aquele resumo de progresso da tarefa que você montou em “Context Engineering: gastando a atenção finita onde ela conta”) ainda registra “até qual arquivo eu analisei, e qual foi a conclusão”. Parece que não se perdeu muita coisa — é só reiniciar o processo e continuar de onde parou.
 
 Mas assim que você reinicia, descobre que o array `messages` dentro de `runAgent` está vazio — ele tem que ser reconstruído a partir de `[{ role: "user", content: userInput }]`. O contador `turns` voltou a zero. `tokensUsed` também voltou a zero. E se a queda pegou o turno 23 bem no meio entre “o modelo indicou uma ferramenta” e “o resultado da ferramenta foi devolvido para `messages`”, aquela chamada de ferramenta — quer tivesse acabado de começar a rodar, quer já tivesse terminado — também não deixa rastro nenhum.
 
@@ -21,7 +21,7 @@ A tarefa não retoma do turno 23; ela recomeça do turno 1. Os arquivos em disco
 
 Antes que este curso possa ensinar o que veio ensinar, ele precisa traçar uma linha contra um conceito que é fácil de embaralhar.
 
-**Memória** é o contexto que você entrega ao modelo — o Curso 5, "Agent Memory and State", cobre como persisti-la entre sessões, e o Curso 8, "Context Engineering: Spending Finite Attention Where It Counts", cobre exatamente o que você entrega ao modelo para olhar a cada turno. Ela responde à pergunta “o que o modelo já viu?”. O `NOTES.md` é um dos veículos da memória: ele já está gravado em disco, e o turno seguinte ou a sessão seguinte pode lê-lo de volta e jogá-lo no prompt.
+**Memória** é o contexto que você entrega ao modelo — o Curso 5, “Memória e Estado de Agente”, cobre como persisti-la entre sessões, e o Curso 8, “Context Engineering: gastando a atenção finita onde ela conta”, cobre exatamente o que você entrega ao modelo para olhar a cada turno. Ela responde à pergunta “o que o modelo já viu?”. O `NOTES.md` é um dos veículos da memória: ele já está gravado em disco, e o turno seguinte ou a sessão seguinte pode lê-lo de volta e jogá-lo no prompt.
 
 **Estado de execução** é a cena em andamento que o próprio processo do harness está segurando — o array `messages`, contadores como `turns` e `tokensUsed`, a chamada de ferramenta que ainda não foi registrada. Ele responde à pergunta “o harness lembra até onde chegou?”.
 
@@ -63,7 +63,7 @@ O estado de execução perdido no turno 23 tem uma correção em cinco etapas, q
 2. **Retomar de um checkpoint** (Lição 3) — depois que o processo reinicia, ler esse estado de volta do arquivo de checkpoint, reconstruir `messages` e deixar o loop continuar de onde quebrou, em vez de recomeçar do turno 1.
 3. **Efeitos colaterais e idempotência** (Lição 4) — a parte mais difícil de retomar não é “o estado sumiu”, é “algumas chamadas de ferramenta podem de fato já ter rodado”: quais ferramentas é seguro reexecutar, e quais precisam ser protegidas contra rodar duas vezes.
 4. **Rebobinar e bifurcar** (Lição 5) — checkpoints não servem só para recuperação de desastre; eles também deixam você rebobinar para uma cena anterior e tentar de novo, ou bifurcar outra tentativa a partir de algum nó.
-5. **Mão na massa** (Lição 6) — pegar o maquinário das lições anteriores, encaixá-lo no harness de "Agent Harness Fundamentals: Loops and Control" e você mesmo levar uma tarefa longa pelo caminho “morta no meio, reiniciada, executada até o fim”.
+5. **Mão na massa** (Lição 6) — pegar o maquinário das lições anteriores, encaixá-lo no harness de “Fundamentos do Harness de Agente: Laços e Controle” e você mesmo levar uma tarefa longa pelo caminho “morta no meio, reiniciada, executada até o fim”.
 
 Um roteiro comunitário de código aberto construído em torno de “engenharia de harness” resume isso em uma linha: "Checkpoint state every node so you can resume, rewind, fork."[^S5] (Faça checkpoint do estado em cada nó para que você possa retomar, rebobinar, bifurcar.) — isso é apenas um enquadramento, vindo de um documento comunitário, sobre o que o componente de persistência responde, não uma especificação que este curso copia literalmente, mas a ordem que ele aponta bate com as cinco etapas acima.
 
@@ -110,7 +110,7 @@ O que de fato precisa do maquinário deste curso é um cenário como o do turno 
 
 Abaixo estão seis “coisas” envolvidas em um harness em execução. Encaixe cada uma em “memória”, “estado de execução” ou “saída em disco”, e diga: se o processo for morto neste exato instante, ela continua lá?
 
-1. O resumo de progresso da tarefa já gravado no `NOTES.md` (aquele que você montou em "Context Engineering: Spending Finite Attention Where It Counts")
+1. O resumo de progresso da tarefa já gravado no `NOTES.md` (aquele que você montou em “Context Engineering: gastando a atenção finita onde ela conta”)
 2. O array `messages` em memória
 3. O arquivo de relatório `report.md` já gravado em disco
 4. O contador `turns` (em qual turno estamos)
@@ -138,14 +138,14 @@ Os itens 2, 4 e 6 têm algo em comum: são todos coisas que o loop do harness us
 
 ### Nível 2: Escreva um inventário de perdas por queda para o harness de "Agent Harness Fundamentals"
 
-De volta ao cenário de abertura: o `runAgent` de "Agent Harness Fundamentals: Loops and Control" (dirigido por um loop de `stop_reason` sobre as variáveis `messages`, `turns`, `tokensUsed`) está rodando uma tarefa de 40 turnos, e no turno 23 o processo é morto — e a queda cai exatamente entre “o modelo indicou uma ferramenta” e “o resultado da ferramenta foi devolvido para `messages`”. Sem escrever código, faça duas coisas em palavras:
+De volta ao cenário de abertura: o `runAgent` de “Fundamentos do Harness de Agente: Laços e Controle” (dirigido por um loop de `stop_reason` sobre as variáveis `messages`, `turns`, `tokensUsed`) está rodando uma tarefa de 40 turnos, e no turno 23 o processo é morto — e a queda cai exatamente entre “o modelo indicou uma ferramenta” e “o resultado da ferramenta foi devolvido para `messages`”. Sem escrever código, faça duas coisas em palavras:
 
 1. **Inventário de perdas por queda**: o que exatamente esta queda perdeu? O que não foi afetado e continua lá?
 2. **O que o checkpoint deveria segurar**: se este harness tivesse um mecanismo de checkpoint, quais campos você acha que o arquivo de checkpoint precisa segurar, no mínimo, para manter essa perda a menor possível? Liste os nomes dos campos e diga por que cada um tem que ser salvo.
 
 <!-- rubric -->
 - O inventário de perdas aponta explicitamente o array `messages`, `turns`, `tokensUsed` e a chamada `tool_use` presa entre a execução da ferramenta e o registro do resultado — todas essas coisas em memória se perdem; e reconhece que os arquivos de saída já gerados em disco e o `NOTES.md` não foram afetados e continuam lá
-- A proposta de campos cobre ao menos `messages`, `turns` e `tokensUsed` — as três variáveis prontas que você reconhece direto no código do `runAgent` — e dá um “por que salvar” de uma linha para cada uma (por exemplo, `messages` é a única fonte para restaurar o contexto da conversa, `turns` serve para julgar a que distância se está do teto de turnos, `tokensUsed` alimenta o orçamento e o limiar de compactação de "Context Engineering: Spending Finite Attention Where It Counts")
+- A proposta de campos cobre ao menos `messages`, `turns` e `tokensUsed` — as três variáveis prontas que você reconhece direto no código do `runAgent` — e dá um “por que salvar” de uma linha para cada uma (por exemplo, `messages` é a única fonte para restaurar o contexto da conversa, `turns` serve para julgar a que distância se está do teto de turnos, `tokensUsed` alimenta o orçamento e o limiar de compactação de “Context Engineering: gastando a atenção finita onde ela conta”)
 - Reconhece que “uma chamada de ferramenta em execução, ainda não registrada” precisa de um campo próprio (mesmo que você mesmo lhe dê nome; ele não precisa bater com o nome usado nas lições seguintes), e explica que isso se deve ao fato de a queda poder cair exatamente entre a ferramenta terminar e o resultado ser gravado de volta em `messages`, de modo que, sem um registro separado, não há como julgar se a chamada conta
 
 <!-- answer -->
@@ -156,11 +156,11 @@ De volta ao cenário de abertura: o `runAgent` de "Agent Harness Fundamentals: L
 **Campos que o checkpoint deveria segurar**:
 - `messages` — a única fonte para restaurar o contexto da conversa; sem ele, tudo o que o modelo viu e disse antes do turno 23 não pode ser reconstruído.
 - `turns` — depois de retomar você tem que saber quantos turnos já rodou para julgar corretamente a que distância se está do teto de turnos, para não bater no teto no instante em que retoma ou, no sentido oposto, se dar turnos extras.
-- `tokensUsed` — depois de retomar você tem que continuar contando o uso para se alinhar com o orçamento e o limiar de compactação definidos em "Context Engineering: Spending Finite Attention Where It Counts"; caso contrário, você retomou um agente que não sabe quanto já gastou.
+- `tokensUsed` — depois de retomar você tem que continuar contando o uso para se alinhar com o orçamento e o limiar de compactação definidos em “Context Engineering: gastando a atenção finita onde ela conta”; caso contrário, você retomou um agente que não sabe quanto já gastou.
 - Um campo dedicado a registrar “uma chamada de ferramenta em execução, ainda não registrada” — porque a queda pode cair exatamente entre a ferramenta terminar e o resultado ser gravado de volta em `messages`. Sem registrar separadamente a identidade e os argumentos dessa chamada, ao retomar você não sabe nem se deve reexecutá-la, nem que tipo de resultado preencher de volta em `messages`.
 
 <!-- hint -->
-Volte ao corpo do `runAgent` em "Agent Harness Fundamentals: Loops and Control" e veja em quais variáveis ele empurra coisas conforme o loop gira — essas variáveis são basicamente a espinha dorsal tanto do inventário de perdas quanto dos campos do checkpoint.
+Volte ao corpo do `runAgent` em “Fundamentos do Harness de Agente: Laços e Controle” e veja em quais variáveis ele empurra coisas conforme o loop gira — essas variáveis são basicamente a espinha dorsal tanto do inventário de perdas quanto dos campos do checkpoint.
 
 <!-- hint -->
 O instante exato da queda importa: uma queda entre “a resposta do modelo chegou” e “a ferramenta de fato começou a rodar” versus uma entre “a ferramenta terminou” e “o resultado foi devolvido para messages” leva a respostas diferentes sobre se a chamada de ferramenta conta e como lidar com ela — resolva isso primeiro, depois decida que informação esse campo deve registrar.

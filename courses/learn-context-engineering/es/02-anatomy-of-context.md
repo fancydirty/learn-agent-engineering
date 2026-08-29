@@ -260,7 +260,7 @@ Heredaste un agente de soporte de comercio electrónico. Su contexto contiene la
 ]
 ```
 
-Corre una auditoría de costo de contexto: (1) señala la funcionalidad superpuesta en la lista de herramientas y da un plan de fusión; (2) explica cómo la herramienta fusionada vuelve su retorno eficiente en tokens sin dejar de tener alcanzable la información necesaria; (3) da un plan para rehacer la lista de ejemplos: qué tipo de ejemplos debería quedarse, y quién debería encargarse de los casos límite.
+Haz una auditoría de costo de contexto: (1) señala la funcionalidad superpuesta en la lista de herramientas y da un plan de fusión; (2) explica cómo la herramienta fusionada vuelve su retorno eficiente en tokens sin dejar de tener alcanzable la información necesaria; (3) da un plan para rehacer la lista de ejemplos: qué tipo de ejemplos debería quedarse, y quién debería encargarse de los casos límite.
 
 <!-- rubric -->
 - Reconoce que las tres herramientas se superponen en «buscar un pedido», propone fusionarlas en una sola herramienta y explica que las herramientas duplicadas con fronteras difusas empujan la decisión de «¿cuál?» a cada turno de inferencia
@@ -284,7 +284,7 @@ Corre una auditoría de costo de contexto: (1) señala la funcionalidad superpue
 
 (2) La eficiencia en tokens viene de «recortado por defecto, conjunto completo bajo demanda»: las preguntas del día a día solo necesitan estado y monto, así que eso es todo lo que vuelve por defecto; cuando de verdad se necesitan los campos internos, `detail=true` trae el registro completo de un solo pedido en vez de inundar el historial de mensajes con cuarenta y pico campos y un registro de auditoría en cada llamada, contenido que se queda en el historial y se vuelve a facturar en cada turno siguiente. Enunciar el tope de resultados y el comportamiento ante resultado vacío en la descripción hace que el modelo nunca tenga que adivinar cómo se ve un fallo de búsqueda.
 
-(3) Cambia los 12 ejemplos de casos límite por 3 canónicos, cada uno representando una clase de comportamiento: un ejemplo de flujo estándar que busca un pedido y responde con normalidad, un ejemplo de juicio donde la culpa es nuestra y se ofrece compensación de entrada, y un ejemplo de escalamiento donde la solicitud excede la autoridad del agente y va a una persona. Los errores de tipeo y las preguntas repetidas no merecen un ejemplo completo de unos cientos de tokens cada uno; ascendélos a un principio en el prompt del sistema («lee la intención del usuario en vez de su ortografía literal; cuando una pregunta se repite, revisa primero si la respuesta anterior la resolvió»).
+(3) Cambia los 12 ejemplos de casos límite por 3 canónicos, cada uno representando una clase de comportamiento: un ejemplo de flujo estándar que busca un pedido y responde con normalidad, un ejemplo de juicio donde la culpa es nuestra y se ofrece compensación de entrada, y un ejemplo de escalamiento donde la solicitud excede la autoridad del agente y va a una persona. Los errores de tipeo y las preguntas repetidas no merecen un ejemplo completo de unos cientos de tokens cada uno; asciéndelos a un principio en el prompt del sistema («lee la intención del usuario en vez de su ortografía literal; cuando una pregunta se repite, revisa primero si la respuesta anterior la resolvió»).
 <!-- hint -->
 Empieza contando cuántas herramientas pueden lograr el mismo trabajo, después revisa si sus descripciones le permiten a alguien distinguir de un vistazo cuál usar y cuándo.
 <!-- hint -->

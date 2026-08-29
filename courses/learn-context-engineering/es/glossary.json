@@ -59,7 +59,7 @@
     "term": "tareas de horizonte largo",
     "def": "Tareas de agente que se extienden a lo largo de muchos turnos de inferencia y de mucho tiempo; el escenario que la compactación, las notas estructuradas y las arquitecturas multiagente atacan en conjunto.",
     "source": "[^S1]",
-    "pitfall": "Suponer que cualquier tarea que corre durante horas de reloj necesita por fuerza el juego completo de compactación, notas y subagentes.",
+    "pitfall": "Suponer que cualquier tarea que se ejecuta durante horas de reloj necesita por fuerza el juego completo de compactación, notas y subagentes.",
     "distractor_rationale": "Quien iguala «horizonte largo» con «tiempo de ejecución largo» puede perderse el énfasis repetido del curso en el sentido de la proporción: estos mecanismos hacen falta cuando la ventana se acerca de verdad a su límite, no en función del tiempo transcurrido."
   },
   {

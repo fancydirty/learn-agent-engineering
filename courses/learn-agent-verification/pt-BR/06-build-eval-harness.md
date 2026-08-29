@@ -20,12 +20,12 @@ Salve o `eval-runner.mjs` completo, mais adiante nesta lição, e depois `node e
 Tarefa            Correção        Resultado     Nota  Chamadas  Erros     Tokens    Duração
 -------------------------------------------------------------------------------------------
 t1-total          determinístico  pass          1.00         3      0      1,800      124ms
-t2-pending        determinístico  pass          1.00         1      0        995       86ms
+t2-pending        determinístico  pass          1.00         1      0        995       81ms
 t3-no-orderid     determinístico  FAIL          0.00         2      1      1,550      123ms
 t4-refund-note    juiz LLM        FAIL          0.67         1      0      1,432      124ms
-t5-missing-order  determinístico  pass          1.00         1      1        966       82ms
+t5-missing-order  determinístico  pass          1.00         1      1        966       83ms
 -------------------------------------------------------------------------------------------
-Taxa de aprovação 3/5 (60%) · Chamadas de ferramenta 8 · Erros de ferramenta 2 · Tokens 6,743 · Total 539ms
+Taxa de aprovação 3/5 (60%) · Chamadas de ferramenta 8 · Erros de ferramenta 2 · Tokens 6,743 · Total 535ms
 
 Casos reprovados:
   [t3-no-orderid] Critério: Com parâmetros incompletos, deve chamar zero ferramentas e pedir o número do pedido
@@ -37,12 +37,12 @@ Casos reprovados:
 Tarefa            Correção        Resultado     Nota  Chamadas  Erros     Tokens    Duração
 -------------------------------------------------------------------------------------------
 t1-total          determinístico  pass          1.00         3      0      1,800      123ms
-t2-pending        determinístico  pass          1.00         1      0        995       82ms
-t3-no-orderid     determinístico  pass          1.00         0      0        487       40ms
+t2-pending        determinístico  pass          1.00         1      0        995       83ms
+t3-no-orderid     determinístico  pass          1.00         0      0        487       41ms
 t4-refund-note    juiz LLM        pass          1.00         1      0      1,518      123ms
-t5-missing-order  determinístico  pass          1.00         1      1        966       82ms
+t5-missing-order  determinístico  pass          1.00         1      1        966       83ms
 -------------------------------------------------------------------------------------------
-Taxa de aprovação 5/5 (100%) · Chamadas de ferramenta 6 · Erros de ferramenta 1 · Tokens 5,766 · Total 450ms
+Taxa de aprovação 5/5 (100%) · Chamadas de ferramenta 6 · Erros de ferramenta 1 · Tokens 5,766 · Total 453ms
 
 === Variação de nota v1 -> v2 ===
 Tarefa                 v1     v2  Mudança
@@ -129,7 +129,7 @@ Use a sintaxe de espalhamento para herdar da v1 e liste apenas as entradas que m
 
 ## Peça três: conjunto de avaliação — quatro comuns mais um caso extremo
 
-A lição 5 disse que conjuntos de avaliação devem espelhar a distribuição real e cobrir casos extremos[^S5]; a documentação oficial também alertou contra ambientes de sandbox simplistas demais, que não estressam as ferramentas com complexidade suficiente[^S3]. Aqui cabem apenas cinco tarefas por questão de espaço, mas a estrutura segue a de conjuntos de avaliação reais:
+A Lição 5 disse que conjuntos de avaliação devem espelhar a distribuição real e cobrir casos extremos[^S5]; a documentação oficial também alertou contra ambientes de sandbox simplistas demais, que não estressam as ferramentas com complexidade suficiente[^S3]. Aqui cabem apenas cinco tarefas por questão de espaço, mas a estrutura segue a de conjuntos de avaliação reais:
 
 | Tarefa | O que testa | Correção |
 | --- | --- | --- |
@@ -639,7 +639,7 @@ printDiff(reportV1, reportV2);
 
 ## Recuperando a armadilha da lição 3: verificadores estritos demais
 
-A lição 3 cobriu uma armadilha, nas palavras exatas da fonte oficial: evite verificadores estritos demais, que rejeitam respostas corretas por diferenças espúrias como formatação, pontuação ou formulações alternativas válidas[^S3]. Soa como bom senso, mas é quase inevitável no código, porque verificadores estritos demais são os mais fáceis de escrever.
+A Lição 3 cobriu uma armadilha, nas palavras exatas da fonte oficial: evite verificadores estritos demais, que rejeitam respostas corretas por diferenças espúrias como formatação, pontuação ou formulações alternativas válidas[^S3]. Soa como bom senso, mas é quase inevitável no código, porque verificadores estritos demais são os mais fáceis de escrever.
 
 A trilha tem um embutido. O `t1-total` tem duas versões de verificador; a antiga é `pass: r.answer.includes("1280.00")` — parece à prova de balas: a resposta correta é 1280.00, então confira se a resposta contém essa string. Rode `node eval-runner.mjs --strict-verify` (colando abaixo só o relatório da v1; o relatório da v2 e a tabela de variação são impressos como de costume):
 
@@ -647,13 +647,13 @@ A trilha tem um embutido. O `t1-total` tem duas versões de verificador; a antig
 === Relatório · Prompt v1 · Verificador estrito (antigo, sem normalização) ===
 Tarefa            Correção        Resultado     Nota  Chamadas  Erros     Tokens    Duração
 -------------------------------------------------------------------------------------------
-t1-total          determinístico  FAIL          0.00         3      0      1,800      123ms
+t1-total          determinístico  FAIL          0.00         3      0      1,800      122ms
 t2-pending        determinístico  pass          1.00         1      0        995       83ms
-t3-no-orderid     determinístico  FAIL          0.00         2      1      1,550      122ms
-t4-refund-note    juiz LLM        FAIL          0.67         1      0      1,432      122ms
+t3-no-orderid     determinístico  FAIL          0.00         2      1      1,550      124ms
+t4-refund-note    juiz LLM        FAIL          0.67         1      0      1,432      124ms
 t5-missing-order  determinístico  pass          1.00         1      1        966       82ms
 -------------------------------------------------------------------------------------------
-Taxa de aprovação 2/5 (40%) · Chamadas de ferramenta 8 · Erros de ferramenta 2 · Tokens 6,743 · Total 532ms
+Taxa de aprovação 2/5 (40%) · Chamadas de ferramenta 8 · Erros de ferramenta 2 · Tokens 6,743 · Total 535ms
 
 Casos reprovados:
   [t1-total] Critério: A resposta precisa conter a string literal 1280.00
@@ -976,7 +976,7 @@ Dois detalhes de implementação que vale a pena guardar. Um é alinhar por `id`
 
 ## Depois de concluir este curso
 
-Olhando para trás, a linha principal é curta. A lição 1 separou “parece pronto” de “está pronto” — sem verificações executáveis, “parece pronto” é o único sinal disponível, e você vira a etapa de verificação[^S4]. A lição 2 fixou o que verificar: agentes podem percorrer caminhos razoáveis completamente diferentes até o mesmo objetivo, então avalie o estado final, não confira a trajetória etapa por etapa[^S2]. A lição 3 transformou “verificações” em verificadores determinísticos executáveis que produzem passa/falha, e também alertou que verificadores estritos demais rejeitam respostas corretas[^S3]. A lição 4 cuidou do texto livre — rubricas, formato de saída, e o modelo que trabalhou não deve se corrigir[^S2][^S4]. A lição 5 resolveu “com quantos casos verificar”: umas vinte tarefas reais já dão para começar, não espere acumular centenas para começar[^S2]. Esta lição soldou as cinco primeiras num arquivo de trezentas linhas.
+Olhando para trás, a linha principal é curta. A Lição 1 separou “parece pronto” de “está pronto” — sem verificações executáveis, “parece pronto” é o único sinal disponível, e você vira a etapa de verificação[^S4]. A Lição 2 fixou o que verificar: agentes podem percorrer caminhos razoáveis completamente diferentes até o mesmo objetivo, então avalie o estado final, não confira a trajetória etapa por etapa[^S2]. A Lição 3 transformou “verificações” em verificadores determinísticos executáveis que produzem passa/falha, e também alertou que verificadores estritos demais rejeitam respostas corretas[^S3]. A Lição 4 cuidou do texto livre — rubricas, formato de saída, e o modelo que trabalhou não deve se corrigir[^S2][^S4]. A Lição 5 resolveu “com quantos casos verificar”: umas vinte tarefas reais já dão para começar, não espere acumular centenas para começar[^S2]. Esta lição soldou as cinco primeiras num arquivo de trezentas linhas.
 
 Esse arquivo não é complexo, roda em menos de dois segundos, mas o que ele muda é concreto: a partir de hoje, quando você mudar uma versão de prompt, não vai depender de “ler alguns parágrafos de saída e sentir que melhorou” para julgar — rode um comando, e a tabela de variação de v1 para v2 fala por você, exatamente como desta vez, em que o `t3` e o `t4` ficaram verdes enquanto os outros três permaneceram estáveis. Da próxima vez que o seu agente disser “pronto”, você tem dois comandos e um código de saída para verificar essa afirmação.
 

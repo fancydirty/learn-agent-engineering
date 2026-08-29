@@ -140,7 +140,7 @@
     "distractor_rationale": "Acostumado ao ensino por enumeração exaustiva de casos, você pode tratar a quantidade de exemplos canônicos como métrica de qualidade, e perder a ênfase do curso em poucos exemplos diversos que representem classes de comportamento, em vez de alongar listas."
   },
   {
-    "term": "lista de lavanderia",
+    "term": "lista interminável",
     "def": "Acrescentar uma linha à lista de exemplos ou de regras para cada caso especial que aparece em produção, até acumular uma lista longa e enfadonha — um antipadrão a evitar.",
     "source": "[^S1]",
     "pitfall": "Acrescentar na hora cada badcase de produção à lista de exemplos, acreditando que isso aumenta a cobertura de forma constante.",

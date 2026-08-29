@@ -91,7 +91,7 @@ async function runAgent(task) {
 
 ## 어려운 절반: 허공에 뜬 호출을 정산하기
 
-진짜 골칫거리는 `state.pendingToolUse`가 `null`이 아닌 체크포인트입니다. 두 저장 지점이 어디에 있었는지 떠올려 보십시오. 지점 A는 모델 응답 뒤에 오고, 그 순간 `pendingToolUse`는 이번 응답의 `{id, name, input}`을 담고 있습니다. 지점 B는 도구 결과가 기록된 뒤에 오고, 거기서 `pendingToolUse`는 `null`로 지워집니다. 프로세스가 A와 B의 정확히 사이에서 죽으면 — 도구가 아직 실행되지 않았거나, 끝났지만 결과가 `messages`에 끝내 들어가지 못했다면 — 체크포인트가 간직하는 것은 `null`이 아닌 `pendingToolUse`입니다.
+진짜 골칫거리는 `state.pendingToolUse`가 `null`이 아닌 체크포인트입니다. 두 저장 지점이 어디에 있었는지 떠올려 보세요. 지점 A는 모델 응답 뒤에 오고, 그 순간 `pendingToolUse`는 이번 응답의 `{id, name, input}`을 담고 있습니다. 지점 B는 도구 결과가 기록된 뒤에 오고, 거기서 `pendingToolUse`는 `null`로 지워집니다. 프로세스가 A와 B의 정확히 사이에서 죽으면 — 도구가 아직 실행되지 않았거나, 끝났지만 결과가 `messages`에 끝내 들어가지 못했다면 — 체크포인트가 간직하는 것은 `null`이 아닌 `pendingToolUse`입니다.
 
 이제 `messages`의 끝은 `tool_use` 블록을 실은 `assistant` 메시지이고, 짝이 되는 `tool_result`가 없습니다. 이것은 끌고 나갈 수 있는 상태가 아닙니다. 프로토콜은 이렇게 요구합니다. "return one tool_result for each tool_use block, all together in the next user message"[^S4](tool_use 블록 하나당 tool_result 하나를, 다음 user 메시지에 함께 모아 돌려주라). 그 결과 하나가 없으면 재개는 다음 호출을 아예 할 수 없습니다. 모델에게 보이는 것은 자기가 도구 호출을 일으켰는데 답은 영영 오지 않는, 반쯤 끝난 주고받기입니다. 이 허공에 뜬 호출은 루프에 재진입하기 전에 처리해야 합니다.
 
@@ -139,7 +139,7 @@ async function runAgent(task) {
 
 ## reconcile(cp): 정산을 코드로 옮기기
 
-이 규칙을 함수로 만듭니다. 도구 이름에서 읽기 전용인지 판정하고, 그렇다면 다시 실행합니다. 그렇지 않다면 '부수 효과 원장'를 보러 가서 이 호출이 이미 실행되었는지 확인합니다. 이 레슨에는 아직 부수 효과 원장이 없으므로 주석이 대역을 서고, 실제 구현은 레슨 4가 줍니다. 가릴 수 없을 때는 `is_error` 폴백으로 떨어뜨립니다.
+이 규칙을 함수로 만듭니다. 도구 이름에서 읽기 전용인지 판정하고, 그렇다면 다시 실행합니다. 그렇지 않다면 '부수 효과 원장'을 보러 가서 이 호출이 이미 실행되었는지 확인합니다. 이 레슨에는 아직 부수 효과 원장이 없으므로 주석이 대역을 서고, 실제 구현은 레슨 4가 줍니다. 가릴 수 없을 때는 `is_error` 폴백으로 떨어뜨립니다.
 
 ```javascript
 const READ_ONLY_TOOLS = new Set(["read_file", "grep", "list_dir", "web_search"]);
@@ -189,7 +189,7 @@ async function reconcile(cp) {
 
 ### 레벨 1: 세 개의 체크포인트, 세 가지 재개 행동
 
-아래는 재개 시점에 읽어 들인 세 개의 체크포인트입니다(읽기 편하도록 `messages`의 내용은 생략했습니다). 각각에 대해 `runAgent`가 재개할 때 무엇을 해야 하는지, 그리고 왜 그런지 쓰십시오.
+아래는 재개 시점에 읽어 들인 세 개의 체크포인트입니다(읽기 편하도록 `messages`의 내용은 생략했습니다). 각각에 대해 `runAgent`가 재개할 때 무엇을 해야 하는지, 그리고 왜 그런지 쓰세요.
 
 ```javascript
 // 체크포인트 A
@@ -229,7 +229,7 @@ const cpC = {
 - cpC: `pendingToolUse`가 `send_email`을 가리키며, 이는 조건 없이 다시 실행할 수 없는 영향이 큰 도구임. 이 레슨에는 아직 부수 효과 원장이 없으므로, 메일을 다시 보내는 대신 `is_error`로 폴백해 모델에게 사실('실행 상태 불명')을 말해 줌
 
 <!-- hint -->
-1. 먼저 `pendingToolUse`가 `null`인지 확인하십시오. `null`이라면 정산은 아예 개입하지 않으며, 문제는 사실 나머지 둘에 관한 것입니다. 2. 그다음 도구 이름을 보십시오. `READ_ONLY_TOOLS`에 있습니까? 3. '이미 실행되었는가?'를 가릴 수 없는 영향이 큰 도구만이 다시 실행이 아니라 폴백을 부릅니다.
+1. 먼저 `pendingToolUse`가 `null`인지 확인하세요. `null`이라면 정산은 아예 개입하지 않으며, 문제는 사실 나머지 둘에 관한 것입니다. 2. 그다음 도구 이름을 보세요. `READ_ONLY_TOOLS`에 있습니까? 3. '이미 실행되었는가?'를 가릴 수 없는 영향이 큰 도구만이 다시 실행이 아니라 폴백을 부릅니다.
 
 <!-- answer -->
 cpA에는 정산이 필요 없습니다. `pendingToolUse`가 `null`이라는 것은 크래시가 저장 지점 B 이후에 떨어졌고 `messages`가 완전하다는 뜻이며, 재개할 때는 그것으로 다음 `client.messages.create()`를 곧장 쏘면 됩니다. cpB에는 다시 실행이 필요합니다. `read_file`은 읽기 전용 도구여서 되풀이해도 부수 효과가 생기지 않으며, 재개할 때 `reconcile()`을 부르면 자연스럽게 `READ_ONLY_TOOLS` 분기로 떨어져 진짜 파일 내용을 얻어 `tool_result`에 채웁니다. cpC는 다시 실행할 수 없습니다. `send_email`은 영향이 큰 도구이고 이미 한 번 실행되었을 가능성이 매우 높으며, 조건 없이 다시 실행하면 팀에 같은 메일이 한 통 더 도착합니다. 이 레슨에는 실행 여부를 확인할 부수 효과 원장이 아직 없으므로, `reconcile()`은 `is_error` 폴백 분기로 떨어져 다시 보내는 대신 '실행 상태 불명이니 다시 평가해 달라'는 정직한 내용을 모델에게 건네야 합니다.
@@ -256,7 +256,7 @@ async function reconcile(cp) {
 }
 ```
 
-근본 원인을 짚어 내고, 이 `reconcile()`을 도구의 성질에 따라 갈라 보내는 버전으로 다시 쓰십시오(힌트: 이 레슨이 세운 규칙은 '읽기 전용은 그대로 다시 실행, 원장이 없는 영향이 큰 도구는 `is_error`로 폴백'입니다). 다시 쓴 뒤에는 `node`로 돌려, `send_email` 같은 영향이 큰 도구가 더 이상 `executeTool()`을 일으키지 않는지 확인하십시오.
+근본 원인을 짚어 내고, 이 `reconcile()`을 도구의 성질에 따라 갈라 보내는 버전으로 다시 쓰세요(힌트: 이 레슨이 세운 규칙은 '읽기 전용은 그대로 다시 실행, 원장이 없는 영향이 큰 도구는 `is_error`로 폴백'입니다). 다시 쓴 뒤에는 `node`로 돌려, `send_email` 같은 영향이 큰 도구가 더 이상 `executeTool()`을 일으키지 않는지 확인하세요.
 
 <!-- rubric -->
 - 근본 원인: `reconcile()`이 읽기 전용 도구와 영향이 큰 도구를 가리지 않고 모든 `pendingToolUse`에 대해 `executeTool()`을 불러 다시 실행함. `send_email`은 크래시 이전에 이미 한 번 실행되었을 가능성이 매우 높으므로, 조건 없는 재실행은 그것을 두 번째로 실행해 메일을 두 통 보냄
@@ -292,7 +292,7 @@ async function reconcile(cp) {
 }
 ```
 
-고친 뒤에는 `READ_ONLY_TOOLS`에 없는 `send_email` 같은 도구가 다시는 `executeTool()`을 일으키지 않습니다. `reconcile()`은 그것에 `is_error`의 `tool_result`만 공급하고, `read_file` 같은 읽기 전용 도구만 실제로 다시 실행됩니다. `node`로 돌려 `reconcile()`을 읽기 전용 도구 이름으로 한 번, `send_email`로 한 번 부른 뒤 `executeTool` 호출 로그를 확인하십시오. 읽기 전용 실행에서는 나타나고 `send_email` 실행에서는 나타나지 않아야 합니다.
+고친 뒤에는 `READ_ONLY_TOOLS`에 없는 `send_email` 같은 도구가 다시는 `executeTool()`을 일으키지 않습니다. `reconcile()`은 그것에 `is_error`의 `tool_result`만 공급하고, `read_file` 같은 읽기 전용 도구만 실제로 다시 실행됩니다. `node`로 돌려 `reconcile()`을 읽기 전용 도구 이름으로 한 번, `send_email`로 한 번 부른 뒤 `executeTool` 호출 로그를 확인하세요. 읽기 전용 실행에서는 나타나고 `send_email` 실행에서는 나타나지 않아야 합니다.
 <!-- /exercises -->
 
 ## 정리

@@ -73,7 +73,7 @@
     "term": "task",
     "def": "La cadena con la tarea original del usuario, guardada en `checkpoint.json` para que el arnés reiniciado sepa a qué tarea pertenece esta escena y pueda reportar avance.",
     "source": "[^S1]",
-    "pitfall": "Suponer que el arnés recuerda por sí solo qué tarea está corriendo y omitir este campo, con lo que los escenarios de varias tareas quedan sin poder confirmar cuál reanudó.",
+    "pitfall": "Suponer que el arnés recuerda por sí solo qué tarea está ejecutándose y omitir este campo, con lo que los escenarios de varias tareas quedan sin poder confirmar cuál reanudó.",
     "distractor_rationale": "Las descripciones de tarea suelen llegar como parámetro de quien llama, lo que las hace sentir «entrada externa» y no «estado que hay que persistir»."
   },
   {
@@ -129,7 +129,7 @@
     "term": "loadCheckpoint",
     "def": "Función que lee y parsea el archivo de punto de control; debe validar el campo `version` y fallar en voz alta ante una versión que no coincide o un parseo fallido, no caer en silencio a un estado vacío.",
     "source": "[^S1]",
-    "pitfall": "Devolver un estado vacío ante un parseo fallido para «que el programa siga corriendo», perdiendo en silencio el avance de la tarea cuando un punto de control corrupto debería ser un error explícito.",
+    "pitfall": "Devolver un estado vacío ante un parseo fallido para «que el programa siga funcionando», perdiendo en silencio el avance de la tarea cuando un punto de control corrupto debería ser un error explícito.",
     "distractor_rationale": "«Dejar que el programa siga» parece más amable que «lanzar un error», pero aceptar en silencio un punto de control corrupto es justo donde las tareas se pierden de verdad."
   },
   {
@@ -227,7 +227,7 @@
     "term": "saveEffect",
     "def": "Función que escribe el registro de efectos de vuelta a disco con escritura atómica de archivo temporal más renombrado; solo debe llamarse después de que la herramienta se ejecutó con éxito y hay un resultado real.",
     "source": "[^S1]",
-    "pitfall": "Poner la llamada a `saveEffect` antes de la ejecución real de la herramienta, anotando un «listo» de mentira para algo que nunca corrió, lo que destruye la garantía de «ya ocurrió» del registro.",
+    "pitfall": "Poner la llamada a `saveEffect` antes de la ejecución real de la herramienta, anotando un «listo» de mentira para algo que nunca se ejecutó, lo que destruye la garantía de «ya ocurrió» del registro.",
     "distractor_rationale": "«Anotar primero para no olvidarse» suena precavido, y tapa que anotar antes convierte en ficción la promesa de completitud del registro."
   },
   {
@@ -360,7 +360,7 @@
     "term": "--resume",
     "def": "Bandera de línea de comandos que indica que este arranque debe llamar a `loadCheckpoint` y tomar la ruta de recuperación en vez de empezar de cero; sin ella, `main()` limpia de forma explícita los archivos viejos de punto de control y de registro.",
     "source": "[^S1]",
-    "pitfall": "Suponer que sin `--resume` los archivos viejos de punto de control se ignoran solos, sin ver que `main()` tiene que limpiarlos de forma explícita o van a contaminar la corrida nueva.",
+    "pitfall": "Suponer que sin `--resume` los archivos viejos de punto de control se ignoran solos, sin ver que `main()` tiene que limpiarlos de forma explícita o van a contaminar la ejecución nueva.",
     "distractor_rationale": "«No usar `--resume` significa empezar de cero» sugiere de forma intuitiva que los archivos viejos no se van a leer, pero sin lógica de limpieza explícita un `checkpoint.json` sobrante igual se puede cargar por error."
   },
   {
@@ -396,7 +396,7 @@
     "def": "Disciplina del registro de efectos: hay que obtener el resultado real de la ejecución de la herramienta antes de escribirlo en el registro; invertir ese orden anota «listo» para cosas que nunca corrieron.",
     "source": "[^S1]",
     "pitfall": "Anotar en el registro antes de ejecutar para «no olvidarse», lo que crea anotaciones falsas de «ya está hecho» que al reanudar habilitan errores de salto por duplicado.",
-    "distractor_rationale": "Anotar por adelantado suena precavido, como apartar un lugar, y eso tapa que fabrica falsos positivos de «existe la anotación pero la herramienta nunca corrió»: el desenlace más peligroso."
+    "distractor_rationale": "Anotar por adelantado suena precavido, como apartar un lugar, y eso tapa que fabrica falsos positivos de «existe la anotación pero la herramienta nunca se ejecutó»: el desenlace más peligroso."
   },
   {
     "term": "137",

@@ -5,7 +5,7 @@
 > - Julgar se uma operação de ferramenta é idempotente e identificar os efeitos colaterais que causam dano de verdade no instante em que rodam duas vezes
 > - Projetar e implementar um **livro-razão de efeitos** indexado por `tool_use_id`, para que uma chamada órfã na retomada consulte o livro-razão antes de decidir se de fato executa
 >
-> Pré-requisitos: você leu as Lições 2 e 3 e entende as regras de reconciliação para um `pendingToolUse` órfão no `checkpoint.json` (Lição 3); você conhece o conjunto de ferramentas `HIGH_IMPACT` e a válvula de aprovação pré-execução do Curso 7 desta série, "Agent Harness Fundamentals: Loops and Control" | Anterior: [Lição 3 <<](./03-resume-from-checkpoint.md) | Próxima: [Lição 5 >>](./05-rewind-and-fork.md)
+> Pré-requisitos: você leu as Lições 2 e 3 e entende as regras de reconciliação para um `pendingToolUse` órfão no `checkpoint.json` (Lição 3); você conhece o conjunto de ferramentas `HIGH_IMPACT` e a válvula de aprovação pré-execução do Curso 7 desta série, “Fundamentos do Harness de Agente: Laços e Controle” | Anterior: [Lição 3 <<](./03-resume-from-checkpoint.md) | Próxima: [Lição 5 >>](./05-rewind-and-fork.md)
 
 ## A retomada entrega at-least-once: a Lição 3 deixou as ferramentas de alto impacto sem solução
 
@@ -121,7 +121,7 @@ Há aqui uma percepção que merece ser dita à parte: **o `tool_use_id` já é 
 
 ## Duas válvulas em camadas: a aprovação pergunta “devemos?”, o livro-razão pergunta “já fizemos?”
 
-O Curso 7 desta série, "Agent Harness Fundamentals: Loops and Control", equipou o `runToolUses` com uma válvula de aprovação: antes de uma ferramenta de alto impacto de fato rodar, imprima o que está prestes a acontecer, espere uma pessoa confirmar e só então deixe passar[^S3]. Essa válvula barra a pergunta “isto deve ser feito”. O livro-razão de efeitos desta lição barra outra pergunta: “isto já foi feito”. As duas válvulas perguntam coisas diferentes, mas ficam no mesmo lugar — ambas encaixadas no momento depois de o modelo ter nomeado uma ferramenta e antes de a ferramenta ter de fato rodado. Nenhuma das duas deixa a função da ferramenta executar antes de ter sido verificada.
+O Curso 7 desta série, “Fundamentos do Harness de Agente: Laços e Controle”, equipou o `runToolUses` com uma válvula de aprovação: antes de uma ferramenta de alto impacto de fato rodar, imprima o que está prestes a acontecer, espere uma pessoa confirmar e só então deixe passar[^S3]. Essa válvula barra a pergunta “isto deve ser feito”. O livro-razão de efeitos desta lição barra outra pergunta: “isto já foi feito”. As duas válvulas perguntam coisas diferentes, mas ficam no mesmo lugar — ambas encaixadas no momento depois de o modelo ter nomeado uma ferramenta e antes de a ferramenta ter de fato rodado. Nenhuma das duas deixa a função da ferramenta executar antes de ter sido verificada.
 
 Empilhe as duas e o `runToolUses` fica assim:
 

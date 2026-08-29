@@ -179,7 +179,7 @@ A esta altura você já viu as três peças do kit de tarefas longas: compactaç
 Seu agente principal assume três tarefas:
 
 - **Tarefa A**: Em um repositório de algumas centenas de milhares de linhas, encontre todos os pontos de chamada que ainda usam a API obsoleta `LegacyLedgerReader` e sugira uma ordem de migração.
-- **Tarefa B**: O agente principal acabou de ler uma função de 80 linhas para o contexto; o usuário aponta um bug de erro por um nela e pede uma correção.
+- **Tarefa B**: O agente principal acabou de ler uma função de 80 linhas para o contexto; o usuário aponta um bug de off-by-one nela e pede uma correção.
 - **Tarefa C**: Para uma decisão de escolha de biblioteca, pesquise três bibliotecas de parsing candidatas — leia a documentação de cada uma, vasculhe seu rastreador de issues e faça uma comparação lado a lado.
 
 Para cada tarefa, anote sua decisão — isolar (despachar um subagente) ou não (fazer na janela principal) — apontando o paralelismo onde ele se aplica, e dê uma ou duas frases de justificativa usando os critérios desta lição.

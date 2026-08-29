@@ -81,7 +81,7 @@ async function forkFrom(turn, branchName, { point, baseDir = "checkpoints" } = {
 
 Después de `forkFrom(14, "plan-b")`, `checkpoints-plan-b/` tiene su propia secuencia de puntos de control y un registro de efectos en blanco. Del turno 14 en adelante, adónde va esta línea temporal, cuántos turnos ejecuta, cuántos puntos de control aterriza: nada de eso interfiere con la línea principal.
 
-Que las dos líneas temporales bifurcadas sean independientes es una advertencia para las herramientas de alto impacto: si ambas líneas llamaran a la misma acción genuinamente externa —las dos necesitan enviar el mismo correo, digamos—, dejar que cada una corra hasta el final sin aprobación significa que cada línea lo envía una vez, lo que se convierte en un efecto secundario duplicado. Cablearles una compuerta de aprobación a herramientas así, o pasar a un modo de simulación durante la bifurcación, vale la pena antes de bifurcar. Es el mismo razonamiento que el de que el registro no se revierta al rebobinar: un punto de control se puede copiar en dos, pero un efecto externo que ya aterrizó no se puede copiar en «uno por mundo paralelo».
+Que las dos líneas temporales bifurcadas sean independientes es una advertencia para las herramientas de alto impacto: si ambas líneas llamaran a la misma acción genuinamente externa —las dos necesitan enviar el mismo correo, digamos—, dejar que cada una se ejecute hasta el final sin aprobación significa que cada línea lo envía una vez, lo que se convierte en un efecto secundario duplicado. Cablearles una compuerta de aprobación a herramientas así, o pasar a un modo de simulación durante la bifurcación, vale la pena antes de bifurcar. Es el mismo razonamiento que el de que el registro no se revierta al rebobinar: un punto de control se puede copiar en dos, pero un efecto externo que ya aterrizó no se puede copiar en «uno por mundo paralelo».
 
 ## Comparación con un producto: Claude Code ya lo lanzó como funcionalidad
 
@@ -191,7 +191,7 @@ async function loadCheckpoint() {
 - `saveCheckpoint` reescrito para nombrar los archivos `turn-NNN-A.json` / `turn-NNN-B.json` en disco y conserva la escritura atómica (escribir primero `.tmp`, después renombrar)
 - Provee la lógica para encontrar «el último punto de guardado escrito en un turno», y `loadLatest()` toma correctamente el punto de guardado más nuevo del turno más alto que se ejecutó
 - `rewindTo(turn)` toma la escena del turno indicado y no toca `effects.json`
-- El script de verificación corre completo: después de guardar 5 turnos, `rewindTo(3).turns === 3`, y el largo de `effects.json` sigue siendo 5 (la acción de rebobinar no lo cambió)
+- El script de verificación se ejecuta completo: después de guardar 5 turnos, `rewindTo(3).turns === 3`, y el largo de `effects.json` sigue siendo 5 (la acción de rebobinar no lo cambió)
 
 <!-- answer -->
 ```javascript
