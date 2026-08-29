@@ -1,7 +1,7 @@
 [
   {
     "term": "arnés",
-    "def": "El nombre colectivo del código de control envuelto alrededor del modelo: correr herramientas, impulsar el bucle, decidir cuándo parar y cuándo esperar a una persona. El modelo solo propone acciones; el arnés dictamina si esas acciones ejecutan y si el bucle continúa.",
+    "def": "El nombre colectivo del código de control envuelto alrededor del modelo: ejecutar herramientas, impulsar el bucle, decidir cuándo parar y cuándo esperar a una persona. El modelo solo propone acciones; el arnés dictamina si esas acciones ejecutan y si el bucle continúa.",
     "source": "[^S2]",
     "pitfall": "Pensar que el arnés es solo el bucle while mismo, excluyendo el despacho de herramientas, la gestión de contexto y las condiciones de parada.",
     "distractor_rationale": "Alguien que solo ha visto código esqueleto mínimo equiparará 'bucle' con 'arnés', sin ver que en realidad es una unión de varios componentes cooperantes."
@@ -52,7 +52,7 @@
     "term": "tool_use",
     "def": "El valor de stop_reason cuando el modelo propone llamar a una herramienta. También el tipo de bloque de contenido que carga id / name / input de la herramienta propuesta.",
     "source": "[^S2]",
-    "pitfall": "Asumir que recibir un bloque tool_use significa que la herramienta terminó de correr, cuando en realidad es solo una solicitud estructurada que el anfitrión debe ejecutar.",
+    "pitfall": "Asumir que recibir un bloque tool_use significa que la herramienta terminó de ejecutarse, cuando en realidad es solo una solicitud estructurada que el anfitrión debe ejecutar.",
     "distractor_rationale": "Tratar 'recibí un tool_use' como 'la herramienta terminó' te hace juzgar mal en qué paso está el bucle en este momento."
   },
   {
@@ -85,7 +85,7 @@
   },
   {
     "term": "cuatro pasos",
-    "def": "Los pasos del bucle multiturno: (1) envía la solicitud con messages, (2) lee stop_reason y los bloques tool_use, (3) corre las herramientas y empaca los bloques tool_result, (4) anexa al historial y envía de nuevo.",
+    "def": "Los pasos del bucle multiturno: (1) envía la solicitud con messages, (2) lee stop_reason y los bloques tool_use, (3) ejecuta las herramientas y empaca los bloques tool_result, (4) anexa al historial y envía de nuevo.",
     "source": "[^S2]",
     "pitfall": "Pensar que 'cuatro pasos' es una receta rígida en vez de una descripción del flujo, o saltarse el paso de reasignar response al final del cuerpo del bucle.",
     "distractor_rationale": "Código esqueleto que muestra los cuatro pasos sin la reasignación final parecerá completo, así que alguien copiará y pegará y obtendrá un bucle muerto."
@@ -99,7 +99,7 @@
   },
   {
     "term": "contador",
-    "def": "Una variable que acumula el número de turnos que el bucle ha corrido. Debe vivir fuera del bucle para acumular a lo largo de las rondas, no dentro del cuerpo donde se reinicia cada vuelta.",
+    "def": "Una variable que acumula el número de turnos que el bucle ha ejecutado. Debe vivir fuera del bucle para acumular a lo largo de las rondas, no dentro del cuerpo donde se reinicia cada vuelta.",
     "source": "[^S1]",
     "pitfall": "Declarar el contador dentro del cuerpo del bucle con let, haciendo que se reinicie a 0 cada vuelta y convirtiendo la condición de parada en código muerto.",
     "distractor_rationale": "Alguien sin experiencia con el alcance de let pondrá let turns = 0 dentro del while, y la verificación turns >= MAX_TURNS nunca será verdadera."
@@ -164,14 +164,14 @@
     "term": "gestión de contexto",
     "def": "Decidir activamente a dónde va el historial del bucle y cuánto se queda, en lugar de empujar a ciegas hacia messages. Incluye compactar, resumir y descartar artefactos intermedios.",
     "source": "[^S5]",
-    "pitfall": "Asumir que gestión de contexto es solo para bucles muy largos, cuando en realidad cualquier bucle que corre docenas de turnos necesita gobernanza activa del historial.",
+    "pitfall": "Asumir que gestión de contexto es solo para bucles muy largos, cuando en realidad cualquier bucle que se ejecuta docenas de turnos necesita gobernanza activa del historial.",
     "distractor_rationale": "Alguien con bucles cortos no verá el problema, así que cuando salte a tareas largas, el messages.push irreflexivo del esqueleto lo llevará al inflado."
   },
   {
     "term": "gobernanza del contexto",
     "def": "Administrar activamente el historial que el bucle produce: compactar turnos viejos, resumir resultados tempranos, descartar artefactos intermedios que ya no importan. La salvaguarda contra el inflado y la degradación del contexto.",
     "source": "[^S3]",
-    "pitfall": "Pensar que gobernanza del contexto es sobreingeniería para la mayoría de los casos, sin ver que un agente que corre docenas de turnos sin ella se degrada conforme avanza.",
+    "pitfall": "Pensar que gobernanza del contexto es sobreingeniería para la mayoría de los casos, sin ver que un agente que se ejecuta docenas de turnos sin ella se degrada conforme avanza.",
     "distractor_rationale": "Alguien dirá 'la ventana de contexto es lo bastante grande', sin experimentar cómo la degradación gradual del recuerdo hace que el comportamiento derive en bucles largos."
   },
   {
@@ -183,7 +183,7 @@
   },
   {
     "term": "despacho de herramientas",
-    "def": "El código que enruta una solicitud tool_use a la función real, la corre y empaca la salida de vuelta en un tool_result. Dentro del bucle, se llama una y otra vez.",
+    "def": "El código que enruta una solicitud tool_use a la función real, la ejecuta y empaca la salida de vuelta en un tool_result. Dentro del bucle, se llama una y otra vez.",
     "source": "[^S5]",
     "pitfall": "Asumir que el despacho de herramientas es trivial y que no necesita manejo de errores, cuando en realidad una herramienta que revienta debería envolver el error en un tool_result con is_error en lugar de matar el proceso.",
     "distractor_rationale": "Alguien escribirá impl(input) sin try/catch, y cuando una herramienta falla, todo el arnés se cae en lugar de devolver un error recuperable al modelo."
@@ -241,7 +241,7 @@
     "term": "parada temprana",
     "def": "Detenerse en el momento en que algo se ve mal, en lugar de dejar que un bucle que ya está derivando queme todo su presupuesto. Para eso sirven las condiciones de parada explícitas.",
     "source": "[^S1]",
-    "pitfall": "Dejar que el bucle corra su techo completo de turnos incluso cuando está claramente atascado, desperdiciando tokens y dejando que los errores crezcan.",
+    "pitfall": "Dejar que el bucle agote su techo completo de turnos incluso cuando está claramente atascado, desperdiciando tokens y dejando que los errores crezcan.",
     "distractor_rationale": "Alguien con un tope de turnos pensará que es suficiente, sin agregar detección de falta de progreso para parar temprano cuando el bucle marcha en el sitio."
   },
   {
@@ -304,12 +304,12 @@
     "term": "interrumpir",
     "def": "Cancelar todo el bucle desde afuera. El más brusco de los tres tipos de intervención: el bucle termina y no sale ninguna petición más. Actúa sobre si el bucle vive.",
     "source": "[^S1]",
-    "pitfall": "Confundir interrumpir con dirigir: interrumpir cancela el bucle entero, mientras que dirigir cambia el objetivo pero sigue corriendo.",
+    "pitfall": "Confundir interrumpir con dirigir: interrumpir cancela el bucle entero, mientras que dirigir cambia el objetivo pero sigue en marcha.",
     "distractor_rationale": "Alguien pedirá 'detente y luego haz esto otro', sin ver que una interrupción es terminal y no hay 'y luego'."
   },
   {
     "term": "dirigir",
-    "def": "Empujar una instrucción nueva al bucle mientras corre, cambiando hacia dónde apunta el objetivo pero dejando que el bucle continúe. Actúa sobre hacia dónde apunta el bucle.",
+    "def": "Empujar una instrucción nueva al bucle mientras se ejecuta, cambiando hacia dónde apunta el objetivo pero dejando que el bucle continúe. Actúa sobre hacia dónde apunta el bucle.",
     "source": "[^S1]",
     "pitfall": "Pensar que dirigir reinicia el bucle, cuando en realidad solo empuja un mensaje user nuevo y el bucle sigue desde el estado actual.",
     "distractor_rationale": "Alguien esperará que dirigir borre el historial previo, sin ver que el modelo conserva todo el contexto anterior y solo ajusta el objetivo."
@@ -318,14 +318,14 @@
     "term": "aprobar",
     "def": "Dar luz verde a un solo paso antes de que se ejecute: el bucle llega a una operación de alto impacto, se detiene, expone 'esto es lo que estoy por hacer', y ejecuta solo si una persona dice que sí. Actúa sobre si una acción pasa.",
     "source": "[^S1]",
-    "pitfall": "Confundir aprobar con logging posterior al hecho, dejando que la acción corra y solo entonces preguntar '¿confirmar?', cuando la acción destructiva ya aterrizó.",
+    "pitfall": "Confundir aprobar con logging posterior al hecho, dejando que la acción se ejecute y solo entonces preguntar '¿confirmar?', cuando la acción destructiva ya aterrizó.",
     "distractor_rationale": "Alguien registrará qué tabla se eliminó y disparará una notificación, pensando que eso es aprobación, sin ver que la compuerta debe pararse antes de la ejecución."
   },
   {
     "term": "válvula de aprobación",
     "def": "La compuerta insertada justo antes de que una herramienta marcada como de alto impacto se llame: imprime la acción por ocurrir, espera a una persona, ejecuta solo tras confirmación. La manera recomendada de contener el riesgo de agencia excesiva.",
     "source": "[^S4]",
-    "pitfall": "Poner la válvula de aprobación después de executeTool en lugar de antes, preguntando '¿confirmar?' cuando la herramienta ya corrió y el efecto secundario ya aterrizó.",
+    "pitfall": "Poner la válvula de aprobación después de executeTool en lugar de antes, preguntando '¿confirmar?' cuando la herramienta ya se ejecutó y el efecto secundario ya aterrizó.",
     "distractor_rationale": "Alguien pensará 'el resultado se tira de todas formas cuando se rechaza, así que es equivalente', sin ver que para acciones de alto impacto el efecto secundario aterriza en el momento en que impl retorna."
   },
   {
@@ -333,7 +333,7 @@
     "def": "Acciones que producen consecuencias externamente visibles o irreversibles: write_file, http_post, delete_file. Solo gate aprobación en estas; las lecturas y consultas inofensivas van directo.",
     "source": "[^S4]",
     "pitfall": "Requerir aprobación en cada paso (haciendo al agente una herramienta manual cara), o dar luz verde a operaciones delete y send sin compuerta (dejando que acciones peligrosas corran sin gateado).",
-    "distractor_rationale": "Alguien sin tiering por impacto hará del agente una herramienta manual costosa (aprobar todo), o dejará que operaciones genuinamente peligrosas corren sin gateado."
+    "distractor_rationale": "Alguien sin tiering por impacto hará del agente una herramienta manual costosa (aprobar todo), o dejará que operaciones genuinamente peligrosas se ejecuten sin control."
   },
   {
     "term": "agencia excesiva",
@@ -358,7 +358,7 @@
   },
   {
     "term": "prueba contrafactual",
-    "def": "La prueba para detectar lo irreversible: si esta acción corre y está mal, ¿puedo deshacerla en un solo paso? Las cosas que no pueden deshacerse necesitan la compuerta temprano.",
+    "def": "La prueba para detectar lo irreversible: si esta acción se ejecuta y está mal, ¿puedo deshacerla en un solo paso? Las cosas que no pueden deshacerse necesitan la compuerta temprano.",
     "source": "[^S4]",
     "pitfall": "Saltarse la prueba contrafactual y solo gatear acciones obvias como 'delete', dejando que otras acciones irreversibles como enviar correos externos o cambiar config de producción pasen sin compuerta.",
     "distractor_rationale": "Alguien hará una lista fija de nombres de herramientas peligrosas, sin razonar sobre el impacto de cada acción y perdiendo operaciones que son peligrosas pero no se llaman 'delete'."
@@ -372,7 +372,7 @@
   },
   {
     "term": "radio de impacto",
-    "def": "Qué tan amplio es el daño si una acción corre mal. Operaciones con radio de impacto amplio (borrados recursivos, cambios masivos de permisos, deploys a producción) necesitan compuerta temprano.",
+    "def": "Qué tan amplio es el daño si una acción sale mal. Operaciones con radio de impacto amplio (borrados recursivos, cambios masivos de permisos, deploys a producción) necesitan compuerta temprano.",
     "source": "[^S4]",
     "pitfall": "Juzgar el impacto solo por el nombre de la herramienta sin considerar sus parámetros: delete_file('/tmp/draft.txt') es bajo impacto, delete_file('/') es catastrófico.",
     "distractor_rationale": "Alguien pondrá 'delete_file' en HIGH_IMPACT sin distinguir, así que un borrado de borrador temporal dispara aprobación innecesaria mientras que 'cleanup_old_data' pasa directo."
@@ -393,7 +393,7 @@
   },
   {
     "term": "executeTool",
-    "def": "La función que lee el name y el input de un bloque tool_use, enruta a la implementación real (impl), la corre y devuelve la salida que se empacará en tool_result.",
+    "def": "La función que lee el name y el input de un bloque tool_use, enruta a la implementación real (impl), la ejecuta y devuelve la salida que se empacará en tool_result.",
     "source": "[^S2]",
     "pitfall": "No envolver executeTool en try/catch, dejando que una herramienta que revienta mate todo el arnés en lugar de devolver un tool_result con is_error.",
     "distractor_rationale": "Alguien escribirá impl(input) sin manejo de errores, y cuando una herramienta falla, todo el proceso se cae en lugar de devolver un error recuperable al modelo."
@@ -437,7 +437,7 @@
     "term": "askHuman",
     "def": "La función que pausa el bucle y le pregunta a una persona si aprueba una acción de alto impacto. Imprime la acción por ocurrir, lee entrada, regresa true para aprobar o false para rechazar.",
     "source": "[^S4]",
-    "pitfall": "Llamar a askHuman después de executeTool en lugar de antes, preguntando '¿confirmar?' cuando la herramienta ya corrió y el efecto secundario ya aterrizó.",
+    "pitfall": "Llamar a askHuman después de executeTool en lugar de antes, preguntando '¿confirmar?' cuando la herramienta ya se ejecutó y el efecto secundario ya aterrizó.",
     "distractor_rationale": "Alguien pensará 'preguntar después del resultado me deja mostrar qué pasó', sin ver que para acciones de alto impacto el daño ya está hecho en el momento en que impl retorna."
   },
   {
@@ -470,7 +470,7 @@
   },
   {
     "term": "turno",
-    "def": "Una vuelta completa del bucle: una llamada a client.messages.create, ejecutar las herramientas que propuso, devolver los tool_result. El contador turns rastrea cuántos turnos ha corrido el bucle.",
+    "def": "Una vuelta completa del bucle: una llamada a client.messages.create, ejecutar las herramientas que propuso, devolver los tool_result. El contador turns rastrea cuántos turnos ha ejecutado el bucle.",
     "source": "[^S1]",
     "pitfall": "Contar turnos incorrectamente: olvidar incrementar, o incrementar varias veces por turno, o inicializar el contador dentro del bucle donde se reinicia cada vuelta.",
     "distractor_rationale": "Alguien pondrá let turns = 0 dentro del while, así que el contador se reinicia a 0 cada vuelta y la verificación turns >= MAX_TURNS nunca es verdadera."

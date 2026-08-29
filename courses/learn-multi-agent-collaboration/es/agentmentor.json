@@ -26,7 +26,7 @@
       "El parseo defensivo del JSON de salida de un revisor"
     ],
     "assumedEnvironment": "Un entorno de Node.js, acceso a una terminal, un editor de texto y una API key de Claude en funcionamiento para el ejercicio de la lección 6",
-    "firstIndependentAction": "Tomar una tarea que estén pensando entregar a varios agentes y juzgar si el coste de coordinación supera al beneficio",
+    "firstIndependentAction": "Tomar una tarea que estén pensando entregar a varios agentes y juzgar si el costo de coordinación supera al beneficio",
     "noviceRamp": [
       "La lección 1 motiva el trabajo multiagente a partir de los límites de un solo contexto (contaminación, dilución de la atención) antes de cualquier arquitectura",
       "La lección 2 introduce orquestador-subagente con aislamiento de contexto y por qué un subagente devuelve solo su conclusión",
@@ -36,7 +36,7 @@
     ]
   },
   "learnerBrief": "El lector objetivo ha terminado los primeros cinco cursos, escribe prompts básicos, entiende el tool calling y la memoria del agente, y lee JavaScript. Todavía no sabe cuándo ni cómo repartir el trabajo entre agentes. El curso lo lleva a juzgar cuándo vale la pena lo multiagente, aplicar la arquitectura orquestador-subagente con aislamiento de contexto, escribir prompts de delegación autónomos, distinguir los patrones pipeline/producer-reviewer/votación, reconocer los modos de fallo multiagente y sus defensas, y por último construir un pipeline producer-reviewer ejecutable con la Claude API.",
-  "scope": "Se cubre: cuándo vale la pena repartir una tarea entre agentes y cuándo gana el coste de coordinación, la arquitectura orquestador-subagente y el aislamiento de contexto, el fan-out y la agregación, los prompts de delegación autónomos, los patrones pipeline / producer-reviewer / votación, los modos de fallo multiagente (un «hecho» no verificable, trabajo duplicado, resultados en conflicto) y el trust-then-verify gap, la integración de resultados y la atribución de citas, el coste en tokens y un pipeline producer-reviewer ejecutable. No se cubre: el código fuente de los frameworks multiagente, los algoritmos de consenso de sistemas distribuidos, ni construir desde cero una plataforma de orquestación de propósito general. Profundidad: desde cero hasta entender los patrones de colaboración y construir un pipeline de dos agentes ejecutable.",
+  "scope": "Se cubre: cuándo vale la pena repartir una tarea entre agentes y cuándo gana el costo de coordinación, la arquitectura orquestador-subagente y el aislamiento de contexto, el fan-out y la agregación, los prompts de delegación autónomos, los patrones pipeline / producer-reviewer / votación, los modos de fallo multiagente (un «hecho» no verificable, trabajo duplicado, resultados en conflicto) y el trust-then-verify gap, la integración de resultados y la atribución de citas, el costo en tokens y un pipeline producer-reviewer ejecutable. No se cubre: el código fuente de los frameworks multiagente, los algoritmos de consenso de sistemas distribuidos, ni construir desde cero una plataforma de orquestación de propósito general. Profundidad: desde cero hasta entender los patrones de colaboración y construir un pipeline de dos agentes ejecutable.",
   "status": {
     "stage": "delivered",
     "generationComplete": true,
@@ -47,7 +47,7 @@
     "diagramUse": "Los diagramas se mantienen exactamente donde los usa el original (fan-out/agregación y las formas de los patrones de colaboración), con las etiquetas reescritas en español; no se añade ni se quita ninguno. La topología multiagente es justo el contenido que un diagram transmite mejor que la prosa, y la colocación heredada ya estaba validada en revisión.",
     "weakestPoints": [
       "La taxonomía de patrones de la lección 4 (pipeline / producer-reviewer / votación) es una simplificación; los sistemas reales los combinan, y se señala donde importa",
-      "Las cifras de coste en tokens de la lección 1 (4x, 15x) son datos reportados por Anthropic para un sistema concreto y se enmarcan como tales, no como constantes universales",
+      "Las cifras de costo en tokens de la lección 1 (4x, 15x) son datos reportados por Anthropic para un sistema concreto y se enmarcan como tales, no como constantes universales",
       "El pipeline de la lección 6 es de nivel didáctico y de una sola ejecución; explícitamente no es un framework de orquestación productivo, y el JSON del revisor se parsea de forma defensiva en vez de darse por válido",
       "Al ser una traducción al español de una variante en inglés verificada, la deriva idiomática es el riesgo residual: las citas de las fuentes se conservaron verbatim en inglés y el código ejecutable mantiene la lógica idéntica, pero la prosa se vertió a un español natural en lugar de traducirse palabra por palabra, así que la revisión debe comprobar la equivalencia de significado con la lección en inglés"
     ],

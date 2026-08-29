@@ -58,7 +58,7 @@ Para decidir si una tarea debería ir a multiagente, arranca con tres preguntas:
 ```agentmentor-check
 {
   "id": "mac-zh-01-when-to-split",
-  "label": "Debería repartirse esta tarea entre varios agentes",
+  "label": "Juzgar si esta tarea debería repartirse entre varios agentes",
   "prompt": "Alguien dice: «Los sistemas multiagente rinden mejor de todos modos, así que de ahora en adelante voy a ir a multiagente en cada tarea; no puede hacer daño.» ¿Tiene razón?",
   "whyHere": "Acabas de ver las cifras de costo en tokens y la evidencia de que «las tareas de código se paralelizan mal», así que es fácil dejarse arrastrar por la impresión vaga de que «multiagente es más fuerte» y olvidar que arrastra un costo y tiene límites. Este es el punto para pincharlo con un criterio de juicio concreto.",
   "mode": "single",

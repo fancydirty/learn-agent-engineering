@@ -9,7 +9,7 @@
 
 ## Primero, el resultado: una ejecución completa
 
-Esto es lo que tendrás corriendo al final de la lección. Le entregas una tarea a la terminal, y dos agentes se turnan hasta que la revisión pasa o llegas al límite de rondas:
+Esto es lo que tendrás en marcha al final de la lección. Le entregas una tarea a la terminal, y dos agentes se turnan hasta que la revisión pasa o llegas al límite de rondas:
 
 ```
 $ node review-pipeline.js "Escribe un anuncio de cambio de API para desarrolladores: el endpoint v2 cambia el campo user_id de número a cadena"
@@ -195,9 +195,9 @@ Cuando llega a `MAX_ROUNDS` todavía sin pasar, `runPipeline` no fuerza un vered
 ```agentmentor-check
 {
   "id": "mac-zh-06-invalid-review-json",
-  "label": "El revisor no respondió en el formato acordado — qué deberías hacer",
+  "label": "Qué hacer cuando el revisor no responde en el formato acordado",
   "prompt": "Mientras ejecutas este pipeline, el revisor una vez no responde en JSON estricto y en su lugar agrega una línea, «Le eché un vistazo rápido, el contenido está básicamente bien», lo que hace que `JSON.parse` lance un error. Para mantener el pipeline en marcha, ¿deberías tratar este fallo de parseo como una revisión aprobada?",
-  "whyHere": "«Solo trátalo como aprobado para que el programa siga corriendo» es una jugada tentadora y de bajo esfuerzo justo cuando el parseo falla; este es el punto para usar el principio de la Lección 5 — «una salida que parece razonable no es lo mismo que una salida que de verdad es correcta» — para rebatir esa idea, y para probar si puedes aplicar ese principio al código que escribes tú mismo",
+  "whyHere": "«Solo trátalo como aprobado para que el programa siga en marcha» es una jugada tentadora y de bajo esfuerzo justo cuando el parseo falla; este es el punto para usar el principio de la Lección 5 — «una salida que parece razonable no es lo mismo que una salida que de verdad es correcta» — para rebatir esa idea, y para probar si puedes aplicar ese principio al código que escribes tú mismo",
   "mode": "single",
   "choices": [
     {
@@ -227,12 +227,12 @@ Cuando llega a `MAX_ROUNDS` todavía sin pasar, `runPipeline` no fuerza un vered
 
 ### Nivel 1: Ponlo a correr, luego agrega un criterio de revisión
 
-Ensambla el código de esta lección en un `review-pipeline.js`, ejecuta `npm install @anthropic-ai/sdk`, `npm pkg set type=module`, define `ANTHROPIC_API_KEY`, y corre una vez la tarea de ejemplo de esta lección. Confirma que ves al menos una ronda «Rechazado» antes de ver «Aprobado». (Si la primera versión del productor pasa de largo, cambia por una tarea más fácil de tropezar — por ejemplo, pide a propósito «un anuncio muy corto» sin decir qué tan corto.)
+Ensambla el código de esta lección en un `review-pipeline.js`, ejecuta `npm install @anthropic-ai/sdk`, `npm pkg set type=module`, define `ANTHROPIC_API_KEY`, y ejecuta una vez la tarea de ejemplo de esta lección. Confirma que ves al menos una ronda «Rechazado» antes de ver «Aprobado». (Si la primera versión del productor pasa de largo, cambia por una tarea más fácil de tropezar — por ejemplo, pide a propósito «un anuncio muy corto» sin decir qué tan corto.)
 
-Una vez que corra, agrega un nuevo criterio a `REVIEW_CRITERIA`: «¿Menciona el texto el número de versión específico donde el cambio entra en vigor?». Córrelo de nuevo y confirma que los `issues` del revisor ahora incluyen una nota atada a este nuevo criterio.
+Una vez que funcione, agrega un nuevo criterio a `REVIEW_CRITERIA`: «¿Menciona el texto el número de versión específico donde el cambio entra en vigor?». Córrelo de nuevo y confirma que los `issues` del revisor ahora incluyen una nota atada a este nuevo criterio.
 
 <!-- rubric -->
-- El pipeline corre de verdad, y el log muestra la primera versión del productor más al menos una ronda de notas de revisión
+- El pipeline se ejecuta de verdad, y el log muestra la primera versión del productor más al menos una ronda de notas de revisión
 - El criterio de revisión agregado sí cambia el resultado de la revisión — un borrador al que le falta esa información queda marcado
 - Puedes explicar qué emite finalmente el pipeline si nunca pasa y llega a `MAX_ROUNDS` (no un crash, sino entregar la última versión y los problemas sin resolver)
 
@@ -300,7 +300,7 @@ function parseReview(raw) {
 ```
 
 <!-- hint -->
-Ponte en el caso específico en que el revisor «no respondió en el formato acordado» — si el respaldo es «aprobado», ese borrador se sirvió sin ninguna comprobación efectiva en absoluto, sin diferencia de que el revisor nunca hubiera corrido.
+Ponte en el caso específico en que el revisor «no respondió en el formato acordado» — si el respaldo es «aprobado», ese borrador se sirvió sin ninguna comprobación efectiva en absoluto, sin diferencia de que el revisor nunca se hubiera ejecutado.
 
 <!-- hint -->
 Para decidir cuál debería ser el respaldo, dale la vuelta a la pregunta: ¿un fallo de parseo está más cerca de «confirmado sin problemas», o de «no puedo confirmar si hay un problema»? La respuesta de la Lección 5: si no puedes confirmarlo, no lo trates como sin-problemas.
@@ -315,4 +315,4 @@ Para decidir cuál debería ser el respaldo, dale la vuelta a la pregunta: ¿un 
 - Lo que el revisor devuelve tampoco se puede confiar a ciegas — un fallo de parseo o una forma de campo incorrecta debería contar como un rechazo, no como un aprobado silencioso[^S6]; este principio aplica no solo a «confiar en lo que dice un subagente» sino también a «confiar en el formato de datos que devuelve un subagente».
 - Cuando llega al máximo de rondas todavía sin pasar, el pipeline debería entregar honestamente el último borrador y los problemas sin resolver para revisión humana, en lugar de decidir un aprobado por sí mismo en código.
 
-Eso es todo lo de las seis lecciones de este curso: desde «por qué varios agentes», pasando por cómo el orquestador y los subagentes reparten el trabajo, cómo escribir prompts de delegación, qué patrón de colaboración encaja con qué escenario, y cómo manejar los fallos, terminando con construir a mano un pipeline productor-revisor que funciona. Lo más valioso que puedes hacer a continuación no es releer las explicaciones — es tomar una tarea pequeña y real que tengas a mano, dejarla caer en este esqueleto de pipeline, ajustar los criterios de revisión, y correrlo para ver si rebota el borrador y cuántas veces. Ajustar tú mismo los criterios de revisión una vez vale más que releer la teoría diez veces.
+Eso es todo lo de las seis lecciones de este curso: desde «por qué varios agentes», pasando por cómo el orquestador y los subagentes reparten el trabajo, cómo escribir prompts de delegación, qué patrón de colaboración encaja con qué escenario, y cómo manejar los fallos, terminando con construir a mano un pipeline productor-revisor que funciona. Lo más valioso que puedes hacer a continuación no es releer las explicaciones — es tomar una tarea pequeña y real que tengas a mano, dejarla caer en este esqueleto de pipeline, ajustar los criterios de revisión, y ejecutarlo para ver si rebota el borrador y cuántas veces. Ajustar tú mismo los criterios de revisión una vez vale más que releer la teoría diez veces.

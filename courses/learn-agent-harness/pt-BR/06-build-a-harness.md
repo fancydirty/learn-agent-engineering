@@ -312,7 +312,7 @@ Por último, reúna `runAgent`, `runToolUses`, as definições de ferramenta e a
 
 ```javascript
 async function main() {
-  const userInput = process.argv[2] ?? "Read the first line of README.md, then tell me what time it is";
+  const userInput = process.argv[2] ?? "Leia a primeira linha do README.md, e então me diga que horas são";
   const answer = await runAgent(userInput, tools, toolImpls, {
     approve: approveInTerminal,
   });

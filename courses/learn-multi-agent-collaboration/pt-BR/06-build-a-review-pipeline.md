@@ -3,7 +3,7 @@
 > Objetivos de aprendizado:
 > - Escrever um pipeline de dois agentes produtor-revisor genuinamente executável com a API do Claude
 > - Fazer o revisor devolver um resultado de revisão estruturado e verificável em vez de um genérico “parece bom”
-> - Colocar uma válvula de segurança no laço para que o produtor e o revisor não fiquem polindo um para o outro para sempre
+> - Colocar uma válvula de segurança no loop para que o produtor e o revisor não fiquem polindo um para o outro para sempre
 >
 > Pré-requisitos: concluir as Lições 1 a 5, ser capaz de ler JavaScript/Node.js básico e ter uma chave da API do Claude funcionando | Anterior: [Lição 5 <<](./05-failure-and-coordination.md)
 
@@ -37,11 +37,11 @@ to avoid parse failures caused by the type mismatch. This change takes effect in
 
 A primeira versão é rejeitada pelo revisor, com razões atreladas a cada critério específico; o produtor revisa em uma segunda versão, o revisor olha de novo e, desta vez, ela passa. Este é o padrão **produtor-revisor** da Lição 4 transformado em código: "one LLM call generates a response while another provides evaluation and feedback in a loop."[^S2]
 
-## A forma geral: o mesmo esqueleto de um laço de execução
+## A forma geral: o mesmo esqueleto de um loop de execução
 
-Se você fez o curso Agent Tool Calling: Getting Agents to Actually Do Things desta série, o esqueleto deste pipeline vai parecer familiar: um laço, um julgamento por rodada, um resultado que decide se continua, mais uma válvula de segurança contra o laço infinito. A única diferença é o que o julgamento julga — o laço de execução de ferramentas daquele curso julga “o modelo ainda quer chamar uma ferramenta” (a semântica do laço está na lição The Full Round-Trip of a Tool Call daquele curso e em suas fontes oficiais), enquanto aqui ele julga “o revisor disse que passou”. Mesmo esqueleto, conteúdos diferentes no corpo do laço.
+Se você fez o curso Tool calling de agentes: fazendo agentes agirem de verdade desta série, o esqueleto deste pipeline vai parecer familiar: um loop, um julgamento por rodada, um resultado que decide se continua, mais uma válvula de segurança contra o loop infinito. A única diferença é o que o julgamento julga — o loop de execução de ferramentas daquele curso julga “o modelo ainda quer chamar uma ferramenta” (a semântica do loop está na lição A ida e volta completa de uma chamada de ferramenta daquele curso e em suas fontes oficiais), enquanto aqui ele julga “o revisor disse que passou”. Mesmo esqueleto, conteúdos diferentes no corpo do loop.
 
-O pipeline inteiro são três funções costuradas juntas: `runProducer` gera ou revisa o texto, `runReviewer` o pontua em relação a critérios e dá notas específicas, e `runPipeline` liga as duas em um laço com um teto de rodadas como válvula de segurança.
+O pipeline inteiro são três funções costuradas juntas: `runProducer` gera ou revisa o texto, `runReviewer` o pontua em relação a critérios e dá notas específicas, e `runPipeline` liga as duas em um loop com um teto de rodadas como válvula de segurança.
 
 ## Passo 1: O produtor — receber a tarefa, produzir o texto
 
@@ -52,7 +52,7 @@ import Anthropic from "@anthropic-ai/sdk";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const MODEL = "claude-sonnet-5"; // troque por um modelo que sua conta consiga chamar
-const MAX_ROUNDS = 3; // válvula de segurança: produtor-revisor pole no máximo 3 rodadas, para evitar um laço infinito
+const MAX_ROUNDS = 3; // válvula de segurança: produtor-revisor pole no máximo 3 rodadas, para evitar um loop infinito
 
 async function runProducer(task, feedback, prevDraft) {
   const prompt = feedback
@@ -69,7 +69,7 @@ async function runProducer(task, feedback, prevDraft) {
 }
 ```
 
-O prompt do produtor é autocontido. Como a Lição 3 cobriu, um subagente não consegue ver o que aconteceu do lado do orquestrador, e também não consegue ver como foi revisado da última vez[^S3]. Então cada chamada escreve “qual é a tarefa”, “o que a versão anterior dizia” e “(se houver) quais foram os problemas da última rodada” no prompt desta chamada, literalmente. Note que até o próprio rascunho anterior do produtor precisa ser repassado explicitamente — esta é a metade do princípio do autocontido que é mais fácil de esquecer: a API de Mensagens é sem estado, cada requisição precisa carregar todo o histórico de que precisa, e o servidor não guarda nada entre requisições[^S8]. “Revise sua versão anterior” só significa algo quando a versão anterior foi de fato escrita neste prompt.
+O prompt do produtor é autocontido. Como a Lição 3 cobriu, um subagente não consegue ver o que aconteceu do lado do orquestrador, e também não consegue ver como foi revisado da última vez[^S3]. Então cada chamada escreve “qual é a tarefa”, “o que a versão anterior dizia” e “(se houver) quais foram os problemas da última rodada” no prompt desta chamada, literalmente. Note que até o próprio rascunho anterior do produtor precisa ser repassado explicitamente — esta é a metade do princípio do autocontido que é mais fácil de esquecer: a Messages API é sem estado, cada requisição precisa carregar todo o histórico de que precisa, e o servidor não guarda nada entre requisições[^S8]. “Revise sua versão anterior” só significa algo quando a versão anterior foi de fato escrita neste prompt.
 
 ## Passo 2: O revisor — pontuar em relação a critérios concretos, sem veredictos vagos
 
@@ -140,7 +140,7 @@ As linhas `typeof parsed.approved !== "boolean"` e `!Array.isArray(parsed.issues
 
 Um à parte: existe um recurso oficial de saídas estruturadas que garante, no nível da amostragem, que a resposta corresponde estritamente a um schema[^S9]. Esta lição usa deliberadamente o estilo “chamada crua mais seu próprio parse defensivo” para você sentir na pele que a saída do modelo não pode ser confiada cegamente; em produção, você pode usar saídas estruturadas para remover essa cova por completo.
 
-## Passo 4: Ligue tudo em um laço, adicione a válvula de segurança
+## Passo 4: Ligue tudo em um loop, adicione a válvula de segurança
 
 Com `runProducer`, `runReviewer` e `parseReview` em mãos, `runPipeline` liga os três, e `MAX_ROUNDS` é a única válvula de segurança aqui — o produtor e o revisor poderiam, em teoria, polir para sempre, então precisa haver um teto:
 
@@ -309,8 +309,8 @@ Para decidir qual deveria ser o fallback, inverta a pergunta: uma falha de parse
 
 ## Recapitulação
 
-- O esqueleto do pipeline produtor-revisor é a mesma coisa que um laço de execução: um laço, um julgamento por rodada, um resultado que decide se continua, mais uma válvula de segurança contra o laço infinito. A definição oficial deste padrão é exatamente "one LLM call generates a response while another provides evaluation and feedback in a loop"[^S2] — aqui o julgamento muda de “uma ferramenta deveria ser chamada” para “o revisor disse que passou”.
-- O prompt do produtor é autocontido: cada chamada escreve a tarefa, a versão anterior completa e (se houver) os problemas específicos da última rodada no prompt, literalmente — a API de Mensagens é sem estado, cada requisição precisa carregar todo o histórico, e nada é guardado entre requisições[^S8], então você não pode contar com o modelo lembrando por conta própria o que aconteceu na última rodada[^S3].
+- O esqueleto do pipeline produtor-revisor é a mesma coisa que um loop de execução: um loop, um julgamento por rodada, um resultado que decide se continua, mais uma válvula de segurança contra o loop infinito. A definição oficial deste padrão é exatamente "one LLM call generates a response while another provides evaluation and feedback in a loop"[^S2] — aqui o julgamento muda de “uma ferramenta deveria ser chamada” para “o revisor disse que passou”.
+- O prompt do produtor é autocontido: cada chamada escreve a tarefa, a versão anterior completa e (se houver) os problemas específicos da última rodada no prompt, literalmente — a Messages API é sem estado, cada requisição precisa carregar todo o histórico, e nada é guardado entre requisições[^S8], então você não pode contar com o modelo lembrando por conta própria o que aconteceu na última rodada[^S3].
 - O revisor pontua em relação a critérios concretos e verificáveis, item a item, e devolve um `{approved, issues}` estruturado em vez de um veredicto genérico[^S1].
 - O que o revisor devolve também não pode ser confiado cegamente — uma falha de parse ou uma forma de campo errada deveria contar como uma rejeição, não um passe silencioso[^S6]; esse princípio se aplica não só a “confiar no que um subagente diz”, mas também a “confiar no formato de dados que um subagente devolve”.
 - Quando atinge a contagem máxima de rodadas ainda sem passar, o pipeline deveria honestamente entregar o último rascunho e os problemas não resolvidos para revisão humana, em vez de decidir um passe por si mesmo no código.

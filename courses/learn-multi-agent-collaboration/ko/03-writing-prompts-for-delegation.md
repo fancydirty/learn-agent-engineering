@@ -9,7 +9,7 @@
 
 ## 되짚기: 서브에이전트가 못 보는 것은, 여러분이 적어 넣어 줘야 한다
 
-레슨 2는 여기서 중요한 메커니즘 하나를 다뤘습니다. "Each subagent starts with a fresh, isolated context window. It doesn't see your conversation history, the skills you've already invoked, or the files Claude has already read. Claude composes a delegation message that summarizes the task, and the subagent works from there."[^S3] (각 서브에이전트는 새롭고 격리된 컨텍스트 윈도로 시작한다. 여러분의 대화 기록도, 이미 호출한 스킬도, Claude가 이미 읽은 파일도 보지 못한다. Claude가 작업을 요약한 위임 메시지를 작성하면, 서브에이전트는 거기서부터 작업한다는 뜻입니다.) 이 레슨은 그것을 구체화합니다. 오케스트레이터 층위에서 사용자와 함께 짚어 온 모든 배경, 앞선 라운드에서 정리한 절충, 사용자가 지나가듯 던진 제약을 서브에이전트는 하나도 알지 못한다는 뜻입니다. 서브에이전트가 아는 것은 여러분이 이 하나의 위임 작업에 적어 넣은 말뿐입니다.
+레슨 2는 여기서 중요한 메커니즘 하나를 다뤘습니다. "Each subagent starts with a fresh, isolated context window. It doesn't see your conversation history, the skills you've already invoked, or the files Claude has already read. Claude composes a delegation message that summarizes the task, and the subagent works from there."[^S3] (각 서브에이전트는 새롭고 격리된 컨텍스트 윈도로 시작한다. 여러분의 대화 기록도, 이미 호출한 스킬도, Claude가 이미 읽은 파일도 보지 못한다. Claude가 작업을 요약한 위임 메시지를 작성하면, 서브에이전트는 거기서부터 작업한다.) 이 레슨은 그것을 구체화합니다. 오케스트레이터 층위에서 사용자와 함께 짚어 온 모든 배경, 앞선 라운드에서 정리한 절충, 사용자가 지나가듯 던진 제약을 서브에이전트는 하나도 알지 못한다는 뜻입니다. 서브에이전트가 아는 것은 여러분이 이 하나의 위임 작업에 적어 넣은 말뿐입니다.
 
 이것은 부드러운 알림이 아니라 단단한 제약입니다. **위임 프롬프트의 품질 상한이 서브에이전트 산출물의 품질 상한을 정합니다**. 프롬프트가 명시하지 않은 것은, 서브에이전트가 추측하거나, 건너뛰거나, 가정을 지어내 계속 진행합니다. 맞게 추측하면 운이 좋은 것이고, 틀리게 추측하면 그 하위 작업은 사실상 낭비됩니다.
 
@@ -21,7 +21,7 @@
 
 ## 범위와 제약을 명시하라: 무엇을 할지, 무엇을 하지 말지, 어떤 출처를 쓸지
 
-공식 가이드는 탄탄한 서브에이전트 작업 설명이 담아야 할 것을 나열합니다. "Each subagent needs an objective, an output format, guidance on the tools and sources to use, and clear task boundaries. Without detailed task descriptions, agents duplicate work, leave gaps, or fail to find necessary information."[^S1] (각 서브에이전트에는 목표, 출력 형식, 쓸 도구와 출처에 대한 안내, 그리고 뚜렷한 작업 경계가 필요하다. 상세한 작업 설명이 없으면 에이전트들은 작업을 중복하고, 빈틈을 남기고, 필요한 정보를 찾지 못한다는 뜻입니다.)
+공식 가이드는 탄탄한 서브에이전트 작업 설명이 담아야 할 것을 나열합니다. "Each subagent needs an objective, an output format, guidance on the tools and sources to use, and clear task boundaries. Without detailed task descriptions, agents duplicate work, leave gaps, or fail to find necessary information."[^S1] (각 서브에이전트에는 목표, 출력 형식, 쓸 도구와 출처에 대한 안내, 그리고 뚜렷한 작업 경계가 필요하다. 상세한 작업 설명이 없으면 에이전트들은 작업을 중복하고, 빈틈을 남기고, 필요한 정보를 찾지 못한다.)
 
 그 목록을 풀어 봅시다. "목표"와 "출력 형식"은 파악하기 쉽습니다. 건너뛰기 쉬운 것은 마지막 한 쌍, 곧 **출처 안내**와 **작업 경계**입니다. 출처 안내는 서브에이전트에게 답을 어디서 찾을지 알려 줍니다. 공식 가격 페이지인지, 제3자 가격 비교 사이트인지, 아니면 둘 다이되 공식 페이지가 우선인지. 작업 경계는 서브에이전트에게 이번 실행은 이 조각만 다루니 그 너머로 뻗지 말라고 알려 줍니다. 현재 가격만, 과거 가격 변화는 안 됨. 주요 제품 라인만, 온갖 잘 알려지지 않은 서비스까지 열거하지 말 것. 이 둘을 놓치면 서브에이전트는 둘 중 한 방향으로 흐르기 쉽습니다. 실제로 원했던 정보를 놓치거나, 아니면 원한 것보다 훨씬 많이 가져와 아낄 수 있었던 도구 호출과 토큰을 태웁니다.
 
@@ -40,7 +40,7 @@
 
 ## 반례: 막연한 지시는 서브에이전트를 임기응변에 내맡긴다
 
-범위와 경계를 명시하지 않으면 실제로 무엇이 어긋나는지 — 공식 팀이 실무에서 겪은 실제 사례를 주었습니다. "We started by allowing the lead agent to give simple, short instructions like 'research the semiconductor shortage,' but found these instructions often were vague enough that subagents misinterpreted the task or performed the exact same searches as other agents."[^S1] (우리는 리드 에이전트가 'research the semiconductor shortage' 같은 짧고 단순한 지시를 주는 것으로 시작했지만, 이런 지시는 흔히 충분히 막연해서 서브에이전트들이 작업을 오해하거나 다른 에이전트와 똑같은 검색을 수행한다는 것을 알게 되었다는 뜻입니다.)
+범위와 경계를 명시하지 않으면 실제로 무엇이 어긋나는지 — 공식 팀이 실무에서 겪은 실제 사례를 주었습니다. "We started by allowing the lead agent to give simple, short instructions like 'research the semiconductor shortage,' but found these instructions often were vague enough that subagents misinterpreted the task or performed the exact same searches as other agents."[^S1] (우리는 리드 에이전트가 'research the semiconductor shortage' 같은 짧고 단순한 지시를 주는 것으로 시작했지만, 이런 지시는 흔히 충분히 막연해서 서브에이전트들이 작업을 오해하거나 다른 에이전트와 똑같은 검색을 수행한다는 것을 알게 되었다.)
 
 "research the semiconductor shortage"는 작업을 넘기는 것처럼 읽히지만, 아무것도 못 박지 못합니다. 어느 기간에 걸쳐? 공급 측, 수요 측, 아니면 정책 영향에 초점? 어떤 형태로 내놓을지? 같은 막연한 지시를 받은 세 서브에이전트는 십중팔구 모두 "반도체 부족의 원인", 곧 가장 먼저 떠오르는 각도로 검색해 갈 것이고, 그 결과는 심하게 겹치는 세 뭉치의 조사가 되며, 정작 다뤄야 했던 각도(가령 하류 산업에 미친 영향, 또는 나라별 대응)는 손대지 않은 채 남습니다. 이것이 레슨 2의 "중복 작업" 문제의, 프롬프트 층위에서의 뿌리입니다. 서브에이전트가 말을 안 들어서가 아니라, 작업 설명 자체가 경계를 긋지 않았기 때문입니다.
 
@@ -78,7 +78,7 @@
 
 프롬프트 하나를 명료하게 쓰는 것을 넘어, 여러 서브에이전트가 일을 어떻게 나누는지도 공식 실무에서 추려낼 수 있는 원칙을 따릅니다 — 공식 팀이 이름 붙인 적은 없고, 이 이름은 우리 것입니다: **하나의 문제 영역, 하나의 에이전트** — 각 서브에이전트는 하나의 서브에이전트가 무관한 여러 일을 한꺼번에 다루는 대신, 뚜렷이 경계 지어진 한 부류의 문제만 맡아야 합니다.
 
-공식 시스템에는 직접적인 예가 있습니다. 그들은 전용 CitationAgent를 두었습니다. "a CitationAgent, which processes the documents and research report to identify specific locations for citations. This ensures all claims are properly attributed to their sources."[^S1] (문서와 조사 보고서를 처리해 인용이 들어갈 구체적 위치를 식별하는 CitationAgent다. 이는 모든 주장이 그 출처에 제대로 귀속되도록 보장한다는 뜻입니다.) 인용이 들어갈 자리를 찾는 것은 "어느 회사의 가격 전략을 조사하는" 것과는 완전히 다른 종류의 일입니다. 앞쪽은 확인하고 위치를 짚는 일이고, 뒤쪽은 검색하고 판단하는 일입니다. 둘 다 같은 서브에이전트에게 맡기면 그것은 완전히 다른 두 사고 방식을 오가야 하고, 두 목표를 함께 섬기려다 작업 설명이 길고 뒤엉켜져 하나를 위해 다른 하나를 소홀히 하기 쉽습니다. 초점 잡힌 두 서브에이전트로 나누면, 각자의 작업 설명이 단순하고 뚜렷이 경계 지어진 채로 남습니다 — 이는 레슨 1의 잣대와 통합니다. 독립적인 하위 작업으로 나뉠 수 있다면, 나눌 가치가 있습니다.
+공식 시스템에는 직접적인 예가 있습니다. 그들은 전용 CitationAgent를 두었습니다. "a CitationAgent, which processes the documents and research report to identify specific locations for citations. This ensures all claims are properly attributed to their sources."[^S1] (문서와 조사 보고서를 처리해 인용이 들어갈 구체적 위치를 식별하는 CitationAgent다. 이는 모든 주장이 그 출처에 제대로 귀속되도록 보장한다.) 인용이 들어갈 자리를 찾는 것은 "어느 회사의 가격 전략을 조사하는" 것과는 완전히 다른 종류의 일입니다. 앞쪽은 확인하고 위치를 짚는 일이고, 뒤쪽은 검색하고 판단하는 일입니다. 둘 다 같은 서브에이전트에게 맡기면 그것은 완전히 다른 두 사고 방식을 오가야 하고, 두 목표를 함께 섬기려다 작업 설명이 길고 뒤엉켜져 하나를 위해 다른 하나를 소홀히 하기 쉽습니다. 초점 잡힌 두 서브에이전트로 나누면, 각자의 작업 설명이 단순하고 뚜렷이 경계 지어진 채로 남습니다 — 이는 레슨 1의 잣대와 통합니다. 독립적인 하위 작업으로 나뉠 수 있다면, 나눌 가치가 있습니다.
 
 <!-- exercises -->
 ## 💻 연습

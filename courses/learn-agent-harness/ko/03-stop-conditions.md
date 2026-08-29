@@ -104,7 +104,7 @@ while (response.stop_reason === "tool_use") {
     return { paused: "awaiting_human", pending: block, messages, turns };
   }
 
-  // ...그 밖의 경우에는 평소처럼 도구를 실행하고, 이력에 덧붙이고, 다음 요청을 보낸다
+  // ...그 밖의 경우에는 평소처럼 도구를 실행하고, 히스토리에 덧붙이고, 다음 요청을 보낸다
 }
 ```
 

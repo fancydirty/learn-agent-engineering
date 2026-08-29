@@ -4,32 +4,32 @@
     "def": "O nome coletivo do código de controle envolto ao redor do modelo — rodando ferramentas, dirigindo o loop, decidindo quando parar e quando esperar uma pessoa. O modelo só propõe ações; o harness decide se elas executam e se o loop continua.",
     "source": "[^S2]",
     "pitfall": "Achar que o harness é só o while loop em si, deixando de fora o despacho de ferramentas, o gerenciamento de contexto e as condições de parada.",
-    "distractor_rationale": "Quem só viu o código esqueleto mínimo vai equiparar \"loop\" a \"harness\", perdendo que ele é na verdade uma união de várias peças que trabalham juntas."
+    "distractor_rationale": "Quem só viu o código esqueleto mínimo vai equiparar “loop” a “harness”, perdendo que ele é na verdade uma união de várias peças que trabalham juntas."
   },
   {
     "term": "agente",
     "def": "Um LLM usando ferramentas com base em feedback do ambiente, em um loop. O modelo dirige dinamicamente seu próprio processo e decide quais ferramentas usar dentro do loop, em vez de seguir caminhos de código predefinidos.",
     "source": "[^S1]",
-    "pitfall": "Chamar de \"agente\" qualquer sistema que chama uma ferramenta uma vez, ignorando que o loop e as decisões autônomas de controle de fluxo são exigidos.",
-    "distractor_rationale": "Iniciantes julgam pelo instinto de \"usa ferramentas\", rotulando erradamente como agentes chamadas de ferramenta de passo único ou workflows fixados no código."
+    "pitfall": "Chamar de “agente” qualquer sistema que chama uma ferramenta uma vez, ignorando que o loop e as decisões autônomas de controle de fluxo são exigidos.",
+    "distractor_rationale": "Iniciantes julgam pelo instinto de “usa ferramentas”, rotulando erradamente como agentes chamadas de ferramenta de passo único ou workflows fixados no código."
   },
   {
     "term": "workflow",
     "def": "Um sistema em que LLMs e ferramentas são orquestrados por caminhos de código predefinidos — o que fazer primeiro e qual galho tomar já foram todos resolvidos de antemão por uma pessoa.",
     "source": "[^S1]",
     "pitfall": "Acreditar que workflows são inferiores a agentes e que toda tarefa deveria ser promovida a um agente autônomo, ignorando que tarefas de caminho fixo ficam mais estáveis e mais baratas como workflows.",
-    "distractor_rationale": "Quem corre atrás de novidade acha que \"loop autônomo\" é sempre melhor que \"caminho predefinido\", então força um loop sobre tarefas que funcionariam melhor com orquestração fixa."
+    "distractor_rationale": "Quem corre atrás de novidade acha que “loop autônomo” é sempre melhor que “caminho predefinido”, então força um loop sobre tarefas que funcionariam melhor com orquestração fixa."
   },
   {
     "term": "loop",
     "def": "O processo repetido de o modelo propor → executar ferramentas → devolver o resultado ao modelo. Uma única ida e volta de chamada de ferramenta é só o caso especial em que o loop girou uma vez.",
     "source": "[^S1]",
     "pitfall": "Achar que o loop é uma capacidade interna do modelo, e não o código do host dirigindo repetidamente ciclos de requisitar-executar-requisitar.",
-    "distractor_rationale": "Quem não separa \"o modelo propõe\" de \"o host executa\" vai achar que o modelo faz o loop dentro da própria cabeça, e não que o código de fora está enviando requisições uma atrás da outra."
+    "distractor_rationale": "Quem não separa “o modelo propõe” de “o host executa” vai achar que o modelo faz o loop dentro da própria cabeça, e não que o código de fora está enviando requisições uma atrás da outra."
   },
   {
     "term": "decisões de controle de fluxo",
-    "def": "Os julgamentos sobre \"qual caminho tomar em seguida\". Em um workflow elas são fixadas no código; em um agente o modelo as toma dinamicamente dentro do loop — é essa a fronteira entre os dois.",
+    "def": "Os julgamentos sobre “qual caminho tomar em seguida”. Em um workflow elas são fixadas no código; em um agente o modelo as toma dinamicamente dentro do loop — é essa a fronteira entre os dois.",
     "source": "[^S5]",
     "pitfall": "Tratar a força do modelo como a linha entre agentes e workflows, em vez de quem toma as decisões de controle de fluxo.",
     "distractor_rationale": "Quem está acostumado a avaliar sistemas pela capacidade do modelo vai achar que trocar por um modelo mais forte transforma a coisa em um agente, ignorando que a fronteira real é onde mora a autoridade sobre o controle de fluxo."
@@ -38,36 +38,36 @@
     "term": "controle de loop",
     "def": "O while loop que dirige modelo→ferramentas→modelo, lendo o stop_reason para decidir se gira mais uma rodada ou para. É o coração do harness.",
     "source": "[^S5]",
-    "pitfall": "Confundir controle de loop com despacho de ferramentas, achando que \"executar ferramentas\" é o trabalho inteiro do controle de loop.",
-    "distractor_rationale": "Quem foca só nos detalhes de execução de ferramentas vai perder que \"decidir se o loop gira de novo\" é a responsabilidade central do controle de loop."
+    "pitfall": "Confundir controle de loop com despacho de ferramentas, achando que “executar ferramentas” é o trabalho inteiro do controle de loop.",
+    "distractor_rationale": "Quem foca só nos detalhes de execução de ferramentas vai perder que “decidir se o loop gira de novo” é a responsabilidade central do controle de loop."
   },
   {
     "term": "despacho de ferramentas",
-    "def": "Uma vez que o modelo propõe \"chame esta ferramenta com estes parâmetros\", o código que roteia a requisição para a função de verdade, a executa e empacota a saída de volta em um tool_result.",
+    "def": "Uma vez que o modelo propõe “chame esta ferramenta com estes parâmetros”, o código que roteia a requisição para a função de verdade, a executa e empacota a saída de volta em um tool_result.",
     "source": "[^S5]",
     "pitfall": "Achar que o despacho de ferramentas é só executar a função, ignorando que ele também precisa empacotar o resultado como um tool_result para o loop poder continuar.",
-    "distractor_rationale": "Quem pensa só em \"chamar a função\" vai perder o empacotamento do tool_result, a reivindicação pelo tool_use_id e os outros passos que deixam o loop girar de novo."
+    "distractor_rationale": "Quem pensa só em “chamar a função” vai perder o empacotamento do tool_result, a reivindicação pelo tool_use_id e os outros passos que deixam o loop girar de novo."
   },
   {
     "term": "gerenciamento de contexto",
     "def": "A peça do harness que gerencia o histórico produzido pelo loop — decidindo para onde ele vai, quanto dele permanece, como comprimir ou resumir, impedindo que o contexto inche até o orçamento de atenção se esgotar.",
     "source": "[^S5]",
     "pitfall": "Supor que dá para carregar o histórico inteiro sem alteração para dentro de cada requisição, sem nenhuma governança.",
-    "distractor_rationale": "Quem acredita que \"mais contexto é sempre melhor\" vai manter todo o histórico sem compressão até as requisições ficarem lentas, o custo subir e a recuperação do modelo degradar."
+    "distractor_rationale": "Quem acredita que “mais contexto é sempre melhor” vai manter todo o histórico sem compressão até as requisições ficarem lentas, o custo subir e a recuperação do modelo degradar."
   },
   {
     "term": "propor uma ação",
-    "def": "O único trabalho do modelo a cada turno — olhar a conversa atual e emitir uma requisição estruturada de \"o que quero fazer em seguida\", sem nunca executá-la.",
+    "def": "O único trabalho do modelo a cada turno — olhar a conversa atual e emitir uma requisição estruturada de “o que quero fazer em seguida”, sem nunca executá-la.",
     "source": "[^S2]",
-    "pitfall": "Tratar \"o modelo propôs uma ação\" como \"a ação foi executada\".",
+    "pitfall": "Tratar “o modelo propôs uma ação” como “a ação foi executada”.",
     "distractor_rationale": "Quem confunde proposta com execução vai ver um bloco tool_use e achar que a ação já aterrissou, errando em qual passo o loop de fato está."
   },
   {
     "term": "válvula de aprovação",
-    "def": "Uma pausa inserida antes de executar uma ferramenta marcada como de alto impacto, mostrando a um humano \"aqui está o que estou prestes a fazer\" e executando só com um aval, retornando is_error numa recusa.",
+    "def": "Uma pausa inserida antes de executar uma ferramenta marcada como de alto impacto, mostrando a um humano “aqui está o que estou prestes a fazer” e executando só com um aval, retornando is_error numa recusa.",
     "source": "[^S4]",
     "pitfall": "Colocar a válvula de aprovação depois da execução da ferramenta, transformando-a num registro pós-fato em vez de uma comporta antes da ação.",
-    "distractor_rationale": "Quem confunde \"rastreável\" com \"interceptável\" vai usar log ou notificação após o fato como aprovação, o que não consegue parar uma ação irreversível que já executou."
+    "distractor_rationale": "Quem confunde “rastreável” com “interceptável” vai usar log ou notificação após o fato como aprovação, o que não consegue parar uma ação irreversível que já executou."
   },
   {
     "term": "ida e volta",
@@ -81,14 +81,14 @@
     "def": "O resultado da execução da ferramenta devolvido ao modelo como entrada. O modelo decide seu próximo passo com base nesse feedback — é o combustível que empurra o loop adiante.",
     "source": "[^S1]",
     "pitfall": "Achar que o modelo de algum jeito fica sabendo dos resultados de execução das ferramentas sem o tool_result ser enviado de volta.",
-    "distractor_rationale": "Quem ignora que \"os resultados têm que voltar\" vai esquecer de anexar o tool_result ao histórico, então o modelo nunca vê a saída da ferramenta."
+    "distractor_rationale": "Quem ignora que “os resultados têm que voltar” vai esquecer de anexar o tool_result ao histórico, então o modelo nunca vê a saída da ferramenta."
   },
   {
     "term": "autonomia",
     "def": "A propriedade que o agente tem de decidir dinamicamente seu próprio próximo passo e qual ferramenta usar. É por isso que agentes são úteis, e também significa custos mais altos e risco de erros que se acumulam.",
     "source": "[^S1]",
     "pitfall": "Ver a autonomia só como uma vantagem, ignorando que ela também traz custos subindo e acúmulo de erros.",
-    "distractor_rationale": "Quem foca nos benefícios de \"consegue trabalhar sozinho\" vai deixar o loop rodar sem fronteira até a conta e os erros saírem os dois de controle."
+    "distractor_rationale": "Quem foca nos benefícios de “consegue trabalhar sozinho” vai deixar o loop rodar sem fronteira até a conta e os erros saírem os dois de controle."
   },
   {
     "term": "while loop",
@@ -102,13 +102,13 @@
     "def": "A sequência fixa que conecta idas e voltas em um loop: envie a requisição → leia o stop_reason e os blocos tool_use → rode as ferramentas e empacote os tool_result → anexe ao histórico e envie de novo.",
     "source": "[^S2]",
     "pitfall": "Achar que loops de múltiplos turnos exigem inventar algo novo, em vez de só repetir os mesmos quatro passos.",
-    "distractor_rationale": "Quem acha que \"operação contínua\" é misterioso vai caçar frameworks complexos, perdendo que são só os mesmos movimentos repetidos."
+    "distractor_rationale": "Quem acha que “operação contínua” é misterioso vai caçar frameworks complexos, perdendo que são só os mesmos movimentos repetidos."
   },
   {
     "term": "stop_reason",
     "def": "O campo na resposta do modelo que indica por que ele parou: tool_use significa que ele quer uma ferramenta e o loop continua, end_turn significa que ele está encerrando e o loop termina.",
     "source": "[^S2]",
-    "pitfall": "Ler stop_reason: tool_use como um comprovante de que \"a ferramenta terminou de rodar\".",
+    "pitfall": "Ler stop_reason: tool_use como um comprovante de que “a ferramenta terminou de rodar”.",
     "distractor_rationale": "Quem trata o sinal como um resultado de execução vai achar que receber tool_use significa que a ferramenta deste turno já rodou, errando o estado atual do loop."
   },
   {
@@ -116,14 +116,14 @@
     "def": "Um bloco de conteúdo que o modelo emite para requisitar uma chamada de ferramenta, carregando id / name / input. Ele significa que o modelo quer usar uma ferramenta, não que uma foi usada.",
     "source": "[^S2]",
     "pitfall": "Achar que a aparição de um bloco tool_use significa que a ação já aconteceu.",
-    "distractor_rationale": "Quem confunde requisição com execução vai pular o passo \"o host de fato executa\", achando que o próprio bloco tool_use significa que o banco de dados já mudou."
+    "distractor_rationale": "Quem confunde requisição com execução vai pular o passo “o host de fato executa”, achando que o próprio bloco tool_use significa que o banco de dados já mudou."
   },
   {
     "term": "tool_result",
     "def": "Um bloco de conteúdo que empacota a saída da execução da ferramenta de volta para o modelo, carregando tool_use_id para reivindicar a qual chamada ele responde, content para a saída, e is_error quando ela falhou.",
     "source": "[^S6]",
     "pitfall": "Esquecer de devolver um tool_result para cada tool_use, fazendo a próxima requisição dar erro por resultado faltando.",
-    "distractor_rationale": "Quem trata só \"a que deu certo\" vai deixar chamadas recusadas ou falhas penduradas, quebrando a correspondência um-para-um entre tool_use e tool_result."
+    "distractor_rationale": "Quem trata só “a que deu certo” vai deixar chamadas recusadas ou falhas penduradas, quebrando a correspondência um-para-um entre tool_use e tool_result."
   },
   {
     "term": "end_turn",
@@ -134,7 +134,7 @@
   },
   {
     "term": "tool_use_id",
-    "def": "O campo no tool_result que reivindica \"esta é a resposta a qual chamada tool_use\", identificado casando com o id do bloco tool_use. Várias ferramentas em um só turno dependem disso para a correspondência um-para-um.",
+    "def": "O campo no tool_result que reivindica “esta é a resposta a qual chamada tool_use”, identificado casando com o id do bloco tool_use. Várias ferramentas em um só turno dependem disso para a correspondência um-para-um.",
     "source": "[^S6]",
     "pitfall": "Não usar o tool_use_id para alinhar os resultados ao executar várias ferramentas em paralelo, misturando qual resultado pertence a qual chamada.",
     "distractor_rationale": "Quem só tratou chamadas de ferramenta únicas vai esquecer de reivindicar por id quando um turno tem vários blocos tool_use, deixando os resultados descasados."
@@ -148,14 +148,14 @@
   },
   {
     "term": "callModel",
-    "def": "A chamada em pseudocódigo nos loops esqueleto que representa \"envie uma requisição ao modelo\". Implementações reais a trocam pelo client.messages.create do SDK.",
+    "def": "A chamada em pseudocódigo nos loops esqueleto que representa “envie uma requisição ao modelo”. Implementações reais a trocam pelo client.messages.create do SDK.",
     "source": "[^S2]",
     "pitfall": "Chamar callModel uma vez fora do loop mas esquecer de chamá-lo de novo no fim do corpo, então o loop nunca lê um stop_reason novo.",
     "distractor_rationale": "Quem copia o esqueleto mas perde aquele último callModel vai escrever um loop cujo stop_reason fica constante para sempre, virando um loop infinito."
   },
   {
     "term": "executeTool",
-    "def": "A chamada nos loops esqueleto que representa \"o host de fato vai e roda a ferramenta que o modelo nomeou\". A ação acontece neste passo, não quando o tool_use chegou.",
+    "def": "A chamada nos loops esqueleto que representa “o host de fato vai e roda a ferramenta que o modelo nomeou”. A ação acontece neste passo, não quando o tool_use chegou.",
     "source": "[^S2]",
     "pitfall": "Achar que a ação já aconteceu no instante em que o tool_use aparece, e não no momento da execução de executeTool.",
     "distractor_rationale": "Quem confunde sinal com execução vai colocar a aprovação ou a interceptação no lugar errado, perdendo o executeTool como o momento em que a ação aterrissa."
@@ -165,14 +165,14 @@
     "def": "O recurso finito do qual o modelo saca para processar contexto. Cada novo token o esgota em alguma medida; quanto mais longo o contexto, pior a capacidade do modelo de recuperar informação dele com precisão.",
     "source": "[^S3]",
     "pitfall": "Achar que o contexto pode crescer sem limite desde que fique abaixo do teto, e que o modelo será igualmente preciso.",
-    "distractor_rationale": "Quem vigia só \"passei da janela?\" vai ignorar que a qualidade da recuperação cai gradualmente com o comprimento, tratando contexto longo como se fosse de graça."
+    "distractor_rationale": "Quem vigia só “passei da janela?” vai ignorar que a qualidade da recuperação cai gradualmente com o comprimento, tratando contexto longo como se fosse de graça."
   },
   {
     "term": "condições de parada",
     "def": "Regras explícitas que o host impõe — como um número máximo de iterações — que param o loop independentemente do end_turn do próprio modelo, mantendo o controle do seu lado.",
     "source": "[^S1]",
     "pitfall": "Achar que o end_turn do modelo basta, então nenhuma condição de parada adicional é necessária.",
-    "distractor_rationale": "Quem confunde \"confiança\" com \"deixar sem supervisão\" vai pular as condições de parada externas, e uma vez que o loop é puxado para fora do rumo não há saída."
+    "distractor_rationale": "Quem confunde “confiança” com “deixar sem supervisão” vai pular as condições de parada externas, e uma vez que o loop é puxado para fora do rumo não há saída."
   },
   {
     "term": "máximo de turnos",
@@ -204,30 +204,30 @@
   },
   {
     "term": "checkpoints",
-    "def": "Pontos de pausa fincados nos elos da cadeia onde \"se isto estiver errado, tudo depois disso é desperdício\", deixando o loop expor o estado intermediário para verificação ou aguardar feedback humano.",
+    "def": "Pontos de pausa fincados nos elos da cadeia onde “se isto estiver errado, tudo depois disso é desperdício”, deixando o loop expor o estado intermediário para verificação ou aguardar feedback humano.",
     "source": "[^S1]",
     "pitfall": "Não fincar checkpoint nenhum, deixando um loop possivelmente derivado rodar a cadeia longa inteira antes de expor qualquer problema.",
     "distractor_rationale": "Quem confia em automação ponta a ponta vai pular os pontos de verificação no meio do caminho, descobrindo os erros só depois de eles virarem bola de neve nos resultados finais."
   },
   {
     "term": "needsHumanApproval",
-    "def": "Um predicado nos exemplos de parada suave que julga \"a próxima ação precisa do aval de uma pessoa antes?\". Quando ele bate, o loop suspende e entrega a cena aguardando a resposta humana.",
+    "def": "Um predicado nos exemplos de parada suave que julga “a próxima ação precisa do aval de uma pessoa antes?”. Quando ele bate, o loop suspende e entrega a cena aguardando a resposta humana.",
     "source": "[^S1]",
     "pitfall": "Achar que a parada suave precisa só da checagem do predicado, esquecendo que você também tem que preservar um instantâneo retomável da cena ao pausar.",
-    "distractor_rationale": "Quem foca só em \"devo parar?\" vai esquecer do \"como retomar?\", escrevendo uma pausa que para mas não consegue continuar."
+    "distractor_rationale": "Quem foca só em “devo parar?” vai esquecer do “como retomar?”, escrevendo uma pausa que para mas não consegue continuar."
   },
   {
     "term": "a tarefa terminou",
     "def": "A mais suave das quatro condições de parada — o modelo julga que acabou e devolve end_turn. A autoridade da decisão fica com o modelo, mas você ainda tem que confirmar que ela de fato terminou em vez de ter desistido pelo caminho.",
     "source": "[^S1]",
     "pitfall": "Tratar todo end_turn como sucesso da tarefa, sem checar se o modelo desistiu no meio em vez de completar.",
-    "distractor_rationale": "Quem vigia só se o stop_reason é end_turn vai ler o \"não vou fazer isto\" do modelo como \"terminei\"."
+    "distractor_rationale": "Quem vigia só se o stop_reason é end_turn vai ler o “não vou fazer isto” do modelo como “terminei”."
   },
   {
     "term": "instantâneo da cena",
     "def": "O estado retomável entregue na pausa de parada suave — o messages atual mais a ação pendente em que empacou, empacotados juntos para uma pessoa poder retomar daquele exato ponto depois de lidar com ela.",
     "source": "[^S1]",
-    "pitfall": "Pausar e reportar \"parei\" sem salvar messages e a ação pendente, então a retomada não tem cena a partir da qual continuar.",
+    "pitfall": "Pausar e reportar “parei” sem salvar messages e a ação pendente, então a retomada não tem cena a partir da qual continuar.",
     "distractor_rationale": "Quem trata parada suave como parada rígida vai retornar sem guardar estado, achando por engano que o loop consegue retomar magicamente depois."
   },
   {
@@ -235,14 +235,14 @@
     "def": "Empilhar mecanismos quando a complexidade não melhora comprovadamente os resultados. Você só deveria adicionar complexidade quando ela comprovadamente melhora os resultados — mas condições de parada como o máximo de turnos são controle barato de grande retorno, não desta categoria.",
     "source": "[^S1]",
     "pitfall": "Jogar a condição de parada de máximo de turnos, de umas poucas linhas, na conta do excesso de engenharia e pulá-la.",
-    "distractor_rationale": "Quem aplica mecanicamente o \"não adicione complexidade\" vai cortar até os freios necessários, confundindo uma rede de segurança verificável com inchaço decorativo."
+    "distractor_rationale": "Quem aplica mecanicamente o “não adicione complexidade” vai cortar até os freios necessários, confundindo uma rede de segurança verificável com inchaço decorativo."
   },
   {
     "term": "erros que se acumulam",
     "def": "Um passo errado seguido por todo turno subsequente continuando em cima do engano e amplificando o desvio. Nenhuma exceção é lançada, cada passo parece razoável, mas os erros crescem a juros compostos ao longo da cadeia.",
     "source": "[^S1]",
     "pitfall": "Achar que, desde que toda chamada de ferramenta tenha sucesso sem exceções, a coisa toda está livre de erro.",
-    "distractor_rationale": "Quem vigia só \"lançou exceção?\" vai perder cadeias construídas sobre uma base errada, entregando como sucesso um resultado que parece completo e está inteiramente errado."
+    "distractor_rationale": "Quem vigia só “lançou exceção?” vai perder cadeias construídas sobre uma base errada, entregando como sucesso um resultado que parece completo e está inteiramente errado."
   },
   {
     "term": "inchaço",
@@ -253,9 +253,9 @@
   },
   {
     "term": "apodrecimento do contexto",
-    "def": "Conforme o contexto se alonga, a informação-chave se afoga no ruído e o modelo \"consegue vê-la sem conseguir agarrá-la\" — a recuperação degrada numa curva suave com o comprimento, não num penhasco abrupto.",
+    "def": "Conforme o contexto se alonga, a informação-chave se afoga no ruído e o modelo “consegue vê-la sem conseguir agarrá-la” — a recuperação degrada numa curva suave com o comprimento, não num penhasco abrupto.",
     "source": "[^S3]",
-    "pitfall": "Ler como o penhasco de que \"passado certo comprimento, o contexto de repente vira inútil\".",
+    "pitfall": "Ler como o penhasco de que “passado certo comprimento, o contexto de repente vira inútil”.",
     "distractor_rationale": "Quem pensa em limiares rígidos vai acreditar que existe um comprimento seguro em que nada dá errado até você cruzá-lo, perdendo que a degradação é um gradiente contínuo."
   },
   {
@@ -274,23 +274,23 @@
   },
   {
     "term": "detecção de não-progresso",
-    "def": "Uma comporta rígida feita para o giro em falso: o host observa \"algo de novo está acontecendo?\", e se N turnos seguidos chamam a mesma ferramenta retornando saída quase idêntica, julga que não há progresso e sai do loop.",
+    "def": "Uma comporta rígida feita para o giro em falso: o host observa “algo de novo está acontecendo?”, e se N turnos seguidos chamam a mesma ferramenta retornando saída quase idêntica, julga que não há progresso e sai do loop.",
     "source": "[^S1]",
     "pitfall": "Achar que o máximo de turnos sozinho basta, pulando a detecção de não-progresso.",
-    "distractor_rationale": "Quem raciocina que \"de qualquer forma ele roda no máximo N turnos\" vai deixar um loop travado no turno 5 queimar os 45 restantes, perdendo que as duas comportas são complementares, não substitutas."
+    "distractor_rationale": "Quem raciocina que “de qualquer forma ele roda no máximo N turnos” vai deixar um loop travado no turno 5 queimar os 45 restantes, perdendo que as duas comportas são complementares, não substitutas."
   },
   {
     "term": "teto de orçamento",
     "def": "Um teto de custo explícito definido para o loop, contado por turnos ou por tokens (dinheiro). Bateu no teto, para; leve quando contado por turnos, ou mais próximo do custo real quando contado por token.",
     "source": "[^S1]",
     "pitfall": "Usar só a contagem de turnos como orçamento, ignorando que o contexto de cada turno pode ser enorme — tokens são uma medida mais apertada do custo de fato.",
-    "distractor_rationale": "Quem equipara \"contagem de turnos\" a \"gasto\" vai ser pego de surpresa em cenários de poucos turnos e muitos tokens, onde a conta explode sem ninguém notar."
+    "distractor_rationale": "Quem equipara “contagem de turnos” a “gasto” vai ser pego de surpresa em cenários de poucos turnos e muitos tokens, onde a conta explode sem ninguém notar."
   },
   {
     "term": "esgotamento de orçamento",
     "def": "A contagem de turnos vezes o contexto por turno se multiplicam para empurrar o custo para fora de controle. Um agente preso girando em falso pode queimar um gasto sério de API durante a noite sem realizar nada.",
     "source": "[^S1]",
-    "pitfall": "Parar no teto mas fingir que resultados completos foram entregues, em vez de reportar com honestidade \"parei porque o orçamento acabou, a tarefa não está terminada\".",
+    "pitfall": "Parar no teto mas fingir que resultados completos foram entregues, em vez de reportar com honestidade “parei porque o orçamento acabou, a tarefa não está terminada”.",
     "distractor_rationale": "Quem tem medo de admitir que não terminou vai deixar o agente mascarar a interrupção por orçamento e forjar uma entrega completa, transformando um problema de custo de volta num problema de erro."
   },
   {
@@ -309,24 +309,24 @@
   },
   {
     "term": "retornos marginais decrescentes",
-    "def": "A propriedade do contexto como recurso finito — cada pedaço adicional de histórico traz progressivamente menos valor. Então cada trecho de histórico deveria justificar \"isto ainda vale a pena?\".",
+    "def": "A propriedade do contexto como recurso finito — cada pedaço adicional de histórico traz progressivamente menos valor. Então cada trecho de histórico deveria justificar “isto ainda vale a pena?”.",
     "source": "[^S3]",
-    "pitfall": "Supor que \"mais contexto é sempre melhor\", ignorando que o valor marginal do histórico novo declina.",
-    "distractor_rationale": "Quem acredita que \"informação é sempre boa\" vai empilhar histórico sem curadoria, diluindo a informação-chave e consumindo o orçamento de atenção."
+    "pitfall": "Supor que “mais contexto é sempre melhor”, ignorando que o valor marginal do histórico novo declina.",
+    "distractor_rationale": "Quem acredita que “informação é sempre boa” vai empilhar histórico sem curadoria, diluindo a informação-chave e consumindo o orçamento de atenção."
   },
   {
     "term": "agência excessiva",
     "def": "A vulnerabilidade que permite que ações danosas sejam realizadas em resposta a saídas inesperadas, ambíguas ou manipuladas de um LLM — independentemente do que causou o mau funcionamento. Quando o modelo está ligado a autoridade real, uma saída ruim pode disparar destruição.",
     "source": "[^S4]",
     "pitfall": "Achar que só erros do modelo causam agência excessiva, ignorando que entradas manipuladas ou ambíguas também podem disparar isso.",
-    "distractor_rationale": "Quem atribui o risco só a \"o modelo vai errar?\" vai perder injeção maliciosa e outras causas externas, ainda concedendo ao loop uma autoridade grande demais e sem comporta."
+    "distractor_rationale": "Quem atribui o risco só a “o modelo vai errar?” vai perder injeção maliciosa e outras causas externas, ainda concedendo ao loop uma autoridade grande demais e sem comporta."
   },
   {
     "term": "interromper",
-    "def": "A mais direta das três intervenções humanas — seja lá o que o modelo queira fazer neste turno, o loop inteiro termina e nenhuma outra requisição sai. Depois de uma interrupção não há \"e então\".",
+    "def": "A mais direta das três intervenções humanas — seja lá o que o modelo queira fazer neste turno, o loop inteiro termina e nenhuma outra requisição sai. Depois de uma interrupção não há “e então”.",
     "source": "[^S1]",
     "pitfall": "Confundir interromper com redirecionar, achando que cancelar o loop significa que ele vai continuar com uma instrução nova.",
-    "distractor_rationale": "Quem perde que \"a interrupção age sobre a sobrevivência do loop\" vai achar que \"pare\" significa \"redirecione e então retome\"."
+    "distractor_rationale": "Quem perde que “a interrupção age sobre a sobrevivência do loop” vai achar que “pare” significa “redirecione e então retome”."
   },
   {
     "term": "redirecionar",
@@ -337,21 +337,21 @@
   },
   {
     "term": "aprovar",
-    "def": "Intervenção sobre uma ação específica de alto impacto — o loop chega nela, para, expõe \"aqui está o que estou prestes a fazer\", e executa só se uma pessoa disser sim; pulando ou cancelando se disser não. Depois da aprovação o loop volta ao seu ritmo.",
+    "def": "Intervenção sobre uma ação específica de alto impacto — o loop chega nela, para, expõe “aqui está o que estou prestes a fazer”, e executa só se uma pessoa disser sim; pulando ou cancelando se disser não. Depois da aprovação o loop volta ao seu ritmo.",
     "source": "[^S4]",
     "pitfall": "Fazer da aprovação um interruptor liga-desliga do loop inteiro, em vez de uma liberação-ou-recusa de uma única ação.",
     "distractor_rationale": "Quem confunde aprovação com interrupção vai parar o loop inteiro por engano quando só um passo precisava de aval, ou exigir aprovação humana em cada passo e deixar o agente lento a ponto de ser inútil."
   },
   {
     "term": "humano no loop",
-    "def": "Controle em que uma pessoa ganha a chance de dizer \"espere aí\" em uns poucos pontos críticos antes de ações irreversíveis aterrissarem, em vez de só ver os logs depois.",
+    "def": "Controle em que uma pessoa ganha a chance de dizer “espere aí” em uns poucos pontos críticos antes de ações irreversíveis aterrissarem, em vez de só ver os logs depois.",
     "source": "[^S4]",
-    "pitfall": "Tratar \"consigo ver os logs depois\" como já ter um humano no loop.",
+    "pitfall": "Tratar “consigo ver os logs depois” como já ter um humano no loop.",
     "distractor_rationale": "Quem confunde rastreável com interceptável vai usar notificações ou auditorias após o fato como humano no loop, o que não consegue parar uma ação destrutiva que já executou."
   },
   {
     "term": "comporta humana",
-    "def": "Um checkpoint manual, além das comportas automáticas do próprio harness, que guarda os poucos cruzamentos de \"se der errado, não dá para voltar\", onde a confiança da automação precisa do julgamento ao vivo de uma pessoa.",
+    "def": "Um checkpoint manual, além das comportas automáticas do próprio harness, que guarda os poucos cruzamentos de “se der errado, não dá para voltar”, onde a confiança da automação precisa do julgamento ao vivo de uma pessoa.",
     "source": "[^S4]",
     "pitfall": "Achar que condições de parada automáticas e fallbacks bastam, então nenhuma comporta humana é necessária para ações irreversíveis.",
     "distractor_rationale": "Quem acredita em automação total vai supor que as paradas automáticas são suficientes, perdendo que ações irreversíveis ainda precisam do aval de uma pessoa na hora."
@@ -361,7 +361,7 @@
     "def": "Ações que não podem ser desfeitas em um passo, ou só podem ser desfeitas a um custo enorme (apagar um banco de dados, mover dinheiro, publicar para fora, mudar a configuração de produção). As comportas de aprovação têm que vir antes delas.",
     "source": "[^S4]",
     "pitfall": "Usar o teste contrafactual com descuido e tratar como facilmente recuperáveis ações que são de fato irreversíveis.",
-    "distractor_rationale": "Quem superestima as \"opções de desfazer\" vai supor que tabelas apagadas sempre restauram do backup, colocando a aprovação depois da execução ou pulando-a inteiramente."
+    "distractor_rationale": "Quem superestima as “opções de desfazer” vai supor que tabelas apagadas sempre restauram do backup, colocando a aprovação depois da execução ou pulando-a inteiramente."
   },
   {
     "term": "raio de impacto",
@@ -374,15 +374,15 @@
     "term": "teste contrafactual",
     "def": "Uma autochecagem para julgar reversibilidade: se esta ação rodar e estiver errada, consigo desfazê-la em um passo, a baixo custo? Se não, a comporta tem que ficar cedo.",
     "source": "[^S4]",
-    "pitfall": "Não rodar o teste contrafactual, decidindo \"é perigoso ou não\" pelo instinto a partir do nome da ação.",
+    "pitfall": "Não rodar o teste contrafactual, decidindo “é perigoso ou não” pelo instinto a partir do nome da ação.",
     "distractor_rationale": "Quem se apoia na intuição vai deixar passar operações de nome inofensivo e efeito irreversível, ou proteger demais ações que revertem com facilidade."
   },
   {
     "term": "askHuman",
-    "def": "A chamada dentro da válvula de aprovação que pede a decisão de liberação a uma pessoa. Num terminal significa \"imprima a ação pendente, leia uma linha de entrada\". Tem que terminar antes de executeTool.",
+    "def": "A chamada dentro da válvula de aprovação que pede a decisão de liberação a uma pessoa. Num terminal significa “imprima a ação pendente, leia uma linha de entrada”. Tem que terminar antes de executeTool.",
     "source": "[^S4]",
     "pitfall": "Colocar askHuman depois de executeTool, então a ação já aterrissou antes de perguntar.",
-    "distractor_rationale": "Quem pensa só em \"registrar a opinião do humano\" vai mover a pergunta para depois da execução, transformando a aprovação num comprovante pós-fato sem valor."
+    "distractor_rationale": "Quem pensa só em “registrar a opinião do humano” vai mover a pergunta para depois da execução, transformando a aprovação num comprovante pós-fato sem valor."
   },
   {
     "term": "@anthropic-ai/sdk",
@@ -417,14 +417,14 @@
     "def": "A função de assinatura da detecção de não-progresso — junta os nomes e parâmetros dos tool_use deste turno numa única string, usada para comparar com o turno anterior e detectar o giro em falso.",
     "source": "[^S1]",
     "pitfall": "Computar a assinatura só pelo nome da ferramenta, ignorando os parâmetros, então mudar os argumentos ainda parece giro em falso, ou vice-versa.",
-    "distractor_rationale": "Quem corta caminho vai pular o input, matando por engano o progresso legítimo de \"mesmo nome, parâmetros diferentes\" ou deixando passar a repetição verdadeira."
+    "distractor_rationale": "Quem corta caminho vai pular o input, matando por engano o progresso legítimo de “mesmo nome, parâmetros diferentes” ou deixando passar a repetição verdadeira."
   },
   {
     "term": "response.usage",
     "def": "O campo nas respostas do modelo que reporta o consumo de tokens daquele turno (input_tokens + output_tokens). Base para tetos de orçamento contados em tokens.",
     "source": "[^S1]",
     "pitfall": "Contar o orçamento só por turnos, sem ler usage para acumular tokens — não consegue segurar o gasto em cenários de poucos turnos e contexto gigante.",
-    "distractor_rationale": "Quem acha que \"poucos turnos significa barato\" vai ignorar os tokens por turno como o verdadeiro motor do custo, e ser pego de surpresa quando a conta passa do esperado."
+    "distractor_rationale": "Quem acha que “poucos turnos significa barato” vai ignorar os tokens por turno como o verdadeiro motor do custo, e ser pego de surpresa quando a conta passa do esperado."
   },
   {
     "term": "input_schema",

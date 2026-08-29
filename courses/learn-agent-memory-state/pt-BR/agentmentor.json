@@ -12,14 +12,14 @@
       "O protocolo de ida e volta da chamada de ferramentas (tool_use / tool_result)",
       "JavaScript básico (variáveis, funções, async/await, métodos de array)",
       "Rodar scripts Node.js localmente",
-      "Que um agente lê o contexto, decide e age em um laço"
+      "Que um agente lê o contexto, decide e age em um loop"
     ],
     "unknownConcepts": [
       "Por que a ideia de que o agente tem memória é uma ilusão",
       "O que a janela de contexto de fato guarda",
       "Que a Messages API é stateless",
       "Estratégias de anexar / truncar / resumir para o histórico",
-      "Compaction e a limpeza de resultados de ferramenta",
+      "Compactação e a limpeza de resultados de ferramenta",
       "Memória externa baseada em arquivos (CLAUDE.md, Auto memory / MEMORY.md)",
       "Estado de tarefa estruturado e checkpoints",
       "Caminhos de ataque por envenenamento de memória (MemoryTrap / ASI06)"
@@ -35,7 +35,7 @@
     ]
   },
   "learnerBrief": "O leitor-alvo concluiu os quatro primeiros cursos e sabe escrever prompts estruturados e ler JavaScript. Ainda não sabe que a janela de contexto é toda a memória de um agente, por que o histórico só cresce, nem como persistir e proteger a memória. O curso o leva a explicar a ilusão da memória, aplicar anexar/truncar/resumir, projetar memória externa baseada em arquivos, usar estado estruturado e checkpoints para retomar tarefas, reconhecer ataques de envenenamento de memória e defesas, e por fim conectar a um agente uma camada de memória persistente executável.",
-  "scope": "Coberto: o que a janela de contexto guarda, a Messages API stateless, o crescimento do histórico de conversa, anexar/truncar/resumir, compaction e limpeza de resultados de ferramenta (com nomes de parâmetro e limiares reais), memória externa baseada em arquivos (CLAUDE.md e Auto memory / MEMORY.md), estado de tarefa estruturado e checkpoints, caminhos de ataque por envenenamento de memória (MemoryTrap, ASI06) e defesas, e uma camada de memória persistente executável. Não coberto: construir um banco de dados vetorial ou um sistema de recuperação RAG, e o treinamento de memória no nível do modelo. Profundidade: do zero até conectar a um agente uma camada de memória persistente que se pode ler, escrever e comprimir.",
+  "scope": "Coberto: o que a janela de contexto guarda, a Messages API stateless, o crescimento do histórico de conversa, anexar/truncar/resumir, compactação e limpeza de resultados de ferramenta (com nomes de parâmetro e limiares reais), memória externa baseada em arquivos (CLAUDE.md e Auto memory / MEMORY.md), estado de tarefa estruturado e checkpoints, caminhos de ataque por envenenamento de memória (MemoryTrap, ASI06) e defesas, e uma camada de memória persistente executável. Não coberto: construir um banco de dados vetorial ou um sistema de recuperação RAG, e o treinamento de memória no nível do modelo. Profundidade: do zero até conectar a um agente uma camada de memória persistente que se pode ler, escrever e comprimir.",
   "status": {
     "stage": "delivered",
     "generationComplete": true,
@@ -55,7 +55,7 @@
       "Verificar que cada termo do glossário aparece verbatim nas lições em pt-BR (checagem de attach)",
       "Verificar que cada âncora [^Sn] das lições em pt-BR tem o bloco ## Sn correspondente no sources.md em pt-BR",
       "Confirmar que os nove ids de bloco de checagem e as posições de resposta correta são idênticos byte a byte ao inglês (b/b/a/b/a/b/b/b/b na ordem das lições)",
-      "Rodar de novo o JS do capstone (ferramentas de leitura/escrita de memória + splitKeepingToolPairs + compaction) e confirmar que o comportamento bate com as saídas afirmadas"
+      "Rodar de novo o JS do capstone (ferramentas de leitura/escrita de memória + splitKeepingToolPairs + compactação) e confirmar que o comportamento bate com as saídas afirmadas"
     ]
   },
   "acceptanceReview": {
@@ -67,7 +67,7 @@
       "load": 5,
       "readable": 5
     },
-    "terminalTask": "Quem aprende consegue pegar um agente, conectar nele ferramentas de leitura/escrita de memória e o backfill de início de sessão, adicionar uma truncagem que nunca separa um par tool_use/tool_result mais um passo de compaction, e defender a superfície de memória contra um caminho de envenenamento — produzindo uma camada de memória persistente executável que lembra entre reinícios de processo.",
+    "terminalTask": "Quem aprende consegue pegar um agente, conectar nele ferramentas de leitura/escrita de memória e o backfill de início de sessão, adicionar uma truncagem que nunca separa um par tool_use/tool_result mais um passo de compactação, e defender a superfície de memória contra um caminho de envenenamento — produzindo uma camada de memória persistente executável que lembra entre reinícios de processo.",
     "interactionCheck": "Nove blocos agentmentor-check ao longo das seis lições (checagem de stateless na L1; trade-off de truncagem e compaction-vs-clearing na L2; tamanho do CLAUDE.md e recuperação sob demanda na L3; estruturado-vs-prosa e durabilidade de checkpoint na L4; escopo da superfície de ataque na L5; ferramenta-de-escrita-não-basta na L6), preservados da variante em inglês com ids, modes, número de opções e posições de resposta correta idênticos; label, prompt, whyHere, o texto das opções e o feedback são traduções para o português ajustadas ao mal-entendido próprio de cada lição. Os exercícios mantêm a estrutura de níveis da variante em inglês, com rubric, answer e hints em cada nível.",
     "learnerFitCheck": "O curso pressupõe os quatro cursos anteriores, a habilidade de escrever prompts estruturados, o ciclo de ida e volta da chamada de ferramentas e a leitura de JavaScript. A ilusão da memória, o gerenciamento de histórico, a memória externa, o estado estruturado e o modelo de risco de envenenamento são ensinados do zero em ordem de dependência; quem aprende constrói uma camada de memória completa só na lição 6, depois de todos os pré-requisitos. O primeiro exercício da lição 1 só pede a inspeção da própria sessão de quem aprende.",
     "decision": "ship",

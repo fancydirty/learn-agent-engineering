@@ -1,15 +1,15 @@
 ---
 domain: Desenvolvimento de software
-tags: [harness de agente, controle de laço, condições de parada, human-in-the-loop, confiabilidade de agente]
+tags: [harness de agente, controle de loop, condições de parada, human-in-the-loop, confiabilidade de agente]
 lang: pt-BR
-outcome: Escreva à mão um laço de agente dirigido pelo stop_reason e equipe-o com quatro válvulas de parada.
+outcome: Escreva à mão um loop de agente dirigido pelo stop_reason e equipe-o com quatro válvulas de parada.
 tier: 2
 order: 7
 ---
 
 # Fundamentos do Harness de Agente: Laços e Controle
 
-Este curso é sobre o **harness** do agente — a camada de código de controle fora do modelo que de fato faz um agente rodar: ela dirige o laço “modelo → executar ferramentas → devolver resultados → perguntar de novo”, decide quando esse laço para, o segura quando ele foge do controle, e deixa um humano interromper e redirecionar no meio do caminho. O curso se concentra no laço de execução de um único agente e termina com você escrevendo à mão um harness mínimo com condições de parada, um teto de orçamento, detecção de giro em falso e uma válvula de aprovação humana. É para quem já concluiu os seis primeiros cursos desta série — você precisa entender uma ida e volta de chamada de ferramentas (`stop_reason: "tool_use"` / `tool_result`), memória de agente e a janela de contexto, e o básico da divisão de trabalho multiagente. Este curso não é um tutorial de API de nenhum framework em particular (nada de especificidades do Claude Agent SDK ou do LangChain), não cobre orquestração multiagente (esse é outro curso desta série) e não cobre avaliação e regressão (guardado para o curso de verificação); o foco é uma camada — como o próprio laço é mantido sob controle.
+Este curso é sobre o **harness** do agente — a camada de código de controle fora do modelo que de fato faz um agente rodar: ela dirige o loop “modelo → executar ferramentas → devolver resultados → perguntar de novo”, decide quando esse loop para, o segura quando ele foge do controle, e deixa um humano interromper e redirecionar no meio do caminho. O curso se concentra no loop de execução de um único agente e termina com você escrevendo à mão um harness mínimo com condições de parada, um teto de orçamento, detecção de giro em falso e uma válvula de aprovação humana. É para quem já concluiu os seis primeiros cursos desta série — você precisa entender uma ida e volta de chamada de ferramentas (`stop_reason: "tool_use"` / `tool_result`), memória de agente e a janela de contexto, e o básico da divisão de trabalho multiagente. Este curso não é um tutorial de API de nenhum framework em particular (nada de especificidades do Claude Agent SDK ou do LangChain), não cobre orquestração multiagente (esse é outro curso desta série) e não cobre avaliação e regressão (guardado para o curso de verificação); o foco é uma camada — como o próprio loop é mantido sob controle.
 
 ## Conteúdo do curso
 
@@ -24,10 +24,10 @@ Este curso é sobre o **harness** do agente — a camada de código de controle 
 
 Ao final deste curso você será capaz de:
 - Traçar a linha entre o harness e o modelo e explicar por que o mesmo modelo com um harness diferente pode produzir resultados radicalmente diferentes
-- Escrever à mão o laço central que dirige um agente e explicar como o `stop_reason` decide se o laço continua ou para
+- Escrever à mão o loop central que dirige um agente e explicar como o `stop_reason` decide se o loop continua ou para
 - Projetar um conjunto explícito de condições de parada para um agente em vez de depender de o modelo dizer “terminei”
-- Reconhecer os modos de descontrole — loops mortos, giro em falso, esgotamento de orçamento, erros que se acumulam — e equipar o laço com um fallback para cada um
-- Julgar onde no laço um checkpoint humano deve ficar, mantendo operações irreversíveis fora da execução automática
+- Reconhecer os modos de descontrole — loops mortos, giro em falso, esgotamento de orçamento, erros que se acumulam — e equipar o loop com um fallback para cada um
+- Julgar onde no loop um checkpoint humano deve ficar, mantendo operações irreversíveis fora da execução automática
 - Construir, do zero, um harness mínimo com condições de parada, um teto de rodadas, um teto de orçamento, detecção de giro em falso e uma válvula de aprovação
 
 ## Pré-requisitos

@@ -6,7 +6,7 @@ URL: https://platform.claude.com/docs/en/build-with-claude/context-windows
 
 - authority: official-docs
 
-Anthropic 공식 문서는 모델의 작업 기억인 '컨텍스트 윈도우'가 무엇으로 이루어지는지 설명합니다. 시스템 프롬프트, 모든 메시지(툴 결과, 이미지, 문서 포함), 툴 정의, 그리고 그 턴에서 모델이 스스로 생성한 출력(확장 사고 포함)까지 모두 포함됩니다. 또한 '컨텍스트 로트'(토큰 수가 늘수록 정확도와 회수율이 떨어지는 현상)를 정의하고, 각 응답이 usage 필드로 소비량을 보고한다는 점을 짚습니다. 레슨 1('컨텍스트 윈도우가 에이전트가 가진 메모리의 전부')의 핵심 근거이자 레슨 2('대화 이력은 늘어나기만 한다')의 배경 근거입니다.
+Anthropic 공식 문서는 모델의 작업 기억인 '컨텍스트 윈도우'가 무엇으로 이루어지는지 설명합니다. 시스템 프롬프트, 모든 메시지(툴 결과, 이미지, 문서 포함), 툴 정의, 그리고 그 턴에서 모델이 스스로 생성한 출력(확장 사고 포함)까지 모두 포함됩니다. 또한 '컨텍스트 로트'(토큰 수가 늘수록 정확도와 회수율이 떨어지는 현상)를 정의하고, 각 응답이 usage 필드로 소비량을 보고한다는 점을 짚습니다. 레슨 1('컨텍스트 윈도우가 에이전트가 가진 메모리의 전부')의 핵심 근거이자 레슨 2('대화 히스토리은 늘어나기만 한다')의 배경 근거입니다.
 
 핵심 인용:
 > "As token count grows, accuracy and recall degrade, a phenomenon known as *context rot*. This makes curating what's in context just as important as how much space is available."
@@ -21,7 +21,7 @@ URL: https://platform.claude.com/cookbook/tool-use-context-engineering-context-e
 
 - authority: official-docs
 
-Anthropic 공식 쿡북은 컨텍스트 비대화를 다루는 세 가지 메커니즘을 정확하게 정의합니다. compaction(윈도우 전체를 고충실도 요약으로 응축하며, 요약 추론 한 번의 비용이 든다), tool-result clearing(호출 기록은 남긴 채 오래되고 다시 가져올 수 있는 툴 결과만 버린다), memory 툴 프리미티브(정보를 윈도우 밖으로 옮겨 세션을 넘어 살아남게 한다)입니다. 이들은 따로 쓸 수도 있고 함께 쓸 수도 있으며, clearing과 compaction은 현재 컨텍스트에만 작용해 새 세션에는 도움이 되지 않는다는 점을 설명합니다. 레슨 2('대화 이력 관리')의 핵심 근거이자 레슨 3, 4, 6의 배경입니다.
+Anthropic 공식 쿡북은 컨텍스트 비대화를 다루는 세 가지 메커니즘을 정확하게 정의합니다. compaction(윈도우 전체를 고충실도 요약으로 응축하며, 요약 추론 한 번의 비용이 든다), tool-result clearing(호출 기록은 남긴 채 오래되고 다시 가져올 수 있는 툴 결과만 버린다), memory 툴 프리미티브(정보를 윈도우 밖으로 옮겨 세션을 넘어 살아남게 한다)입니다. 이들은 따로 쓸 수도 있고 함께 쓸 수도 있으며, clearing과 compaction은 현재 컨텍스트에만 작용해 새 세션에는 도움이 되지 않는다는 점을 설명합니다. 레슨 2('대화 히스토리 관리')의 핵심 근거이자 레슨 3, 4, 6의 배경입니다.
 
 핵심 인용:
 > "Compaction distills the contents of a context window into a high-fidelity summary, letting the agent continue with minimal performance degradation when the conversation gets long."
@@ -85,7 +85,7 @@ URL: https://platform.claude.com/docs/en/build-with-claude/working-with-messages
 
 - authority: official-docs
 
-공식 문서는 Messages API가 스테이트리스라는 점을 분명히 밝힙니다. 모든 요청은 전체 대화 이력을 실어 보내야 하며, API는 요청 사이에 어떤 상태도 보관하지 않습니다. 레슨 1의 핵심 주장('API 호출은 스테이트리스')의 직접 근거이자, 세션이 끝나면 진행 기록이 윈도우와 함께 사라진다는 레슨 4의 전제를 뒷받침합니다.
+공식 문서는 Messages API가 스테이트리스라는 점을 분명히 밝힙니다. 모든 요청은 전체 대화 히스토리을 실어 보내야 하며, API는 요청 사이에 어떤 상태도 보관하지 않습니다. 레슨 1의 핵심 주장('API 호출은 스테이트리스')의 직접 근거이자, 세션이 끝나면 진행 기록이 윈도우와 함께 사라진다는 레슨 4의 전제를 뒷받침합니다.
 
 핵심 인용:
 > "The Messages API is stateless, which means that you always send the full conversational history to the API."

@@ -57,14 +57,14 @@ return { stopped: "end_turn", turns, last: response };
 
 Duas coisas carregam o peso aqui. Primeiro, `let turns = 0` é declarado **fora** do loop. Ele tem que permanecer vivo entre rodadas e somar cada uma, ou a trava não faz ideia de quantas voltas já se passaram; mova-o para dentro do corpo do loop e você ganha exatamente a armadilha que o exercício de Nível 2 desmonta. Segundo, a trava não se importa **por que** o modelo ainda está pedindo ferramentas — empacado, girando em círculos, puxado para fora do rumo pela saída de uma ferramenta, ela nunca pergunta. Uma vez que a contagem de voltas bate no teto, o host para, não envia mais requisição, e retoma o controle para o seu próprio lado.
 
-Isso é uma **parada rígida**: na fronteira ela interrompe incondicionalmente e o loop acabou. É coisa diferente da conclusão suave do `end_turn`, em que o modelo decide que terminou — uma é um teto que você define, a outra é o julgamento do próprio modelo. Note que não há resposta padrão para quão grande `MAX_TURNS` deveria ser; depende de aproximadamente quantas rodadas a tarefa deveria precisar. O 10 aqui é um valor de exemplo. O que importa é que a trava exista e consiga de fato parar um loop que desgovernou.
+Isso é uma **parada rígida**: na fronteira ela interrompe incondicionalmente e o loop acabou. É coisa diferente da conclusão suave do `end_turn`, em que o modelo decide que terminou — uma é um teto que você define, a outra é o julgamento do próprio modelo. Note que não há resposta padrão para quão grande `MAX_TURNS` deveria ser; depende de aproximadamente quantas rodadas a tarefa deveria precisar. O 10 aqui é um valor de exemplo. O que importa é que a trava exista e consiga de fato parar um loop que se descontrolou.
 
 ```agentmentor-check
 {
   "id": "harness-zh-03-self-stop-insufficient",
   "label": "Julgar se a autoterminação do modelo sozinha basta, sem outra condição de parada",
   "prompt": "Você está projetando um agente de operações que chamará ferramentas rodada após rodada. Um colega argumenta: os modelos são espertos o bastante hoje para devolver end_turn por conta própria quando a tarefa termina, então o loop não precisa de nenhuma condição de parada externa — deixe a decisão de desistir com o modelo. Você deveria concordar com isso?",
-  "whyHere": "Esta seção acabou de argumentar que end_turn sozinho não basta, e aparafusou uma trava rígida de turno máximo no loop. A checagem existe para barrar a crença de que um modelo é esperto o bastante para parar na hora certa por conta própria e portanto não precisa de condição de parada externa, porque essa crença é precisamente como a decisão de desistir é entregue por atacado ao modelo e o loop desgoverna.",
+  "whyHere": "Esta seção acabou de argumentar que end_turn sozinho não basta, e aparafusou uma trava rígida de turno máximo no loop. A checagem existe para barrar a crença de que um modelo é esperto o bastante para parar na hora certa por conta própria e portanto não precisa de condição de parada externa, porque essa crença é precisamente como a decisão de desistir é entregue por atacado ao modelo e o loop se descontrola.",
   "mode": "single",
   "choices": [
     {
@@ -88,7 +88,7 @@ Isso é uma **parada rígida**: na fronteira ela interrompe incondicionalmente e
 Travas como turnos máximos compartilham uma propriedade: bater em uma é o fim da linha — o loop acabou e não vai continuar por conta própria. Mas esse não é o único tipo de condição de parada. O mesmo artigo nomeia outro: "Agents can then pause for human feedback at checkpoints or when encountering blockers."[^S1] (Agentes podem então pausar para feedback humano em checkpoints ou ao encontrar bloqueios.) É um bicho diferente de uma parada rígida, e vale desmontar:
 
 - **Parada rígida**: no teto ela interrompe, o loop terminou de vez, nada continua automaticamente. Turnos máximos e orçamento esgotado pertencem aqui. É um **estado terminal**.
-- **Parada suave / suspensão**: o loop deliberadamente interrompe em um ponto de verificação, entrega o controle a uma pessoa, e consegue retomar daquele exato ponto uma vez que ela tenha respondido. Não é um fim; é uma **pausa retomável**.
+- **Parada suave / suspensão**: o loop deliberadamente interrompe em um checkpoint, entrega o controle a uma pessoa, e consegue retomar daquele exato ponto uma vez que ela tenha respondido. Não é um fim; é uma **pausa retomável**.
 
 No código a diferença cai sobre o que você retorna. Uma parada rígida retorna um resultado final — foi aqui que terminou. Uma parada suave tem que preservar estado: ela retorna um instantâneo da cena a partir do qual dá para retomar, entregando o `messages` atual junto com a ação pendente em que empacou, de modo que, uma vez que um humano tenha lidado com ela, aquele instantâneo baste para prosseguir:
 
@@ -158,7 +158,7 @@ Você está projetando um agente de "corrigir CI automaticamente". Ele pega um p
    - Tarefa terminada: **conclusão suave**, decidida pelo **modelo** (ele devolve `end_turn`).
    - Teto de turnos: **parada rígida**, decidida pelo **host** (para na marca, independentemente do que o modelo quer).
    - Orçamento esgotado: **parada rígida**, decidida pelo **host**.
-   - Aprovação antes do `push`, e o modelo reportando um bloqueio: **parada suave / suspensão**, **compartilhada** (o host define o ponto de verificação, uma pessoa decide se continua).
+   - Aprovação antes do `push`, e o modelo reportando um bloqueio: **parada suave / suspensão**, **compartilhada** (o host define o checkpoint, uma pessoa decide se continua).
 3. Sim. O `push` envia mudanças para o remoto e dispara uma execução de CI que outras pessoas veem — uma ação externamente visível que custa algo para reverter, o que combina com uma parada suave: o loop interrompe antes do push, uma pessoa olha as mudanças e decide se as deixa passar, em vez de deixar o modelo empurrar tudo até o fim por conta própria.
 
 <!-- hint -->
@@ -169,7 +169,7 @@ Para distinguir uma parada rígida de uma suave, faça uma única pergunta: depo
 
 ### Nível 2: Por que esta trava de turnos máximos não pegou nada
 
-Um colega quis uma salvaguarda de turno máximo no loop e escreveu a versão abaixo. Ele a testou em tarefas que precisavam de uma ou duas chamadas de ferramenta e ela "pareceu bem". Mas quando o modelo caiu em chamar a mesma ferramenta repetidamente sem devolver `end_turn`, esta trava não pegou nada e o loop seguiu desgovernado. Encontre a causa raiz e corrija.
+Um colega quis uma salvaguarda de turno máximo no loop e escreveu a versão abaixo. Ele a testou em tarefas que precisavam de uma ou duas chamadas de ferramenta e ela "pareceu bem". Mas quando o modelo caiu em chamar a mesma ferramenta repetidamente sem devolver `end_turn`, esta trava não pegou nada e o loop seguiu descontrolado. Encontre a causa raiz e corrija.
 
 ```javascript
 async function runAgent(userInput, tools) {
@@ -178,7 +178,7 @@ async function runAgent(userInput, tools) {
   let response = await callModel({ tools, messages });
 
   while (response.stop_reason === "tool_use") {
-    let turns = 0;                       // deveria pegar um loop desgovernado
+    let turns = 0;                       // deveria pegar um loop descontrolado
     if (turns >= MAX_TURNS) {
       return { stopped: "max_turns", response };
     }
@@ -200,13 +200,13 @@ async function runAgent(userInput, tools) {
 
 <!-- rubric -->
 - Nomeia a causa raiz exatamente: `let turns = 0` é declarado dentro do corpo do loop, é resetado para 0 a cada rodada, `turns >= MAX_TURNS` nunca é verdadeiro, e a trava é código morto
-- Explica como isso difere do loop infinito da Lição 2: aqui `response` de fato é reatribuído e o loop ainda pode parar no próprio `end_turn` do modelo, e é por isso que "tarefas curtas parecem bem"; mas o freio de turno máximo que deveria ter pegado o desgoverno nunca engatou
+- Explica como isso difere do loop infinito da Lição 2: aqui `response` de fato é reatribuído e o loop ainda pode parar no próprio `end_turn` do modelo, e é por isso que "tarefas curtas parecem bem"; mas o freio de turno máximo que deveria ter pegado o descontrole nunca engatou
 - Dá a correção: mova `let turns = 0;` para cima do `while` (o estado do contador tem que acumular entre rodadas), mantendo `turns += 1` dentro do corpo do loop
 
 <!-- answer -->
 Causa raiz: **o contador `turns` é declarado dentro do corpo do loop.** `let turns = 0` roda de novo no topo de cada rodada, então `turns` é resetado para 0 a cada volta; `turns += 1` o sobe para 1, a próxima rodada o derruba de volta para 0, e o teste `turns >= MAX_TURNS` (10) nunca consegue dar verdadeiro. A trava é código morto do início ao fim — uma condição de parada funciona porque seu estado acumula entre rodadas, e o escopo de uma declaração `let` termina naquele par de chaves, então ela não consegue transportar nada adiante.
 
-Por que "tarefas curtas parecem bem": este código não é o mesmo que o loop infinito da Lição 2. O bug lá era esquecer de reatribuir `response`, então o loop nunca conseguia sair. Aqui `response` de fato é reatribuído, e o loop consegue parar normalmente sempre que o modelo devolve `end_turn` em alguma rodada. Então, enquanto o modelo se comporta e desiste dentro de uma rodada ou duas, você nunca percebe que a trava está inerte — ela simplesmente nunca foi acionada. Mas no momento em que o modelo se recusa a devolver `end_turn` e começa a girar, a salvaguarda que você achava que tinha revela-se nunca ter sido ligada, e o loop desgoverna do mesmo jeito.
+Por que "tarefas curtas parecem bem": este código não é o mesmo que o loop infinito da Lição 2. O bug lá era esquecer de reatribuir `response`, então o loop nunca conseguia sair. Aqui `response` de fato é reatribuído, e o loop consegue parar normalmente sempre que o modelo devolve `end_turn` em alguma rodada. Então, enquanto o modelo se comporta e desiste dentro de uma rodada ou duas, você nunca percebe que a trava está inerte — ela simplesmente nunca foi acionada. Mas no momento em que o modelo se recusa a devolver `end_turn` e começa a girar, a salvaguarda que você achava que tinha revela-se nunca ter sido ligada, e o loop se descontrola do mesmo jeito.
 
 A correção — mova o contador para fora do loop para ele acumular entre rodadas:
 

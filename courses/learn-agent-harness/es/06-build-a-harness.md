@@ -7,7 +7,7 @@
 >
 > Requisitos: Lee las Lecciones 2 a 5; entiende el bucle guiado por `stop_reason`, las condiciones de parada, las salvaguardas de desbocamiento y la intervención human-in-the-loop | Anterior: [Lección 5 <<](./05-intervention-and-steering.md)
 
-## Primero, cómo se ve corriendo
+## Primero, cómo se ve en ejecución
 
 Las primeras cinco lecciones desarmaron la máquina pieza por pieza: cómo gira el bucle, cuándo debería detenerse, cómo se ve el desbocamiento, cómo interviene una persona. Esta lección suelda esas piezas en el arnés funcional más pequeño posible. Antes de cualquier código, mira lo que hace en una terminal — un agente cableado con dos herramientas de juguete (`get_time` reporta la hora, `read_file` lee un archivo dentro del proyecto), al que se le pasa una sola oración: «lee la primera línea de README.md, y luego dime qué hora es».
 
@@ -24,11 +24,11 @@ La primera línea de README.md es "# Fundamentos del arnés de agentes", y son l
 Eso tomó 2 turnos de llamadas a herramientas a lo largo de 3 peticiones al modelo.
 ```
 
-Mira de cerca lo que pasó: **la persona dijo una sola oración, y cuántas herramientas se llamaron, cuál fue primero, y cuándo detenerse los decidió todo el modelo dentro del bucle.** Esa es la línea entre un agente y un flujo de trabajo — el camino de un flujo de trabajo está fijado en código, mientras que un agente es el modelo dirigiendo dinámicamente su propio proceso y decidiendo qué herramientas usar[^S1]. El código anfitrión (el arnés que escribimos en esta lección) nunca especificó «lee el archivo primero, luego revisa la hora». Solo giró fielmente el bucle, corrió la herramienta que el modelo nombró, y devolvió el resultado. Ambas herramientas aquí son inofensivas, así que nada interrumpió la corrida — pero este arnés también tiene una válvula de aprobación soldada, y si el modelo echa mano de algo de alto impacto como borrar un archivo o disparar una petición, se detiene y espera un asentimiento humano antes de actuar (eso lo escribimos más adelante en la lección). El resto de esta lección construye, línea por línea, el código detrás de esa salida de terminal.
+Mira de cerca lo que pasó: **la persona dijo una sola oración, y cuántas herramientas se llamaron, cuál fue primero, y cuándo detenerse los decidió todo el modelo dentro del bucle.** Esa es la línea entre un agente y un flujo de trabajo — el camino de un flujo de trabajo está fijado en código, mientras que un agente es el modelo dirigiendo dinámicamente su propio proceso y decidiendo qué herramientas usar[^S1]. El código anfitrión (el arnés que escribimos en esta lección) nunca especificó «lee el archivo primero, luego revisa la hora». Solo giró fielmente el bucle, ejecutó la herramienta que el modelo nombró, y devolvió el resultado. Ambas herramientas aquí son inofensivas, así que nada interrumpió la corrida — pero este arnés también tiene una válvula de aprobación soldada, y si el modelo echa mano de algo de alto impacto como borrar un archivo o disparar una petición, se detiene y espera un asentimiento humano antes de actuar (eso lo escribimos más adelante en la lección). El resto de esta lección construye, línea por línea, el código detrás de esa salida de terminal.
 
 ## El bucle central: acarrea el esqueleto, mete el SDK real
 
-El `callModel` de la Lección 2: El bucle central: de una ida y vuelta a operación continua era pseudocódigo. Ahora se vuelve el `@anthropic-ai/sdk` de verdad. El esqueleto del bucle es idéntico: envía una petición que carga `messages`, mira `response.stop_reason` — si es `"tool_use"`, corre las herramientas, cose los resultados de vuelta, y envía de nuevo; si no lo es (digamos, `end_turn`), devuelve el texto y sal del bucle[^S2].
+El `callModel` de la Lección 2: El bucle central: de una ida y vuelta a operación continua era pseudocódigo. Ahora se vuelve el `@anthropic-ai/sdk` de verdad. El esqueleto del bucle es idéntico: envía una petición que carga `messages`, mira `response.stop_reason` — si es `"tool_use"`, ejecuta las herramientas, cose los resultados de vuelta, y envía de nuevo; si no lo es (digamos, `end_turn`), devuelve el texto y sal del bucle[^S2].
 
 Aquí está la versión mínima sin ninguna válvula, para que el bucle mismo quede visible:
 
@@ -54,7 +54,7 @@ async function runAgent(userInput, tools, toolImpls) {
     // Agrega al historial la respuesta completa del modelo para este turno (rol assistant)
     messages.push({ role: "assistant", content: response.content });
 
-    // Corre cada bloque tool_use de este turno, empacando cada uno en un tool_result
+    // Ejecuta cada bloque tool_use de este turno, empacando cada uno en un tool_result
     const toolResults = await runToolUses(response.content, toolImpls);
 
     // Todos los bloques tool_result de un turno van en el único mensaje user que sigue
@@ -74,11 +74,11 @@ async function runAgent(userInput, tools, toolImpls) {
 }
 ```
 
-Pon esto al lado del esqueleto de la Lección 2 y la estructura no se ha movido: la línea `while` todavía dice «repite mientras `stop_reason` sea `tool_use`», y el cuerpo son todavía los mismos cuatro pasos — push del assistant, corre herramientas, push del tool_result, reasigna `response`. El único cambio sustantivo es `callModel` volviéndose `client.messages.create(...)`, más esa reasignación al final del cuerpo. Esa reasignación es lo que hace posible detenerse siquiera; quítala y `stop_reason` se queda en su valor viejo para siempre, que es exactamente el bucle muerto de la Lección 4: Desbocamiento y salvaguarda: bucles muertos, giro en vacío, agotamiento del presupuesto.
+Pon esto al lado del esqueleto de la Lección 2 y la estructura no se ha movido: la línea `while` todavía dice «repite mientras `stop_reason` sea `tool_use`», y el cuerpo son todavía los mismos cuatro pasos — push del assistant, ejecuta herramientas, push del tool_result, reasigna `response`. El único cambio sustantivo es `callModel` volviéndose `client.messages.create(...)`, más esa reasignación al final del cuerpo. Esa reasignación es lo que hace posible detenerse siquiera; quítala y `stop_reason` se queda en su valor viejo para siempre, que es exactamente el bucle muerto de la Lección 4: Desbocamiento y salvaguarda: bucles muertos, giro en vacío, agotamiento del presupuesto.
 
 ## Los campos de tool_use / tool_result, sin que falte ni uno
 
-`runToolUses` es donde de verdad corre la herramienta que el modelo nombró. Lo más fácil de equivocar aquí son los campos del bloque de contenido, así que sigue la especificación: un bloque `tool_use` carga `id` / `name` / `input`, un bloque `tool_result` carga `tool_use_id` (declarando a qué llamada responde) y `content`, y cuando la ejecución de la herramienta falla agregas `is_error: true`[^S6]. Hay una regla dura más: por más bloques `tool_use` que contenga una respuesta, ese mismo número de bloques `tool_result` debe volver, todos empacados en el único mensaje `user` que sigue inmediatamente[^S6] — la línea `messages.push({ role: "user", content: toolResults })` del cuerpo del bucle de arriba es lo que sostiene esa regla.
+`runToolUses` es donde de verdad se ejecuta la herramienta que el modelo nombró. Lo más fácil de equivocar aquí son los campos del bloque de contenido, así que sigue la especificación: un bloque `tool_use` carga `id` / `name` / `input`, un bloque `tool_result` carga `tool_use_id` (declarando a qué llamada responde) y `content`, y cuando la ejecución de la herramienta falla agregas `is_error: true`[^S6]. Hay una regla dura más: por más bloques `tool_use` que contenga una respuesta, ese mismo número de bloques `tool_result` debe volver, todos empacados en el único mensaje `user` que sigue inmediatamente[^S6] — la línea `messages.push({ role: "user", content: toolResults })` del cuerpo del bucle de arriba es lo que sostiene esa regla.
 
 ```javascript
 async function runToolUses(content, toolImpls) {
@@ -184,7 +184,7 @@ function signatureOf(content) {
 
 ## La válvula de aprobación: encajada en el momento antes de la ejecución
 
-De las cuatro válvulas, la posición de la válvula de aprobación es la que más importa y la más fácil de equivocar. Tiene que encajar en el momento en que el modelo nombró una herramienta pero la herramienta todavía no ha corrido — imprime la acción por ocurrir, espera a una persona, ejecuta solo tras la confirmación. Un paso más tarde y el archivo ya está escrito, la petición ya enviada, y preguntar «¿confirmar?» no tiene sentido. Así que va dentro de `runToolUses`, delante de la línea `impl(...)`:
+De las cuatro válvulas, la posición de la válvula de aprobación es la que más importa y la más fácil de equivocar. Tiene que encajar en el momento en que el modelo nombró una herramienta pero la herramienta todavía no se ha ejecutado — imprime la acción por ocurrir, espera a una persona, ejecuta solo tras la confirmación. Un paso más tarde y el archivo ya está escrito, la petición ya enviada, y preguntar «¿confirmar?» no tiene sentido. Así que va dentro de `runToolUses`, delante de la línea `impl(...)`:
 
 ```javascript
 const HIGH_IMPACT = new Set(["write_file", "http_post", "delete_file"]);
@@ -230,7 +230,7 @@ import readline from "node:readline/promises";
 async function approveInTerminal(name, input) {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   const answer = await rl.question(
-    `[approve] Por correr la acción de alto impacto ${name}(${JSON.stringify(input)}) — Enter para permitir / escribe n para rechazar: `
+    `[approve] Por ejecutar la acción de alto impacto ${name}(${JSON.stringify(input)}) — Enter para permitir / escribe n para rechazar: `
   );
   rl.close();
   return answer.trim().toLowerCase() !== "n";
@@ -243,27 +243,27 @@ Un detalle que importa: incluso cuando la persona rechaza, igual devuelves un `t
 {
   "id": "harness-zh-06-approval-before-exec",
   "label": "Colocar la válvula de aprobación correctamente en el flujo de control del bucle",
-  "prompt": "Un colega cablea la válvula de aprobación así: dentro de runToolUses, cada herramienta corre como de costumbre y produce su salida primero; luego, justo antes de que el resultado se empuje a results, las acciones de alto impacto sacan un aviso de «¿confirmar?», y si la persona dice que no, ese tool_result se marca is_error y se descarta. Argumenta: «el resultado se tira de todas formas cuando se rechaza, así que es equivalente». ¿Es correcto este cableado?",
-  "whyHere": "Esta sección acaba de insistir en que la válvula de aprobación debe encajar en el momento antes de que la herramienta de verdad haya corrido. Seguirla de inmediato con un error concreto de ubicación de código — la confirmación movida después de que impl ejecuta — prueba si quien lee de verdad capta que la válvula intercepta la ejecución misma, no si el resultado se usa.",
+  "prompt": "Un colega cablea la válvula de aprobación así: dentro de runToolUses, cada herramienta se ejecuta como de costumbre y produce su salida primero; luego, justo antes de que el resultado se empuje a results, las acciones de alto impacto sacan un aviso de «¿confirmar?», y si la persona dice que no, ese tool_result se marca is_error y se descarta. Argumenta: «el resultado se tira de todas formas cuando se rechaza, así que es equivalente». ¿Es correcto este cableado?",
+  "whyHere": "Esta sección acaba de insistir en que la válvula de aprobación debe encajar en el momento antes de que la herramienta de verdad se haya ejecutado. Seguirla de inmediato con un error concreto de ubicación de código — la confirmación movida después de que impl ejecuta — prueba si quien lee de verdad capta que la válvula intercepta la ejecución misma, no si el resultado se usa.",
   "mode": "single",
   "choices": [
     {
       "id": "a",
-      "text": "No. La aprobación tiene que completarse antes de que se llame a impl; correr primero y preguntar después significa que el efecto secundario ya aterrizó, así que confirmar no intercepta nada",
+      "text": "No. La aprobación tiene que completarse antes de que se llame a impl; ejecutar primero y preguntar después significa que el efecto secundario ya aterrizó, así que confirmar no intercepta nada",
       "correct": true,
       "feedback": "Correcto. Sobre lo que actúa la válvula de aprobación es sobre ejecutar la acción misma, no sobre si aceptar su resultado. Así que tiene que sentarse delante de la línea impl(...) — llama a impl solo una vez que vuelve la aprobación, y ante un rechazo simplemente continua sin tocar impl jamás. Ese es el punto entero de la aprobación human-in-the-loop sobre acciones de alto impacto: sostener la compuerta antes de que una acción irreversible de verdad ocurra, en lugar de archivar un aviso nulo después de que ocurrió."
     },
     {
       "id": "b",
-      "text": "Sí. Como un tool_result rechazado se marca como error y nunca se usa, ejecutar o no no hace diferencia; corre primero, pregunta después, mismo desenlace",
+      "text": "Sí. Como un tool_result rechazado se marca como error y nunca se usa, ejecutar o no no hace diferencia; ejecutar primero y preguntar después da el mismo desenlace",
       "correct": false,
-      "feedback": "El problema es que la herramienta de verdad ya corrió. Para acciones de alto impacto como write_file, http_post y delete_file, el efecto secundario aterriza en el momento en que impl retorna — el archivo está escrito, la petición salió, el registro está borrado. Preguntar «¿confirmar?» en ese punto controla solo si usas este resultado; no puede controlar un efecto secundario que ya ocurrió, lo que deja a la válvula de aprobación sin hacer nada en absoluto."
+      "feedback": "El problema es que la herramienta de verdad ya se ejecutó. Para acciones de alto impacto como write_file, http_post y delete_file, el efecto secundario aterriza en el momento en que impl retorna — el archivo está escrito, la petición salió, el registro está borrado. Preguntar «¿confirmar?» en ese punto controla solo si usas este resultado; no puede controlar un efecto secundario que ya ocurrió, lo que deja a la válvula de aprobación sin hacer nada en absoluto."
     }
   ]
 }
 ```
 
-## Dos herramientas de juguete, para que el bucle de verdad corra
+## Dos herramientas de juguete, para que el bucle de verdad se ejecute
 
 Las válvulas están puestas; lo que falta son herramientas que el modelo pueda llamar. Esta lección usa solo dos juguetes absolutamente seguros y mantiene las operaciones peligrosas afuera: `get_time` reporta la hora actual, y `read_file` lee un archivo — con `path.resolve` clavándolo firmemente dentro del directorio del proyecto, para que el modelo (o un modelo sacado de rumbo por la salida de una herramienta) no pueda ir a leer rutas fuera de límites como `/etc/passwd`:
 
@@ -304,11 +304,11 @@ const tools = [
 ];
 ```
 
-Ninguna de las dos herramientas está en el conjunto `HIGH_IMPACT`, así que ninguna dispara aprobación — son inofensivas por construcción. Para demostrar la válvula de aprobación, agrega un `write_file` a `toolImpls` y a `HIGH_IMPACT`. Esta lección deliberadamente evita introducir una operación de escritura real para que correr el ejemplo no pueda dañar tus archivos.
+Ninguna de las dos herramientas está en el conjunto `HIGH_IMPACT`, así que ninguna dispara aprobación — son inofensivas por construcción. Para demostrar la válvula de aprobación, agrega un `write_file` a `toolImpls` y a `HIGH_IMPACT`. Esta lección deliberadamente evita introducir una operación de escritura real para que ejecutar el ejemplo no pueda dañar tus archivos.
 
-## Juntándolo todo: un punto de entrada que puedes correr con node agent.js
+## Juntándolo todo: un punto de entrada que puedes ejecutar con node agent.js
 
-Por último, reúne `runAgent`, `runToolUses`, las definiciones de herramientas y la función de aprobación en un punto de entrada que puedas correr directamente — la cosa detrás de la salida de terminal del inicio de esta lección:
+Por último, reúne `runAgent`, `runToolUses`, las definiciones de herramientas y la función de aprobación en un punto de entrada que puedas ejecutar directamente — la cosa detrás de la salida de terminal del inicio de esta lección:
 
 ```javascript
 async function main() {
@@ -325,11 +325,11 @@ main().catch((err) => {
 });
 ```
 
-Deja las piezas anteriores (`import`, `client`, `MODEL`, `runAgent`, `runToolUses`, `signatureOf`, `approveInTerminal`, `toolImpls`, `tools`, `main`) en un solo `agent.js`, define `ANTHROPIC_API_KEY`, corre `npm i @anthropic-ai/sdk`, y `node agent.js "tu tarea"` correrá.
+Deja las piezas anteriores (`import`, `client`, `MODEL`, `runAgent`, `runToolUses`, `signatureOf`, `approveInTerminal`, `toolImpls`, `tools`, `main`) en un solo `agent.js`, define `ANTHROPIC_API_KEY`, ejecuta `npm i @anthropic-ai/sdk`, y `node agent.js "tu tarea"` se ejecutará.
 
-Mira de nuevo estas cien y tantas líneas y notarás que ni una sola es un concepto nuevo: el bucle `while` y `stop_reason` vinieron de la Lección 2, `MAX_TURNS` de la Lección 3, el presupuesto y la detección de giro en vacío de la Lección 4, y la válvula de aprobación de la Lección 5. **Un arnés no es un marco profundo; es esta capa de bucle-más-válvulas que tú mismo escribes y controlas.** Mismo modelo, mismas dos herramientas — pero un arnés con estas cuatro válvulas y el bucle pelado de la Lección 2 pueden diferir enormemente en qué tan establemente corren la misma tarea, porque lo que decide si un agente es confiable es en gran medida esta capa externa de código de control, no solo el modelo adentro[^S5].
+Mira de nuevo estas cien y tantas líneas y notarás que ni una sola es un concepto nuevo: el bucle `while` y `stop_reason` vinieron de la Lección 2, `MAX_TURNS` de la Lección 3, el presupuesto y la detección de giro en vacío de la Lección 4, y la válvula de aprobación de la Lección 5. **Un arnés no es un marco profundo; es esta capa de bucle-más-válvulas que tú mismo escribes y controlas.** Mismo modelo, mismas dos herramientas — pero un arnés con estas cuatro válvulas y el bucle pelado de la Lección 2 pueden diferir enormemente en con qué estabilidad ejecutan la misma tarea, porque lo que decide si un agente es confiable es en gran medida esta capa externa de código de control, no solo el modelo adentro[^S5].
 
-Mantén también un sentido de proporción sobre la complejidad: no todo agente necesita las cuatro válvulas, y una línea que vale la pena recordar es que habría que considerar agregar complejidad solo cuando mejore los resultados de forma demostrable[^S1]. Una herramienta pequeña que corre de tres a cinco turnos en un entorno controlado podría estar bien con `MAX_TURNS` solo; cuatro válvulas son para los casos que corren muchos turnos seguidos y pueden echar mano de acciones de alto impacto.
+Mantén también un sentido de proporción sobre la complejidad: no todo agente necesita las cuatro válvulas, y una línea que vale la pena recordar es que habría que considerar agregar complejidad solo cuando mejore los resultados de forma demostrable[^S1]. Una herramienta pequeña que dura de tres a cinco turnos en un entorno controlado podría estar bien con `MAX_TURNS` solo; cuatro válvulas son para los casos que operan muchos turnos seguidos y pueden echar mano de acciones de alto impacto.
 
 <!-- exercises -->
 ## 💻 Ejercicios
@@ -351,7 +351,7 @@ const POLICY = { get_time: "allow", read_file: "allow", write_file: "ask", send_
 const DEFAULT_POLICY = "ask"; // las herramientas no listadas requieren confirmación de forma conservadora
 ```
 
-Posición: exactamente donde se sienta la válvula de aprobación — dentro de `runToolUses`, mientras recorre cada bloque `tool_use`, antes de que se llame a `impl`. Dos de los tres niveles, `ask` y `deny`, tienen ambos que interceptar antes de que la herramienta de verdad corra, que es el mismo momento en que intercepta la válvula de aprobación. En realidad es una generalización de la válvula de aprobación: la original equivalía a dos niveles, alto impacto = ask y todo lo demás = allow, y ahora hay un nivel `deny` también.
+Posición: exactamente donde se sienta la válvula de aprobación — dentro de `runToolUses`, mientras recorre cada bloque `tool_use`, antes de que se llame a `impl`. Dos de los tres niveles, `ask` y `deny`, tienen ambos que interceptar antes de que la herramienta de verdad se ejecute, que es el mismo momento en que intercepta la válvula de aprobación. En realidad es una generalización de la válvula de aprobación: la original equivalía a dos niveles, alto impacto = ask y todo lo demás = allow, y ahora hay un nivel `deny` también.
 
 ```javascript
 for (const block of toolUseBlocks) {
@@ -454,10 +454,10 @@ Una frontera que «con certeza se detendrá» se apoya en un contador que el anf
 
 ## Resumen
 
-- El núcleo de un arnés funcional sigue siendo el bucle de la Lección 2: envía una petición que carga `messages` → verifica `stop_reason`, y si es `tool_use`, corre las herramientas, cose un `tool_result` de vuelta, y envía de nuevo; si no lo es, devuelve texto y cierra[^S2]. Cambiar al SDK real solo convierte `callModel` en `client.messages.create(...)`
+- El núcleo de un arnés funcional sigue siendo el bucle de la Lección 2: envía una petición que carga `messages` → verifica `stop_reason`, y si es `tool_use`, ejecuta las herramientas, cose un `tool_result` de vuelta, y envía de nuevo; si no lo es, devuelve texto y cierra[^S2]. Cambiar al SDK real solo convierte `callModel` en `client.messages.create(...)`
 - Los campos del bloque de contenido siguen la especificación sin que falte ninguno: `tool_use` carga `id` / `name` / `input`, `tool_result` carga `tool_use_id` / `content` más `is_error` ante una falla; por más bloques `tool_use` que tenga un turno, ese mismo número de bloques `tool_result` vuelve, todos empacados en el único mensaje `user` que sigue inmediatamente[^S6]
 - Cada una de las cuatro válvulas de control vigila un punto, y sus posiciones no se pueden barajar: el tope de turnos (Lección 3) y el tope de presupuesto (Lección 4) son las fronteras duras que hacen que el bucle con certeza se detenga, la detección de falta de progreso (Lección 4) atrapa el caminar en el sitio, y la válvula de aprobación (Lección 5) tiene que encajar delante de la ejecución de la herramienta — porque la autonomía de un agente trae costos más altos y errores que se componen, y el modelo puede operar durante muchos turnos[^S1], así que el `end_turn` propio del modelo no puede sostenerlo
 - La válvula de aprobación que exige confirmación humana en acciones de alto impacto es la manera recomendada de contener el riesgo de agencia excesiva[^S4]; incluso ante un rechazo, devuelve un `tool_result` con `is_error` y no dejes la llamada colgando[^S6]
 - Un arnés no es un marco profundo; es esta capa de bucle-más-válvulas que tú mismo escribes y controlas — mismo modelo, código de control distinto, y la confiabilidad puede diferir enormemente[^S5]. Pero tampoco apiles válvulas por apilarlas: agrega complejidad solo cuando mejore los resultados de forma demostrable[^S1]
 
-Terminaste este curso. De «qué es un arnés» a escribir a mano un bucle con cuatro válvulas de control, lo que sostienes ahora no es solo un conjunto de conceptos — es código real que corre, que puedes editar, y al que puedes seguir agregándole control. Conéctalo a tus propias herramientas y déjalo hacer algo de trabajo por ti.
+Terminaste este curso. De «qué es un arnés» a escribir a mano un bucle con cuatro válvulas de control, lo que sostienes ahora no es solo un conjunto de conceptos — es código real que se ejecuta, que puedes editar, y al que puedes seguir agregándole control. Conéctalo a tus propias herramientas y déjalo hacer algo de trabajo por ti.

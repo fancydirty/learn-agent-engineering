@@ -23,7 +23,7 @@ URL: https://platform.claude.com/cookbook/tool-use-context-engineering-context-e
 
 - authority: official-docs
 
-El cookbook oficial de Anthropic define con precisión los tres mecanismos para manejar el crecimiento del contexto: la compaction (destila toda la ventana en un resumen de alta fidelidad, a costa de una inferencia del sumarizador), el tool-result clearing (descarta solo los resultados de herramientas obsoletos y recuperables, conservando el registro de la llamada) y la primitiva memory tool (saca información de la ventana para que sobreviva entre sesiones). Explica que se pueden usar de forma independiente o combinada, y que el clearing y la compaction actúan solo sobre el contexto actual y no ayudan a una sesión nueva. Es la base principal de la lección 2 («gestionar el historial de conversación») y apoyo de fondo para las lecciones 3, 4 y 6.
+El cookbook oficial de Anthropic define con precisión los tres mecanismos para manejar el crecimiento del contexto: la compactación (destila toda la ventana en un resumen de alta fidelidad, a costa de una inferencia del sumarizador), el tool-result clearing (descarta solo los resultados de herramientas obsoletos y recuperables, conservando el registro de la llamada) y la primitiva memory tool (saca información de la ventana para que sobreviva entre sesiones). Explica que se pueden usar de forma independiente o combinada, y que el clearing y la compactación actúan solo sobre el contexto actual y no ayudan a una sesión nueva. Es la base principal de la lección 2 («gestionar el historial de conversación») y apoyo de fondo para las lecciones 3, 4 y 6.
 
 Cita clave:
 > "Compaction distills the contents of a context window into a high-fidelity summary, letting the agent continue with minimal performance degradation when the conversation gets long."
@@ -110,7 +110,7 @@ URL: https://platform.claude.com/docs/en/build-with-claude/compaction
 
 - authority: official-docs
 
-La documentación oficial da los detalles de parámetros de la compaction de resumen del lado del servidor: un umbral de disparo mínimo de 50 000 tokens (impuesto por el servidor), la posibilidad de múltiples compactions en una conversación larga, el último bloque de compaction reflejando el estado final del prompt y la posibilidad de que la compaction ocurra más de una vez dentro de una sola solicitud. Es la base directa de los detalles de compaction de la lección 2.
+La documentación oficial da los detalles de parámetros de la compactación de resumen del lado del servidor: un umbral de disparo mínimo de 50 000 tokens (impuesto por el servidor), la posibilidad de múltiples compactaciones en una conversación larga, el último bloque de compactación reflejando el estado final del prompt y la posibilidad de que la compactación ocurra más de una vez dentro de una sola solicitud. Es la base directa de los detalles de compactación de la lección 2.
 
 Cita clave:
 > "`input_tokens` is the only supported trigger type. `value` must be at least 50,000 tokens."

@@ -9,7 +9,7 @@ order: 5
 
 # Memoria y estado del agente
 
-Un agente parece «recordar» lo que hablasteis hace diez minutos, pero esa memoria no vive de verdad en la cabeza del modelo: simplemente se ha metido, verbatim, en la ventana de contexto de cada solicitud. Este curso desarma esa ilusión: por qué la ventana de contexto equivale a toda la memoria de un agente, por qué el historial de conversación solo crece, cuándo deberías escribir la memoria en un archivo, cómo un agente recuerda en qué punto está una tarea y qué riesgos de seguridad introduce la propia memoria. Es para quienes han terminado los primeros cuatro cursos de esta serie y quieren que un agente recuerde información entre sesiones. Se centra en la cadena que va de la ventana de contexto a la memoria persistente a nivel de archivo; no cubre construir una base de datos vectorial ni un sistema de recuperación RAG, ni el entrenamiento de memoria a nivel de modelo. Al terminar, conectarás por tu cuenta a un agente una capa de memoria persistente legible, escribible y comprimible.
+Un agente parece «recordar» lo que hablaste hace diez minutos, pero esa memoria no vive de verdad en la cabeza del modelo: simplemente se ha metido, verbatim, en la ventana de contexto de cada solicitud. Este curso desarma esa ilusión: por qué la ventana de contexto equivale a toda la memoria de un agente, por qué el historial de conversación solo crece, cuándo deberías escribir la memoria en un archivo, cómo un agente recuerda en qué punto está una tarea y qué riesgos de seguridad introduce la propia memoria. Es para quienes han terminado los primeros cuatro cursos de esta serie y quieren que un agente recuerde información entre sesiones. Se centra en la cadena que va de la ventana de contexto a la memoria persistente a nivel de archivo; no cubre construir una base de datos vectorial ni un sistema de recuperación RAG, ni el entrenamiento de memoria a nivel de modelo. Al terminar, conectarás por tu cuenta a un agente una capa de memoria persistente legible, escribible y comprimible.
 
 ## Contenido del curso
 
@@ -29,7 +29,7 @@ Al terminar este curso podrás:
 - Diseñar un esquema de memoria externa basada en archivos, sabiendo qué escribir en ella y cuándo recuperarla
 - Usar estado estructurado (listas de tareas, checkpoints) para que un agente reanude tras una interrupción en vez de empezar de cero
 - Reconocer las vías de ataque del envenenamiento de memoria y nombrar al menos dos defensas concretas
-- Conectar por tu cuenta a un agente herramientas de lectura/escritura y la lógica de compaction, construyendo una capa de memoria persistente ejecutable
+- Conectar por tu cuenta a un agente herramientas de lectura/escritura y la lógica de compactación, construyendo una capa de memoria persistente ejecutable
 
 ## Requisitos previos
 

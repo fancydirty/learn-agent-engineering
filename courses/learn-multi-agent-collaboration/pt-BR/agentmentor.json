@@ -13,7 +13,7 @@
       "Memória e estado de agente",
       "JavaScript básico (variáveis, funções, async/await, métodos de array)",
       "Rodar scripts Node.js em um terminal",
-      "Que um agente lê o contexto, decide, chama ferramentas e faz laços"
+      "Que um agente lê o contexto, decide, chama ferramentas e roda em loop"
     ],
     "unknownConcepts": [
       "Quando vale a pena dividir uma tarefa entre múltiplos agentes",
@@ -56,7 +56,7 @@
       "Verificar que cada termo do glossário aparece verbatim nas lições em pt-BR (checagem de attach)",
       "Verificar que cada âncora [^Sn] das lições em pt-BR tem o bloco ## Sn correspondente no sources.md em pt-BR",
       "Confirmar que os seis ids de bloco de checagem e as posições de resposta correta são idênticos byte a byte ao inglês (c/b/b/a/b/c na ordem das lições)",
-      "Rodar de novo o JS produtor-revisor do capstone e confirmar que o laço, o parsing defensivo de JSON e as condições de parada batem com as saídas afirmadas"
+      "Rodar de novo o JS produtor-revisor do capstone e confirmar que o loop, o parsing defensivo de JSON e as condições de parada batem com as saídas afirmadas"
     ]
   },
   "acceptanceReview": {
@@ -68,7 +68,7 @@
       "load": 5,
       "readable": 5
     },
-    "terminalTask": "Quem aprende consegue decidir se uma tarefa justifica múltiplos agentes, escrever um prompt de delegação autossuficiente com escopo e formato de saída, escolher o padrão de colaboração adequado, e construir um pipeline produtor-revisor executável com a Claude API que parseia defensivamente o JSON do revisor, verifica as afirmações do subagente em vez de confiar nelas, e para em um laço limitado.",
+    "terminalTask": "Quem aprende consegue decidir se uma tarefa justifica múltiplos agentes, escrever um prompt de delegação autossuficiente com escopo e formato de saída, escolher o padrão de colaboração adequado, e construir um pipeline produtor-revisor executável com a Claude API que parseia defensivamente o JSON do revisor, verifica as afirmações do subagente em vez de confiar nelas, e para em um loop limitado.",
     "interactionCheck": "Seis blocos agentmentor-check, um por lição (quando-dividir na L1, visibilidade-do-subagente na L2, instrução-vaga na L3, pipeline-vs-revisor na L4, confiar-no-subagente na L5, JSON-de-revisão-inválido na L6), preservados da variante em inglês com ids, modes, número de opções e posições de resposta correta idênticos; label, prompt, whyHere, o texto das opções e o feedback são traduções para o português ajustadas ao mal-entendido próprio de cada lição. Os exercícios mantêm a estrutura de níveis da variante em inglês, com rubric, answer e hints em cada nível.",
     "learnerFitCheck": "O curso pressupõe os cinco cursos anteriores, prompt básico, o protocolo de chamada de ferramentas, memória/estado de agente e a leitura de JavaScript. Quando dividir, orquestração, prompts de delegação, padrões de colaboração e o modelo de falhas são ensinados do zero em ordem de dependência; quem aprende constrói um pipeline completo só na lição 6, depois de todos os pré-requisitos. O primeiro exercício da lição 1 só pede um julgamento de vale-a-pena sobre a própria tarefa de quem aprende.",
     "decision": "ship",

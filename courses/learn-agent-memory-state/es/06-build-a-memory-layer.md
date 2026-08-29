@@ -227,7 +227,7 @@ async function maybeCompact(messages) {
 }
 ```
 
-Generar el resumen aquí significa hacer una **llamada de resumen** extra — que es exactamente el coste que mencionó la Lección 2: la compactación en sí consume una llamada al modelo extra, y el **mensaje de resumen** resultante tiene pérdidas, así que el detalle original desaparece.
+Generar el resumen aquí significa hacer una **llamada de resumen** extra — que es exactamente el costo que mencionó la Lección 2: la compactación en sí consume una llamada al modelo extra, y el **mensaje de resumen** resultante tiene pérdidas, así que el detalle original desaparece.
 
 La versión escrita a mano de la limpieza de resultados de herramienta es más ligera: no hay llamada al modelo extra, solo intercambia el contenido de los bloques `tool_result` antiguos que superan el número a conservar por **contenido de marcador de posición**, mientras mantiene el registro de que la llamada ocurrió (el `tool_use_id` sigue ahí, solo se reemplaza el `content`):
 

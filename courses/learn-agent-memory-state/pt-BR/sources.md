@@ -121,7 +121,7 @@ URL: https://platform.claude.com/docs/en/agents-and-tools/tool-use/how-tool-use-
 
 - authority: official-docs
 
-A documentação oficial dá a especificação do laço de execução de ferramentas dirigido pelo stop_reason: o modelo nunca executa nada por conta própria, apenas emite uma requisição estruturada; o host a executa e envia o resultado de volta; enquanto o stop_reason ainda for tool_use, o laço continua. Base direta da passagem da lição 6 “ponto de partida: o laço de execução do curso de chamada de ferramentas”.
+A documentação oficial dá a especificação do loop de execução de ferramentas dirigido pelo stop_reason: o modelo nunca executa nada por conta própria, apenas emite uma requisição estruturada; o host a executa e envia o resultado de volta; enquanto o stop_reason ainda for tool_use, o loop continua. Base direta da passagem da lição 6 “ponto de partida: o loop de execução do curso de tool calling”.
 
 Citação principal:
 > "The model never executes anything on its own. It emits a structured request, your code (or Anthropic's servers) runs the operation, and the result flows back into the conversation. ... 2. Claude responds with stop_reason: "tool_use" and one or more tool_use blocks. 3. Execute each tool. Format the outputs as tool_result blocks. 4. Send a new request... 5. Repeat from step 2 while stop_reason is "tool_use"."

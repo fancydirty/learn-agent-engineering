@@ -27,7 +27,7 @@ Claude Code의 작업 추적 도구를 예로 들어 봅시다. 공식 문서는
 
 이 네 단계는 자연어의 모호한 '다 했어요'나 '하고 있어요'가 아닙니다. 네 개의 명시적인 상태 값입니다. pending, in_progress, completed, 그리고 제거를 뜻하는 deleted입니다. 모든 상태 변화는 모델이 답변 텍스트에서 슬쩍 언급하는 것이 아니라, 명시적인 도구 호출을 통해 일어납니다.
 
-문서는 또한 이 메커니즘이 대화에서 실제로 어떻게 드러나는지도 명확히 밝힙니다: "In a session that has the task-tracking tools, Claude keeps a written todo list, updating each item's status as it works. You see each change in the message stream as a structured tool call."[^S4]（작업 추적 도구를 갖춘 세션에서 Claude는 작성된 todo 목록을 유지하며, 작업을 진행하는 동안 각 항목의 상태를 업데이트합니다. 각 변화는 메시지 스트림 안에서 구조화된 도구 호출로 나타납니다.） 이 문장은 핵심적인 구분을 못 박습니다. 진행 상황은 대화 속에 수동적으로 '반영'되는 것이 아니라, 그 자체로 식별하고 파싱할 수 있는 도구 호출로 능동적으로 기록됩니다. 그것이 바로 구조화된 상태와 문장 속에 흩어진 진행 상황 설명의 진짜 차이입니다.
+문서는 또한 이 메커니즘이 대화에서 실제로 어떻게 드러나는지도 명확히 밝힙니다: "In a session that has the task-tracking tools, Claude keeps a written todo list, updating each item's status as it works. You see each change in the message stream as a structured tool call."[^S4] (작업 추적 도구를 갖춘 세션에서 Claude는 작성된 todo 목록을 유지하며, 작업을 진행하는 동안 각 항목의 상태를 업데이트합니다. 각 변화는 메시지 스트림 안에서 구조화된 도구 호출로 나타납니다.) 이 문장은 핵심적인 구분을 못 박습니다. 진행 상황은 대화 속에 수동적으로 '반영'되는 것이 아니라, 그 자체로 식별하고 파싱할 수 있는 도구 호출로 능동적으로 기록됩니다. 그것이 바로 구조화된 상태와 문장 속에 흩어진 진행 상황 설명의 진짜 차이입니다.
 
 ```agentmentor-check
 {
@@ -62,7 +62,7 @@ Claude Code의 작업 추적 도구를 예로 들어 봅시다. 공식 문서는
 
 ## 체크포인트: 복구를 처음부터 다시 시작하는 것이 아닌 무언가로 만들기
 
-구조화된 todo 목록을 갖추고 나면, 다음 질문은 이것입니다: 그 목록 자체는 어디에 사는가? 그것이 오직 이번 세션의 대화 히스토리에만 존재한다면, 세션이 진짜로 끝나는 순간(짧은 중단이 아니라 레슨 3의 '세션이 끝나면 윈도우 안의 모든 것은 사라진다'는 개념처럼 완전히 닫히는 것) 진행 기록도 함께 사라집니다. 근본적으로 API는 상태를 유지하지 않습니다: "The Messages API is stateless, which means that you always send the full conversational history to the API."[^S6]（Messages API는 상태를 유지하지 않으며, 이는 항상 전체 대화 히스토리를 API에 보낸다는 뜻입니다.）
+구조화된 todo 목록을 갖추고 나면, 다음 질문은 이것입니다: 그 목록 자체는 어디에 사는가? 그것이 오직 이번 세션의 대화 히스토리에만 존재한다면, 세션이 진짜로 끝나는 순간(짧은 중단이 아니라 레슨 3의 '세션이 끝나면 윈도우 안의 모든 것은 사라진다'는 개념처럼 완전히 닫히는 것) 진행 기록도 함께 사라집니다. 근본적으로 API는 상태를 유지하지 않습니다: "The Messages API is stateless, which means that you always send the full conversational history to the API."[^S6] (Messages API는 상태를 유지하지 않으며, 이는 항상 전체 대화 히스토리를 API에 보낸다는 뜻입니다.)
 
 바로 그것이 **체크포인트**가 해결하는 문제입니다: 어느 시점의 작업 상태 — 어떤 단계가 끝났는지, 어떤 단계가 현재인지, 어떤 단계가 남았는지 — 를 하나의 데이터로 기록하고, 세션의 수명 바깥 어딘가에 영속화하는 것입니다. 체크포인트는 레슨 3의 외부 메모리와 같은 밑바탕 메커니즘(파일에 쓰고 나중에 다시 읽기)을 씁니다. 차이는 체크포인트가 '기억할 가치가 있는 지식'을 저장하는 것이 아니라 '작업이 어디까지 왔는지' — 실행을 재개하는 데 바로 쓸 수 있는 종류의 상태 — 를 저장한다는 점입니다.
 

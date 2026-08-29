@@ -14,7 +14,7 @@ Um agente está executando uma tarefa de várias etapas: refatorar um módulo, q
 
 A resposta se resume a uma coisa: se o progresso da tarefa foi registrado como **estado estruturado**, em vez de espalhado por uma pilha de prosa conversacional. Se "as definições de tipo já foram atualizadas" for apenas uma linha de linguagem natural em uma das respostas anteriores do modelo, enterrada entre dezenas de mensagens, o código hospedeiro não tem como extrair de forma confiável o fato concreto "em qual etapa estamos". Mas se esse progresso for expresso como uma **lista de todos** com campos fixos — onde cada tarefa carrega um marcador de status explícito — o código hospedeiro pode lê-lo diretamente: as etapas um e dois estão completed, a etapa três não começou.
 
-Essa é a questão central que esta lição aborda. As Lições 1, 2 e 3 trataram todas de como gerenciar *conteúdo* — histórico de conversa, arquivos de memória. Esta lição trata de como expressar *progresso*, para que um agente ou sua aplicação hospedeira, depois de uma interrupção, saiba exatamente até onde a tarefa chegou.
+Essa é a questão central que esta lição aborda. As Lições 1, 2 e 3 trataram todas de como gerenciar *conteúdo* — histórico de conversa, arquivos de memória. Esta lição trata de como expressar *progresso*, para que um agente ou seu aplicativo host, depois de uma interrupção, saiba exatamente até onde a tarefa chegou.
 
 ## O ciclo de vida do todo: criado, ativado, concluído, removido
 
@@ -62,7 +62,7 @@ A documentação também detalha como esse mecanismo de fato aparece na conversa
 
 ## Checkpoints: tornar a recuperação algo diferente de recomeçar
 
-Uma vez que você tem uma lista de todos estruturada, a próxima pergunta é: onde a própria lista vive? Se ela existir apenas no histórico de conversa desta sessão, então no momento em que a sessão realmente terminar (não uma breve interrupção, mas um fechamento completo, como a ideia de "quando a sessão termina, tudo o que está na janela some" da Lição 3), o registro de progresso desaparece junto. No fundo, a API é stateless: "The Messages API is stateless, which means that you always send the full conversational history to the API."[^S6] (A API de Mensagens é stateless, o que significa que você sempre envia o histórico completo da conversa para a API.)
+Uma vez que você tem uma lista de todos estruturada, a próxima pergunta é: onde a própria lista vive? Se ela existir apenas no histórico de conversa desta sessão, então no momento em que a sessão realmente terminar (não uma breve interrupção, mas um fechamento completo, como a ideia de "quando a sessão termina, tudo o que está na janela some" da Lição 3), o registro de progresso desaparece junto. No fundo, a API é sem estado: "The Messages API is stateless, which means that you always send the full conversational history to the API."[^S6] (A Messages API é sem estado, o que significa que você sempre envia todo o histórico da conversa para a API.)
 
 É esse o problema que os **checkpoints** resolvem: gravar o estado de uma tarefa em algum momento no tempo — quais etapas estão prontas, qual etapa é a atual, quais etapas restam — em um pedaço de dado, e persisti-lo em algum lugar fora do tempo de vida da sessão. Os checkpoints usam o mesmo mecanismo subjacente da memória externa da Lição 3 (escrever um arquivo, lê-lo de volta depois); a diferença é que um checkpoint não armazena "conhecimento que vale a pena lembrar", ele armazena "até onde a tarefa chegou" — o tipo de estado que você pode usar diretamente para retomar a execução.
 

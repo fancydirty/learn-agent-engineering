@@ -18,7 +18,7 @@ order: 6
 3. [위임을 위한 프롬프트 작성](./03-writing-prompts-for-delegation.md)
 4. [협업 패턴: 파이프라인, 리뷰, 투표](./04-collaboration-patterns.md)
 5. [실패와 조율](./05-failure-and-coordination.md)
-6. [핸즈온: 두 에이전트 리뷰 파이프라인 만들기](./06-build-a-review-pipeline.md)
+6. [실습: 두 에이전트 리뷰 파이프라인 만들기](./06-build-a-review-pipeline.md)
 
 ## 학습 목표
 

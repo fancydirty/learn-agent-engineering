@@ -18,7 +18,7 @@
     "def": "La forma en que Anthropic plantea el fondo finito de atención del que tira un modelo al procesar grandes volúmenes de contexto; cada token nuevo agota una parte de él.",
     "source": "[^S7]",
     "pitfall": "Tratar el presupuesto de atención como si se reiniciara cada vez que el modelo arranca un paso nuevo de razonamiento dentro de la misma conversación.",
-    "distractor_rationale": "Como cada turno se siente como un arranque en limpio, es tentador pensar que la atención se recarga entre pasos, pero el presupuesto se descuenta contra todo el contexto que se está procesando: un historial largo y acumulado lo sigue agotando en cada llamada posterior."
+    "distractor_rationale": "Como cada turno se siente como un arranque en limpio, es tentador pensar que la atención se recarga entre pasos, pero el presupuesto se descuenta de todo el contexto que se está procesando: un historial largo y acumulado lo sigue agotando en cada llamada posterior."
   },
   {
     "term": "gradiente de rendimiento",
@@ -235,7 +235,7 @@
     "def": "Un informe como «investiga la escasez de semiconductores» que no fija rango de tiempo, ángulo, fuente ni entregable, dejando a los subagentes improvisar.",
     "source": "[^S1]",
     "pitfall": "Suponer que el lío que provoca una instrucción vaga es un problema de capacidad del subagente que un modelo más fuerte arreglaría.",
-    "distractor_rationale": "Culpar al modelo es el diagnóstico más fácil, pero el caso oficial muestra al mismo lote de subagentes malinterpretando la tarea y corriendo búsquedas duplicadas puramente porque la instrucción no fijó ningún alcance: la capacidad no tiene nada que ver."
+    "distractor_rationale": "Culpar al modelo es el diagnóstico más fácil, pero el caso oficial muestra al mismo lote de subagentes malinterpretando la tarea y haciendo búsquedas duplicadas puramente porque la instrucción no fijó ningún alcance: la capacidad no tiene nada que ver."
   },
   {
     "term": "formato de salida",
@@ -269,7 +269,7 @@
     "term": "productor-revisor",
     "def": "Un patrón de colaboración donde una llamada al LLM genera una respuesta mientras otra aporta evaluación y retroalimentación en un bucle, repitiendo hasta converger.",
     "source": "[^S2]",
-    "pitfall": "Suponer que el bucle debería correr sin más hasta que el revisor quede conforme, sin tope de rondas.",
+    "pitfall": "Suponer que el bucle debería ejecutarse sin más hasta que el revisor quede conforme, sin tope de rondas.",
     "distractor_rationale": "«Hasta que quede suficientemente bien» suena a la condición de parada correcta, pero la cantidad de rondas no se sabe de antemano, así que un productor y un revisor enredados en un ida y vuelta pueden disparar el costo muy por encima de lo que esperabas: de ahí el tope máximo de rondas estándar."
   },
   {
@@ -284,7 +284,7 @@
     "def": "Un patrón de colaboración donde varios agentes juzgan cada uno el mismo contenido ya existente de forma independiente y en paralelo, y el contenido queda marcado en cuanto cualquiera de ellos encuentra un problema.",
     "source": "[^S2]",
     "pitfall": "Suponer que la votación, como el productor-revisor, es un bucle de borrador y corrección.",
-    "distractor_rationale": "Ambos implican juicio repetido, lo que los mezcla, pero la votación corre en paralelo sobre contenido que ya existe y nunca lo corrige: el objetivo es una cobertura más amplia frente a los descuidos, no mejorar el contenido."
+    "distractor_rationale": "Ambos implican juicio repetido, lo que los mezcla, pero la votación se ejecuta en paralelo sobre contenido que ya existe y nunca lo corrige: el objetivo es una cobertura más amplia frente a los descuidos, no mejorar el contenido."
   },
   {
     "term": "handoff",
@@ -304,7 +304,7 @@
     "term": "decentralized",
     "def": "El rasgo que define la colaboración de estilo handoff: el control no lo sostiene todo el tiempo un nodo central, sino que se pasa directamente entre agentes de igual rango. La Lección 4 conserva el término en inglés dentro de la cita oficial; en español, «descentralizado».",
     "source": "[^S4]",
-    "pitfall": "Leer «descentralizado» como que ningún agente está al mando y varios agentes corren sueltos a la vez.",
+    "pitfall": "Leer «descentralizado» como que ningún agente está al mando y varios agentes andan sueltos a la vez.",
     "distractor_rationale": "«Sin centro» se escucha como «sin nadie al mando», pero en cualquier momento dado hay exactamente un agente que ha tomado el relevo de la conversación y la está dirigiendo: la descentralización va de que el control se mueva, no de que desaparezca."
   },
   {
@@ -407,7 +407,7 @@
   },
   {
     "term": "MAX_ROUNDS",
-    "def": "El techo de cuántas rondas de productor-revisor va a correr el pipeline, que impide que los dos agentes se pulan de ida y vuelta para siempre.",
+    "def": "El techo de cuántas rondas de productor-revisor va a ejecutar el pipeline, que impide que los dos agentes se pulan de ida y vuelta para siempre.",
     "source": "[^S2]",
     "pitfall": "Tratar `MAX_ROUNDS` como un ajuste opcional de rendimiento que se podría quitar sin afectar a la corrección.",
     "distractor_rationale": "Parece una perilla de afinado, pero la cantidad de rondas es en principio genuinamente ilimitada: sin el tope el pipeline no lanza un error, simplemente nunca termina, así que esto es un mecanismo de seguridad y no una optimización."
@@ -417,7 +417,7 @@
     "def": "El mecanismo que garantiza que un bucle termina; en el pipeline de esta lección, `MAX_ROUNDS` cumple ese papel.",
     "source": "[^S2]",
     "pitfall": "Tratar la válvula de seguridad como protección contra caídas, sin relación con que la cantidad de rondas sea impredecible.",
-    "distractor_rationale": "Los mecanismos de seguridad se asocian normalmente a atrapar errores, pero aquí nada lanza una excepción: sin la válvula el pipeline corre correctamente y para siempre, así que la válvula existe para acotar la cantidad de rondas en el origen, no para atrapar un fallo."
+    "distractor_rationale": "Los mecanismos de seguridad se asocian normalmente a atrapar errores, pero aquí nada lanza una excepción: sin la válvula el pipeline se ejecuta correctamente y para siempre, así que la válvula existe para acotar la cantidad de rondas en el origen, no para atrapar un fallo."
   },
   {
     "term": "REVIEW_CRITERIA",

@@ -27,7 +27,7 @@ Al terminar este curso podrás:
 - Escribir a mano el bucle central que impulsa a un agente, y explicar cómo `stop_reason` decide si el bucle continúa o se detiene
 - Diseñar un conjunto explícito de condiciones de parada para un agente en vez de fiarte de que el modelo diga «he terminado»
 - Reconocer los modos de descontrol —bucles muertos, giro en vacío, agotamiento del presupuesto, errores acumulados— y equipar el bucle con un mecanismo de resguardo para cada uno
-- Juzgar en qué punto del bucle va un checkpoint humano, manteniendo las operaciones irreversibles fuera de la ejecución automática
+- Juzgar en qué punto del bucle va un punto de control humano, manteniendo las operaciones irreversibles fuera de la ejecución automática
 - Construir, desde cero, un arnés mínimo con condiciones de parada, un tope de turnos, un tope de presupuesto, detección de giro en vacío y una válvula de aprobación
 
 ## Requisitos previos

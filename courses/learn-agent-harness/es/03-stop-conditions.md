@@ -71,13 +71,13 @@ Eso es una **parada dura**: en la frontera se detiene sin condiciones y el bucle
       "id": "a",
       "text": "Sí. El modelo puede juzgar por sí mismo si la tarea está terminada y regresará end_turn cuando lo esté, así que una condición de parada extra es sobreingeniería.",
       "correct": false,
-      "feedback": "Esto confunde la confianza con carta blanca. El modelo sí dirige su propio proceso, pero también puede atascarse en algún paso, o desviarse por lo que una herramienta devolvió, y nunca volver con end_turn, corriendo durante muchos turnos mientras un bucle que solo vigila stop_reason le hace compañía y gira. Justo por eso añadir una condición de parada explícita (un número máximo de iteraciones, digamos) para mantener el control es una práctica común, en vez de dejarle la frontera por entero al modelo."
+      "feedback": "Esto confunde la confianza con carta blanca. El modelo sí dirige su propio proceso, pero también puede atascarse en algún paso, o desviarse por lo que una herramienta devolvió, y nunca volver con end_turn, ejecutándose durante muchos turnos mientras un bucle que solo vigila stop_reason le hace compañía y gira. Justo por eso añadir una condición de parada explícita (un número máximo de iteraciones, digamos) para mantener el control es una práctica común, en vez de dejarle la frontera por entero al modelo."
     },
     {
       "id": "b",
       "text": "No. Más allá del propio end_turn del modelo, necesitas una condición de parada explícita que el anfitrión decida; un tope de turnos, por ejemplo.",
       "correct": true,
-      "feedback": "Correcto. end_turn es el propio juicio del modelo, y la autonomía en sí trae costos más altos y errores que se componen. Sí tienes que depositar cierto nivel de confianza en su toma de decisiones para dejarlo correr siquiera, pero la confianza no es la ausencia de una frontera; una compuerta dura de turnos máximos recupera el control del modelo hacia el anfitrión cuando el modelo no se rinde por su cuenta."
+      "feedback": "Correcto. end_turn es el propio juicio del modelo, y la autonomía en sí trae costos más altos y errores que se componen. Sí tienes que depositar cierto nivel de confianza en su toma de decisiones para dejarlo ejecutarse siquiera, pero la confianza no es la ausencia de una frontera; una compuerta dura de turnos máximos recupera el control del modelo hacia el anfitrión cuando el modelo no se rinde por su cuenta."
     }
   ]
 }
@@ -104,7 +104,7 @@ while (response.stop_reason === "tool_use") {
     return { paused: "awaiting_human", pending: block, messages, turns };
   }
 
-  // ...de lo contrario corre la herramienta, anexa al historial, y envia la siguiente solicitud como de costumbre
+  // ...de lo contrario ejecuta la herramienta, anexa al historial, y envía la siguiente solicitud como de costumbre
 }
 ```
 
@@ -129,14 +129,14 @@ Alguien puede refunfuñar que estas compuertas convierten un bucle simple en uno
 
 Haz la aritmética y es obvio. Un contador de turnos máximos es una declaración fuera del bucle y una comparación dentro de él, unas pocas líneas de código. Lo que frena —un bucle que no para de girar, costos que trepan fuera de control, una acción irreversible tomada sobre una salida manipulada o malformada— cuesta muchísimo más. La autonomía del agente ya carga costos más altos y el potencial de errores que se componen,[^S1] y una condición de parada es el freno más barato apuntado de lleno a ese riesgo.
 
-Así que una condición de parada no es la clase de complejidad que habría que añadir solo cuando mejora los resultados de forma demostrable[^S1]; supera esa vara de sobra. Comprime la frontera del peor caso de «sin límite» a «con límite», lo cual es en sí una mejora verificable en los resultados. Es el control más básico que hace de un bucle autónomo algo que te atreves a dejar correr, no un extra decorativo.
+Así que una condición de parada no es la clase de complejidad que habría que añadir solo cuando mejora los resultados de forma demostrable[^S1]; supera esa vara de sobra. Comprime la frontera del peor caso de «sin límite» a «con límite», lo cual es en sí una mejora verificable en los resultados. Es el control más básico que hace de un bucle autónomo algo que te atreves a dejar en marcha, no un extra decorativo.
 
 <!-- exercises -->
 ## 💻 Ejercicios
 
 ### Nivel 1: Cuenta las condiciones de parada de un agente
 
-Estás diseñando un agente de «arregla CI automáticamente». Recoge un pipeline que falla y tiene estas herramientas: `read_logs` (leer los logs), `edit_file` (cambiar código), `run_tests` (correr las pruebas) y `push` (empujar al remoto, disparando una corrida fresca de CI). La meta es dejar las pruebas en verde. Responde esto para él:
+Estás diseñando un agente de «arregla CI automáticamente». Recoge un pipeline que falla y tiene estas herramientas: `read_logs` (leer los logs), `edit_file` (cambiar código), `run_tests` (ejecutar las pruebas) y `push` (empujar al remoto, disparando una corrida fresca de CI). La meta es dejar las pruebas en verde. Responde esto para él:
 
 1. Lista al menos cuatro condiciones bajo las cuales este agente debe parar.
 2. Para cada una, márcala como una **parada dura** o una **parada suave / suspensión**, y di si la decisión de parar pertenece al modelo, al anfitrión, o a ambos.
@@ -150,7 +150,7 @@ Estás diseñando un agente de «arregla CI automáticamente». Recoge un pipeli
 <!-- answer -->
 1. Cuatro (o más) condiciones de parada:
    - **Las pruebas están en verde / la tarea está hecha** — el modelo juzga que quedó arreglado y regresa `end_turn`.
-   - **El techo de turnos** — por ejemplo, varias rondas de «editar código → correr pruebas» sin llegar al verde, topando con `MAX_TURNS` y siendo forzado a parar.
+   - **El techo de turnos** — por ejemplo, varias rondas de «editar código → ejecutar pruebas» sin llegar al verde, topando con `MAX_TURNS` y siendo forzado a parar.
    - **Justo antes de empujar al remoto (`push`)** — detente y espera aprobación, porque este paso es visible por fuera y dispara una corrida de CI que otras personas pueden ver.
    - **Presupuesto agotado** — los tokens / gasto / tiempo transcurrido acumulados tocan un techo y se para (detalles en la Lección 4).
    - (Opcional) **El modelo reporta un obstáculo** — por ejemplo decide que necesita un permiso o una credencial que no puede conseguir, y se suspende para una persona.
@@ -204,7 +204,7 @@ async function runAgent(userInput, tools) {
 - Da el arreglo: mueve `let turns = 0;` arriba del `while` (el estado del contador tiene que acumular a lo largo de las rondas), manteniendo `turns += 1` dentro del cuerpo del bucle
 
 <!-- answer -->
-Causa raíz: **el contador `turns` se declara dentro del cuerpo del bucle.** `let turns = 0` corre de nuevo al comienzo de cada ronda, así que `turns` se reinicia a 0 cada vuelta; `turns += 1` lo sube a 1, la siguiente ronda lo devuelve a 0, y la prueba `turns >= MAX_TURNS` (10) nunca puede salir verdadera. La compuerta es código muerto de principio a fin —una condición de parada funciona porque su estado acumula a lo largo de las rondas, y el alcance de una declaración `let` termina en ese par de llaves, así que no puede transferirse.
+Causa raíz: **el contador `turns` se declara dentro del cuerpo del bucle.** `let turns = 0` se ejecuta de nuevo al comienzo de cada ronda, así que `turns` se reinicia a 0 cada vuelta; `turns += 1` lo sube a 1, la siguiente ronda lo devuelve a 0, y la prueba `turns >= MAX_TURNS` (10) nunca puede salir verdadera. La compuerta es código muerto de principio a fin —una condición de parada funciona porque su estado acumula a lo largo de las rondas, y el alcance de una declaración `let` termina en ese par de llaves, así que no puede transferirse.
 
 Por qué «las tareas cortas se ven bien»: este código no es lo mismo que el bucle infinito de la Lección 2. El error de allá era olvidar reasignar `response`, así que el bucle nunca podía salir en absoluto. Aquí `response` sí se reasigna, y el bucle puede pararse normalmente cuando el modelo regresa `end_turn` en alguna ronda. Así que mientras el modelo se porte bien y se rinda dentro de una ronda o dos, nunca notas que la compuerta está inerte —simplemente nunca se la llamó a la acción. Pero en cuanto el modelo se niega a regresar `end_turn` y empieza a girar, la salvaguarda que creías tener resulta no haber estado cableada nunca, y el bucle se desboca igual.
 

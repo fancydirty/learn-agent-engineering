@@ -8,7 +8,7 @@ URL: https://www.anthropic.com/engineering/multi-agent-research-system
 
 - authority: authoritative-guide
 
-Una entrada de blog técnica de primera mano del equipo de ingeniería de Anthropic que detalla la arquitectura de Claude Research, un sistema multiagente de nivel productivo: la división del trabajo entre orquestador y subagentes, los principios de diseño de prompts, los modos de fallo y los métodos de evaluación. De este artículo provienen las afirmaciones del curso sobre «qué es un sistema multiagente», «qué debe contener el prompt de un subagente», la regla de escalar el esfuerzo, la integración de citas y resultados, el coste en tokens y qué tareas se prestan a la paralelización.
+Una entrada de blog técnica de primera mano del equipo de ingeniería de Anthropic que detalla la arquitectura de Claude Research, un sistema multiagente de nivel productivo: la división del trabajo entre orquestador y subagentes, los principios de diseño de prompts, los modos de fallo y los métodos de evaluación. De este artículo provienen las afirmaciones del curso sobre «qué es un sistema multiagente», «qué debe contener el prompt de un subagente», la regla de escalar el esfuerzo, la integración de citas y resultados, el costo en tokens y qué tareas se prestan a la paralelización.
 
 Cita clave:
 

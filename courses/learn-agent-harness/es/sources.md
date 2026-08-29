@@ -8,7 +8,7 @@ URL: https://www.anthropic.com/engineering/building-effective-agents
 
 - authority: authoritative-guide
 
-El artículo autorizado de la ingeniería de Anthropic sobre qué es un agente, en qué se diferencian los agentes de los workflows y cómo mantener el control: da la definición de agente como «herramientas en un bucle», las condiciones de parada, los checkpoints y los costes y errores acumulados que trae la autonomía. Es la base central del tema de bucle y control de este curso.
+El artículo autorizado de la ingeniería de Anthropic sobre qué es un agente, en qué se diferencian los agentes de los workflows y cómo mantener el control: da la definición de agente como «herramientas en un bucle», las condiciones de parada, los puntos de control y los costos y errores acumulados que trae la autonomía. Es la base central del tema de bucle y control de este curso.
 
 Cita clave:
 > "They are typically just LLMs using tools based on environmental feedback in a loop."

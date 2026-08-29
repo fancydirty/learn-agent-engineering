@@ -130,7 +130,7 @@ URL: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-
 
 - authority: authoritative-guide
 
-Anthropic이 직접 쓴 컨텍스트 엔지니어링 가이드로, 'context rot'와 'attention budget'을 직접 설명합니다. 컨텍스트 윈도우의 토큰이 많아질수록 모델이 그 안에서 정보를 정확히 회수하는 능력이 떨어지고, 새 토큰 하나하나가 한정된 어텐션 예산을 소모한다는 것입니다. 또한 이 저하가 절벽이 아니라 그라디언트라는 점도 분명히 합니다. 이 코스의 '컨텍스트 오염'과 '어텐션 희석' 섹션의 주장은 이 글에 근거합니다.
+Anthropic이 직접 쓴 컨텍스트 엔지니어링 가이드로, 'context rot'와 'attention budget'을 직접 설명합니다. 컨텍스트 윈도의 토큰이 많아질수록 모델이 그 안에서 정보를 정확히 회수하는 능력이 떨어지고, 새 토큰 하나하나가 한정된 어텐션 예산을 소모한다는 것입니다. 또한 이 저하가 절벽이 아니라 그라디언트라는 점도 분명히 합니다. 이 코스의 '컨텍스트 오염'과 '어텐션 희석' 섹션의 주장은 이 글에 근거합니다.
 
 핵심 인용:
 

@@ -22,7 +22,7 @@ Esto parece una limitación, pero en realidad es la cura para los dos problemas 
 ```agentmentor-check
 {
   "id": "mac-zh-02-subagent-visibility",
-  "label": "Debería un subagente ver el historial completo de conversación del orquestador",
+  "label": "Juzgar si un subagente debería ver el historial completo de conversación del orquestador",
   "prompt": "Tres subagentes están investigando en paralelo los precios de tres proveedores de nube. Alguien sugiere: «Dejemos sin más que cada subagente vea el historial completo de conversación del orquestador hasta ahora, incluido lo que los otros dos subagentes ya han encontrado. Así pueden cruzar referencias entre sí y evitar duplicar búsquedas.» ¿Es buena idea?",
   "whyHere": "Acabamos de ver que un subagente arranca por defecto desde un contexto fresco y aislado, lo que hace fácil dejarse llevar por la afirmación de sonido plausible de que «compartir el historial evita el trabajo duplicado». Este es el momento de trazar la raya: el aislamiento de contexto es el mecanismo por defecto, y evitar el trabajo duplicado viene de que el orquestador trace límites de tarea claros al delegar, no de que los subagentes se espíen entre sí.",
   "mode": "single",

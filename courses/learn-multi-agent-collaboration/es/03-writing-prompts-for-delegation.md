@@ -47,7 +47,7 @@ Qué sale mal de verdad cuando no detallas alcance y límites: el equipo oficial
 ```agentmentor-check
 {
   "id": "mac-zh-03-vague-instruction",
-  "label": "Es esta instrucción de delegación lo bastante buena",
+  "label": "Juzgar si esta instrucción de delegación es lo bastante buena",
   "prompt": "El orquestador envía la misma instrucción a tres subagentes: «Echa un vistazo a la actividad reciente de producto de esta empresa.» Cada subagente busca por su cuenta, y lo que devuelven se solapa mucho a la vez que se pierde lo que al orquestador más le importaba: «los lanzamientos de funciones nuevas de los últimos seis meses». ¿Dónde está el problema?",
   "whyHere": "Acabamos de ver cómo las instrucciones vagas hacen que los subagentes malinterpreten la tarea o corran búsquedas duplicadas unos contra otros. Esto da un caso concreto de trabajo duplicado para comprobar si quien aprende sabe ubicar la causa raíz como «a la descripción de la tarea le faltan alcance y límites» en lugar de culpar a una capacidad débil del subagente o a la mala suerte.",
   "mode": "single",
@@ -56,7 +56,7 @@ Qué sale mal de verdad cuando no detallas alcance y límites: el equipo oficial
       "id": "a",
       "text": "La capacidad de búsqueda de los subagentes no es lo bastante fuerte; deberías cambiar a un modelo más capaz",
       "correct": false,
-      "feedback": "El problema no es la capacidad del modelo. El caso real oficial muestra que incluso el mismo lote de subagentes, ante una instrucción vaga como \"research the semiconductor shortage\", malinterpretará la tarea y correrá búsquedas duplicadas unos contra otros, porque la instrucción misma no fija ningún alcance, lo que no tiene nada que ver con lo fuerte que sea el modelo. Un modelo más fuerte no arreglará una instrucción a la que le faltan límites."
+      "feedback": "El problema no es la capacidad del modelo. El caso real oficial muestra que incluso el mismo lote de subagentes, ante una instrucción vaga como 'research the semiconductor shortage', malinterpretará la tarea y hará búsquedas duplicadas unos con otros, porque la instrucción misma no fija ningún alcance, lo que no tiene nada que ver con lo fuerte que sea el modelo. Un modelo más fuerte no arreglará una instrucción a la que le faltan límites."
     },
     {
       "id": "b",
@@ -68,7 +68,7 @@ Qué sale mal de verdad cuando no detallas alcance y límites: el equipo oficial
       "id": "c",
       "text": "Los tres subagentes deberían sincronizar entre sí su progreso de búsqueda para evitar buscar el mismo contenido",
       "correct": false,
-      "feedback": "Esto equivale a pedirles a los subagentes que compartan contexto, pero la Lección 2 ya cubrió que el mecanismo por defecto es que cada subagente arranque desde un contexto aislado y reciba solo la descripción de tarea que el orquestador escribió para él, así que tampoco puede ver el trabajo de los demás. El sistema oficial cayó justo en esta trampa al principio: varios agentes \"distracting each other with excessive updates\"[^S1] (distrayéndose mutuamente con actualizaciones excesivas), llenando la atención unos de otros. El arreglo de verdad es escribir con claridad el alcance y los límites de cada subagente al delegar, previniendo el solape en el origen, en lugar de confiar en que los subagentes se coordinen en tiempo de ejecución después del hecho."
+      "feedback": "Esto equivale a pedirles a los subagentes que compartan contexto, pero la Lección 2 ya cubrió que el mecanismo por defecto es que cada subagente arranque desde un contexto aislado y reciba solo la descripción de tarea que el orquestador escribió para él, así que tampoco puede ver el trabajo de los demás. El sistema oficial cayó justo en esta trampa al principio: varios agentes 'distracting each other with excessive updates'[^S1] (distrayéndose mutuamente con actualizaciones excesivas), llenando la atención unos de otros. El arreglo de verdad es escribir con claridad el alcance y los límites de cada subagente al delegar, previniendo el solape en el origen, en lugar de confiar en que los subagentes se coordinen en tiempo de ejecución después del hecho."
     }
   ]
 }
@@ -136,7 +136,7 @@ Compara con el ejemplo del CitationAgent de esta lección: encontrar ubicaciones
 
 - El subagente no puede ver el historial de conversación del orquestador,[^S3] lo que significa que un prompt de delegación tiene que ser **autocontenido**: legible por su cuenta, aparte de cualquier trasfondo conversacional, y aun así suficiente para que el subagente juzgue con precisión qué debería hacer.
 - Una descripción de tarea sólida tiene que contener un objetivo, un formato de salida, orientación sobre las fuentes y límites de tarea claros; sin esto, los subagentes duplican trabajo, dejan huecos o no logran encontrar la información necesaria.[^S1]
-- El contraejemplo real oficial demuestra que las instrucciones vagas como «investiga la escasez de semiconductores» llevan a los subagentes a malinterpretar la tarea o a correr exactamente las mismas búsquedas que otros subagentes[^S1]: el alcance y los límites no son opcionales, son la clave para evitar el trabajo duplicado.
+- El contraejemplo real oficial demuestra que las instrucciones vagas como «investiga la escasez de semiconductores» llevan a los subagentes a malinterpretar la tarea o a hacer exactamente las mismas búsquedas que otros subagentes[^S1]: el alcance y los límites no son opcionales, son la clave para evitar el trabajo duplicado.
 - **Un dominio de problema, un agente** (la destilación que hace esta lección de la práctica oficial): cada subagente debería ser dueño solo de una clase de problema con límites claros, como montar un CitationAgent dedicado para manejar las ubicaciones de citas, repartiendo trabajo de naturaleza distinta entre subagentes distintos[^S1] para que cada descripción de tarea se mantenga simple y enfocada.
 - Para juzgar si un prompt de delegación es lo bastante bueno, la prueba es simple: sácalo por su cuenta y léelo una vez, y mira si el subagente tiene que adivinar para rellenar los detalles de la tarea.
 

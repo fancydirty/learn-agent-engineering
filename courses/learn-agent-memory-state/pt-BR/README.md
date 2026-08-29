@@ -1,6 +1,6 @@
 ---
 domain: Desenvolvimento de software
-tags: [memória de agente, janela de contexto, compaction por resumo, memória persistente, prompt injection]
+tags: [memória de agente, janela de contexto, compactação por resumo, memória persistente, prompt injection]
 lang: pt-BR
 outcome: Distinga memória de estado e dê a um agente uma memória que sobrevive entre sessões sem ser envenenada.
 tier: 2
@@ -29,7 +29,7 @@ Ao final deste curso você será capaz de:
 - Projetar um esquema de memória externa baseada em arquivos, sabendo o que escrever nele e quando buscá-lo de volta
 - Usar estado estruturado (listas de tarefas, checkpoints) para deixar um agente retomar de uma interrupção em vez de recomeçar
 - Reconhecer os caminhos de ataque do envenenamento de memória e nomear pelo menos duas defesas específicas
-- Conectar você mesmo ferramentas de leitura/escrita e lógica de compaction a um agente, construindo uma camada de memória persistente executável
+- Conectar você mesmo ferramentas de leitura/escrita e lógica de compactação a um agente, construindo uma camada de memória persistente executável
 
 ## Pré-requisitos
 

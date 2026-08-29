@@ -3,7 +3,7 @@
 > Objetivos de aprendizaje:
 > - Explicar por qué enterrar el progreso de una tarea en prosa conversacional no es fiable, y por qué tiene que convertirse en estado estructurado
 > - Enunciar el ciclo de vida completo que recorre una tarea pendiente, desde su creación hasta su eliminación
-> - Distinguir el coste de empezar de cero frente al de retomar desde donde se interrumpió el trabajo
+> - Distinguir el costo de empezar de cero frente al de retomar desde donde se interrumpió el trabajo
 > - Decidir si una pieza del estado de la tarea debería vivir en el historial de la sesión o escribirse en un punto de control separado
 >
 > Requisitos: terminar la Lección 3 y entender los dos modos de la memoria externa | Anterior: [Lección 3 <<](./03-external-memory-files.md) | Siguiente: [Lección 5 >>](./05-memory-boundaries-and-safety.md)
@@ -68,7 +68,7 @@ Ese es el problema que resuelven los **puntos de control**: escribir el estado d
 
 Con los puntos de control en su sitio, por fin se sostiene la **recuperabilidad**: tras un reinicio del proceso, el agente no tiene que adivinar «dónde estaba». Lee el punto de control más reciente, ve «los pasos uno y dos están completed, el paso tres está in_progress», y continúa desde el paso tres en lugar de rehacer los pasos uno y dos.
 
-La comparación de costes aquí es concreta. En la tarea de refactorización, el paso «actualizar las definiciones de tipos», si es idempotente (ejecutarlo de nuevo produce el mismo resultado), solo cuesta tiempo perdido cuando se rehace desde cero. Pero si algún paso es una operación no idempotente como «insertar un registro de migración en la base de datos», empezar de cero podría insertar dos registros duplicados e incluso corromper datos. Lo que un punto de control ahorra no es solo tiempo — es el riesgo de volver a ejecutar por accidente ese tipo de operación no idempotente.
+La comparación de costos aquí es concreta. En la tarea de refactorización, el paso «actualizar las definiciones de tipos», si es idempotente (ejecutarlo de nuevo produce el mismo resultado), solo cuesta tiempo perdido cuando se rehace desde cero. Pero si algún paso es una operación no idempotente como «insertar un registro de migración en la base de datos», empezar de cero podría insertar dos registros duplicados e incluso corromper datos. Lo que un punto de control ahorra no es solo tiempo — es el riesgo de volver a ejecutar por accidente ese tipo de operación no idempotente.
 
 ```agentmentor-check
 {

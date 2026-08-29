@@ -17,7 +17,7 @@ Tome um post de blog de lançamento de produto. Você pode dividi-lo em três et
 
 ## Produtor-revisor: um escreve, o outro disseca, repete
 
-**Produtor-revisor** (avaliador-otimizador): "one LLM call generates a response while another provides evaluation and feedback in a loop."[^S2] A diferença central em relação a um pipeline é esse laço. Um pipeline percorre um conjunto fixo de etapas e para; o produtor-revisor vai do rascunho, o revisor dá feedback, revisa-se de acordo com o feedback, revisa de novo, e não para até o revisor ficar satisfeito (ou até atingir um número máximo de rodadas pré-definido). Quantas rodadas serão necessárias normalmente não se sabe de antemão.
+**Produtor-revisor** (avaliador-otimizador): "one LLM call generates a response while another provides evaluation and feedback in a loop."[^S2] A diferença central em relação a um pipeline é esse loop. Um pipeline percorre um conjunto fixo de etapas e para; o produtor-revisor vai do rascunho, o revisor dá feedback, revisa-se de acordo com o feedback, revisa de novo, e não para até o revisor ficar satisfeito (ou até atingir um número máximo de rodadas pré-definido). Quantas rodadas serão necessárias normalmente não se sabe de antemão.
 
 Por exemplo, coloque um agente para escrever código que lida com a lógica de pagamento e outro agente cujo único trabalho é verificar se esse código deixa passar casos extremos — um valor negativo, um envio duplicado sob concorrência. Se o agente revisor encontrar um problema, o código volta ao agente produtor para mais uma passada e depois retorna ao revisor, até o revisor não ver problemas óbvios. Essa forma se encaixa em tarefas em que “ele fez um bom trabalho” não pode ser julgado com precisão de uma só vez e precisa de polimento repetido para convergir. A primeira versão raramente é a final; a etapa de revisão existe para pegar problemas óbvios antes da entrega e empurrar o produtor a revisar mais uma vez.
 
@@ -25,17 +25,17 @@ Por exemplo, coloque um agente para escrever código que lida com a lógica de p
 
 **Votação multiperspectiva**: vários agentes julgam o mesmo conteúdo de forma independente, em vez de processá-lo passo a passo em um revezamento. O exemplo oficial é uma revisão de segurança de código: "Reviewing a piece of code for vulnerabilities, where several different prompts review and flag the code if they find a problem."[^S2] Aqui, os “vários prompts diferentes” olham cada um para o mesmo código de forma independente, nenhum dependendo do julgamento de outro; basta um prompt sinalizar um problema para o código ser sinalizado e valer uma análise mais atenta.
 
-Esse padrão difere do produtor-revisor. A votação não é um laço de rascunhar-e-revisar; os agentes julgam um conteúdo já existente em paralelo e de forma independente. O objetivo é reduzir as chances de um deslize verificando de vários ângulos diferentes, não tornar o conteúdo melhor por meio de edições repetidas. Ele se encaixa em situações em que você prefere gastar algumas chamadas a mais a deixar um problema escapar — em revisões de segurança e verificações de conformidade, deixar passar um problema real costuma custar muito mais do que alguns tokens a mais.
+Esse padrão difere do produtor-revisor. A votação não é um loop de rascunhar-e-revisar; os agentes julgam um conteúdo já existente em paralelo e de forma independente. O objetivo é reduzir as chances de um deslize verificando de vários ângulos diferentes, não tornar o conteúdo melhor por meio de edições repetidas. Ele se encaixa em situações em que você prefere gastar algumas chamadas a mais a deixar um problema escapar — em revisões de segurança e verificações de conformidade, deixar passar um problema real costuma custar muito mais do que alguns tokens a mais.
 
 ## Escolhendo entre os três e para onde vai o custo
 
 Os três padrões têm estruturas de custo diferentes, então escolha fazendo as contas em relação à sua situação real:
 
 - **Pipeline**: o custo total é aproximadamente a soma das chamadas ao longo das etapas. A contagem de etapas é fixa e previsível, mas, como a execução é estritamente sequencial, a latência total é o tempo de cada etapa somado, então não será rápido. Bom para tarefas com dependências claras de etapa a etapa, em que o escopo de cada etapa é bem pequeno.
-- **Produtor-revisor**: o custo depende de quantas rodadas leva para convergir, e a contagem de rodadas é incerta. Quando o produtor e o revisor entram em um vai e vem, o custo pode ir muito além do que você esperava — por isso esse padrão normalmente precisa de um limite máximo de rodadas no laço, para não ficar girando para sempre. Bom para tarefas em que a primeira versão provavelmente não é boa o suficiente e precisa de polimento repetido.
+- **Produtor-revisor**: o custo depende de quantas rodadas leva para convergir, e a contagem de rodadas é incerta. Quando o produtor e o revisor entram em um vai e vem, o custo pode ir muito além do que você esperava — por isso esse padrão normalmente precisa de um limite máximo de rodadas no loop, para não ficar girando para sempre. Bom para tarefas em que a primeira versão provavelmente não é boa o suficiente e precisa de polimento repetido.
 - **Votação multiperspectiva**: o custo é aproximadamente o custo de uma única revisão vezes o número de agentes votando — uma multiplicação direta, então N agentes significam N vezes o custo. Bom para tarefas em que um deslize é caro e você prefere pagar mais por uma cobertura mais ampla; uma má escolha para situações sensíveis a custo em que o conteúdo em si não é muito arriscado.
 
-Para escolher, volte à forma da própria tarefa. Ela tem uma ordem natural de etapas? Se sim, considere um pipeline. A qualidade da saída precisa de polimento repetido para ser boa o suficiente? Se sim, considere o produtor-revisor. Deixar passar um problema é caro o bastante para valer verificar de vários ângulos? Se sim, considere a votação multiperspectiva. Os três também não são mutuamente exclusivos — um fluxo de trabalho completo pode percorrer um pipeline fixo e aninhar um laço produtor-revisor dentro de uma de suas etapas. A Lição 6 constrói exatamente esse tipo de combinação na prática.
+Para escolher, volte à forma da própria tarefa. Ela tem uma ordem natural de etapas? Se sim, considere um pipeline. A qualidade da saída precisa de polimento repetido para ser boa o suficiente? Se sim, considere o produtor-revisor. Deixar passar um problema é caro o bastante para valer verificar de vários ângulos? Se sim, considere a votação multiperspectiva. Os três também não são mutuamente exclusivos — um fluxo de trabalho completo pode percorrer um pipeline fixo e aninhar um loop produtor-revisor dentro de uma de suas etapas. A Lição 6 constrói exatamente esse tipo de combinação na prática.
 
 ```agentmentor-check
 {
@@ -47,15 +47,15 @@ Para escolher, volte à forma da própria tarefa. Ela tem uma ordem natural de e
   "choices": [
     {
       "id": "a",
-      "text": "Produtor-revisor — um laço de escrever-revisar-corrigir que só termina quando a verificação passa.",
+      "text": "Produtor-revisor — um loop de escrever-revisar-corrigir que só termina quando a verificação passa.",
       "correct": true,
-      "feedback": "Correto. A definição oficial de produtor-revisor é uma chamada gerando uma resposta enquanto outra fornece avaliação e feedback em um laço; o laço aqui só converge quando a verificação passa. “Devolver para reescrever se a verificação falhar” é exatamente esse laço, diferente da execução fixa e unidirecional de um pipeline — um pipeline não devolve a saída de uma etapa para refazer uma etapa anterior só porque ela não ficou boa o suficiente."
+      "feedback": "Correto. A definição oficial de produtor-revisor é uma chamada gerando uma resposta enquanto outra fornece avaliação e feedback em um loop; o loop aqui só converge quando a verificação passa. “Devolver para reescrever se a verificação falhar” é exatamente esse loop, diferente da execução fixa e unidirecional de um pipeline — um pipeline não devolve a saída de uma etapa para refazer uma etapa anterior só porque ela não ficou boa o suficiente."
     },
     {
       "id": "b",
       "text": "Pipeline — há duas etapas, e a primeira alimenta sua saída para a segunda.",
       "correct": false,
-      "feedback": "Olhar apenas para “há uma ordem de etapas, e a etapa posterior processa a saída da anterior” não basta. Um pipeline percorre um conjunto fixo de etapas e para; ele não devolve trabalho. Aqui uma verificação que falha volta ao agente de documentação para adicionar mais, repetidamente até passar, então a contagem de rodadas não é fixa. Esse é o laço produtor-revisor, não a execução sequencial de uma só passada de um pipeline."
+      "feedback": "Olhar apenas para “há uma ordem de etapas, e a etapa posterior processa a saída da anterior” não basta. Um pipeline percorre um conjunto fixo de etapas e para; ele não devolve trabalho. Aqui uma verificação que falha volta ao agente de documentação para adicionar mais, repetidamente até passar, então a contagem de rodadas não é fixa. Esse é o loop produtor-revisor, não a execução sequencial de uma só passada de um pipeline."
     },
     {
       "id": "c",
@@ -94,10 +94,10 @@ Para cada uma das três tarefas abaixo, decida se ela se encaixa melhor em pipel
 <!-- answer -->
 1. Pipeline. Tradução, consistência de terminologia e formatação são três etapas fixas com uma ordem clara de dependências; cada etapa processa a saída da etapa anterior, não há devolução de trabalho para refazer com base em uma verificação, e termina uma vez que as três etapas estão prontas.
 2. Votação multiperspectiva. “Esforçar-se ao máximo para não deixar passar um único risco” significa que um deslize é caro, então se encaixa em usar vários ângulos de revisão independentes (digamos, um focado em termos de pagamento, um em responsabilidade por descumprimento, um em propriedade intelectual), cada um verificando o mesmo contrato; basta um ângulo sinalizar um risco para valer atenção, trocando múltiplas perspectivas por uma cobertura mais ampla.
-3. Produtor-revisor. “Várias rodadas de polimento permitidas até ficar satisfatório” é exatamente o laço de escrever um rascunho, obter feedback, revisar, revisar de novo; a contagem de rodadas não é fixa, e ele só para quando converge para uma versão satisfatória.
+3. Produtor-revisor. “Várias rodadas de polimento permitidas até ficar satisfatório” é exatamente o loop de escrever um rascunho, obter feedback, revisar, revisar de novo; a contagem de rodadas não é fixa, e ele só para quando converge para uma versão satisfatória.
 
 <!-- hint -->
-Palavras-chave ajudam a classificar uma tarefa rápido: uma descrição clara de “primeiro… depois… por fim…” de etapas fixas costuma apontar para pipeline; “tente não deixar passar nada” e “vários ângulos” apontam para votação; “polir repetidamente” e “laço até ficar satisfeito” apontam para produtor-revisor.
+Palavras-chave ajudam a classificar uma tarefa rápido: uma descrição clara de “primeiro… depois… por fim…” de etapas fixas costuma apontar para pipeline; “tente não deixar passar nada” e “vários ângulos” apontam para votação; “polir repetidamente” e “loop até ficar satisfeito” apontam para produtor-revisor.
 
 <!-- hint -->
 A armadilha fácil é a tarefa 1 — ela também é “uma etapa após a outra”, mas note que não envolve “devolver para reescrever se a verificação falhar”. As três etapas são estritamente unidirecionais, e é isso que a torna um pipeline em vez de produtor-revisor.
@@ -108,11 +108,11 @@ A tarefa: antes do envio, revisar um trecho de código em busca de vulnerabilida
 
 <!-- rubric -->
 - A abordagem escolhida é votação multiperspectiva, não produtor-revisor ou pipeline
-- Explica por que, sob essa restrição de orçamento, a votação supera o laço e o polimento repetidos
+- Explica por que, sob essa restrição de orçamento, a votação supera o loop e o polimento repetidos
 - Dá uma divisão concreta das 3 chamadas (digamos, focando em tipos diferentes de vulnerabilidade)
 
 <!-- answer -->
-A votação multiperspectiva se encaixa. A necessidade central da tarefa é “maximizar as chances de encontrar vulnerabilidades reais” — um deslize é caro e você quer uma cobertura mais ampla, de vários ângulos, que é exatamente a força da votação. A contagem de rodadas do produtor-revisor é incerta e, sob um orçamento rígido de apenas 3 chamadas, você provavelmente esgotaria as chamadas antes de o laço terminar de polir; gastar as 3 chamadas diretamente em revisões independentes em paralelo é mais previsível. Configuração concreta: use as 3 chamadas para revisar o mesmo código de forma independente, cada uma focada em um tipo diferente de vulnerabilidade — a primeira em falhas de injeção (injeção de SQL, injeção de comando), a segunda em problemas de permissão e escalada de privilégios, a terceira em vazamentos de informação sensível (chaves, dados privados em logs). Basta uma chamada sinalizar um problema para valer uma revisão humana, trocando três ângulos diferentes por uma cobertura mais ampla do que uma única revisão.
+A votação multiperspectiva se encaixa. A necessidade central da tarefa é “maximizar as chances de encontrar vulnerabilidades reais” — um deslize é caro e você quer uma cobertura mais ampla, de vários ângulos, que é exatamente a força da votação. A contagem de rodadas do produtor-revisor é incerta e, sob um orçamento rígido de apenas 3 chamadas, você provavelmente esgotaria as chamadas antes de o loop terminar de polir; gastar as 3 chamadas diretamente em revisões independentes em paralelo é mais previsível. Configuração concreta: use as 3 chamadas para revisar o mesmo código de forma independente, cada uma focada em um tipo diferente de vulnerabilidade — a primeira em falhas de injeção (injeção de SQL, injeção de comando), a segunda em problemas de permissão e escalada de privilégios, a terceira em vazamentos de informação sensível (chaves, dados privados em logs). Basta uma chamada sinalizar um problema para valer uma revisão humana, trocando três ângulos diferentes por uma cobertura mais ampla do que uma única revisão.
 
 <!-- hint -->
 Descarte o produtor-revisor primeiro — sua contagem de chamadas não é fixada de antemão; depende de quantas rodadas leva para convergir, o que não combina bem com o orçamento rígido de “no máximo 3 chamadas” da tarefa.
@@ -125,7 +125,7 @@ Se as 3 chamadas usarem o mesmo prompt para revisar o mesmo código, o retorno �
 ## Recapitulação
 
 - **Pipeline** divide uma tarefa em uma cadeia de etapas fixas dependentes de ordem, cada uma processando a saída da etapa anterior[^S2]; bom para tarefas com uma ordem natural que não precisam de trabalho devolvido.
-- **Produtor-revisor** é um laço de escrever um rascunho, obter feedback, revisar, revisar de novo, que roda até convergir[^S2]; bom para tarefas cuja qualidade de saída precisa de polimento repetido, com o custo determinado pela contagem de rodadas, então normalmente precisa de um limite máximo de rodadas.
+- **Produtor-revisor** é um loop de escrever um rascunho, obter feedback, revisar, revisar de novo, que roda até convergir[^S2]; bom para tarefas cuja qualidade de saída precisa de polimento repetido, com o custo determinado pela contagem de rodadas, então normalmente precisa de um limite máximo de rodadas.
 - **Votação multiperspectiva** tem vários agentes julgando o mesmo conteúdo em paralelo e de forma independente, sinalizando-o assim que qualquer ângulo encontra um problema[^S2]; bom para situações em que um deslize é caro e você pagará várias vezes o custo por uma cobertura mais ampla, com o custo sendo aproximadamente o custo de uma única execução vezes o número de agentes julgando.
 - Para escolher entre os três, olhe a forma da tarefa: ela tem uma ordem natural de etapas, precisa de polimento repetido e um deslize é caro — as três perguntas apontam respectivamente para pipeline, produtor-revisor e votação multiperspectiva.
 - **Handoff** é uma ideia de colaboração diferente: os agentes passam o controle adiante por completo uns aos outros, o agente que recebe assume a conversa e por padrão vê todo o histórico anterior da conversa[^S5], o oposto do mecanismo do orquestrador-subagente em que os subagentes partem de um contexto novo e isolado e só devolvem uma conclusão[^S3] — um handoff permanece dentro de uma única execução e se encaixa no caso em que um agente mais especializado deveria assumir a conversa dali[^S4].

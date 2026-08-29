@@ -431,7 +431,7 @@
     "def": "A função no código desta lição que gera ou revisa o rascunho; em uma reexecução ela carrega a versão anterior mais as notas de revisão para que o produtor edite em vez de recomeçar.",
     "source": "[^S8]",
     "pitfall": "Presumir que `runProducer` lembra o rascunho que gerou na rodada passada, então a versão anterior não precisa ser escrita no prompt novamente.",
-    "distractor_rationale": "O nome da função sugere um trabalhador com estado, mas a API de Mensagens é sem estado e não mantém nada entre requisições — 'revise sua versão anterior' só significa algo se essa versão for escrita no prompt desta chamada literalmente."
+    "distractor_rationale": "O nome da função sugere um trabalhador com estado, mas a Messages API é sem estado e não mantém nada entre requisições — 'revise sua versão anterior' só significa algo se essa versão for escrita no prompt desta chamada literalmente."
   },
   {
     "term": "runReviewer",
@@ -484,7 +484,7 @@
   },
   {
     "term": "sem estado",
-    "def": "A propriedade da API de Mensagens de que cada requisição deve carregar todo o histórico de conversa de que precisa, porque a API não mantém estado entre requisições.",
+    "def": "A propriedade da Messages API de que cada requisição deve carregar todo o histórico de conversa de que precisa, porque a API não mantém estado entre requisições.",
     "source": "[^S8]",
     "pitfall": "Presumir que o modelo retém o que aconteceu na chamada anterior dentro da mesma execução de script.",
     "distractor_rationale": "As chamadas vêm de um programa em um loop, o que as faz parecer uma sessão contínua, mas nada é preservado no lado do servidor — cada rodada tem de reenviar a tarefa, o rascunho anterior e as notas da última rodada por completo."

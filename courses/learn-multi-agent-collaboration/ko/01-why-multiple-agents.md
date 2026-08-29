@@ -21,37 +21,37 @@
 
 일단 그 잘못된 판단이 생기고 나면 사라지지 않습니다. 대화 기록에 남아, 이후 모든 추론 단계의 배경 일부가 됩니다. 에이전트가 권위 있고 최신인 가격 페이지를 찾아냈을 무렵에는 서로 모순되는 두 사실이 같은 컨텍스트 윈도 안에 나란히 놓이고, 모델은 어느 쪽을 신뢰해야 할지 깔끔하게 가려내지 못할 수 있습니다. 특히 잘못된 쪽이 더 일찍 등장했고 그동안 여러 번 참조된 경우라면 더욱 그렇습니다.
 
-이것이 **컨텍스트 오염**입니다. 초기 단계의 에러나 관련 없는 조각이, 이후의 모든 추론이 의존하는 하나의 컨텍스트에 섞여 들어가고, 나중의 올바른 정보로도 그것을 완전히 씻어내기 어렵다는 것입니다. Anthropic의 표현을 빌리면, "as the number of tokens in the context window increases, the model's ability to accurately recall information from that context decreases"[^S7]. (컨텍스트 윈도의 토큰 수가 늘어날수록, 그 컨텍스트에서 정보를 정확히 떠올리는 모델의 능력은 떨어진다는 뜻입니다.) 작업이 길고 중간 단계가 많을수록 이런 오염이 쌓일 기회도 늘어납니다.
+이것이 **컨텍스트 오염**입니다. 초기 단계의 에러나 관련 없는 조각이, 이후의 모든 추론이 의존하는 하나의 컨텍스트에 섞여 들어가고, 나중의 올바른 정보로도 그것을 완전히 씻어내기 어렵다는 것입니다. Anthropic의 표현을 빌리면, "as the number of tokens in the context window increases, the model's ability to accurately recall information from that context decreases"[^S7]. (컨텍스트 윈도의 토큰 수가 늘어날수록, 그 컨텍스트에서 정보를 정확히 떠올리는 모델의 능력은 떨어진다.) 작업이 길고 중간 단계가 많을수록 이런 오염이 쌓일 기회도 늘어납니다.
 
 ## 어텐션 희석: 많이 읽을수록 흐릿해지는 시야
 
 두 번째 문제는 첫 번째와 다릅니다. 정보가 틀린 것이 아니라, 정보가 너무 많다는 것 자체가 비용이라는 점입니다. 세 제공업체의 가격 페이지와 변경 이력을 합치면 수만 단어에 이르는 원본 콘텐츠가 되고, 그것이 전부 하나의 컨텍스트 윈도에 쌓입니다. 모델이 최종 추천 글을 쓸 때는 원칙적으로 그 수만 단어에 걸친 모든 세부 사항을 한꺼번에 붙들고 있어야 하지만, 컨텍스트가 커질수록 그 하나하나에 쏟는 주의는 점점 얇게 퍼집니다.
 
-이것이 **어텐션 희석**입니다. Anthropic은 이를 어텐션 예산의 개념으로 설명합니다. "LLMs have an 'attention budget' that they draw on when parsing large volumes of context"이며 "Every new token introduced depletes this budget by some amount"[^S7]. (LLM에는 방대한 양의 컨텍스트를 해석할 때 끌어다 쓰는 '어텐션 예산'이 있고, 새로 들어오는 토큰마다 그 예산을 얼마간 소모한다는 뜻입니다.) 하나의 컨텍스트 윈도에 많이 밀어 넣을수록 개별 세부 사항에 쓸 예산은 줄어들고, 여러 세부 사항을 동시에 정확히 붙들어야 하는 작업, 곧 요약이나 비교 같은 작업에서 실수하거나 빠뜨리기 쉬워집니다.
+이것이 **어텐션 희석**입니다. Anthropic은 이를 어텐션 예산의 개념으로 설명합니다. "LLMs have an 'attention budget' that they draw on when parsing large volumes of context"이며 "Every new token introduced depletes this budget by some amount"[^S7]. (LLM에는 방대한 양의 컨텍스트를 해석할 때 끌어다 쓰는 '어텐션 예산'이 있고, 새로 들어오는 토큰마다 그 예산을 얼마간 소모한다.) 하나의 컨텍스트 윈도에 많이 밀어 넣을수록 개별 세부 사항에 쓸 예산은 줄어들고, 여러 세부 사항을 동시에 정확히 붙들어야 하는 작업, 곧 요약이나 비교 같은 작업에서 실수하거나 빠뜨리기 쉬워집니다.
 
-컨텍스트 오염과 어텐션 희석을 합치면 단일 컨텍스트 경로의 한계가 드러납니다. 작업이 충분히 길어지면, 한 에이전트가 처음부터 끝까지 도맡을 경우 품질이 꾸준히 떨어집니다. Anthropic은 이 하락을 "a performance gradient rather than a hard cliff"[^S7]이라고 설명하며(가파른 절벽이 아니라 완만한 성능 기울기라는 뜻입니다), 프롬프트를 길게 쓰는 것만으로는 이를 되돌리기 어렵습니다.
+컨텍스트 오염과 어텐션 희석을 합치면 단일 컨텍스트 경로의 한계가 드러납니다. 작업이 충분히 길어지면, 한 에이전트가 처음부터 끝까지 도맡을 경우 품질이 꾸준히 떨어집니다. Anthropic은 이 하락을 "a performance gradient rather than a hard cliff"[^S7]이라고 설명하며(가파른 절벽이 아니라 완만한 성능 기울기다), 프롬프트를 길게 쓰는 것만으로는 이를 되돌리기 어렵습니다.
 
 ## 멀티 에이전트 시스템: 긴 작업을 여러 컨텍스트로 나눈다
 
-멀티 에이전트의 해법은, 모든 것을 같은 컨텍스트에 끝없이 쌓아 넣는 대신, 하나의 큰 작업을 여러 조각으로 쪼개어 각 조각을 별개의 독립된 에이전트에게 맡기는 것입니다. Anthropic의 정의는 이렇습니다. "A multi-agent system consists of multiple agents (LLMs autonomously using tools in a loop) working together."[^S1] (멀티 에이전트 시스템은 여러 에이전트, 곧 루프 안에서 자율적으로 도구를 쓰는 여러 LLM이 함께 협력하는 것으로 이루어진다는 뜻입니다.)
+멀티 에이전트의 해법은, 모든 것을 같은 컨텍스트에 끝없이 쌓아 넣는 대신, 하나의 큰 작업을 여러 조각으로 쪼개어 각 조각을 별개의 독립된 에이전트에게 맡기는 것입니다. Anthropic의 정의는 이렇습니다. "A multi-agent system consists of multiple agents (LLMs autonomously using tools in a loop) working together."[^S1] (멀티 에이전트 시스템은 여러 에이전트, 곧 루프 안에서 자율적으로 도구를 쓰는 여러 LLM이 함께 협력하는 것으로 이루어진다.)
 
 클라우드 조사 예시로 돌아가 봅시다. 한 에이전트가 세 회사의 자료를 처음부터 끝까지 다 읽는 대신, 세 에이전트가 각각 한 회사에 집중하되 저마다 별개의 컨텍스트 윈도를 갖고 서로 간섭하지 않게 합니다[^S1]. 첫 번째 회사를 조사하다 주워 든 오래된 블로그 글은 그 한 에이전트의 컨텍스트만 오염시킬 뿐, 나머지 두 회사에 대한 추론에는 결코 섞이지 않습니다. Anthropic은 이를 "separation of concerns"라 부르는데, 이는 서로 다른 도구·프롬프트·탐색 경로로 경로 의존성을 줄이는 것을 말합니다[^S1]. 그리고 각 에이전트가 다뤄야 할 원본 콘텐츠도 "세 회사의 자료 전부"에서 "한 회사의 자료"로 줄어드니 어텐션 희석 문제도 완화됩니다. 이 구조가 정확히 어떻게 돌아가는지, 곧 하나의 중앙 에이전트가 작업을 나누고 여러 에이전트가 병렬로 작업한 뒤 결과를 합치는 과정은 다음 레슨에서 다룹니다.
 
 ## 비용: 멀티 에이전트는 더 비싸다
 
-에이전트로 나누는 것은 공짜가 아닙니다. 각 서브에이전트는 작업 배경을 다시 읽어 들이고 자기 나름의 추론을 정리해야 하며, 그것이 토큰을 태웁니다. 그다음 마지막 단계에서 여러 에이전트의 결과를 합치는데, 그것도 토큰을 태웁니다. Anthropic이 측정한 수치는 이렇습니다. "In our data, agents typically use about 4× more tokens than chat interactions, and multi-agent systems use about 15× more tokens than chats."[^S1] (우리 데이터에서 에이전트는 보통 채팅 상호작용보다 약 4배 많은 토큰을 쓰고, 멀티 에이전트 시스템은 채팅보다 약 15배 많은 토큰을 쓴다는 뜻입니다.)
+에이전트로 나누는 것은 공짜가 아닙니다. 각 서브에이전트는 작업 배경을 다시 읽어 들이고 자기 나름의 추론을 정리해야 하며, 그것이 토큰을 태웁니다. 그다음 마지막 단계에서 여러 에이전트의 결과를 합치는데, 그것도 토큰을 태웁니다. Anthropic이 측정한 수치는 이렇습니다. "In our data, agents typically use about 4× more tokens than chat interactions, and multi-agent systems use about 15× more tokens than chats."[^S1] (우리 데이터에서 에이전트는 보통 채팅 상호작용보다 약 4배 많은 토큰을 쓰고, 멀티 에이전트 시스템은 채팅보다 약 15배 많은 토큰을 쓴다.)
 
-15배는 작은 숫자가 아닙니다. 이는 멀티 에이전트 시스템을 도입하는 것이, 그 추가 토큰 비용을 정당화할 만큼 작업 자체가 가치 있을 때에만 수지가 맞는다는 뜻입니다. Anthropic의 표현을 빌리면, "For economic viability, multi-agent systems require tasks where the value of the task is high enough to pay for the increased performance."[^S1] (경제적으로 성립하려면, 멀티 에이전트 시스템은 작업의 가치가 향상된 성능 값을 치를 만큼 충분히 높은 작업을 요구한다는 뜻입니다.)
+15배는 작은 숫자가 아닙니다. 이는 멀티 에이전트 시스템을 도입하는 것이, 그 추가 토큰 비용을 정당화할 만큼 작업 자체가 가치 있을 때에만 수지가 맞는다는 뜻입니다. Anthropic의 표현을 빌리면, "For economic viability, multi-agent systems require tasks where the value of the task is high enough to pay for the increased performance."[^S1] (경제적으로 성립하려면, 멀티 에이전트 시스템은 작업의 가치가 향상된 성능 값을 치를 만큼 충분히 높은 작업을 요구한다.)
 
 서브에이전트를 몇 개 돌릴지도 "많을수록 좋다"는 판단이 아닙니다. Anthropic은 규모 산정의 경험칙을 제시했습니다. 단순한 사실 확인은 에이전트 1개와 도구 호출 3~10회면 충분하고, 직접 비교는 서브에이전트 2~4개에 각각 10~15회의 호출이 필요하며, 책임이 뚜렷이 나뉠 만큼 복잡한 조사만이 서브에이전트 10개를 넘길 가치가 있다는 것입니다[^S1]. 초기에 팀은 반례들을 겪었습니다. 단순한 질의에 서브에이전트 50개를 띄우는 에이전트, 존재하지도 않는 출처를 찾아 끝없이 웹을 뒤지는 에이전트, 그리고 불필요한 업데이트를 잔뜩 주고받으며 서로의 주의를 흩뜨리는 에이전트들이었습니다[^S1].
 
-그 규칙 뒤에 놓인 태도는, Anthropic이 에이전트 아키텍처를 다룬 다른 글에서 준 조언과 일치합니다. "you should consider adding complexity only when it demonstrably improves outcomes."[^S2] (복잡성을 더하는 것은 그것이 결과를 명백히 개선할 때에만 고려해야 한다는 뜻입니다.) 우선 한 에이전트로 작업이 돌아가게 만들고, 실제로 어디서 막히는지, 곧 컨텍스트 오염인지 어텐션 희석인지 지켜본 뒤, 여러 에이전트를 어느 단계에 들일지, 들일지 말지를 결정합니다. 이것이 처음부터 복잡한 멀티 에이전트 시스템을 세우는 것보다 낫습니다.
+그 규칙 뒤에 놓인 태도는, Anthropic이 에이전트 아키텍처를 다룬 다른 글에서 준 조언과 일치합니다. "you should consider adding complexity only when it demonstrably improves outcomes."[^S2] (복잡성을 더하는 것은 그것이 결과를 명백히 개선할 때에만 고려해야 한다.) 우선 한 에이전트로 작업이 돌아가게 만들고, 실제로 어디서 막히는지, 곧 컨텍스트 오염인지 어텐션 희석인지 지켜본 뒤, 여러 에이전트를 어느 단계에 들일지, 들일지 말지를 결정합니다. 이것이 처음부터 복잡한 멀티 에이전트 시스템을 세우는 것보다 낫습니다.
 
 ## 멀티 에이전트를 쓰지 말아야 할 때: 조율 오버헤드가 이득을 넘어선다
 
 멀티 에이전트 시스템의 가치는 하나의 전제에 놓여 있습니다. 작업이 각각 독립적으로 처리되는 조각들로 나뉠 수 있다는 것입니다. 그 전제가 무너지는 순간, 나누는 것 자체가 짐이 됩니다. 이것이 **조율 오버헤드**입니다. 여러 에이전트가 일을 나누고 협력하게 만드는 데 드는 추가 시간과 토큰으로, 작업을 쪼개고, 결과를 합치고, 에이전트들의 모순되는 출력을 조정하는 일을 포함합니다. 작업에 진정으로 **병렬화**할 수 있는 부분이 많지 않으면, 조율 오버헤드가 나눔이 주는 이득을 쉽게 앞질러 버립니다.
 
-Anthropic은 잘 맞지 않는 작업 한 종류를 이렇게 짚습니다. "most coding tasks involve fewer truly parallelizable tasks than research, and LLM agents are not yet great at coordinating and delegating to other agents in real time."[^S1] (대부분의 코딩 작업은 조사보다 진정으로 병렬화할 수 있는 부분이 적고, LLM 에이전트는 아직 실시간으로 다른 에이전트에게 조율하고 위임하는 데 능숙하지 않다는 뜻입니다.) 버그를 고친다는 것은 대개 코드 안에서 앞뒤로 촘촘히 얽힌 여러 로직 조각을 이해하는 일이라, 서로 밟지 않게 서로 다른 에이전트를 위한 덩어리로 깔끔하게 잘라내기 어렵습니다. 이는 **깊이 우선 작업**에 가깝습니다. 답이 여러 무관한 방향에 흩어져 있는 것이 아니라, 한 단계 한 단계 밟아가야 하는 하나의 추론 사슬 안에 놓여 있는 것입니다. 반면 Anthropic이 멀티 에이전트 시스템이 진정으로 뛰어나다고 본 것은 가치 높은 작업입니다. "multi-agent systems excel at valuable tasks that involve heavy parallelization, information that exceeds single context windows, and interfacing with numerous complex tools"[^S1](멀티 에이전트 시스템은 대규모 병렬화, 단일 컨텍스트 윈도를 넘어서는 정보, 그리고 수많은 복잡한 도구와의 연결이 관여하는 가치 높은 작업에서 탁월하다는 뜻입니다). 클라우드 가격을 조사하거나 여러 문서를 나란히 비교하는 것은 **너비 우선 작업**입니다. 답이 서로 비교적 독립적인 몇 방향에 퍼져 있어, 서로의 중간 결과에 의존하지 않고 따로따로 쫓아갈 수 있는 것입니다.
+Anthropic은 잘 맞지 않는 작업 한 종류를 이렇게 짚습니다. "most coding tasks involve fewer truly parallelizable tasks than research, and LLM agents are not yet great at coordinating and delegating to other agents in real time."[^S1] (대부분의 코딩 작업은 조사보다 진정으로 병렬화할 수 있는 부분이 적고, LLM 에이전트는 아직 실시간으로 다른 에이전트에게 조율하고 위임하는 데 능숙하지 않다.) 버그를 고친다는 것은 대개 코드 안에서 앞뒤로 촘촘히 얽힌 여러 로직 조각을 이해하는 일이라, 서로 밟지 않게 서로 다른 에이전트를 위한 덩어리로 깔끔하게 잘라내기 어렵습니다. 이는 **깊이 우선 작업**에 가깝습니다. 답이 여러 무관한 방향에 흩어져 있는 것이 아니라, 한 단계 한 단계 밟아가야 하는 하나의 추론 사슬 안에 놓여 있는 것입니다. 반면 Anthropic이 멀티 에이전트 시스템이 진정으로 뛰어나다고 본 것은 가치 높은 작업입니다. "multi-agent systems excel at valuable tasks that involve heavy parallelization, information that exceeds single context windows, and interfacing with numerous complex tools"[^S1](멀티 에이전트 시스템은 대규모 병렬화, 단일 컨텍스트 윈도를 넘어서는 정보, 그리고 수많은 복잡한 도구와의 연결이 관여하는 가치 높은 작업에서 탁월하다). 클라우드 가격을 조사하거나 여러 문서를 나란히 비교하는 것은 **너비 우선 작업**입니다. 답이 서로 비교적 독립적인 몇 방향에 퍼져 있어, 서로의 중간 결과에 의존하지 않고 따로따로 쫓아갈 수 있는 것입니다.
 
 작업을 멀티 에이전트로 갈지 판단하려면 세 가지 질문에서 출발합니다. 작업이 서로 독립적인 하위 작업으로 나뉠 수 있는가? 일단 나눈 뒤, 전체 정보가 하나의 **컨텍스트 윈도**가 담을 수 있는 양을 넘어서는가? 그 추가 토큰 비용을 감당할 만큼 작업이 가치 있는가? 셋 중 하나라도 "아니다" 또는 "그럴 가치가 없다" 쪽으로 기운다면, 대개는 그 작업을 **단일 에이전트 시스템**으로 성실히 끝내는 편이, 억지로 여러 에이전트에 밀어 넣는 것보다 나은 거래입니다.
 

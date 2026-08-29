@@ -206,4 +206,4 @@ Na versão correta da seção "Adicionando uma fronteira segura" desta lição, 
 - Os dois são complementares: o CLAUDE.md encaixa em regras estáveis úteis toda vez; a Auto memory encaixa em detalhes de grande volume necessários só para tarefas particulares
 - A ferramenta de leitura/escrita de um arquivo de memória deve fazer uma verificação segura de fronteira de caminho; a condição combinada `abs === ROOT || abs.startsWith(ROOT + path.sep)` precisa das duas metades, já que uma verificação `startsWith` sozinha tem um buraco de burla por prefixo igual
 
-[>> Lição 4: Estado estruturado: como um agente lembra em que pé está uma tarefa](./04-structured-task-state.md)
+[>> Lição 4: Estado estruturado: como um agente lembra em que ponto uma tarefa está](./04-structured-task-state.md)
