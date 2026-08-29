@@ -1,0 +1,422 @@
+[
+  {
+    "term": "memória",
+    "def": "O contexto que você entrega ao modelo — responde à pergunta \"o que o modelo já viu?\". Pode já estar persistida em disco (como o NOTES.md) ou ainda viver apenas na memória do processo.",
+    "source": "[^S1]",
+    "pitfall": "Confundir memória com \"já está em disco\", ignorando que o conteúdo gerado pelo modelo e ainda não escrito no NOTES.md também é memória e pode se perder.",
+    "distractor_rationale": "Como o exemplo do NOTES.md na Lição 1 já está persistido, você pode fundir \"memória\" com \"produto em disco\" e deixar passar que a memória também pode viver apenas na memória do processo."
+  },
+  {
+    "term": "estado de execução",
+    "def": "A cena em andamento que o processo do harness está segurando — o array messages, contadores como turns e tokensUsed, a chamada de ferramenta ainda não registrada. Por padrão vive apenas na memória do processo e se perde quando o processo termina.",
+    "source": "[^S1]",
+    "pitfall": "Supor que, se os arquivos de saída em disco e a memória estão intactos, o estado de execução também tem de estar a salvo — ignorando que eles vivem fisicamente em lugares diferentes.",
+    "distractor_rationale": "Produto em disco e estado de execução costumam conviver na mesma tarefa, o que facilita tomá-los como uma coisa só em vez de reconhecer que o estado de execução vive, por padrão, apenas na memória do processo."
+  },
+  {
+    "term": "messages",
+    "def": "O array com o histórico completo da conversa que o harness segura em memória; é a única fonte para restaurar o contexto ao modelo e o maior campo do checkpoint.",
+    "source": "[^S1]",
+    "pitfall": "Acreditar que dá para reconstruir messages a partir dos arquivos de saída em disco depois de uma queda, ignorando que os arquivos de saída não registram o que o modelo disse a cada turno.",
+    "distractor_rationale": "Arquivos de saída e messages dizem respeito à mesma tarefa, o que tenta você a crer que um substitui o outro — mas arquivos de saída são resultados, não o registro do processo."
+  },
+  {
+    "term": "turns",
+    "def": "Contador de quantos turnos já rodaram, usado para julgar condições de parada como o teto de turnos; na retomada precisa continuar do valor do checkpoint, não recomeçar do zero.",
+    "source": "[^S1]",
+    "pitfall": "Zerar turns na retomada, fazendo a checagem de limite de turnos disparar errado ou deixando uma tarefa que cai repetidamente furar o teto de turnos.",
+    "distractor_rationale": "A palavra \"reiniciar\" sugere \"começar do zero\", o que facilita supor que os contadores relacionados também devem zerar, ignorando que turns rastreia o total da tarefa, não a sessão do processo."
+  },
+  {
+    "term": "tokensUsed",
+    "def": "Contador cumulativo de uso de tokens; na retomada precisa ser carregado do checkpoint para sustentar as decisões de limiar de compactação de contexto.",
+    "source": "[^S1]",
+    "pitfall": "Tentar reestimar o uso a partir do histórico em messages em vez de usar o valor gravado no checkpoint, fazendo o momento da compactação derivar.",
+    "distractor_rationale": "A maioria dos cenários não fornece dados históricos de uso, o que faz a reestimativa parecer a única saída, ignorando que o checkpoint deveria guardar esse valor para reuso direto."
+  },
+  {
+    "term": "pendingToolUse",
+    "def": "Campo do checkpoint que marca uma chamada órfã (o modelo a nomeou, o resultado ainda não foi registrado); é null ou um objeto no formato {id, name, input}.",
+    "source": "[^S1]",
+    "pitfall": "Tratá-lo como opcional e deixá-lo fora do checkpoint, perdendo a capacidade de distinguir \"turno completo\" de \"turno pela metade\".",
+    "distractor_rationale": "É o único campo do checkpoint que não corresponde diretamente a uma variável contadora do loop, o que o faz parecer metadado suplementar em vez de estado essencial."
+  },
+  {
+    "term": "chamada órfã",
+    "def": "Um bloco tool_use que o modelo nomeou mas cujo resultado não chegou a ser empurrado de volta em messages antes de o processo cair, ficando sem o tool_result correspondente.",
+    "source": "[^S1]",
+    "pitfall": "Supor que chamadas órfãs são casos de borda raros em vez de um desfecho garantido sempre que a queda cai entre a nomeação da ferramenta e o registro do resultado.",
+    "distractor_rationale": "A janela é estreita, o que faz a chamada órfã parecer improvável, mas ela é na verdade um dos estados normais que a recuperação de queda tem de tratar."
+  },
+  {
+    "term": "checkpoint",
+    "def": "Serializar o estado de execução (messages, turns, tokensUsed, pendingToolUse) em disco para que o processo consiga retomar depois de uma queda; uma das salvaguardas determinísticas emparelhadas com a adaptabilidade do modelo.",
+    "source": "[^S1]",
+    "pitfall": "Achar que fazer checkpoint é despejar todo o conteúdo da memória sem critério, em vez de registrar apenas os campos de que a retomada realmente precisa.",
+    "distractor_rationale": "\"Salvar o estado\" sugere intuitivamente \"salvar tudo\", o que faz a seleção de campos parecer incompleta em vez de correta por projeto."
+  },
+  {
+    "term": "checkpoint.json",
+    "def": "O arquivo de checkpoint que guarda version, task, turns, tokensUsed, messages e pendingToolUse — um instantâneo completo da cena de execução.",
+    "source": "[^S1]",
+    "pitfall": "Guardar só messages, supondo que o histórico da conversa basta, e deixar de fora version, task e os contadores de que a retomada correta precisa.",
+    "distractor_rationale": "messages é o campo maior e mais rico em informação, o que tenta você a tratar os demais como metadados opcionais."
+  },
+  {
+    "term": "version",
+    "def": "Número de versão do protocolo dentro do checkpoint.json; permite ao loadCheckpoint confirmar a compatibilidade de formato e recusar carregar versões que não batem.",
+    "source": "[^S1]",
+    "pitfall": "Tratar version como enfeite e analisar checkpoints antigos com código novo (ou o contrário) sem checar compatibilidade.",
+    "distractor_rationale": "Um arquivo de checkpoint não avisa por conta própria \"meu formato mudou\", então é fácil ignorar esse campo até que uma mudança de formato provoque uma corrupção de estado misteriosa."
+  },
+  {
+    "term": "task",
+    "def": "A string da tarefa original do usuário guardada no checkpoint.json, para que o harness reiniciado saiba a que tarefa esta cena pertence e consiga relatar progresso.",
+    "source": "[^S1]",
+    "pitfall": "Supor que o harness lembra por si só qual tarefa está rodando e omitir esse campo, deixando cenários multitarefa sem como confirmar qual tarefa foi retomada.",
+    "distractor_rationale": "Descrições de tarefa costumam chegar como parâmetro do chamador, o que as faz parecer \"entrada externa\" em vez de \"estado que precisa ser persistido\"."
+  },
+  {
+    "term": "saveCheckpoint",
+    "def": "Função que escreve o estado atual em disco; a implementação correta grava primeiro um arquivo temporário e depois renomeia atomicamente, evitando a corrupção de uma gravação pela metade.",
+    "source": "[^S1]",
+    "pitfall": "Sobrescrever o checkpoint.json direto com fs.writeFileSync, deixando meio documento JSON se o processo for morto no meio da gravação.",
+    "distractor_rationale": "\"Guardar só o mais recente\" e \"como fazer o conteúdo novo chegar até lá com segurança\" são duas perguntas distintas, mas a correção da primeira pode ser confundida com justificativa para a sobrescrita direta insegura."
+  },
+  {
+    "term": "ponto de gravação A",
+    "def": "Primeiro checkpoint dentro de um turno, salvo depois que o modelo nomeia uma ferramenta e antes de ela executar; registra em pendingToolUse o bloco tool_use daquele turno.",
+    "source": "[^S1]",
+    "pitfall": "Acreditar que o ponto de gravação B sozinho basta e largar o A, deixando invisível no checkpoint a janela entre a nomeação da ferramenta e o registro do resultado.",
+    "distractor_rationale": "O estado do ponto de gravação B parece \"mais completo\" (o resultado da ferramenta já está registrado), o que tenta você a supor que ele cobre a informação do A, ignorando que os dois registram momentos diferentes."
+  },
+  {
+    "term": "ponto de gravação B",
+    "def": "Segundo checkpoint dentro de um turno, salvo depois que o resultado da ferramenta é empurrado para messages; devolve pendingToolUse a null.",
+    "source": "[^S1]",
+    "pitfall": "Tratar B como o único ponto de gravação necessário por turno, ignorando que sem o A ele não cobre a janela de execução da ferramenta.",
+    "distractor_rationale": "\"Salvar uma vez ao fim do turno\" é a cadência mais intuitiva, o que mascara o fato de que o estado do meio do turno também precisa ser registrado."
+  },
+  {
+    "term": "arquivo temporário",
+    "def": "Arquivo intermediário (por exemplo, checkpoint.json.tmp) gravado primeiro na escrita atômica do checkpoint; é escrito por inteiro antes de ser renomeado sobre o arquivo real.",
+    "source": "[^S1]",
+    "pitfall": "Achar que o passo do arquivo temporário pode ser pulado desde que o rename seja atômico, deixando passar que é o arquivo temporário que garante que a gravação em si esteja completa antes da substituição.",
+    "distractor_rationale": "A atenção tende a cair toda sobre \"rename é atômico\", o que obscurece que o rename só importa se o arquivo temporário já estiver completo."
+  },
+  {
+    "term": "fs.renameSync",
+    "def": "Operação de renomeação atômica dentro do mesmo sistema de arquivos; a entrada de diretório ou aponta por inteiro para o arquivo novo ou continua apontando para o antigo, sem estado intermediário de meio-renomeado.",
+    "source": "[^S1]",
+    "pitfall": "Supor que rename é atômico entre sistemas de arquivos diferentes ou em unidades de rede, aplicando esse padrão onde a atomicidade não é garantida.",
+    "distractor_rationale": "A lição enfatiza \"rename é atômico\" como conclusão, o que facilita deixar passar a precondição de ser no mesmo sistema de arquivos."
+  },
+  {
+    "term": "sobrescrever no lugar",
+    "def": "Gravar direto por cima do arquivo de checkpoint com fs.writeFileSync; não é atômico e pode deixar um JSON truncado se o processo for morto no meio da gravação.",
+    "source": "[^S1]",
+    "pitfall": "Achar que o risco da sobrescrita é \"o arquivo cresce demais\" ou \"não há histórico\", deixando passar o risco real: uma gravação interrompida deixa um meio-arquivo ilegível.",
+    "distractor_rationale": "A sobrescrita funciona bem quando o processo termina normalmente, o que mascara seu risco verdadeiro nos cenários de morte inesperada."
+  },
+  {
+    "term": "retomada",
+    "def": "Reiniciar o loop a partir de um checkpoint depois de uma queda, lendo o estado de volta, reconstruindo messages e continuando de onde o erro aconteceu, em vez de recomeçar do turno 1.",
+    "source": "[^S1]",
+    "pitfall": "Achar que retomar significa montar um array messages inicial e reencenar o histórico, em vez de pegar direto o messages completo do checkpoint.",
+    "distractor_rationale": "\"Retomar\" sugere \"reconstruir\", o que tenta você a remontar o histórico da conversa em vez de reconhecer que o checkpoint já guarda um messages completo e utilizável."
+  },
+  {
+    "term": "loadCheckpoint",
+    "def": "Função que lê e analisa o arquivo de checkpoint; deve validar o campo version e lançar erro em alto e bom som quando a versão não bate ou a análise falha, em vez de cair silenciosamente para um estado vazio.",
+    "source": "[^S1]",
+    "pitfall": "Devolver um estado vazio quando a análise falha, \"para o programa continuar rodando\", perdendo em silêncio o progresso da tarefa quando um checkpoint corrompido deveria ser um erro explícito.",
+    "distractor_rationale": "\"Deixar o programa continuar\" parece mais gentil que \"lançar um erro\", mas aceitar em silêncio um checkpoint corrompido é justamente onde as tarefas se perdem."
+  },
+  {
+    "term": "reconcile",
+    "def": "Função que trata um pendingToolUse órfão na retomada; decide pela natureza da ferramenta (somente leitura ou de alto impacto) e pelo estado do livro-razão se reexecuta, reusa ou devolve is_error.",
+    "source": "[^S4]",
+    "pitfall": "Simplificar o reconcile para \"é só reexecutar tudo\", ignorando que reexecutar ferramentas de alto impacto arrisca efeitos colaterais duplicados.",
+    "distractor_rationale": "Reexecutar ferramentas somente leitura é seguro, e essa segurança pode ser generalizada em excesso para \"toda chamada órfã pode ser reexecutada\"."
+  },
+  {
+    "term": "READ_ONLY_TOOLS",
+    "def": "Conjunto de nomes de ferramentas (read_file, grep, list_dir, web_search) julgadas sem efeito colateral; na retomada, o reconcile reexecuta com segurança as ferramentas desse conjunto.",
+    "source": "[^S4]",
+    "pitfall": "Acrescentar ferramentas cujo nome soa somente leitura mas cuja implementação tem efeitos colaterais (cache ou log, por exemplo), causando ações duplicadas inesperadas.",
+    "distractor_rationale": "Alguns nomes de ferramenta sugerem operações apenas de consulta, o que facilita classificá-las intuitivamente como somente leitura sem conferir os detalhes de implementação."
+  },
+  {
+    "term": "ferramenta somente leitura",
+    "def": "Ferramenta com efeito colateral zero (ler arquivos, buscar); é segura de reexecutar quantas vezes for, porque o mundo externo permanece inalterado.",
+    "source": "[^S4]",
+    "pitfall": "Confundir \"soa somente leitura\" com \"é de fato somente leitura\", julgando pelo nome em vez dos detalhes de implementação.",
+    "distractor_rationale": "Os critérios de somente leitura e de idempotência se sobrepõem, o que facilita fundi-los, embora \"somente leitura\" seja um caso particular de \"idempotente\"."
+  },
+  {
+    "term": "ferramenta de alto impacto",
+    "def": "Ferramenta que muda estado externo (send_email, create_ticket, delete_file); precisa confirmar se já executou antes de reexecutar, para evitar efeitos colaterais duplicados.",
+    "source": "[^S4]",
+    "pitfall": "Acreditar que a lógica de retentativa por si só torna ferramentas de alto impacto seguras, ignorando que a retentativa é justamente a operação perigosa para esse tipo de ferramenta.",
+    "distractor_rationale": "\"Tentar de novo\" é um padrão de confiabilidade corrente em muitos sistemas, o que facilita aplicá-lo sem crítica a ferramentas de alto impacto, onde retentativa equivale a efeito colateral duplicado."
+  },
+  {
+    "term": "is_error",
+    "def": "Campo opcional do tool_result definido como true para indicar que a execução da ferramenta falhou ou que o estado é desconhecido, deixando o modelo saber e se adaptar em vez de supor sucesso.",
+    "source": "[^S4]",
+    "pitfall": "Usar is_error como fallback universal para toda situação incerta, em vez de separar os casos em que uma ferramenta somente leitura pode simplesmente reexecutar.",
+    "distractor_rationale": "is_error parece \"seguro\" e é fácil de usar, o que tenta você a abusar dele como tratamento padrão para toda chamada órfã em vez de diferenciar pela natureza da ferramenta."
+  },
+  {
+    "term": "tool_result",
+    "def": "Bloco de conteúdo devolvido ao modelo para cada tool_use; o protocolo exige que todo tool_use tenha um tool_result correspondente, casado por tool_use_id, todos na mensagem user seguinte.",
+    "source": "[^S4]",
+    "pitfall": "Apagar de messages o tool_use órfão na retomada em vez de fornecer o tool_result correspondente, violando o protocolo de emparelhamento.",
+    "distractor_rationale": "\"Apagar para deixar limpo\" tem apelo intuitivo, o que faz você deixar passar que o protocolo exige emparelhamento, não remoção."
+  },
+  {
+    "term": "tool_use",
+    "def": "Bloco de conteúdo na resposta do modelo que nomeia uma ferramenta a chamar; contém os campos id, name e input. Um tool_use órfão fica sem tool_result correspondente quando o processo cai.",
+    "source": "[^S4]",
+    "pitfall": "Supor que qualquer entrada de messages com um tool_use significa que a ferramenta já executou, ignorando que o tool_use representa apenas o \"pedido\" do modelo, não a execução de fato.",
+    "distractor_rationale": "O tool_use aparece em mensagens assistant, o que facilita fundir \"o modelo mandou fazer\" com \"foi feito\"."
+  },
+  {
+    "term": "idempotente",
+    "def": "Operação que produz o mesmo efeito final quer você a rode uma vez, quer a rode muitas; o julgamento se apoia no efeito (o estado final no mundo externo), não no valor de retorno.",
+    "source": "[^S1]",
+    "pitfall": "Definir idempotente como \"retorna o mesmo valor a cada chamada\", em vez de \"deixa o mundo externo no mesmo estado final, não importa a contagem de chamadas\".",
+    "distractor_rationale": "A palavra \"idempotente\" sugere literalmente \"mesma saída\", o que facilita focar no valor de retorno em vez do efeito sobre o estado externo."
+  },
+  {
+    "term": "livro-razão de efeitos",
+    "def": "Registro em disco separado, indexado por tool_use_id, que rastreia quais efeitos colaterais de fato aconteceram; escrito no instante em que a ferramenta tem sucesso, permitindo à retomada distinguir \"rodou\" de \"não rodou\".",
+    "source": "[^S1]",
+    "pitfall": "Juntar o livro-razão de efeitos e o checkpoint em um só arquivo, deixando passar que eles respondem perguntas diferentes: \"em que passo?\" e \"o efeito colateral deste passo aconteceu?\".",
+    "distractor_rationale": "Os dois envolvem registrar estado e os dois exigem gravação atômica, o que os deixa superficialmente parecidos e tenta você a fundi-los, obscurecendo que seus momentos de registro e seus propósitos são distintos."
+  },
+  {
+    "term": "effects.json",
+    "def": "O arquivo do livro-razão de efeitos, indexado por tool_use_id, que registra o nome da ferramenta, o resultado e o carimbo de tempo; escrito assim que a ferramenta tem sucesso, antes do ponto de gravação B.",
+    "source": "[^S1]",
+    "pitfall": "Adiar a gravação do livro-razão para o ponto de gravação B, em vez de escrever no instante do sucesso da ferramenta, deixando uma janela sem solução entre o fim da ferramenta e a gravação no livro-razão.",
+    "distractor_rationale": "Gravar o livro-razão \"junto com\" o ponto de gravação B parece mais arrumado, o que obscurece que os dois precisam ser escritos em momentos diferentes justamente para cobrir a janela entre eles."
+  },
+  {
+    "term": "tool_use_id",
+    "def": "Identificador único que o modelo atribui a cada bloco tool_use; não muda quando a mesma nomeação é repetida, o que o torna uma chave de idempotência natural para o livro-razão de efeitos.",
+    "source": "[^S4]",
+    "pitfall": "Achar que você precisa inventar um esquema de desduplicação próprio para reconhecer \"a mesma chamada\", deixando passar que o tool_use_id já cumpre esse papel.",
+    "distractor_rationale": "Chaves de idempotência costumam exigir regras de geração próprias em outros sistemas, o que facilita supor o mesmo aqui e ignorar que o protocolo já fornece um identificador único."
+  },
+  {
+    "term": "at-least-once",
+    "def": "Semântica de execução inerente à retomada por checkpoint (pelo menos uma vez): uma ferramenta pode terminar sem que o resultado seja registrado antes da queda, tornando impossível distinguir \"não rodou\" de \"rodou mas não foi registrado\".",
+    "source": "[^S1]",
+    "pitfall": "Tratar a retomada como semântica exactly-once e escrever código que supõe que cada ação acontece exatamente uma vez, ignorando que o checkpoint não consegue separar os dois estados.",
+    "distractor_rationale": "\"Retomar de um checkpoint\" soa como continuação precisa, o que facilita supor que cada ação executa exatamente uma vez e obscurece a janela estreita que cria a incerteza."
+  },
+  {
+    "term": "loadEffects",
+    "def": "Função que lê o livro-razão de efeitos; devolve um objeto vazio quando o arquivo não existe ou não pode ser analisado, tratando isso como \"ainda não há registros\" em vez de bloquear a retomada.",
+    "source": "[^S1]",
+    "pitfall": "Aplicar ao loadCheckpoint o mesmo tratamento tolerante de \"devolver vazio em caso de falha\", quando o checkpoint exige tratamento de erro mais estrito por ser o único registro da cena da tarefa.",
+    "distractor_rationale": "As duas funções têm nomes e papéis parecidos, o que tenta você a aplicar um tratamento de erro uniforme, mas o checkpoint é o registro autoritativo único e exige validação estrita."
+  },
+  {
+    "term": "saveEffect",
+    "def": "Função que grava o livro-razão de efeitos de volta em disco usando a gravação atômica de arquivo temporário mais rename; só pode ser chamada depois que a ferramenta executa com sucesso e devolve um resultado real.",
+    "source": "[^S1]",
+    "pitfall": "Colocar a chamada de saveEffect antes da execução de fato da ferramenta, registrando um status \"feito\" de fachada para algo que nunca rodou e destruindo a garantia de \"já aconteceu\" do livro-razão.",
+    "distractor_rationale": "\"Registrar antes para não esquecer\" soa precavido, o que obscurece que registrar antes transforma em ficção a promessa de conclusão do livro-razão."
+  },
+  {
+    "term": "válvula de aprovação",
+    "def": "Checagem pré-execução para ferramentas de alto impacto que exige confirmação humana; pergunta \"isto deve ser feito?\" (distinta do \"isto já foi feito?\" do livro-razão de efeitos).",
+    "source": "[^S1]",
+    "pitfall": "Achar que a válvula de aprovação dispensa o livro-razão de efeitos, supondo que \"uma pessoa já confirmou uma vez\" impede a reexecução, ignorando que uma queda ainda pode causar repetição.",
+    "distractor_rationale": "As duas válvulas ficam antes da execução, o que as faz parecer dois nomes para a mesma defesa, quando na verdade guardam contra riscos diferentes."
+  },
+  {
+    "term": "ensureTicket",
+    "def": "Exemplo de redesenhar \"criar\" como \"garantir que existe\": procura pelo título, devolve o existente se encontrar e só cria se faltar; idempotente por projeto.",
+    "source": "[^S1]",
+    "pitfall": "Supor que qualquer função chamada \"ensure\" é automaticamente idempotente, sem verificar se a lógica de busca dela é de fato sólida.",
+    "distractor_rationale": "A idempotência depende de uma desduplicação sólida; se o título carregar algo que difere a cada vez, a busca deixa de casar e a idempotência fica só no nome, algo que o nome tranquilizador da função facilmente obscurece."
+  },
+  {
+    "term": "acréscimo",
+    "def": "Estilo de escrita cumulativo (array.push, append em arquivo de log); cada chamada de fato acrescenta mais uma coisa, fazendo o estado final variar com a contagem de chamadas — em geral não é idempotente.",
+    "source": "[^S1]",
+    "pitfall": "Tratar todo acréscimo como igualmente arriscado, ignorando que operações de acréscimo diferentes têm gravidades de consequência muito distintas (uma linha de log e um e-mail duplicado).",
+    "distractor_rationale": "\"Não é idempotente\" se simplifica facilmente em \"tudo é de alto risco\", o que obscurece que acrescentar uma linha de log e enviar e-mails duplicados diferem drasticamente em impacto real."
+  },
+  {
+    "term": "sobrescrita",
+    "def": "Estilo de escrita por substituição (definir uma linha com um valor fixo, um write_file de arquivo inteiro); chamar uma ou dez vezes deixa o mesmo estado final — em geral é idempotente.",
+    "source": "[^S1]",
+    "pitfall": "Supor que escritas por sobrescrita são sempre idempotentes, ignorando os casos em que o próprio alvo da sobrescrita depende do estado externo no momento da chamada, tornando o resultado não determinístico.",
+    "distractor_rationale": "\"Sobrescrever\" sugere intuitivamente \"resultado determinístico\", o que facilita deixar passar que a idempotência da sobrescrita tem uma precondição: o conteúdo escrito precisa ser, ele próprio, determinístico."
+  },
+  {
+    "term": "runToolUses",
+    "def": "Função que executa todos os blocos tool_use de um turno; depois de integrar o livro-razão de efeitos e a válvula de aprovação, a ordem passa a ser: consultar o livro-razão, depois a aprovação, depois executar, depois registrar no livro-razão.",
+    "source": "[^S1]",
+    "pitfall": "Inverter a ordem entre a consulta ao livro-razão e a válvula de aprovação, ou colocar a consulta depois da aprovação, fazendo operações já concluídas serem confirmadas de novo sem necessidade.",
+    "distractor_rationale": "As duas são checagens pré-execução, o que faz a ordem parecer arbitrária, mas a consulta ao livro-razão tem de vir primeiro, para não perguntar \"devemos?\" sobre algo que já está feito."
+  },
+  {
+    "term": "rebobinagem",
+    "def": "Reverter a cena da decisão para um turno anterior e tentar de novo quando a tarefa saiu do rumo (não uma queda); reverte o checkpoint, não os efeitos colaterais externos já consumados.",
+    "source": "[^S2]",
+    "pitfall": "Acreditar que a rebobinagem consegue desfazer efeitos colaterais externos que já aconteceram, como puxar de volta um e-mail enviado, quando ela só restaura o estado de decisão em memória.",
+    "distractor_rationale": "\"Rebobinar\" em controle de versão costuma significar \"desfazer\", o que facilita generalizar demais a rebobinagem de checkpoint para ações no mundo externo, algo que os checkpoints nunca se propuseram a reverter."
+  },
+  {
+    "term": "bifurcação",
+    "def": "Copiar duas linhas do tempo independentes a partir do mesmo checkpoint para explorar rotas diferentes; cada linha ganha a própria sequência de checkpoints e o próprio livro-razão de efeitos em branco.",
+    "source": "[^S2]",
+    "pitfall": "Deixar as duas linhas bifurcadas chamarem sem controle a mesma ferramenta externa de alto impacto, transformando o que era exploração paralela em efeito colateral dobrado.",
+    "distractor_rationale": "A atenção na bifurcação vai naturalmente para \"as duas rotas de decisão vão diferir?\", o que obscurece que, se ambas tocarem a mesma ação externa, duplicar checkpoints não impede duplicar efeitos."
+  },
+  {
+    "term": "rewindTo",
+    "def": "Função que pega o checkpoint de um turno específico dentro da sequência retida por turno; assume por padrão o último ponto de gravação escrito naquele turno.",
+    "source": "[^S2]",
+    "pitfall": "Chamar uma lógica no estilo rewindTo sobre uma implementação de checkpoint de arquivo único sobrescrito, e descobrir que os turnos iniciais já foram sobrescritos e são irrecuperáveis.",
+    "distractor_rationale": "rewindTo soa como \"é só ler um arquivo de checkpoint\", o que obscurece que ele pressupõe checkpoints guardados como sequência por turno, e não sobrescritos em um arquivo só."
+  },
+  {
+    "term": "forkFrom",
+    "def": "Função que copia uma linha do tempo independente a partir do checkpoint de um turno específico; a nova linha traz a própria sequência de checkpoints e um livro-razão de efeitos em branco, isolada da linha principal.",
+    "source": "[^S2]",
+    "pitfall": "Supor que as linhas bifurcadas compartilham o livro-razão de efeitos da linha principal, poluindo entre linhas o julgamento de \"quais efeitos colaterais aconteceram\".",
+    "distractor_rationale": "\"Bifurcar a partir do mesmo ponto de partida\" sugere intuitivamente estado inicial compartilhado, o que facilita cair no padrão de registros compartilhados, quando a lição exige explicitamente livros-razão independentes e em branco."
+  },
+  {
+    "term": "turn-014-A.json",
+    "def": "Exemplo de nomenclatura da sequência de checkpoints por turno, embutindo no nome do arquivo o número do turno e a letra do ponto de gravação para identificar turno e momento com precisão.",
+    "source": "[^S2]",
+    "pitfall": "Nomear só pelo turno, sem a letra do ponto de gravação, fazendo os checkpoints A e B do mesmo turno se sobrescreverem e perdendo a distinção entre \"antes da ferramenta\" e \"depois do resultado\".",
+    "distractor_rationale": "O número do turno parece suficiente para localizar \"qual turno\", o que obscurece que um único turno contém dois momentos de gravação distintos que precisam ser identificados separadamente."
+  },
+  {
+    "term": "pickLatestPoint",
+    "def": "Função que encontra o último ponto de gravação escrito dentro de um turno; apoia-se em a ordenação lexicográfica de A/B coincidir naturalmente com a ordem temporal \"antes da ferramenta → depois do resultado\".",
+    "source": "[^S2]",
+    "pitfall": "Achar que são necessários carimbos de tempo para julgar \"qual ponto de gravação é o mais recente\", deixando passar que a nomenclatura A/B já codifica a ordem temporal por projeto.",
+    "distractor_rationale": "Determinar \"qual é o mais recente\" pede intuitivamente uma comparação de carimbos de tempo, o que obscurece que o próprio esquema de nomes já carrega a informação de ordem."
+  },
+  {
+    "term": "cena da decisão",
+    "def": "O que os checkpoints de fato rebobinam: messages, turns, pendingToolUse e os demais campos que você definiu no instantâneo — não as ações no mundo externo que já foram consumadas.",
+    "source": "[^S2]",
+    "pitfall": "Fundir \"rebobinar a cena da decisão\" com \"desfazer o que aconteceu\", quando elas mapeiam para estado interno e mundo externo — domínios inteiramente diferentes.",
+    "distractor_rationale": "A rebobinagem de fato muda o caminho de raciocínio do modelo, o que facilita supor que os efeitos no mundo externo também \"resetam\", quando só a base da decisão mudou, e não as ações externas já consumadas."
+  },
+  {
+    "term": "modo de dry-run",
+    "def": "Modo, usado durante a bifurcação, em que ações externas não são executadas de fato, impedindo que as duas linhas do tempo acionem a mesma ferramenta de alto impacto e causem efeito colateral dobrado.",
+    "source": "[^S1]",
+    "pitfall": "Bifurcar com ferramentas de alto impacto reais ligadas nas duas linhas, sem perceber que, sem isolamento, ambas vão tocar a mesma ação externa e duplicar efeitos.",
+    "distractor_rationale": "O foco da bifurcação tende a ir para \"as decisões vão diferir?\", o que obscurece que, se as duas linhas acionarem a mesma ferramenta externa real, duplicar checkpoints não impede duplicar efeitos."
+  },
+  {
+    "term": "sequência de checkpoints",
+    "def": "Série de arquivos de checkpoint retida por turno, em vez de sobrescrita para guardar só o mais recente; é o pré-requisito da rebobinagem e da bifurcação, e cada linha bifurcada carrega a própria cópia independente.",
+    "source": "[^S2]",
+    "pitfall": "Seguir com checkpoints de arquivo único sobrescrito enquanto se espera rebobinar para um turno arbitrário, e descobrir que os turnos iniciais foram sobrescritos há muito tempo.",
+    "distractor_rationale": "\"Checkpoint\" sozinho não implica nem \"sequência\" nem \"arquivo único\", o que facilita deixar passar que sustentar a rebobinagem exige mudar o armazenamento de sobrescrita para retenção."
+  },
+  {
+    "term": "Git",
+    "def": "Sistema de controle de versão que gerencia o histórico permanente e colaborativo do próprio código; distinto dos checkpoints (recuperação de sessão em escala de minutos) e do livro-razão de efeitos (registro de efeitos colaterais externos).",
+    "source": "[^S2]",
+    "pitfall": "Achar que a rebobinagem de checkpoint se parece tanto com o histórico de commits do Git que os checkpoints poderiam substituir o Git no gerenciamento de mudanças de código.",
+    "distractor_rationale": "Checkpoint e Git oferecem \"voltar a um estado anterior\", o que faz suas capacidades parecerem equivalentes, mas checkpoints nem sequer rastreiam arquivos modificados por bash e não têm os mecanismos de commit, ramificação e colaboração do Git."
+  },
+  {
+    "term": "CRASH_AFTER",
+    "def": "Variável de ambiente que controla o momento da queda simulada (por exemplo, CRASH_AFTER=after-effect-write:3 dispara a queda depois da 3ª gravação no livro-razão).",
+    "source": "[^S1]",
+    "pitfall": "Tratar essa variável como mera configuração de depuração, deixando passar que ela é o método-chave que torna o momento da queda reproduzível e as afirmações verificáveis.",
+    "distractor_rationale": "Variáveis de ambiente costumam ser vistas como configuração menor de execução, o que obscurece que aqui ela cumpre um papel central: transformar um momento de queda não determinístico em um inteiro que se pode especificar com precisão."
+  },
+  {
+    "term": "SimulatedCrash",
+    "def": "Tipo de exceção dedicado a simular a morte do processo; main() captura apenas essa exceção, imprime um log e sai com o código 137, fazendo a demonstração se ler como uma morte real em vez de um stack trace.",
+    "source": "[^S1]",
+    "pitfall": "Misturar o tratamento de SimulatedCrash com erros reais de execução, fazendo bugs de verdade serem confundidos com quedas simuladas esperadas.",
+    "distractor_rationale": "As duas são exceções lançadas e capturadas em algum lugar, o que facilita tratá-las de forma uniforme, mas SimulatedCrash tem de ser estritamente distinguida de erros genuínos, sob pena de mascarar bugs."
+  },
+  {
+    "term": "crashPoint",
+    "def": "Função de disparo de queda simulada controlada por variável de ambiente; compara o rótulo da operação corrente com CRASH_AFTER e lança SimulatedCrash quando eles casam.",
+    "source": "[^S1]",
+    "pitfall": "Colocar o crashPoint em pontos do código que não coincidem com a janela que você quer testar, produzindo um \"momento de queda\" que não corresponde ao cenário de teste pretendido.",
+    "distractor_rationale": "Pontos de queda soam como simples interruptores de liga/desliga, o que obscurece que a posição exata em que são inseridos determina diretamente qual janela de recuperação está de fato sendo testada."
+  },
+  {
+    "term": "--resume",
+    "def": "Flag de linha de comando que indica que esta inicialização deve fazer loadCheckpoint e seguir o caminho de recuperação em vez de começar do zero; sem ela, main() limpa explicitamente os arquivos antigos de checkpoint e de livro-razão.",
+    "source": "[^S1]",
+    "pitfall": "Supor que, sem --resume, os arquivos de checkpoint antigos são ignorados automaticamente, deixando passar que main() precisa limpá-los explicitamente ou eles poluem a execução nova.",
+    "distractor_rationale": "\"Não usar --resume significa começar do zero\" sugere intuitivamente que os arquivos antigos não serão lidos, mas sem lógica de limpeza explícita um checkpoint.json remanescente ainda pode ser carregado por engano."
+  },
+  {
+    "term": "fila de respostas",
+    "def": "Dublê de verificação que substitui o cliente de modelo real, devolvendo respostas pré-escritas em ordem fixa para tornar a execução da tarefa determinística e o momento da queda reproduzível.",
+    "source": "[^S1]",
+    "pitfall": "Depois de verificar a recuperação com uma fila de respostas, supor que o comportamento do cliente de modelo real será idêntico, ignorando que modelos reais têm conteúdo e tempo de resposta não determinísticos.",
+    "distractor_rationale": "A fila de respostas e o modelo real produzem logs de formato idêntico, o que obscurece que a fila apenas torna a verificação repetível — ela não representa o comportamento do mundo real."
+  },
+  {
+    "term": "makeStubClient",
+    "def": "Função fábrica que constrói um cliente de modelo dublê a partir de uma fila de respostas, usada na verificação para substituir as chamadas reais a client.messages.create.",
+    "source": "[^S1]",
+    "pitfall": "Tratar o dublê e o cliente real como intercambiáveis em qualquer cenário, levando o código de verificação direto para produção sem integrar o cliente real.",
+    "distractor_rationale": "O dublê e o cliente real compartilham a mesma interface, o que tenta você a supor que são intercambiáveis, mas o dublê existe unicamente para tornar as respostas previsíveis, não como substituto de produção."
+  },
+  {
+    "term": "main()",
+    "def": "Função de entrada do programa que faz um único julgamento: se --resume está presente, roteando daí para o caminho de recuperação ou o de início limpo, e capturando de forma unificada SimulatedCrash para imprimir e sair.",
+    "source": "[^S1]",
+    "pitfall": "Espalhar as checagens de --resume e o tratamento de exceção por vários lugares, fragmentando a lógica de entrada da recuperação e dificultando garantir consistência.",
+    "distractor_rationale": "main() parece um simples despachante, o que facilita subestimar seu papel de \"ponto de entrada único\" e espalhar a lógica de recuperação por outros lugares."
+  },
+  {
+    "term": "divisão em três vias",
+    "def": "Os três ramos do reconcile para chamadas órfãs: acerto no livro-razão (reusar), falha no livro-razão com ferramenta somente leitura (reexecutar) e falha no livro-razão com efeitos colaterais (devolver is_error ao modelo).",
+    "source": "[^S4]",
+    "pitfall": "Simplificar para dois ramos (acerto/falha), deixando passar que a própria falha precisa se dividir mais uma vez entre somente leitura e alto impacto para ser tratada corretamente.",
+    "distractor_rationale": "\"Acerto no livro-razão\" e \"falha no livro-razão\" parecem uma lógica binária completa, o que obscurece que os casos de falha exigem mais uma checagem de somente leitura para decidir entre reexecução segura e fallback conservador."
+  },
+  {
+    "term": "executar primeiro, registrar depois",
+    "def": "Disciplina do livro-razão de efeitos: você tem de obter o resultado real da execução da ferramenta antes de escrevê-lo no livro-razão; inverter essa ordem registra \"feito\" para algo que nunca rodou.",
+    "source": "[^S1]",
+    "pitfall": "Registrar antes de executar \"para não esquecer\", criando registros falso-positivos de \"já feito\" que habilitam erros de pulo por duplicação na retomada.",
+    "distractor_rationale": "Registrar antes soa precavido, como reservar um lugar, o que obscurece que isso fabrica falsos positivos de \"há registro mas a ferramenta nunca rodou\" — o desfecho mais perigoso."
+  },
+  {
+    "term": "137",
+    "def": "Código de saída convencional para um processo morto por SIGKILL; as demonstrações de verificação o usam para fazer as quedas simuladas se lerem como mortes reais em vez de exceções.",
+    "source": "[^S1]",
+    "pitfall": "Interpretar o código de saída 137 como um código de erro de negócio próprio, deixando passar que ele é uma convenção do sistema operacional para processos mortos à força.",
+    "distractor_rationale": "Códigos de saída costumam ser marcadores de erro definidos pela aplicação, o que facilita deixar passar que 137 tem um sentido convencional em nível de sistema, e não específico deste curso."
+  },
+  {
+    "term": "aparato de verificação",
+    "def": "Método de teste que usa uma fila fixa de respostas mais pontos de queda controlados para fixar os elementos não determinísticos (o que o modelo responde, quando o processo morre), permitindo afirmar o comportamento de recuperação linha por linha.",
+    "source": "[^S1]",
+    "pitfall": "Achar que observar uma única morte real de processo equivale ao rigor de verificação de um arranjo controlado de dublê mais ponto de queda, deixando passar que um momento não controlado não consegue mirar ramos específicos de recuperação.",
+    "distractor_rationale": "Matar o processo de verdade parece \"mais próximo da produção\", o que obscurece que isso produz um momento incontrolável e irrepetível, impedindo a validação dirigida de cada ramo da recuperação."
+  },
+  {
+    "term": "proporção",
+    "def": "Princípio de que a maquinaria de checkpoint só deve ser acrescentada quando a complexidade comprovadamente melhora os resultados; nem toda tarefa curta precisa de checkpointing completo.",
+    "source": "[^S3]",
+    "pitfall": "Tratar checkpoints e livros-razão de efeitos como obrigatórios por padrão em qualquer agente, em vez de avaliar se a tarefa específica é longa e importante o bastante para justificar o mecanismo.",
+    "distractor_rationale": "Esses mecanismos de fato melhoram a confiabilidade de tarefas longas, o que faz \"útil\" se fundir facilmente com \"deve sempre estar lá\", obscurecendo a ênfase repetida do curso em julgar pela escala real da tarefa."
+  }
+]

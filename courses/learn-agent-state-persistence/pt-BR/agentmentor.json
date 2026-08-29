@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 2,
+  "originalRequest": "Produzir a variante em português do Brasil do curso learn-agent-state-persistence para o learn.agentmentor.dev, a partir da variante em inglês já verificada. É uma tradução com polimento pedagógico a partir do en (não do zh): mesma estrutura de 6 lições, mesmos slugs de lição, mesmos ids de bloco interativo e mesmas posições de resposta correta, citações das fontes mantidas no inglês original, código executável com a lógica intacta e apenas comentários e strings visíveis traduzidos, referências entre cursos apontando para os títulos em português, e uma prosa técnica natural em português, em tom profissional próximo e sem a rigidez de tradução automática.",
+  "briefCompleteness": {
+    "status": "user-provided",
+    "evidence": "O responsável ratificou o plano multilíngue: os seis idiomas no learn.agentmentor.dev, primeiro o inglês (já completo) e depois os demais idiomas como ondas de tradução a partir da base em inglês. A variante em inglês é a fonte de verdade verificada e com a fundamentação corrigida, então nenhum esclarecimento adicional foi necessário."
+  },
+  "learnerModel": {
+    "targetReader": "Uma pessoa desenvolvedora que concluiu os oito primeiros cursos desta série, sabe escrever à mão o loop do harness e quer que tarefas longas de agente sobrevivam a uma interrupção",
+    "knownConcepts": [
+      "Escrever à mão um loop de harness dirigido por stop_reason (curso 7)",
+      "A regra de emparelhamento um-para-um entre tool_use e tool_result",
+      "Gerenciamento da janela de contexto e compactação, incluindo o contador tokensUsed (curso 8)",
+      "Memória de agente vs a janela de contexto (curso 5)",
+      "Leitura e escrita de JavaScript / Node.js básico"
+    ],
+    "unknownConcepts": [
+      "O estado de execução como algo distinto da memória",
+      "Por que agentes têm estado e os erros se acumulam",
+      "Anatomia do checkpoint: que campos entram no instantâneo, quando gravar, escritas atômicas",
+      "Retomada: reconstruir messages e contadores, reentrar no loop",
+      "Chamadas de ferramenta órfãs quando uma queda acontece entre a execução e a gravação no livro-razão",
+      "Efeitos colaterais e idempotência; chaves de idempotência para ferramentas de alto impacto",
+      "Rebobinagem e bifurcação como o segundo valor dos checkpoints",
+      "A divisão de trabalho entre checkpoints e controle de versão"
+    ],
+    "assumedEnvironment": "Um ambiente Node.js, acesso ao terminal, um editor de texto e o código do harness do curso 7 disponível para ser estendido",
+    "firstIndependentAction": "Matar uma das próprias execuções de agente no meio da tarefa e listar exatamente que estado se perdeu e que um checkpoint teria salvado",
+    "noviceRamp": [
+      "A lição 1 separa a memória do estado de execução antes de qualquer maquinaria de persistência",
+      "A lição 2 projeta o instantâneo do checkpoint (campos, momento da gravação, escrita atômica)",
+      "A lição 3 implementa a retomada, incluindo o caso da chamada órfã que a regra de emparelhamento cria",
+      "A lição 4 acrescenta idempotência para que reexecuções sejam seguras, com chaves nas ferramentas de alto impacto",
+      "A lição 5 transforma checkpoints em rebobinagem e bifurcação, e a lição 6 conecta o mecanismo completo ao harness do curso 7 com uma execução demonstrada de interromper e retomar"
+    ]
+  },
+  "learnerBrief": "O leitor-alvo concluiu os oito primeiros cursos, escreve o loop do harness e lê JavaScript. Ainda não sabe como persistir e restaurar o próprio estado de execução do harness. O curso o leva a separar estado de memória, projetar instantâneos de checkpoint seguros, implementar a retomada incluindo a reconciliação de chamadas órfãs, proteger reexecuções com idempotência, usar rebobinagem e bifurcação e, por fim, conectar a persistência a cada turno com recuperação via --resume ao harness do curso 7, demonstrando uma tarefa longa interrompida levada até o fim.",
+  "scope": "Coberto: estado de execução vs memória, por que os erros se acumulam em agentes com estado, anatomia do checkpoint (campos, momento, escritas atômicas), retomada (reconstruir messages e contadores, reconciliar chamadas órfãs), efeitos colaterais e idempotência com chaves para ferramentas de alto impacto, rebobinagem e bifurcação, checkpoints vs controle de versão, e um mecanismo prático completo de checkpoint + retomada sobre o harness do curso 7. Não coberto: gerenciamento de memória e de contexto (cursos 5 e 8), motores de workflow externos (Temporal), concorrência entre processos ou consistência distribuída; o checkpointing do Claude Code aparece apenas como referência de produto. Profundidade: do zero até demonstrar uma tarefa longa interrompida e retomada até a conclusão.",
+  "status": {
+    "stage": "generated",
+    "generationComplete": true,
+    "guardCommand": "node scripts/course-guard.mjs /Users/dirtyfancy/projects/agent-mentor-open-courses/courses/learn-agent-state-persistence/pt-BR/",
+    "guardStatus": "pass"
+  },
+  "qualitySelfReview": {
+    "diagramUse": "Os diagrams são mantidos exatamente onde a variante em inglês os usa (a separação entre estado e memória e a linha do tempo da janela de queda), com os rótulos reescritos em português; nenhum foi acrescentado ou removido. Onde exatamente a queda aconteceu é conteúdo de linha do tempo que um diagram enuncia melhor que a prosa, e o posicionamento em inglês já passou por revisão.",
+    "weakestPoints": [
+      "O desenho do livro-razão do capstone, que executa e só então registra, foi endurecido de propósito na revisão (dois blocos try/catch, para que uma falha na gravação do livro-razão depois de um efeito colateral real nunca dispare um retry do modelo impossível de deduplicar) — a variante em pt-BR preserva exatamente essa estrutura, e a revisão não deve “simplificá-la” de volta para um bloco só",
+      "As chaves de idempotência são ensinadas com exemplos em nível de arquivo; efeitos colaterais em rede (pagamentos, e-mails) precisam de garantias mais fortes, o que a lição sinaliza mas não implementa",
+      "Os detalhes do checkpointing do Claude Code (mudanças por bash não rastreadas, a semântica do /rewind) estão atrelados à versão do produto e datados no texto",
+      "Por ser uma tradução da variante em inglês verificada, o risco residual é o desvio idiomático: as citações das fontes foram mantidas verbatim em inglês e o código executável manteve a lógica idêntica, mas a prosa foi vertida para um português natural em vez de traduzida palavra por palavra, então a revisão deve conferir a equivalência de sentido com as lições em inglês"
+    ],
+    "followUpChecks": [
+      "Passada de renderização no learn.agentmentor.dev /pt-BR/agent-state-persistence/... após o deploy: as 6 lições mais o README, com os cards interativos hidratados",
+      "Verificar que cada termo do glossário aparece verbatim nas lições em pt-BR (checagem de attach)",
+      "Verificar que cada âncora [^Sn] das lições em pt-BR tem o bloco ## Sn correspondente no sources.md em pt-BR",
+      "Confirmar que os seis ids de bloco de checagem e as posições de resposta correta são idênticos byte a byte ao inglês (c/b/a/c/b/a na ordem das lições)",
+      "Rodar de novo o JS do capstone (gravação de checkpoint, --resume, reconciliação de chamada órfã, guarda de idempotência) e confirmar que a demonstração de interromper e retomar bate com as saídas afirmadas"
+    ]
+  },
+  "acceptanceReview": {
+    "rubricScores": {
+      "structure": 5,
+      "grounded": 5,
+      "pedagogy": 5,
+      "exercises": 5,
+      "load": 5,
+      "readable": 5
+    },
+    "terminalTask": "Quem aprende consegue conectar a um harness o checkpointing a cada turno, a recuperação via --resume que reconstrói messages e contadores, a reconciliação de chamadas órfãs que satisfaz a regra de emparelhamento tool_use/tool_result e a proteção por idempotência nas ferramentas de alto impacto — e então matar o processo no meio da tarefa e levar a execução até o fim a partir do checkpoint.",
+    "interactionCheck": "Seis blocos agentmentor-check, um por lição (a ilusão do recomeço na L1; o risco da sobrescrita direta na L2; o tool_use órfão na L3; o retry às cegas na L4; checkpoint vs git na L5; a necessidade do ponto A na L6), preservados da variante em inglês com ids, modes, número de opções e posições de resposta correta idênticos; label, prompt, whyHere, o texto das opções e o feedback são traduções para o português ajustadas ao mal-entendido próprio de cada lição. Os exercícios mantêm a estrutura de níveis da variante em inglês, com rubric, answer e hints em cada nível.",
+    "learnerFitCheck": "O curso pressupõe os oito cursos anteriores: o loop do harness, a regra de emparelhamento e a compactação. Estado vs memória, anatomia do checkpoint, retomada, idempotência e rebobinagem/bifurcação são ensinados do zero em ordem de dependência; quem aprende só constrói o mecanismo completo na lição 6, depois de todos os pré-requisitos. O primeiro exercício da lição 1 pede apenas uma auditoria do que se perdeu na execução que a própria pessoa matou.",
+    "decision": "ship",
+    "blockers": [],
+    "promotionNotes": [
+      "Tradução para o português do Brasil da variante em inglês verificada: estrutura, fundamentação e posições de resposta herdadas do original verificado",
+      "Todos os blocos interativos preservam id, mode, número de opções e resposta correta com paridade byte a byte em relação ao inglês",
+      "Todas as citações das fontes são mantidas no inglês original e conferidas byte a byte com o sources.md",
+      "Referências entre cursos usam os títulos dos cursos em português; o código do capstone manteve a lógica idêntica, incluindo o endurecimento do livro-razão com dois try/catch"
+    ]
+  },
+  "nextSteps": [
+    "Rodar o course-guard na variante em pt-BR e corrigir o que ele apontar",
+    "Fazer o deploy do learn.agentmentor.dev e conferir que as páginas /pt-BR renderizam com os cards interativos hidratados",
+    "Fechar a onda de locales com uma passada de revisão cruzada entre ko, es e pt-BR contra a base em inglês",
+    "Incentivar quem aprende a acoplar checkpoint + retomada a um agente real de execução longa no próprio projeto como projeto de consolidação pós-curso"
+  ],
+  "memoryBoundary": "Este agentmentor.json é um registro de estado local do curso (course-local state record), armazenado apenas no diretório do curso para as checagens de qualidade e o acompanhamento da trilha de aprendizado. Ele nunca é escrito de volta na memória de longo prazo do Claude Code ou de qualquer sistema de IA hospedeiro, e não afeta outros cursos nem outras conversas."
+}
