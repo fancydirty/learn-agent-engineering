@@ -318,7 +318,7 @@ while (!success && attempts < 3) {
   } catch (error) {
     attempts++;
     console.log(`测试失败，重试 ${attempts}/3`);
-    await wait(1000 * attempts); // 指数退避
+    await wait(1000 * attempts); // 线性退避(1s, 2s, 3s)
   }
 }
 

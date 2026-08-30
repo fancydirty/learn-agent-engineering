@@ -318,7 +318,7 @@ while (!success && attempts < 3) {
   } catch (error) {
     attempts++;
     console.log(`La prueba falló, reintentando ${attempts}/3`);
-    await wait(1000 * attempts); // retroceso exponencial
+    await wait(1000 * attempts); // retroceso lineal (1s, 2s, 3s)
   }
 }
 

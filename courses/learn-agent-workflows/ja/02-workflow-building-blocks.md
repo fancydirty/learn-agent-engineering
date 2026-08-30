@@ -318,7 +318,7 @@ while (!success && attempts < 3) {
   } catch (error) {
     attempts++;
     console.log(`テスト失敗、リトライ中 ${attempts}/3`);
-    await wait(1000 * attempts); // 指数バックオフ
+    await wait(1000 * attempts); // 線形バックオフ(1s, 2s, 3s)
   }
 }
 

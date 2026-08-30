@@ -318,7 +318,7 @@ while (!success && attempts < 3) {
   } catch (error) {
     attempts++;
     console.log(`테스트 실패, 재시도 ${attempts}/3`);
-    await wait(1000 * attempts); // 지수 백오프
+    await wait(1000 * attempts); // 선형 백오프(1s, 2s, 3s)
   }
 }
 

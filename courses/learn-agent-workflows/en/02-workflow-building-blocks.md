@@ -318,7 +318,7 @@ while (!success && attempts < 3) {
   } catch (error) {
     attempts++;
     console.log(`Test failed, retrying ${attempts}/3`);
-    await wait(1000 * attempts); // exponential backoff
+    await wait(1000 * attempts); // linear backoff (1s, 2s, 3s)
   }
 }
 
