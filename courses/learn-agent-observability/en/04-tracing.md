@@ -217,7 +217,7 @@ interaction  p-9c41  8420ms                                   a1b2c3d4e5f60001
 ├─ llm_request  1570ms  in 4980 / out 312                     a1b2c3d4e5f60005
 ├─ tool Bash  2140ms (wait 320ms)                             a1b2c3d4e5f60006
 │  └─ tool.execution  1810ms                                  a1b2c3d4e5f60007
-│     └─ build.compile  1500ms (emitted by build script)     9f8e7d6c5b4a0001
+│     └─ build.compile  1500ms (emitted by build script)      9f8e7d6c5b4a0001
 ├─ hook PostToolUse  70ms                                     a1b2c3d4e5f6000d
 └─ tool Agent(code-searcher)  3030ms (wait 10ms)              a1b2c3d4e5f60008
    └─ tool.execution  3015ms                                  a1b2c3d4e5f60009

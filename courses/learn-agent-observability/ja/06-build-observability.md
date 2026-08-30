@@ -552,19 +552,19 @@ main();
 $ node observed-agent.mjs --version v-good
 
 === トレースツリー（v-good、run.log.jsonl から再構築）===
-agent_run  sales-summary 16ms  trace_id=tr-0f4f0551
+agent_run  sales-summary  1ms  trace_id=tr-7f2cc208
 ├─ model_call turn-1         0ms  in=812 out=96  stop=tool_use
-│  └─ tool_call  list_files     4ms  in={"dir":"data"}  ok string(52)
+│  └─ tool_call  list_files     0ms  in={"dir":"data"}  ok string(52)
 ├─ model_call turn-2         0ms  in=946 out=218  stop=tool_use
-│  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-east.csv"}  ok string(74)
-│  ├─ tool_call  read_file      1ms  in={"path":"data/2026-q1-south.csv"}  ok string(72)
-│  └─ tool_call  read_file      0ms  in={"path":"data/2026-q1-north.csv"}  ok string(74)
+│  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-east.csv"}  ok string(98)
+│  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-south.csv"}  ok string(99)
+│  └─ tool_call  read_file      0ms  in={"path":"data/2026-q1-north.csv"}  ok string(101)
 ├─ model_call turn-3         0ms  in=1584 out=342  stop=tool_use
-│  └─ tool_call  write_file     1ms  in={"path":"summary.md","content":"# …  ok string(22)
+│  └─ tool_call  write_file     0ms  in={"path":"summary.md","content":"# …  ok string(27)
 └─ model_call turn-4         0ms  in=1961 out=74  stop=end_turn
 
 === メトリクスサマリー（v-good）===
-rounds=4 model_calls=4 tool_calls=5 errors=0 tokens_in=5303 tokens_out=730 tokens_total=6033 wall=16ms
+rounds=4 model_calls=4 tool_calls=5 errors=0 tokens_in=5303 tokens_out=730 tokens_total=6033 wall=1ms
 ログ: runs/v-good/run.log.jsonl　成果物: runs/v-good/summary.md
 ```
 
@@ -578,9 +578,9 @@ rounds=4 model_calls=4 tool_calls=5 errors=0 tokens_in=5303 tokens_out=730 token
 
 ```text
 $ head -3 runs/v-good/run.log.jsonl
-{"ts":"2026-08-26T09:01:32.516Z","trace_id":"tr-0f4f0551","span_id":"span-c72deaec","parent_id":"span-69103346","kind":"model_call","name":"turn-1","duration_ms":0,"stop_reason":"tool_use","tokens":{"input":812,"output":96},"error":null}
-{"ts":"2026-08-26T09:01:32.528Z","trace_id":"tr-0f4f0551","span_id":"span-8fb2e82a","parent_id":"span-c72deaec","kind":"tool_call","name":"list_files","tool_input":{"shape":"object{dir}","chars":14,"head":"{\"dir\":\"data\"}"},"duration_ms":4,"tool_result":{"shape":"string(52)","chars":52,"head":"2026-q1-east.csv 2026-q1-north.csv 2026-q1-south.csv"},"error":null}
-{"ts":"2026-08-26T09:01:32.528Z","trace_id":"tr-0f4f0551","span_id":"span-833bd890","parent_id":"span-69103346","kind":"model_call","name":"turn-2","duration_ms":0,"stop_reason":"tool_use","tokens":{"input":946,"output":218},"error":null}
+{"ts":"2026-08-30T03:54:21.577Z","trace_id":"tr-7f2cc208","span_id":"span-ecd7a44b","parent_id":"span-8dc25c01","kind":"model_call","name":"turn-1","duration_ms":0,"stop_reason":"tool_use","tokens":{"input":812,"output":96},"error":null}
+{"ts":"2026-08-30T03:54:21.578Z","trace_id":"tr-7f2cc208","span_id":"span-b746a61d","parent_id":"span-ecd7a44b","kind":"tool_call","name":"list_files","tool_input":{"shape":"object{dir}","chars":14,"head":"{\"dir\":\"data\"}"},"duration_ms":0,"tool_result":{"shape":"string(52)","chars":52,"head":"2026-q1-east.csv 2026-q1-north.csv 2026-q1-south.csv"},"error":null}
+{"ts":"2026-08-30T03:54:21.578Z","trace_id":"tr-7f2cc208","span_id":"span-f3b91fcf","parent_id":"span-8dc25c01","kind":"model_call","name":"turn-2","duration_ms":0,"stop_reason":"tool_use","tokens":{"input":946,"output":218},"error":null}
 ```
 
 2行目があの `list_files` です。`parent_id` が1行目の `span_id` を指している（だから `turn-1` の下にぶら下がります）、`tool_input` の中には形状と長さと小さな抜粋しかなく、`tool_result` も同様です。`shape` は `string(52)` で、`head` には3つのファイル名が入っています。この行には「ファイルの中身」は1バイトもありませんが、「このステップは何を呼び、どんな形のものを受け取り、エラーになったか」にはもう答えられます。
@@ -625,19 +625,19 @@ $ head -3 runs/v-good/run.log.jsonl
 $ node observed-agent.mjs --version v-bug
 
 === トレースツリー（v-bug、run.log.jsonl から再構築）===
-agent_run  sales-summary 16ms  trace_id=tr-b8934bdd
+agent_run  sales-summary  2ms  trace_id=tr-b4fae843
 ├─ model_call turn-1         0ms  in=812 out=96  stop=tool_use
-│  └─ tool_call  list_files     1ms  in={"dir":"data"}  ok string(52)
+│  └─ tool_call  list_files     0ms  in={"dir":"data"}  ok string(52)
 ├─ model_call turn-2         0ms  in=946 out=218  stop=tool_use
-│  ├─ tool_call  read_file      1ms  in={"path":"data/2026-q1-east.csv"}  ok string(74)
+│  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-east.csv"}  ok string(98)
 │  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-sourth.csv"}  ERROR ENOENT: no such file or directory, open 'dat…
-│  └─ tool_call  read_file      1ms  in={"path":"data/2026-q1-north.csv"}  ok string(74)
+│  └─ tool_call  read_file      0ms  in={"path":"data/2026-q1-north.csv"}  ok string(101)
 ├─ model_call turn-3         0ms  in=1602 out=355  stop=tool_use
-│  └─ tool_call  write_file     1ms  in={"path":"summary.md","content":"# …  ok string(22)
+│  └─ tool_call  write_file     1ms  in={"path":"summary.md","content":"# …  ok string(27)
 └─ model_call turn-4         0ms  in=1990 out=81  stop=end_turn
 
 === メトリクスサマリー（v-bug）===
-rounds=4 model_calls=4 tool_calls=5 errors=1 tokens_in=5350 tokens_out=750 tokens_total=6100 wall=16ms
+rounds=4 model_calls=4 tool_calls=5 errors=1 tokens_in=5350 tokens_out=750 tokens_total=6100 wall=2ms
 ログ: runs/v-bug/run.log.jsonl　成果物: runs/v-bug/summary.md
 ```
 
@@ -688,7 +688,7 @@ $ cat runs/v-bug/summary.md
 $ cat runs/v-good/run.log.jsonl runs/v-bug/run.log.jsonl runs/v-fixed/run.log.jsonl > all-runs.log.jsonl
 $ wc -l < all-runs.log.jsonl
       32
-$ grep -c 'tr-b8934bdd' all-runs.log.jsonl
+$ grep -c 'tr-b4fae843' all-runs.log.jsonl
 10
 ```
 
@@ -718,7 +718,7 @@ $ grep -c '"error":{"shape"' all-runs.log.jsonl
 ```text
 $ node -e '
 const fs = require("node:fs");
-const TRACE = "tr-b8934bdd";
+const TRACE = "tr-b4fae843";
 for (const line of fs.readFileSync("all-runs.log.jsonl", "utf8").split("\n").filter(Boolean)) {
   const r = JSON.parse(line);
   if (r.trace_id === TRACE && r.error) console.log(r.kind, r.name, r.tool_input.head, "->", r.error.head);
@@ -785,21 +785,21 @@ if (ctx.errorStyle === "actionable") {
 $ node observed-agent.mjs --version v-fixed
 
 === トレースツリー（v-fixed、run.log.jsonl から再構築）===
-agent_run  sales-summary  7ms  trace_id=tr-80892fc3
+agent_run  sales-summary  2ms  trace_id=tr-ae0dedca
 ├─ model_call turn-1         0ms  in=812 out=96  stop=tool_use
-│  └─ tool_call  list_files     1ms  in={"dir":"data"}  ok string(52)
+│  └─ tool_call  list_files     0ms  in={"dir":"data"}  ok string(52)
 ├─ model_call turn-2         0ms  in=946 out=218  stop=tool_use
-│  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-east.csv"}  ok string(74)
-│  ├─ tool_call  read_file      1ms  in={"path":"data/2026-q1-sourth.csv"}  ERROR ファイル data/2026-q1-sourth.csv が見つかりません。現在 dat…
-│  └─ tool_call  read_file      0ms  in={"path":"data/2026-q1-north.csv"}  ok string(74)
+│  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-east.csv"}  ok string(98)
+│  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-sourth.csv"}  ERROR ファイル data/2026-q1-sourth.csv が見つかりません。現在 dat…
+│  └─ tool_call  read_file      0ms  in={"path":"data/2026-q1-north.csv"}  ok string(101)
 ├─ model_call turn-3         0ms  in=1688 out=64  stop=tool_use
-│  └─ tool_call  read_file      1ms  in={"path":"data/2026-q1-south.csv"}  ok string(72)
+│  └─ tool_call  read_file      0ms  in={"path":"data/2026-q1-south.csv"}  ok string(99)
 ├─ model_call turn-4         0ms  in=1849 out=342  stop=tool_use
-│  └─ tool_call  write_file     0ms  in={"path":"summary.md","content":"# …  ok string(22)
+│  └─ tool_call  write_file     0ms  in={"path":"summary.md","content":"# …  ok string(27)
 └─ model_call turn-5         0ms  in=2226 out=118  stop=end_turn
 
 === メトリクスサマリー（v-fixed）===
-rounds=5 model_calls=5 tool_calls=6 errors=1 tokens_in=7521 tokens_out=838 tokens_total=8359 wall=7ms
+rounds=5 model_calls=5 tool_calls=6 errors=1 tokens_in=7521 tokens_out=838 tokens_total=8359 wall=2ms
 ログ: runs/v-fixed/run.log.jsonl　成果物: runs/v-fixed/summary.md
 ```
 
@@ -843,7 +843,7 @@ $ echo $?
 
 **サンプリングレートとログの保持期間も広げません。** 1回の実行で JSONL は数十行、ローカルで数百回走らせるくらいなら管理は不要です。これらを検討する必要が出てきた時点で、それはもうバックエンドの問題です。
 
-最後に一言。この観測レイヤーの価値は、どれだけ多く記録したかにあるのではなく、**具体的な問いを立てられるようにすること**にあります。「なぜ Central China 地域をでっち上げたのか」は答えのない問いです。「`trace_id=tr-b8934bdd` のこの実行で、`error` が非 null になっている最初の記録はどれで、そのパラメータは何か」は答えのある問いです。本番のトレーシングを完全に組み込んで初めて、エージェントがなぜ失敗したのかを体系的に診断し、体系的に修正できるようになります[^S1]。
+最後に一言。この観測レイヤーの価値は、どれだけ多く記録したかにあるのではなく、**具体的な問いを立てられるようにすること**にあります。「なぜ Central China 地域をでっち上げたのか」は答えのない問いです。「`trace_id=tr-b4fae843` のこの実行で、`error` が非 null になっている最初の記録はどれで、そのパラメータは何か」は答えのある問いです。本番のトレーシングを完全に組み込んで初めて、エージェントがなぜ失敗したのかを体系的に診断し、体系的に修正できるようになります[^S1]。
 
 ## 💻 演習
 
@@ -854,22 +854,22 @@ $ echo $?
 以下のトレースツリーは `v-bug` を実際に走らせて得たものです（本文のものと同じで、`trace_id` とミリ秒は実行ごとに変わります）。初めて見るつもりになってください。同僚からは「summary.md にうちの会社にない Central China 地域がある」という1行が投げられただけです。
 
 ```text
-agent_run  sales-summary 16ms  trace_id=tr-b8934bdd
+agent_run  sales-summary  2ms  trace_id=tr-b4fae843
 ├─ model_call turn-1         0ms  in=812 out=96  stop=tool_use
-│  └─ tool_call  list_files     1ms  in={"dir":"data"}  ok string(52)
+│  └─ tool_call  list_files     0ms  in={"dir":"data"}  ok string(52)
 ├─ model_call turn-2         0ms  in=946 out=218  stop=tool_use
-│  ├─ tool_call  read_file      1ms  in={"path":"data/2026-q1-east.csv"}  ok string(74)
+│  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-east.csv"}  ok string(98)
 │  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-sourth.csv"}  ERROR ENOENT: no such file or directory, open 'dat…
-│  └─ tool_call  read_file      1ms  in={"path":"data/2026-q1-north.csv"}  ok string(74)
+│  └─ tool_call  read_file      0ms  in={"path":"data/2026-q1-north.csv"}  ok string(101)
 ├─ model_call turn-3         0ms  in=1602 out=355  stop=tool_use
-│  └─ tool_call  write_file     1ms  in={"path":"summary.md","content":"# …  ok string(22)
+│  └─ tool_call  write_file     1ms  in={"path":"summary.md","content":"# …  ok string(27)
 └─ model_call turn-4         0ms  in=1990 out=81  stop=end_turn
 ```
 
 同僚はあの `list_files` のログ記録も引っ張り出してくれました。ツリーの上では `ok string(52)` としか出ていませんが、詳細はログにあります（id とミリ秒は例によって実行ごとに変わります）。
 
 ```json
-{"trace_id":"tr-b8934bdd","span_id":"span-3d81c04a","parent_id":"span-71f2ce09","kind":"tool_call","name":"list_files","tool_input":{"shape":"object{dir}","chars":14,"head":"{\"dir\":\"data\"}"},"duration_ms":1,"tool_result":{"shape":"string(52)","chars":52,"head":"2026-q1-east.csv 2026-q1-north.csv 2026-q1-south.csv"},"error":null}
+{"trace_id":"tr-b4fae843","span_id":"span-603fe632","parent_id":"span-bd6b7c23","kind":"tool_call","name":"list_files","tool_input":{"shape":"object{dir}","chars":14,"head":"{\"dir\":\"data\"}"},"duration_ms":0,"tool_result":{"shape":"string(52)","chars":52,"head":"2026-q1-east.csv 2026-q1-north.csv 2026-q1-south.csv"},"error":null}
 ```
 
 コードは書かず、4つの問いに文章で答えてください。
@@ -1030,8 +1030,8 @@ main();
 
 ```text
 $ node compare-runs.mjs runs/v-good/run.log.jsonl runs/v-good/run.log.jsonl
-A: runs/v-good/run.log.jsonl  trace_id=tr-0f4f0551
-B: runs/v-good/run.log.jsonl  trace_id=tr-0f4f0551
+A: runs/v-good/run.log.jsonl  trace_id=tr-7f2cc208
+B: runs/v-good/run.log.jsonl  trace_id=tr-7f2cc208
 
 指標               A       B   変化
 model_calls        4       4   ±0
@@ -1040,7 +1040,7 @@ errors             0       0   ±0
 tokens_in       5303    5303   ±0（±0.0%）
 tokens_out       730     730   ±0（±0.0%）
 tokens_total    6033    6033   ±0（±0.0%）
-wall_ms           16      16   ±0
+wall_ms            1       1   ±0
 
 ツール名別:
 list_files         1       1   ±0
@@ -1058,8 +1058,8 @@ $ echo $?
 
 ```text
 $ node compare-runs.mjs runs/v-good/run.log.jsonl runs/v-fixed/run.log.jsonl
-A: runs/v-good/run.log.jsonl  trace_id=tr-0f4f0551
-B: runs/v-fixed/run.log.jsonl  trace_id=tr-80892fc3
+A: runs/v-good/run.log.jsonl  trace_id=tr-7f2cc208
+B: runs/v-fixed/run.log.jsonl  trace_id=tr-ae0dedca
 
 指標               A       B   変化
 model_calls        4       5   +1
@@ -1068,7 +1068,7 @@ errors             0       1   +1
 tokens_in       5303    7521   +2218（+41.8%）
 tokens_out       730     838   +108（+14.8%）
 tokens_total    6033    8359   +2326（+38.6%）
-wall_ms           16       7   -9
+wall_ms            1       2   +1
 
 ツール名別:
 list_files         1       1   ±0
@@ -1085,7 +1085,7 @@ $ echo $?
 - **新しいエラーを持ち込んだか。** 新しいものはありませんが、古いものは残っています。`v-fixed` の `errors=1` は、まさに `south` を `sourth` と打ち間違えたあの読み取りです。エラーメッセージを変えたのは「エラーの後にモデルが何をするか」であって、「モデルが打ち間違えるかどうか」ではありません。だから関所は不合格と判断し、終了コードは1になります。この結果は正しいものです。この関所が問うているのは「この実行にまだツールのエラーがあるか」であって、「最終的な成果物が正しいか」ではありません。成果物が正しいかは別途検証が必要です（`diff runs/v-good/summary.md runs/v-fixed/summary.md` は空です）。`errors` を本当にゼロに戻すには、次に動かすべきなのは `read_file` の説明で、正例を与えてモデルがそもそも打ち間違えないようにすることです。
 - **トークンはどれだけ増えたか。** 合計は6033から8359へ、2326の増加、38.6%増です。増えた分はすべてあの読み直しの1往復にあります（`read_file` が3回から4回に、モデル呼び出しが4回から5回になりました）。38%は爆発ではありませんが、タダでもありません。修正のコストはこのテーブルの上で認めなければならず、結果が正しいのを見て終わりにはできません。
 
-`wall_ms` の行のあの `-9` も真に受けないでください。スタブクライアントはネットワークリクエストを送らないので、2回の実行の実時間は基本的にファイル I/O のノイズで、実行ごとに変わります。実 API に繋いだ後、この行は意味を持ちます。
+`wall_ms` の行のあの `+1` も真に受けないでください。スタブクライアントはネットワークリクエストを送らないので、2回の実行の実時間は基本的にファイル I/O のノイズで、実行ごとに変わります（同じコードを2回走らせても、この差分の符号は反転しえます）。実 API に繋いだ後、この行は意味を持ちます。
 
 <!-- hint -->
 

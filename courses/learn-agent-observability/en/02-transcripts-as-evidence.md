@@ -220,7 +220,7 @@ Label each of the five sentences: **transcript confirms** / **transcript contrad
 
 - All five sentences get a label, and both "transcript contradicts" sentences point their evidence to call 5's `permission denied`
 - When judging "no correspondence," the answer states which piece of evidence in the transcript is **the closest** and why it's still insufficient to confirm the statement, not just "the transcript doesn't mention this"
-- For the two "no correspondence" sentences, each gets a补测 (remediation) proposal that lands on a tool boundary—adding a new call that will leave a trace, or adding fields to an existing call's input/return—not "have the agent explain more in the summary"
+- For the two "no correspondence" sentences, each gets a follow-up instrumentation proposal that lands on a tool boundary—adding a new call that will leave a trace, or adding fields to an existing call's input/return—not "have the agent explain more in the summary"
 
 <!-- answer -->
 

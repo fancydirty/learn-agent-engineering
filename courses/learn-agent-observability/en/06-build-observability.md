@@ -552,19 +552,19 @@ See what normal looks like first. The terminal output below and all subsequent t
 $ node observed-agent.mjs --version v-good
 
 === Trace tree (v-good, rebuilt from run.log.jsonl) ===
-agent_run  sales-summary 16ms  trace_id=tr-0f4f0551
+agent_run  sales-summary  2ms  trace_id=tr-8fa1ae12
 ├─ model_call turn-1         0ms  in=812 out=96  stop=tool_use
-│  └─ tool_call  list_files     4ms  in={"dir":"data"}  ok string(52)
+│  └─ tool_call  list_files     0ms  in={"dir":"data"}  ok string(52)
 ├─ model_call turn-2         0ms  in=946 out=218  stop=tool_use
-│  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-east.csv"}  ok string(74)
-│  ├─ tool_call  read_file      1ms  in={"path":"data/2026-q1-south.csv"}  ok string(72)
-│  └─ tool_call  read_file      0ms  in={"path":"data/2026-q1-north.csv"}  ok string(74)
+│  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-east.csv"}  ok string(98)
+│  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-south.csv"}  ok string(99)
+│  └─ tool_call  read_file      0ms  in={"path":"data/2026-q1-north.csv"}  ok string(101)
 ├─ model_call turn-3         0ms  in=1584 out=342  stop=tool_use
-│  └─ tool_call  write_file     1ms  in={"path":"summary.md","content":"# …  ok string(22)
+│  └─ tool_call  write_file     0ms  in={"path":"summary.md","content":"# …  ok string(28)
 └─ model_call turn-4         0ms  in=1961 out=74  stop=end_turn
 
 === Metrics summary (v-good) ===
-rounds=4 model_calls=4 tool_calls=5 errors=0 tokens_in=5303 tokens_out=730 tokens_total=6033 wall=16ms
+rounds=4 model_calls=4 tool_calls=5 errors=0 tokens_in=5303 tokens_out=730 tokens_total=6033 wall=2ms
 Log: runs/v-good/run.log.jsonl　Artifact: runs/v-good/summary.md
 ```
 
@@ -578,9 +578,9 @@ The log file looks like this, one complete JSON per line, can `grep` directly:
 
 ```text
 $ head -3 runs/v-good/run.log.jsonl
-{"ts":"2026-08-26T09:01:32.516Z","trace_id":"tr-0f4f0551","span_id":"span-c72deaec","parent_id":"span-69103346","kind":"model_call","name":"turn-1","duration_ms":0,"stop_reason":"tool_use","tokens":{"input":812,"output":96},"error":null}
-{"ts":"2026-08-26T09:01:32.528Z","trace_id":"tr-0f4f0551","span_id":"span-8fb2e82a","parent_id":"span-c72deaec","kind":"tool_call","name":"list_files","tool_input":{"shape":"object{dir}","chars":14,"head":"{\"dir\":\"data\"}"},"duration_ms":4,"tool_result":{"shape":"string(52)","chars":52,"head":"2026-q1-east.csv 2026-q1-north.csv 2026-q1-south.csv"},"error":null}
-{"ts":"2026-08-26T09:01:32.528Z","trace_id":"tr-0f4f0551","span_id":"span-833bd890","parent_id":"span-69103346","kind":"model_call","name":"turn-2","duration_ms":0,"stop_reason":"tool_use","tokens":{"input":946,"output":218},"error":null}
+{"ts":"2026-08-30T03:49:27.942Z","trace_id":"tr-8fa1ae12","span_id":"span-a64bf5fa","parent_id":"span-7b99c0b1","kind":"model_call","name":"turn-1","duration_ms":0,"stop_reason":"tool_use","tokens":{"input":812,"output":96},"error":null}
+{"ts":"2026-08-30T03:49:27.943Z","trace_id":"tr-8fa1ae12","span_id":"span-fcce8741","parent_id":"span-a64bf5fa","kind":"tool_call","name":"list_files","tool_input":{"shape":"object{dir}","chars":14,"head":"{\"dir\":\"data\"}"},"duration_ms":0,"tool_result":{"shape":"string(52)","chars":52,"head":"2026-q1-east.csv 2026-q1-north.csv 2026-q1-south.csv"},"error":null}
+{"ts":"2026-08-30T03:49:27.943Z","trace_id":"tr-8fa1ae12","span_id":"span-5cb1997c","parent_id":"span-7b99c0b1","kind":"model_call","name":"turn-2","duration_ms":0,"stop_reason":"tool_use","tokens":{"input":946,"output":218},"error":null}
 ```
 
 Line two is that `list_files`: `parent_id` points to line one's `span_id` (so it hangs under `turn-1`), inside `tool_input` only has shape, length, and a small snippet, `tool_result` same — `shape` is `string(52)`, `head` has the three filenames. Not a single byte in this line is "file contents," but you can already answer "what did this step call, what shape of thing did it get, did it error."
@@ -625,19 +625,19 @@ Now run the buggy one. The stub queue has the real divergence from the lesson's 
 $ node observed-agent.mjs --version v-bug
 
 === Trace tree (v-bug, rebuilt from run.log.jsonl) ===
-agent_run  sales-summary 16ms  trace_id=tr-b8934bdd
+agent_run  sales-summary  2ms  trace_id=tr-eb1fcf76
 ├─ model_call turn-1         0ms  in=812 out=96  stop=tool_use
-│  └─ tool_call  list_files     1ms  in={"dir":"data"}  ok string(52)
+│  └─ tool_call  list_files     0ms  in={"dir":"data"}  ok string(52)
 ├─ model_call turn-2         0ms  in=946 out=218  stop=tool_use
-│  ├─ tool_call  read_file      1ms  in={"path":"data/2026-q1-east.csv"}  ok string(74)
+│  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-east.csv"}  ok string(98)
 │  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-sourth.csv"}  ERROR ENOENT: no such file or directory, open 'dat…
-│  └─ tool_call  read_file      1ms  in={"path":"data/2026-q1-north.csv"}  ok string(74)
+│  └─ tool_call  read_file      0ms  in={"path":"data/2026-q1-north.csv"}  ok string(101)
 ├─ model_call turn-3         0ms  in=1602 out=355  stop=tool_use
-│  └─ tool_call  write_file     1ms  in={"path":"summary.md","content":"# …  ok string(22)
+│  └─ tool_call  write_file     0ms  in={"path":"summary.md","content":"# …  ok string(28)
 └─ model_call turn-4         0ms  in=1990 out=81  stop=end_turn
 
 === Metrics summary (v-bug) ===
-rounds=4 model_calls=4 tool_calls=5 errors=1 tokens_in=5350 tokens_out=750 tokens_total=6100 wall=16ms
+rounds=4 model_calls=4 tool_calls=5 errors=1 tokens_in=5350 tokens_out=750 tokens_total=6100 wall=2ms
 Log: runs/v-bug/run.log.jsonl　Artifact: runs/v-bug/summary.md
 ```
 
@@ -688,7 +688,7 @@ Production environment all runs' logs mix into one stream. First simulate this s
 $ cat runs/v-good/run.log.jsonl runs/v-bug/run.log.jsonl runs/v-fixed/run.log.jsonl > all-runs.log.jsonl
 $ wc -l < all-runs.log.jsonl
       32
-$ grep -c 'tr-b8934bdd' all-runs.log.jsonl
+$ grep -c 'tr-eb1fcf76' all-runs.log.jsonl
 10
 ```
 
@@ -718,7 +718,7 @@ To see that complete record, fish it out of the stream:
 ```text
 $ node -e '
 const fs = require("node:fs");
-const TRACE = "tr-b8934bdd";
+const TRACE = "tr-eb1fcf76";
 for (const line of fs.readFileSync("all-runs.log.jsonl", "utf8").split("\n").filter(Boolean)) {
   const r = JSON.parse(line);
   if (r.trace_id === TRACE && r.error) console.log(r.kind, r.name, r.tool_input.head, "->", r.error.head);
@@ -785,21 +785,21 @@ The `v-fixed` response queue demonstrates the model's reaction after receiving t
 $ node observed-agent.mjs --version v-fixed
 
 === Trace tree (v-fixed, rebuilt from run.log.jsonl) ===
-agent_run  sales-summary  7ms  trace_id=tr-80892fc3
+agent_run  sales-summary  1ms  trace_id=tr-674cc52b
 ├─ model_call turn-1         0ms  in=812 out=96  stop=tool_use
-│  └─ tool_call  list_files     1ms  in={"dir":"data"}  ok string(52)
+│  └─ tool_call  list_files     0ms  in={"dir":"data"}  ok string(52)
 ├─ model_call turn-2         0ms  in=946 out=218  stop=tool_use
-│  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-east.csv"}  ok string(74)
-│  ├─ tool_call  read_file      1ms  in={"path":"data/2026-q1-sourth.csv"}  ERROR File data/2026-q1-sourth.csv not found. Curre…
-│  └─ tool_call  read_file      0ms  in={"path":"data/2026-q1-north.csv"}  ok string(74)
+│  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-east.csv"}  ok string(98)
+│  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-sourth.csv"}  ERROR File data/2026-q1-sourth.csv not found. Curr…
+│  └─ tool_call  read_file      0ms  in={"path":"data/2026-q1-north.csv"}  ok string(101)
 ├─ model_call turn-3         0ms  in=1688 out=64  stop=tool_use
-│  └─ tool_call  read_file      1ms  in={"path":"data/2026-q1-south.csv"}  ok string(72)
+│  └─ tool_call  read_file      0ms  in={"path":"data/2026-q1-south.csv"}  ok string(99)
 ├─ model_call turn-4         0ms  in=1849 out=342  stop=tool_use
-│  └─ tool_call  write_file     0ms  in={"path":"summary.md","content":"# …  ok string(22)
+│  └─ tool_call  write_file     0ms  in={"path":"summary.md","content":"# …  ok string(28)
 └─ model_call turn-5         0ms  in=2226 out=118  stop=end_turn
 
 === Metrics summary (v-fixed) ===
-rounds=5 model_calls=5 tool_calls=6 errors=1 tokens_in=7521 tokens_out=838 tokens_total=8359 wall=7ms
+rounds=5 model_calls=5 tool_calls=6 errors=1 tokens_in=7521 tokens_out=838 tokens_total=8359 wall=1ms
 Log: runs/v-fixed/run.log.jsonl　Artifact: runs/v-fixed/summary.md
 ```
 
@@ -843,7 +843,7 @@ This thing is small, boundaries need stating clearly, lest you think wiring it u
 
 **Sampling rate, log retention window also not expanding.** One run dozens of JSONL lines, locally run a few hundred times no need to manage; when you need to consider these, it's already a backend problem.
 
-Final word: this observability layer's value isn't in how much it recorded, it's in **it lets you ask a specific question**. "Why did it fabricate a Central China region" is an unanswerable question; "in this run with `trace_id=tr-b8934bdd`, which record is the first one with `error` non-null, what are the params" is an answerable question. After wiring up complete production tracing, only then can you systematically diagnose why agents failed, systematically fix[^S1].
+Final word: this observability layer's value isn't in how much it recorded, it's in **it lets you ask a specific question**. "Why did it fabricate a Central China region" is an unanswerable question; "in this run with `trace_id=tr-eb1fcf76`, which record is the first one with `error` non-null, what are the params" is an answerable question. After wiring up complete production tracing, only then can you systematically diagnose why agents failed, systematically fix[^S1].
 
 ## 💻 Exercises
 
@@ -854,22 +854,22 @@ Final word: this observability layer's value isn't in how much it recorded, it's
 The trace tree below is genuinely run from `v-bug` (same as the one in the main text, `trace_id` and millisecond counts vary by run). Pretend you're seeing it for the first time, colleague only threw you one line "summary.md has a Central China region our company doesn't have."
 
 ```text
-agent_run  sales-summary 16ms  trace_id=tr-b8934bdd
+agent_run  sales-summary  2ms  trace_id=tr-eb1fcf76
 ├─ model_call turn-1         0ms  in=812 out=96  stop=tool_use
-│  └─ tool_call  list_files     1ms  in={"dir":"data"}  ok string(52)
+│  └─ tool_call  list_files     0ms  in={"dir":"data"}  ok string(52)
 ├─ model_call turn-2         0ms  in=946 out=218  stop=tool_use
-│  ├─ tool_call  read_file      1ms  in={"path":"data/2026-q1-east.csv"}  ok string(74)
+│  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-east.csv"}  ok string(98)
 │  ├─ tool_call  read_file      0ms  in={"path":"data/2026-q1-sourth.csv"}  ERROR ENOENT: no such file or directory, open 'dat…
-│  └─ tool_call  read_file      1ms  in={"path":"data/2026-q1-north.csv"}  ok string(74)
+│  └─ tool_call  read_file      0ms  in={"path":"data/2026-q1-north.csv"}  ok string(101)
 ├─ model_call turn-3         0ms  in=1602 out=355  stop=tool_use
-│  └─ tool_call  write_file     1ms  in={"path":"summary.md","content":"# …  ok string(22)
+│  └─ tool_call  write_file     0ms  in={"path":"summary.md","content":"# …  ok string(28)
 └─ model_call turn-4         0ms  in=1990 out=81  stop=end_turn
 ```
 
 Colleague also pulled out that `list_files` log record for you — on the tree it only shows `ok string(52)`, details in the log (id and milliseconds as usual vary by run):
 
 ```json
-{"trace_id":"tr-b8934bdd","span_id":"span-3d81c04a","parent_id":"span-71f2ce09","kind":"tool_call","name":"list_files","tool_input":{"shape":"object{dir}","chars":14,"head":"{\"dir\":\"data\"}"},"duration_ms":1,"tool_result":{"shape":"string(52)","chars":52,"head":"2026-q1-east.csv 2026-q1-north.csv 2026-q1-south.csv"},"error":null}
+{"trace_id":"tr-eb1fcf76","span_id":"span-72cde4a2","parent_id":"span-ae95d591","kind":"tool_call","name":"list_files","tool_input":{"shape":"object{dir}","chars":14,"head":"{\"dir\":\"data\"}"},"duration_ms":0,"tool_result":{"shape":"string(52)","chars":52,"head":"2026-q1-east.csv 2026-q1-north.csv 2026-q1-south.csv"},"error":null}
 ```
 
 Without writing code, answer four questions in text:
@@ -1030,22 +1030,22 @@ main();
 
 ```text
 $ node compare-runs.mjs runs/v-good/run.log.jsonl runs/v-good/run.log.jsonl
-A: runs/v-good/run.log.jsonl  trace_id=tr-0f4f0551
-B: runs/v-good/run.log.jsonl  trace_id=tr-0f4f0551
+A: runs/v-good/run.log.jsonl  trace_id=tr-8fa1ae12
+B: runs/v-good/run.log.jsonl  trace_id=tr-8fa1ae12
 
-Metric               A       B   Change
-model_calls          4       4   ±0
-tool_calls           5       5   ±0
-errors               0       0   ±0
-tokens_in         5303    5303   ±0（±0.0%）
-tokens_out         730     730   ±0（±0.0%）
-tokens_total      6033    6033   ±0（±0.0%）
-wall_ms             16      16   ±0
+Metric             A       B   Change
+model_calls        4       4   ±0
+tool_calls         5       5   ±0
+errors             0       0   ±0
+tokens_in       5303    5303   ±0（±0.0%）
+tokens_out       730     730   ±0（±0.0%）
+tokens_total    6033    6033   ±0（±0.0%）
+wall_ms            2       2   ±0
 
 By tool name:
-list_files           1       1   ±0
-read_file            3       3   ±0
-write_file           1       1   ±0
+list_files         1       1   ±0
+read_file          3       3   ±0
+write_file         1       1   ±0
 
 Gate passes: both sides have no error records.
 $ echo $?
@@ -1058,22 +1058,22 @@ All `±0`, exit code 0. Gate can let through, ready to use.
 
 ```text
 $ node compare-runs.mjs runs/v-good/run.log.jsonl runs/v-fixed/run.log.jsonl
-A: runs/v-good/run.log.jsonl  trace_id=tr-0f4f0551
-B: runs/v-fixed/run.log.jsonl  trace_id=tr-80892fc3
+A: runs/v-good/run.log.jsonl  trace_id=tr-8fa1ae12
+B: runs/v-fixed/run.log.jsonl  trace_id=tr-674cc52b
 
-Metric               A       B   Change
-model_calls          4       5   +1
-tool_calls           5       6   +1
-errors               0       1   +1
-tokens_in         5303    7521   +2218（+41.8%）
-tokens_out         730     838   +108（+14.8%）
-tokens_total      6033    8359   +2326（+38.6%）
-wall_ms             16       7   -9
+Metric             A       B   Change
+model_calls        4       5   +1
+tool_calls         5       6   +1
+errors             0       1   +1
+tokens_in       5303    7521   +2218（+41.8%）
+tokens_out       730     838   +108（+14.8%）
+tokens_total    6033    8359   +2326（+38.6%）
+wall_ms            2       1   -1
 
 By tool name:
-list_files           1       1   ±0
-read_file            3       4   +1
-write_file           1       1   ±0
+list_files         1       1   ±0
+read_file          3       4   +1
+write_file         1       1   ±0
 
 Gate FAILS: A side 0 errors, B side 1 errors.
 $ echo $?
@@ -1085,7 +1085,7 @@ Answer those two questions:
 - **Did it introduce new errors?** No new ones, but the old one is still there. `v-fixed`'s `errors=1` is exactly that read that typo'd `south` as `sourth` — changing error message changed "what does model do after error," didn't change "will model typo." So gate judges fail, exit code 1, this result is correct: this gate asks "does this run still have tool errors," not "is the final artifact correct." Whether artifact's correct needs separate verification (`diff runs/v-good/summary.md runs/v-fixed/summary.md` is empty). To genuinely return `errors` to zero, next step what should move is `read_file`'s description, give it a positive example, so model doesn't typo in the first place.
 - **How much did tokens increase?** Total from 6033 up to 8359, up 2326, increase 38.6%; the extra all on that round of re-read's round-trip (`read_file` from 3 times became 4 times, model calls from 4 times became 5 times). 38% not a blowout, but not free either — fix's cost must acknowledge on this table, can't just see result correct and call it done.
 
-Also that `-9` on the `wall_ms` line don't take seriously: stub client doesn't send network requests, two runs' wall-clock time is basically file I/O noise, each run different. After hooking up real APIs this line gains meaning.
+Also that `-1` on the `wall_ms` line don't take seriously: stub client doesn't send network requests, two runs' wall-clock time is basically file I/O noise, each run different — the sign of that delta can flip between two runs of the exact same code. After hooking up real APIs this line gains meaning.
 
 <!-- hint -->
 
