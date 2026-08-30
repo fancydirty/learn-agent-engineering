@@ -123,7 +123,7 @@ Look back at that `tool_use` block. Only three of its fields are required:[^S5]
 - **`name`**: the tool the model picked, which has to match the `name` of one of the tools in your `tools` manifest exactly.
 - **`input`**: an object holding the parameters for this call, shaped to satisfy the rules you defined in `input_schema`.
 
-Put those three fields together and you have everything the model can express: "I want to call the `name` tool with this `id`, and here's the `input`." It won't tack on logic like "retry three times" — you write that yourself in the host code. How to design a tool interface so the model makes fewer parameter mistakes is Lesson 3's territory; this lesson only cares about how these three fields get packed in and read back out.
+Put those three fields together and you have everything the model can express: "I want to call the `name` tool with this `id`, and here's the `input`." It won't tack on logic like "retry three times" — you write that yourself in the host code. How to design a tool interface so the model makes fewer parameter mistakes is Lesson 4's territory; this lesson only cares about how these three fields get packed in and read back out.
 
 ## tool_result Matches Up by tool_use_id
 
@@ -249,7 +249,7 @@ while (response.stop_reason === "tool_use") {
 // stop_reason has turned to end_turn; response holds the final text answer
 ```
 
-This loop has no fixed cap on iterations — for one user request, the model might call a tool just once, or five or six times before it has gathered enough. Lesson 3 covers how tool-interface design can cut the number of round-trips; for this lesson, just remember: multiple round-trips are the norm, not the exception.
+This loop has no fixed cap on iterations — for one user request, the model might call a tool just once, or five or six times before it has gathered enough. Lesson 4 covers how tool-interface design can cut the number of round-trips; for this lesson, just remember: multiple round-trips are the norm, not the exception.
 
 ## Swap the Host, the Field Names Change, the Structure Doesn't
 

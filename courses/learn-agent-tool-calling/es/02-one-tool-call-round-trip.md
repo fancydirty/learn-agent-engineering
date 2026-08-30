@@ -123,7 +123,7 @@ Vuelve a mirar ese bloque `tool_use`. Solo tres de sus campos son obligatorios:[
 - **`name`**: la herramienta que el modelo eligió, que tiene que coincidir exactamente con el `name` de una de las herramientas de tu manifiesto `tools`.
 - **`input`**: un objeto que contiene los parámetros de esta llamada, con la forma que exigen las reglas que definiste en `input_schema`.
 
-Junta esos tres campos y tienes todo lo que el modelo puede expresar: «quiero llamar a la herramienta `name` con este `id`, y aquí está el `input`». No le añadirá lógica del tipo «reintenta tres veces» — eso lo escribes tú mismo en el código del host. Cómo diseñar una interfaz de herramienta para que el modelo cometa menos errores de parámetros es terreno de la Lección 3; esta lección solo se ocupa de cómo se empaquetan y se leen estos tres campos.
+Junta esos tres campos y tienes todo lo que el modelo puede expresar: «quiero llamar a la herramienta `name` con este `id`, y aquí está el `input`». No le añadirá lógica del tipo «reintenta tres veces» — eso lo escribes tú mismo en el código del host. Cómo diseñar una interfaz de herramienta para que el modelo cometa menos errores de parámetros es terreno de la Lección 4; esta lección solo se ocupa de cómo se empaquetan y se leen estos tres campos.
 
 ## tool_result se empareja mediante tool_use_id
 
@@ -249,7 +249,7 @@ while (response.stop_reason === "tool_use") {
 // stop_reason ha pasado a end_turn; response contiene la respuesta final en texto
 ```
 
-Este bucle no tiene un tope fijo de iteraciones — para una misma petición del usuario, el modelo podría llamar a una herramienta una sola vez, o cinco o seis veces antes de haber reunido lo suficiente. La Lección 3 cubre cómo el diseño de la interfaz de herramientas puede recortar el número de idas y vueltas; para esta lección, recuerda solo esto: varias idas y vueltas son la norma, no la excepción.
+Este bucle no tiene un tope fijo de iteraciones — para una misma petición del usuario, el modelo podría llamar a una herramienta una sola vez, o cinco o seis veces antes de haber reunido lo suficiente. La Lección 4 cubre cómo el diseño de la interfaz de herramientas puede recortar el número de idas y vueltas; para esta lección, recuerda solo esto: varias idas y vueltas son la norma, no la excepción.
 
 ## Cambia el host, cambian los nombres de campo, la estructura no
 

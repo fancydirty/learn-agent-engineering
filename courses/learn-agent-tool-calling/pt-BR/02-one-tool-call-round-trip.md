@@ -123,7 +123,7 @@ Volte àquele bloco `tool_use`. Só três dos seus campos são obrigatórios:[^S
 - **`name`**: a ferramenta que o modelo escolheu, que tem que corresponder exatamente ao `name` de uma das ferramentas do seu manifesto `tools`.
 - **`input`**: um objeto contendo os parâmetros desta chamada, no formato que satisfaz as regras que você definiu em `input_schema`.
 
-Junte esses três campos e você tem tudo o que o modelo consegue expressar: “quero chamar a ferramenta `name` com este `id`, e aqui está o `input`”. Ele não vai acrescentar lógica do tipo “tente de novo três vezes” — isso você escreve por conta própria no código do host. Como projetar uma interface de ferramenta para que o modelo erre menos parâmetros é território da Lição 3; esta lição só se importa com como esses três campos são empacotados e lidos de volta.
+Junte esses três campos e você tem tudo o que o modelo consegue expressar: “quero chamar a ferramenta `name` com este `id`, e aqui está o `input`”. Ele não vai acrescentar lógica do tipo “tente de novo três vezes” — isso você escreve por conta própria no código do host. Como projetar uma interface de ferramenta para que o modelo erre menos parâmetros é território da Lição 4; esta lição só se importa com como esses três campos são empacotados e lidos de volta.
 
 ## tool_result faz a correspondência pelo tool_use_id
 
@@ -249,7 +249,7 @@ while (response.stop_reason === "tool_use") {
 // stop_reason virou end_turn; response contém o texto final da resposta
 ```
 
-Este laço não tem um teto fixo de iterações — para um único pedido do usuário, o modelo pode chamar uma ferramenta só uma vez, ou cinco ou seis vezes até ter reunido o suficiente. A Lição 3 cobre como o projeto da interface de ferramenta consegue cortar o número de idas e voltas; para esta lição, basta lembrar: várias idas e voltas são a norma, não a exceção.
+Este laço não tem um teto fixo de iterações — para um único pedido do usuário, o modelo pode chamar uma ferramenta só uma vez, ou cinco ou seis vezes até ter reunido o suficiente. A Lição 4 cobre como o projeto da interface de ferramenta consegue cortar o número de idas e voltas; para esta lição, basta lembrar: várias idas e voltas são a norma, não a exceção.
 
 ## Troque o host, os nomes dos campos mudam, a estrutura não
 
