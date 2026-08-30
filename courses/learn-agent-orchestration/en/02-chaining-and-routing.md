@@ -67,7 +67,7 @@ This shape appears in products too. Claude Code's official documentation recomme
 
 ## Gates: moving Course 10 verifiers between stages
 
-The last half-sentence in the definition is what chaining actually adds beyond "one big prompt": you can add programmatic checks on any intermediate steps to ensure that the process is still on track[^S1]. The original text calls these checks "gate," and it's in quotation marks: `(see "gate" in the diagram below)`—one straight, one curly, exactly as in the source, not a typo here.
+The last half-sentence in the definition is what chaining actually adds beyond "one big prompt": you can add programmatic checks on any intermediate steps to ensure that the process is still on track[^S1]. The original text calls these checks "gate," and it's in quotation marks: `(see "gate” in the diagram below)`—one straight, one curly, exactly as in the source, not a typo here.
 
 "Programmatic" is the key: it's code, not another model call, just a few `if` statements.
 

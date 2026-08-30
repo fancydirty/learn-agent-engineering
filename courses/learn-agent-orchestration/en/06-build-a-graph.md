@@ -22,24 +22,24 @@ inbox/ received 6 tickets: T-1001, T-1002, T-1003, T-1004, T-1005, T-1006
 [review] gate rewrites: 2 rounds total
 
 === Full graph execution summary ===
-Node      Time    Model calls    Tokens    Gate rounds   Status
-route     62ms    1              720       -             ok
-fanout    247ms   8              8903      -             ok
-merge     2ms     0              0         -             ok
-review    127ms   2              3033      2             ok
+Node      Time    Model calls Tokens   Gate rounds Status
+route     61ms    1           720      -           ok
+fanout    243ms   8           8903     -           ok
+merge     1ms     0           0        -           ok
+review    126ms   2           3033     2           ok
 
 === Per-ticket breakdown ===
-Ticket   Category   Handler            Gate rounds   Stop reason     Status
-T-1001   billing    worker:billing     0             gate_pass       pass
-T-1002   bug        worker:bug         0             gate_pass       pass
-T-1003   other      template           0             gate_pass       pass
-T-1004   billing    worker:billing     1             no_progress     needs_human
-T-1005   bug        worker:bug         1             gate_pass       pass
-T-1006   other      template           0             gate_pass       pass
+Ticket   Category  Handler           Gate rounds Stop reason     Status
+T-1001   billing   worker:billing    0           gate_pass       pass
+T-1002   bug       worker:bug        0           gate_pass       pass
+T-1003   other     template          0           gate_pass       pass
+T-1004   billing   worker:billing    1           no_progress     needs_human
+T-1005   bug       worker:bug        1           gate_pass       pass
+T-1006   other     template          0           gate_pass       pass
 
 Output directory out/: 6 replies; needs human handoff: 1 ticket
-  - T-1004 (no_progress): Ticket T-1004: Changing invoice head from personal to…
-Trace: run-state.json / run.jsonl (run_id=run-mta57gsx)
+  - T-1004 (no_progress): Ticket T-1004: Changing head from personal to company requir…
+Trace: run-state.json / run.jsonl (run_id=run-mtf9z47q)
 \$ echo \$?
 1
 ```
@@ -205,10 +205,10 @@ async function routeNode(tickets) {
 
 The key is the middle ten lines, not the model call. The model returns free text, every downstream branch depends on this value, so it must be tightened into one of three legal labels before entering downstream: lines not matching the format are discarded; categories not in the whitelist fall to `other`; tickets without even one matched line, `parsed.get(t.id) ?? "other"` catches. 
 
-I deliberately had the stub return "投诉" (a Chinese word) for the last ticket—not in the whitelist. The real-run log shows this tightening:
+I deliberately had the stub return "complaint" for the last ticket—not in the whitelist. The real-run log shows this tightening:
 
 ```text
-{"ts":"2026-08-26T13:41:46.130Z","run_id":"run-mta57gsx","node":"route","event":"clamped","ticket":"T-1006","raw":"投诉","category":"other"}
+{"ts":"2026-08-30T03:54:05.526Z","run_id":"run-mtf9z47q","node":"route","event":"clamped","ticket":"T-1006","raw":"complaint","category":"other"}
 ```
 
 The model gave a self-invented label, code clamped it back to `other`, and left a record saying what was clamped. **Downstream branches only recognize values code has vetted**—this is the practical difference between a routing node and "letting the model directly decide where to jump next," and it's why routing can be unit-tested.
@@ -239,14 +239,14 @@ The concurrency pool is Lesson 3's pool (called `pool` there, `runPool` here): t
 \$ POOL_SIZE=1 node orchestrate.mjs
 ...
 === Full graph execution summary ===
-Node      Time    Model calls    Tokens    Gate rounds   Status
-route     62ms    1              720       -             ok
-fanout    494ms   8              8903      -             ok
-merge     2ms     0              0         -             ok
-review    131ms   2              3033      2             ok
+Node      Time    Model calls Tokens   Gate rounds Status
+route     62ms    1           720      -           ok
+fanout    487ms   8           8903     -           ok
+merge     1ms     0           0        -           ok
+review    124ms   2           3033     2           ok
 ```
 
-494ms vs. 247ms, call count and tokens identical. Concurrency buys wall-clock time, not less work—this remains true after switching to a real API, except then you also need to consider the provider's rate limits, making the ceiling even more essential.
+487ms vs. 243ms, call count and tokens identical. Concurrency buys wall-clock time, not less work—this remains true after switching to a real API, except then you also need to consider the provider's rate limits, making the ceiling even more essential.
 
 ### Delegation prompts: all four elements present
 
@@ -376,17 +376,17 @@ I planted two scripts in the stubs, making each exit of the loop execute once.
 **T-1005: Fixed correctly, done.** Bug worker's first version forgot ticket ID (first rule fails), gate returns `missing_ticket_id`, worker adds the opening line per report, second version passes:
 
 ```text
-{"ts":"2026-08-26T13:41:46.444Z","run_id":"run-mta57gsx","node":"review","event":"gate","ticket":"T-1005","round":0,"pass":false,"report":"missing_ticket_id"}
-{"ts":"2026-08-26T13:41:46.505Z","run_id":"run-mta57gsx","node":"review","event":"worker_done","ticket":"T-1005","round":2,"calls":1,"tokens":1638}
-{"ts":"2026-08-26T13:41:46.506Z","run_id":"run-mta57gsx","node":"review","event":"gate","ticket":"T-1005","round":1,"pass":true,"report":""}
+{"ts":"2026-08-30T03:54:05.837Z","run_id":"run-mtf9z47q","node":"review","event":"gate","ticket":"T-1005","round":0,"pass":false,"report":"missing_ticket_id"}
+{"ts":"2026-08-30T03:54:05.897Z","run_id":"run-mtf9z47q","node":"review","event":"worker_done","ticket":"T-1005","round":2,"calls":1,"tokens":1638}
+{"ts":"2026-08-30T03:54:05.898Z","run_id":"run-mtf9z47q","node":"review","event":"gate","ticket":"T-1005","round":1,"pass":true,"report":""}
 ```
 
-**T-1004: Revised, but not fixed, loop stopped itself.** Billing worker's first version wrote "please wait," gate returns `filler_word:稍等`; worker rewrote a version, sentence entirely different, longer, added an explanation, but that word remains. Second round's report identical to first round:
+**T-1004: Revised, but not fixed, loop stopped itself.** Billing worker's first version wrote "please wait," gate returns `filler_word:please wait`; worker rewrote a version, sentence entirely different, longer, added an explanation, but that phrase remains. Second round's report identical to first round:
 
 ```text
-{"ts":"2026-08-26T13:41:46.381Z","run_id":"run-mta57gsx","node":"review","event":"gate","ticket":"T-1004","round":0,"pass":false,"report":"filler_word:稍等"}
-{"ts":"2026-08-26T13:41:46.443Z","run_id":"run-mta57gsx","node":"review","event":"worker_done","ticket":"T-1004","round":2,"calls":1,"tokens":1395}
-{"ts":"2026-08-26T13:41:46.443Z","run_id":"run-mta57gsx","node":"review","event":"gate","ticket":"T-1004","round":1,"pass":false,"report":"filler_word:稍等"}
+{"ts":"2026-08-30T03:54:05.775Z","run_id":"run-mtf9z47q","node":"review","event":"gate","ticket":"T-1004","round":0,"pass":false,"report":"filler_word:please wait"}
+{"ts":"2026-08-30T03:54:05.835Z","run_id":"run-mtf9z47q","node":"review","event":"worker_done","ticket":"T-1004","round":2,"calls":1,"tokens":1395}
+{"ts":"2026-08-30T03:54:05.836Z","run_id":"run-mtf9z47q","node":"review","event":"gate","ticket":"T-1004","round":1,"pass":false,"report":"filler_word:please wait"}
 ```
 
 At this moment `gate.report === lastReport` holds, loop judges no further progress, stops, marks this ticket `needs_human`. It originally had two more rounds of budget (`MAX_REVIEW_ROUNDS` is 3), but spending them would be wasted—same report fed back, most likely same reply returns. The "no further progress" exit's value is here: it cuts losses earlier than max rounds, and it gives an informative conclusion—not "tried three times still fails," but "it doesn't understand this feedback," which is precisely the signal to escalate to human.
@@ -397,8 +397,8 @@ The difference between the two exits in data is immediately visible:
 "T-1004": {
   "gate_rounds": 1,
   "gate_reports": [
-    "filler_word:稍等",
-    "filler_word:稍等"
+    "filler_word:please wait",
+    "filler_word:please wait"
   ],
   "stop": "no_progress",
   "status": "needs_human"
@@ -452,10 +452,10 @@ inbox/ received 6 tickets: T-1001, T-1002, T-1003, T-1004, T-1005, T-1006
 ```json
 {
   "version": 1,
-  "run_id": "run-mta4fnpe",
+  "run_id": "run-mtf9zyy3",
   "nodes": {
     "route": { "ms": 62, "calls": 1, "tokens": 720, "status": "ok" },
-    "fanout": { "ms": 248, "calls": 8, "tokens": 8903, "status": "ok" },
+    "fanout": { "ms": 246, "calls": 8, "tokens": 8903, "status": "ok" },
     "merge": { "ms": 1, "calls": 0, "tokens": 0, "status": "ok" }
   },
   "tickets": {
@@ -463,7 +463,7 @@ inbox/ received 6 tickets: T-1001, T-1002, T-1003, T-1004, T-1005, T-1006
       "category": "billing",
       "handler": "worker:billing",
       "file": "out/T-1004.txt",
-      "one_line": "Ticket T-1004: Invoice head change requires finance review…",
+      "one_line": "Ticket T-1004: Invoice head change requires finance review, …",
       "gate_rounds": 0,
       "gate_reports": [],
       "stop": null,
@@ -473,7 +473,7 @@ inbox/ received 6 tickets: T-1001, T-1002, T-1003, T-1004, T-1005, T-1006
       "category": "bug",
       "handler": "worker:bug",
       "file": "out/T-1005.txt",
-      "one_line": "This is known issue KI-91—App avatar still uses…",
+      "one_line": "This is known issue KI-91—App avatar still uses old CDN doma…",
       "gate_rounds": 0,
       "gate_reports": [],
       "stop": null,
@@ -504,7 +504,7 @@ const MAX_TURNS = 6;          // Single node's internal loop ceiling (Course 7 V
 const POOL_SIZE = Math.max(1, Number(process.env.POOL_SIZE) || 2); // Fan-out concurrency ceiling (Lesson 3); 0/invalid falls back to 1
 const STUB_LATENCY_MS = 60;   // Stub's fixed latency, replaces real network round-trip, so timing column has something to show
 const MAX_REVIEW_ROUNDS = 3;  // Review loop's max rewrite rounds (Lesson 5)
-const FILLER_WORDS = ["稍等", "请耐心等待", "尽快处理"];
+const FILLER_WORDS = ["please wait", "thank you for your patience", "we'll handle it soon"];
 const CATEGORIES = ["billing", "bug", "other"];
 
 const ROOT = process.cwd();
@@ -517,22 +517,22 @@ const LOG_PATH = path.join(ROOT, "run.jsonl");
 // ============ 1. Input: 6 tickets in inbox/ and one known-issues DB ============
 
 const TICKET_TEXT = {
-  "T-1001": "订单 A-77301 这个月被扣了两次款，麻烦查一下，多扣的那笔退给我。",
-  "T-1002": "在报表页点「导出 CSV」，按钮一直转圈，等了五分钟也没反应。Chrome，公司网络。",
-  "T-1003": "你们的人工客服电话是多少？我想直接打电话问。",
-  "T-1004": "订单 A-77420 的发票抬头开错了，开成了我的个人名字，要改成公司抬头。",
-  "T-1005": "手机 App 上登录之后头像一直不显示，网页端是正常的。",
-  "T-1006": "用了三个月，问题提了好几次都没下文，这产品到底还有没有人维护？",
+  "T-1001": "Order A-77301 got charged twice this month, please look into it and refund the extra charge.",
+  "T-1002": "On the reports page I click 'Export CSV' and the button just keeps spinning; waited five minutes, nothing. Chrome, office network.",
+  "T-1003": "What's your phone number for a human agent? I'd like to just call and ask.",
+  "T-1004": "The invoice for order A-77420 has the wrong name on it: it came out under my personal name and I need it under the company name.",
+  "T-1005": "On the phone app my avatar never shows up after I log in; on the web it's fine.",
+  "T-1006": "Been using it three months, reported problems several times and never heard back. Is anyone still maintaining this product?",
 };
 
 const KNOWN_ISSUES = [
-  "## KI-88 报表页导出 CSV 无响应",
-  "影响：点击导出后按钮持续转圈，后台导出队列积压。状态：已在 3.4.2 修复，等待发版。",
-  "临时办法：改用同一页的「导出 XLSX」，数据列完全一致。",
+  "## KI-88 Reports page CSV export not responding",
+  "Impact: after clicking export the button keeps spinning; the backend export queue is backed up. Status: fixed in 3.4.2, awaiting release.",
+  "Workaround: use 'Export XLSX' on the same page; the data columns are identical.",
   "",
-  "## KI-91 移动端头像不显示",
-  "影响：App 端头像 URL 仍指向旧 CDN 域名，网页端不受影响。状态：修复中，预计本周五随版本发布。",
-  "临时办法：退出登录后重新登录一次，头像通常会恢复显示。",
+  "## KI-91 Avatar not showing on mobile",
+  "Impact: in the app the avatar URL still points at the old CDN domain; the web is unaffected. Status: being fixed, ships this Friday with the release.",
+  "Workaround: log out and log back in once; the avatar usually reappears.",
 ].join("\n");
 
 function seedWorkspace() {
@@ -579,7 +579,7 @@ const SCRIPTS = {
             "T-1003: other",
             "T-1004: billing",
             "T-1005: bug",
-            "T-1006: 投诉",
+            "T-1006: complaint",
           ].join("\n")
         ),
       ],
@@ -600,7 +600,7 @@ const SCRIPTS = {
       "end_turn",
       [
         say(
-          "Ticket T-1001 reply: Order A-77301 was indeed charged twice this month, each 399.00 yuan, system marked as duplicate charge. " +
+          "Ticket T-1001 reply: Order A-77301 was indeed charged twice this month, 399.00 each charge, system marked as duplicate charge. " +
             "The extra charge has been submitted for refund, will return via original payment method, arrival time depends on card issuer, usually 3-5 business days. " +
             "If still not arrived by the 5th business day, please reply in this ticket, we'll take the transaction ID to check with payment channel."
         ),
@@ -805,8 +805,8 @@ async function runToolUses(content, toolImpls) {
 // ============ 4. Two tools ============
 
 const ORDERS = {
-  "A-77301": { order_id: "A-77301", amount_cents: 39900, charged_times: 2, status: "duplicate_charge", invoice_title: "李明（个人）" },
-  "A-77420": { order_id: "A-77420", amount_cents: 128000, charged_times: 1, status: "paid", invoice_title: "李明（个人）" },
+  "A-77301": { order_id: "A-77301", amount_cents: 39900, charged_times: 2, status: "duplicate_charge", invoice_title: "Alex Reed (individual)" },
+  "A-77420": { order_id: "A-77420", amount_cents: 128000, charged_times: 1, status: "paid", invoice_title: "Alex Reed (individual)" },
 };
 
 const TOOLS = [
@@ -856,14 +856,14 @@ const ROUTER_PROMPT = [
 const WORKER_PROMPTS = {
   billing: [
     "You are billing ticket specialist, handling one ticket at a time.",
-    "Objective: Investigate this ticket's billing facts, produce a complete Chinese-language reply.",
+    "Objective: Investigate this ticket's billing facts, produce a complete reply in English.",
     "Output format: Plain text paragraph, start with 'Ticket <ticket_id> reply:', state facts found, actions already taken, what the user can expect next; no bullet lists, no pleasantries.",
     "Tool guidance: Billing facts must use lookup_order, pass the order ID from the ticket verbatim; if not found say so, don't infer amounts or charge counts from ticket description.",
     "Task boundaries: Handle only this ticket's billing portion, don't modify orders, don't promise extra compensation, don't answer non-billing questions; don't write filler like 'please wait,' 'thank you for your patience,' or 'we'll handle it soon.'",
   ].join("\n"),
   bug: [
     "You are bug ticket specialist, handling one ticket at a time.",
-    "Objective: Determine if this ticket is a known issue, produce a complete Chinese-language reply.",
+    "Objective: Determine if this ticket is a known issue, produce a complete reply in English.",
     "Output format: Plain text paragraph, start with 'Ticket <ticket_id> reply:', state matched known-issue number and conclusion, workaround, when fix arrives; no bullet lists, no pleasantries.",
     "Tool guidance: Use read_file to read kb/known-issues.md for cross-reference, if matched cite the number inside; if not matched say so, don't invent an issue number.",
     "Task boundaries: Only do issue identification and reply, don't disable features, don't promise minute-precise fix times, don't ask for account passwords; don't write filler like 'please wait,' 'thank you for your patience,' or 'we'll handle it soon.'",
@@ -1002,8 +1002,8 @@ async function fanoutNode(routed) {
 // ============ 9. Node three: Merge (pure code, pass references not payloads) ============
 
 function oneLineOf(text) {
-  const head = text.split("。")[0];
-  return head.length > 22 ? `${head.slice(0, 22)}…` : head;
+  const head = text.split(".")[0];
+  return head.length > 60 ? `${head.slice(0, 60)}…` : head;
 }
 
 function mergeNode(drafts) {
@@ -1181,7 +1181,7 @@ Every terminal output in this lesson came from this script's actual runs, not by
 
 **Swap model for a stub that plays a fixed queue.** `SCRIPTS` is a table, key is "ticket id + which version," value is a pre-written response sequence; each `messages.create` call spits the next one in order, queue exhausted and still calling throws directly. This way "which ticket calls which tool in which round, when model finishes" are all constants. The stub also left an assertion: `create` must carry `model` and `max_tokens`, missing one throws—real client requires these two parameters, stub won't cover for you, so you don't discover the gap the day you swap to real client. This method used from Course 8's hands-on all the way here, so the object being verified is your control logic, not the model's performance that day (real models are non-deterministic, same input can still give different responses[^S3]).
 
-The stub also adds a fixed 60ms delay, replacing real network round-trip. Without it every node would be 0ms, concurrency pool's effect wouldn't show in the summary table at all—the `POOL_SIZE=1` comparison above (494ms vs. 247ms) relies on it.
+The stub also adds a fixed 60ms delay, replacing real network round-trip. Without it every node would be 0ms, concurrency pool's effect wouldn't show in the summary table at all—the `POOL_SIZE=1` comparison above (487ms vs. 243ms) relies on it.
 
 **Two loop scripts planted in stubs.** The review loop needs to genuinely spin, which requires something genuinely failing gate. So:
 
@@ -1208,7 +1208,7 @@ A course reaching its capstone hands-on, the easiest mistake is quietly overturn
 
 **6. `run-state.json` atomic write matches Course 9.** Write `.tmp` first, then `renameSync` swap, not one step missing. Write timing also per that course's caliber: persist once after each small step completes, not once after full run completes.
 
-**7. Observability caliber same form as Course 11, but coarser grain.** One JSON event per line, each carrying `ts` and `run_id`, grep-able after the fact. **Four differences**: (a) Course 11's logger records content summary (shape, length, first few chars), this lesson only records id, category, filename, report string and counts, doesn't record reply full text—full text already in `out/`; (b) association field Course 11 calls `trace_id`, here called `run_id`; (c) that course's core is using `span_id`/`parent_id` to串成 a trace tree, this graph although node→worker→tool three-layer nested, didn't implement parent-child linking, so no trace tree; (d) `initLog()` each run clears `run.jsonl`, only keeps most recent run, to do Course 11's cross-run comparison (`v-good` vs. `v-bug`), must change to append by `run_id` separate files. To connect this graph into real trace system, Course 11's span fields need to be added following that pattern.
+**7. Observability caliber same form as Course 11, but coarser grain.** One JSON event per line, each carrying `ts` and `run_id`, grep-able after the fact. **Four differences**: (a) Course 11's logger records content summary (shape, length, first few chars), this lesson only records id, category, filename, report string and counts, doesn't record reply full text—full text already in `out/`; (b) association field Course 11 calls `trace_id`, here called `run_id`; (c) that course's core is using `span_id`/`parent_id` to string together a trace tree, this graph although node→worker→tool three-layer nested, didn't implement parent-child linking, so no trace tree; (d) `initLog()` each run clears `run.jsonl`, only keeps most recent run, to do Course 11's cross-run comparison (`v-good` vs. `v-bug`), must change to append by `run_id` separate files. To connect this graph into real trace system, Course 11's span fields need to be added following that pattern.
 
 **8. Orchestrator-workers pattern, this lesson intentionally didn't implement (Lesson 4).** Lesson 4's orchestrator-workers, key is "dispatch how many, each does what" decided by model watching input on the fly; this graph isn't—how six tickets classify, each category goes which worker, locked into `CATEGORIES` and three constant prompts before writing first line of code. This is precisely Lesson 4's "can predefine then don't make dynamic" direct application: this batch of work's shape is known, shouldn't hand decision authority back to model. So strictly speaking, welded into this file are four patterns (chaining, routing, parallelization-sectioning, review loop), voting supplements fifth in Level 2 exercise, orchestrator-workers is the one barred by this batch of tasks' nature.
 
@@ -1220,7 +1220,7 @@ Several boundaries, state them explicitly:
 
 **Fan-out is synchronous, will hurt at scale.** The pool in `fanoutNode` must wait for the entire batch to complete before entering `merge`. This is precisely the bottleneck that real production system acknowledged: synchronous execution simplifies coordination, but creates bottlenecks in the information flow—one subagent taking forever, entire system stuck waiting[^S2]. Six tickets, each at most two calls, this bottleneck doesn't hurt at all; six hundred tickets, each ten calls, it becomes "slowest one determines whole batch's wall-clock time." Whether to change to asynchronous, must calculate the cost: async lets agents work concurrently, spin up new ones on demand, but it adds difficulty in result coordination, state consistency, error propagation across subagents[^S2]—these three don't exist in synchronous version, because order is code-determined.
 
-**Review loop's two rules are shallow and brittle.** `includes("稍等")` will mis-flag sentences like "no need to wait, already handled" as filler. This is Course 10's old warned problem: overly strict deterministic validators will judge correct as incorrect. For real production, these two rules need calibration against a small batch of real replies, or demote them to "flag for judge re-review" rather than directly send back for rewrite.
+**Review loop's two rules are shallow and brittle.** `includes("please wait")` will mis-flag a legitimate sentence like "the export dialog shows please wait until the file is ready" as filler. This is Course 10's old warned problem: overly strict deterministic validators will judge correct as incorrect. For real production, these two rules need calibration against a small batch of real replies, or demote them to "flag for judge re-review" rather than directly send back for rewrite.
 
 **Swap to real API, only swap stub, structure unmoved.** `makeStubClient(queue)` swap to `new Anthropic()`, delete entire `SCRIPTS` table, rest not one line changes—`runAgent` was always written to real API's `stop_reason` / `tool_use` / `tool_result` shape, `model` and `max_tokens` always carried. After swap three things will change: classification result will jitter (same tickets, two runs might land in different categories), gate rounds will jitter, token count will jitter; one run costs money and time; Course 7's three unmoved valves must be installed back.
 
@@ -1236,20 +1236,20 @@ Below is this graph's one complete run's summary table, plus two tickets' record
 
 ```text
 === Full graph execution summary ===
-Node      Time    Model calls    Tokens    Gate rounds   Status
-route     62ms    1              720       -             ok
-fanout    247ms   8              8903      -             ok
-merge     2ms     0              0         -             ok
-review    127ms   2              3033      2             ok
+Node      Time    Model calls Tokens   Gate rounds Status
+route     61ms    1           720      -           ok
+fanout    243ms   8           8903     -           ok
+merge     1ms     0           0        -           ok
+review    126ms   2           3033     2           ok
 
 === Per-ticket breakdown ===
-Ticket   Category   Handler            Gate rounds   Stop reason     Status
-T-1001   billing    worker:billing     0             gate_pass       pass
-T-1002   bug        worker:bug         0             gate_pass       pass
-T-1003   other      template           0             gate_pass       pass
-T-1004   billing    worker:billing     1             no_progress     needs_human
-T-1005   bug        worker:bug         1             gate_pass       pass
-T-1006   other      template           0             gate_pass       pass
+Ticket   Category  Handler           Gate rounds Stop reason     Status
+T-1001   billing   worker:billing    0           gate_pass       pass
+T-1002   bug       worker:bug        0           gate_pass       pass
+T-1003   other     template          0           gate_pass       pass
+T-1004   billing   worker:billing    1           no_progress     needs_human
+T-1005   bug       worker:bug        1           gate_pass       pass
+T-1006   other     template          0           gate_pass       pass
 ```
 
 ```json
@@ -1257,9 +1257,9 @@ T-1006   other      template           0             gate_pass       pass
   "category": "billing",
   "handler": "worker:billing",
   "file": "out/T-1004.txt",
-  "one_line": "Ticket T-1004: Changing head from personal to company, requires…",
+  "one_line": "Ticket T-1004: Changing head from personal to company requir…",
   "gate_rounds": 1,
-  "gate_reports": ["filler_word:稍等", "filler_word:稍等"],
+  "gate_reports": ["filler_word:please wait", "filler_word:please wait"],
   "stop": "no_progress",
   "status": "needs_human"
 },
@@ -1267,7 +1267,7 @@ T-1006   other      template           0             gate_pass       pass
   "category": "bug",
   "handler": "worker:bug",
   "file": "out/T-1005.txt",
-  "one_line": "Ticket T-1005 reply: This is known issue KI…",
+  "one_line": "Ticket T-1005 reply: This is known issue KI-91—App avatar st…",
   "gate_rounds": 1,
   "gate_reports": ["missing_ticket_id"],
   "stop": "gate_pass",
@@ -1279,14 +1279,14 @@ Without writing code, answer three questions: (1) Which of the six tickets enter
 
 <!-- rubric -->
 - (1) T-1004 and T-1005 entered loop, each spun 1 round; basis is per-ticket table's `gate rounds` column non-zero, or `run-state.json`'s `gate_rounds` greater than 0; other four are 0, means draft passed gate first time. Summary table `review` row's gate rounds 2 is these two's 1 round each summed
-- (2) Dividing line is `gate_reports` not `gate_rounds`: T-1005 has only one report `missing_ticket_id`, means after rewrite second version passed check, didn't produce second report, so `stop` is `gate_pass`; T-1004 has two entries with identical content `filler_word:稍等`, means after rewrite gate report had zero change, triggers "two consecutive rounds identical report judged no further progress," so `stop` is `no_progress`, `status` is `needs_human`. Must point out `gate_rounds` counts rewrite times, `gate_reports` records each failed report (including last one), the two aren't equivalent
+- (2) Dividing line is `gate_reports` not `gate_rounds`: T-1005 has only one report `missing_ticket_id`, means after rewrite second version passed check, didn't produce second report, so `stop` is `gate_pass`; T-1004 has two entries with identical content `filler_word:please wait`, means after rewrite gate report had zero change, triggers "two consecutive rounds identical report judged no further progress," so `stop` is `no_progress`, `status` is `needs_human`. Must point out `gate_rounds` counts rewrite times, `gate_reports` records each failed report (including last one), the two aren't equivalent
 - (3) Preserved: `nodes` has `route` / `fanout` / `merge` three nodes' timing and usage; six tickets' `category`, `handler`, `file`, `one_line`; and six draft files already persisted in `out/`. Lost: review verdict, all tickets stuck at `status: "drafted"`, `stop: null`, `gate_reports: []`. After restart can read drafts back from `out/`, start directly from review node, don't need to re-run route and fan-out—because state is persist once after each node completes, not persist once after full run completes
 - Explain this "incremental trace" significance: incrementally recording each step's result during run, is precisely the premise for a run being recoverable; also pairs with Course 9's "write .tmp then rename" atomic write—killed at that moment on disk is either previous complete state or new complete state
 
 <!-- answer -->
 (1) Entered loop are T-1004 and T-1005, each spun 1 round. Most direct field is per-ticket table's `gate rounds` column (`run-state.json` corresponds to `gate_rounds`): these two are 1, other four are 0. 0 means draft first check passed gate, worker not called back once. Summary table's `review` row that 2 is these two's 1 round each added, not some one spun two rounds.
 
-(2) Just looking at `gate_rounds` indeed can't tell success from failure—it counts "worker called back to rewrite how many times," whether rewrite result good or bad, it doesn't care. Real evidence is `gate_reports`, it records each failed report, including the last one causing loop stop. T-1005's array has only one entry `missing_ticket_id`: draft missing ticket ID, sent back; rewritten second version added it, gate passed, didn't produce another report, so `stop` records as `gate_pass`, `status` is `pass`. T-1004's array has two entries, and strings identical, both `filler_word:稍等`: draft wrote "please wait" sent back; worker rewrote a version—sentence changed, longer, explained more—but that word still there, gate returned report character-for-character same as previous round. Loop's criterion is "this round's report same as previous round judge no further progress," so it didn't spend remaining two rounds budget, directly stopped, marked `needs_human`, `stop` records as `no_progress`. One sentence: `gate_rounds` counts rewrite times, `gate_reports` reflects whether each rewrite produced different result.
+(2) Just looking at `gate_rounds` indeed can't tell success from failure—it counts "worker called back to rewrite how many times," whether rewrite result good or bad, it doesn't care. Real evidence is `gate_reports`, it records each failed report, including the last one causing loop stop. T-1005's array has only one entry `missing_ticket_id`: draft missing ticket ID, sent back; rewritten second version added it, gate passed, didn't produce another report, so `stop` records as `gate_pass`, `status` is `pass`. T-1004's array has two entries, and strings identical, both `filler_word:please wait`: draft wrote "please wait" sent back; worker rewrote a version—sentence changed, longer, explained more—but that phrase still there, gate returned report character-for-character same as previous round. Loop's criterion is "this round's report same as previous round judge no further progress," so it didn't spend remaining two rounds budget, directly stopped, marked `needs_human`, `stop` records as `no_progress`. One sentence: `gate_rounds` counts rewrite times, `gate_reports` reflects whether each rewrite produced different result.
 
 (3) Preserved portion not little. `nodes` already has `route`, `fanout`, `merge` three complete accounts (timing, model call count, tokens); six tickets each have `category`, `handler`, `file`, `one_line`; `out/` directory six draft files all written and persisted. Lost only review segment—all tickets stuck at `status: "drafted"`, `stop: null`, `gate_reports` empty array, who should rewrite, who should hand off, none judged yet. So after restart can completely skip route and fan-out (these two steps' products all on disk), read six drafts back from `out/`, enter review node directly. Can do this because state's write timing: persist once after each node completes, inside review after each ticket judged persist again, not wait entire run completes before write. Incrementally recording each step's result is precisely the premise for a run being recoverable within same session; this lesson extending state to disk is own added layer promotion; pair with "write `.tmp` then `rename`" atomic swap, killed at any moment on disk is either one complete state or the other, won't leave half JSON you can't even read back.
 
@@ -1298,7 +1298,7 @@ Third question don't reason, directly look at `run-state.json` pasted from that 
 
 ### Level 2: Add voting node to graph
 
-`other` category has one ticket hard to gauge tone—T-1006: "Used three months, reported problems several times no response, is this product still maintained?" One fixed template replying to it, most likely inappropriate: too cold seems dismissive, too warm risks over-promising.
+`other` category has one ticket hard to gauge tone—T-1006: "Been using it three months, reported problems several times and never heard back. Is anyone still maintaining this product?" One fixed template replying to it, most likely inappropriate: too cold seems dismissive, too warm risks over-promising.
 
 Add a voting node to this graph: same ticket, same task, run once from two angles[^S1], then use pure code to compare both versions, pick superior one into merge. Comparison rules only two, both can't ask model: first use gate's deterministic rules to eliminate (has banned words or missing ticket ID directly out), survivors pick shorter one (customer replies don't ramble).
 
@@ -1333,7 +1333,7 @@ Second place, stubs add two response queues (in `SCRIPTS` after `T-1005#2`):
       [
         say(
           "Ticket T-1006 reply: First apologize, previous feedbacks all didn't give you clear result, this is our follow-up's problem. " +
-            "I re-threaded your three months' submitted tickets, forwarded to corresponding responsible colleagues, will handle soon, progress written in this ticket. " +
+            "I re-threaded your three months' submitted tickets, forwarded to corresponding responsible colleagues, we'll handle it soon, progress written in this ticket. " +
             "Product still maintained, latest version update can check in help center's 'Update Log.'"
         ),
       ],
@@ -1448,41 +1448,41 @@ Real run result:
 \$ node orchestrate.mjs
 inbox/ received 6 tickets: T-1001, T-1002, T-1003, T-1004, T-1005, T-1006
 [route] T-1001=billing  T-1002=bug  T-1003=other  T-1004=billing  T-1005=bug  T-1006=other
-[vote] T-1006 warm=filler_word:尽快处理(124chars)  plain=ok(102chars)  → pick plain
+[vote] T-1006 warm=filler_word:we'll handle it soon(370chars)  plain=ok(305chars)  → pick plain
 [fanout] concurrency ceiling 2, produced 6 drafts
 [merge] wrote out/ 6 files, passing downstream only refs and one-line summaries
 [review] gate rewrites: 2 rounds total
 
 === Full graph execution summary ===
-Node      Time    Model calls    Tokens    Gate rounds   Status
-route     62ms    1              720       -             ok
-fanout    371ms   10             10827     -             ok
-merge     1ms     0              0         -             ok
-review    127ms   2              3033      2             ok
+Node      Time    Model calls Tokens   Gate rounds Status
+route     62ms    1           720      -           ok
+fanout    367ms   10          10827    -           ok
+merge     1ms     0           0        -           ok
+review    124ms   2           3033     2           ok
 
 === Per-ticket breakdown ===
-Ticket   Category   Handler            Gate rounds   Stop reason     Status
-T-1001   billing    worker:billing     0             gate_pass       pass
-T-1002   bug        worker:bug         0             gate_pass       pass
-T-1003   other      template           0             gate_pass       pass
-T-1004   billing    worker:billing     1             no_progress     needs_human
-T-1005   bug        worker:bug         1             gate_pass       pass
-T-1006   other      vote:plain         0             gate_pass       pass
+Ticket   Category  Handler           Gate rounds Stop reason     Status
+T-1001   billing   worker:billing    0           gate_pass       pass
+T-1002   bug       worker:bug        0           gate_pass       pass
+T-1003   other     template          0           gate_pass       pass
+T-1004   billing   worker:billing    1           no_progress     needs_human
+T-1005   bug       worker:bug        1           gate_pass       pass
+T-1006   other     vote:plain        0           gate_pass       pass
 
 Output directory out/: 6 replies; needs human handoff: 1 ticket
-  - T-1004 (no_progress): Ticket T-1004: Changing head from personal to company, requires…
-Trace: run-state.json / run.jsonl (run_id=run-mta4ffwe)
+  - T-1004 (no_progress): Ticket T-1004: Changing head from personal to company requir…
+Trace: run-state.json / run.jsonl (run_id=run-mtfa0ip9)
 ```
 
-Compare against base version: `fanout`'s model calls from 8 rose to 10, tokens from 8903 rose to 10827, timing from 247ms rose to 371ms—this is voting's price, same ticket's work done twice. Per-ticket table T-1006's handler from `template` became `vote:plain`.
+Compare against base version: `fanout`'s model calls from 8 rose to 10, tokens from 8903 rose to 10827, timing from 243ms rose to 367ms—this is voting's price, same ticket's work done twice. Per-ticket table T-1006's handler from `template` became `vote:plain`.
 
-This time first rule decided victory: `warm` version has "will handle soon," hit banned word directly out, length rule didn't even get a turn. To see length rule work, change stub's `T-1006@warm#1` that sentence "forwarded to corresponding responsible colleagues, will handle soon, progress written in this ticket" to "forwarded to corresponding responsible colleagues, progress written in this ticket" then run again, real output is:
+This time first rule decided victory: `warm` version has "we'll handle it soon," hit banned word directly out, length rule didn't even get a turn. To see length rule work, change stub's `T-1006@warm#1` that sentence "forwarded to corresponding responsible colleagues, we'll handle it soon, progress written in this ticket" to "forwarded to corresponding responsible colleagues, progress written in this ticket" then run again, real output is:
 
 ```text
-[vote] T-1006 warm=ok(118chars)  plain=ok(102chars)  → pick plain
+[vote] T-1006 warm=ok(348chars)  plain=ok(305chars)  → pick plain
 ```
 
-Both versions passed deterministic check, so by second rule pick shorter version, `plain` wins 102 chars vs. 118 chars.
+Both versions passed deterministic check, so by second rule pick shorter version, `plain` wins 305 chars vs. 348 chars.
 
 **Why use pure code comparison, not call model to judge?** Because these two rules are inherently deterministically judgeable. "Has banned words present or not," "which version shorter" these questions, string operations one line gives answer, same input forever same result, doesn't cost one call, doesn't add one network wait, also won't introduce new non-determinism—Course 10's tiered judgment says exactly this order: deterministically judgeable judge first, what's left then judge's turn. Conversely speaking, if comparison standard becomes "which version's tone makes people more willing to continue communicating," that indeed can't write as rule, should consult judge; but even then, judge should rank after these two deterministic rules—first eliminate obviously unqualified candidates, then spend money to judge what's left.
 

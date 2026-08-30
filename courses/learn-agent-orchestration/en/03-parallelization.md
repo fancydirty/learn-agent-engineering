@@ -56,7 +56,7 @@ const reports = await Promise.all(
 Aggregation happens in the next line, done by this code:
 
 ```javascript
-const blockers = reports.filter((r) => r.level === "高");
+const blockers = reports.filter((r) => r.level === "high");
 const total = reports.reduce((n, r) => n + r.issues, 0);
 console.log(`${docs.length} docs, ${total} issues, ${blockers.length} high-risk`);
 ```

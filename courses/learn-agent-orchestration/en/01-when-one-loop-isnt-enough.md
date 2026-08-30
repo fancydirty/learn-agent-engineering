@@ -156,7 +156,7 @@ The rest of this course starts with the lightest shape and builds toward composi
 - **Lesson 2: Chaining and Routing**: Break a task into fixed steps with programmatic gates between each; classify then dispatch to specialized prompts. The lightest form of "plan in code."
 - **Lesson 3: Parallelization**: Sectioning (split into independent subtasks run in parallel) and voting (run the same task multiple times for diverse outputs), plus how to aggregate results in code.
 - **Lesson 4: Orchestrator-Workers**: A central LLM dynamically breaks down tasks, delegates to worker LLMs, and synthesizes their results. The key difference: subtasks aren't predefined.
-- **Lesson 5: Evaluation loops, and composing patterns into graphs**: Check-fix-recheck until it passes or stops making progress, then stitch the earlier patterns together. That lesson will state it again: "graph" is this course's own visualization.
+- **Lesson 5: The Review Loop, and Composing Patterns into a Graph**: Check-fix-recheck until it passes or stops making progress, then stitch the earlier patterns together. That lesson will state it again: "graph" is this course's own visualization.
 - **Lesson 6: Hands-on**: Upgrade that single-loop harness from course 7 in this series into a deterministic orchestration script.
 
 This pattern taxonomy isn't a 2024 relic: the current Claude platform's multi-agent orchestration docs still independently name **Parallelization (fan out independent subtasks simultaneously, coordinator synthesizes results), Specialization (route to agents with domain-focused system prompts and tools), Escalation (consult a more capable agent or model for a subset of complex subtasks)**[^S6]. The skin changed, the skeleton is the same.
