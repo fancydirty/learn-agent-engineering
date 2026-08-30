@@ -1,15 +1,15 @@
 # Lição 6: Mão na massa: elevando seu harness a um pequeno grafo
 
 > Objetivos de aprendizado:
-> - Soldar roteamento, fan-out, fusão, laço de revisão e relatório das cinco primeiras lições em um único `orchestrate.mjs`: o plano vive no código, cada nó ainda roda o laço de `stop_reason` do Curso 7 (Fundamentos do Harness de Agentes: Laços e Controle), e os resultados intermediários permanecem em variáveis do script
-> - Colocar o laço de revisão realmente para girar, e observar as duas maneiras pelas quais ele pode parar — um chamado corrigido conforme o relatório do gate e pronto, outro devolvendo relatórios idênticos duas rodadas seguidas, julgado sem progresso adicional e marcado needs_human
+> - Soldar roteamento, fan-out, fusão, loop de revisão e relatório das cinco primeiras lições em um único `orchestrate.mjs`: o plano vive no código, cada nó ainda roda o loop de `stop_reason` do Curso 7 (Fundamentos do Harness de Agente: Laços e Controle), e os resultados intermediários permanecem em variáveis do script
+> - Colocar o loop de revisão realmente para girar, e observar as duas maneiras pelas quais ele pode parar — um chamado corrigido conforme o relatório do gate e pronto, outro devolvendo relatórios idênticos duas rodadas seguidas, julgado sem progresso adicional e marcado needs_human
 > - Persistir o rastro de execução do grafo inteiro em `run-state.json` e `run.jsonl`, e depois conciliá-lo com a tabela-resumo da execução real: qual nó gastou quanto tempo, quantas chamadas de modelo, quantos tokens, quantas rodadas de gate
 >
-> Pré-requisitos: Lições 1–5 concluídas, capaz de rodar o laço de harness do Curso 7 (Fundamentos do Harness de Agentes: Laços e Controle) | Anterior: [<< Lição 5](./05-evaluator-and-graphs.md)
+> Pré-requisitos: Lições 1–5 concluídas, capaz de rodar o loop de harness do Curso 7 (Fundamentos do Harness de Agente: Laços e Controle) | Anterior: [<< Lição 5](./05-evaluator-and-graphs.md)
 
 ## Primeiro, veja rodando
 
-As cinco primeiras lições separaram as peças: quem guarda o plano (Lição 1), encadeamento e roteamento (Lição 2), seccionamento e votação mais um pool de concorrência limitado (Lição 3), orquestrador-workers e os quatro elementos dos prompts de delegação (Lição 4), o laço de revisão e como compor esses padrões no que a Lição 5 chama de “grafo” (Lição 5). Esta lição solda tudo em um arquivo.
+As cinco primeiras lições separaram as peças: quem guarda o plano (Lição 1), encadeamento e roteamento (Lição 2), seccionamento e votação mais um pool de concorrência limitado (Lição 3), orquestrador-workers e os quatro elementos dos prompts de delegação (Lição 4), o loop de revisão e como compor esses padrões no que a Lição 5 chama de “grafo” (Lição 5). Esta lição solda tudo em um arquivo.
 
 A tarefa é deliberadamente banal: `inbox/` contém seis chamados de suporte a clientes, e o trabalho é escrever para cada um uma resposta que possa ser enviada como está. Primeiro, como fica quando termina:
 
@@ -50,7 +50,7 @@ Vale encarar primeiro aquele `1` final. Isso não é um erro — é um veredito:
 
 ## Como é o grafo: o plano é aquela dúzia de linhas em `main()`
 
-Comece pelo esqueleto do script. Usar “grafo” e “nó” é o vocabulário que a Lição 5 introduziu — este é o nosso próprio sistema visual, não um conceito oficial, e ele se apoia em exatamente uma âncora primária: o próprio script do fluxo de trabalho guarda o laço, as ramificações e os resultados intermediários[^S5]. O trecho abaixo é a implementação literal dessa afirmação:
+Comece pelo esqueleto do script. Usar “grafo” e “nó” é o vocabulário que a Lição 5 introduziu — este é o nosso próprio sistema visual, não um conceito oficial, e ele se apoia em exatamente uma âncora primária: o próprio script do fluxo de trabalho guarda o loop, as ramificações e os resultados intermediários[^S5]. O trecho abaixo é a implementação literal dessa afirmação:
 
 A Lição 5 desenhou um grafo composto primeiro; este grafo é uma **variante** dele, com três diferenças: a Lição 5 dividia por dificuldade em “simples / complexo”, aqui dividimos por assunto em `billing` / `bug` / `other`; o fan-out da Lição 5 era “um chamado complexo despachado a três workers e depois fundido”, aqui é seccionamento — “seis chamados, cada um atribuído a um tratador”; a aresta de retorno da Lição 5 voltava a um nó `[rascunho]` separado, aqui ela volta ao worker original. Por que essas mudanças, está tudo reunido na seção “Tabela de conciliação” no fim.
 
@@ -95,17 +95,17 @@ Cinco nós, cada um cuidando de um trecho:
 
 | Nó | O que faz | Quem faz |
 | --- | --- | --- |
-| `route` | Uma chamada barata divide seis chamados em três categorias | Um laço de modelo |
-| `fanout` | Despacha por categoria a workers especializados, com concorrência limitada | Dois tipos de laço de modelo + um template de código puro |
+| `route` | Uma chamada barata divide seis chamados em três categorias | Um loop de modelo |
+| `fanout` | Despacha por categoria a workers especializados, com concorrência limitada | Dois tipos de loop de modelo + um template de código puro |
 | `merge` | A saída vai para o disco, adiante só referências e resumos de uma linha | Código puro |
-| `review` | O gate determinístico filtra primeiro, e as falhas entram em verificar-corrigir-reverificar | Código puro + laços de modelo sob demanda |
+| `review` | O gate determinístico filtra primeiro, e as falhas entram em verificar-corrigir-reverificar | Código puro + loops de modelo sob demanda |
 | `report` | Imprime as tabelas-resumo, determina o código de saída | Código puro |
 
 Apenas dois dos cinco nós de fato chamam modelos. **Nem todo nó precisa ser um modelo** — esta é a regra mais barata e mais facilmente ignorada da lição: `merge` e `report` são funções puras, a categoria `other` em `fanout` usa um template de string, e o primeiro filtro de `review` são algumas linhas de `includes`. Onde código determinístico consegue dar a mesma resposta, não há motivo para pagar o custo e a latência de uma chamada de modelo.
 
-## Dentro dos nós: ainda o laço do Curso 7
+## Dentro dos nós: ainda o loop do Curso 7
 
-Fixe primeiro a camada mais interna e o grafo passa a fazer sentido. Cada nó de modelo roda internamente o laço de `stop_reason` do Curso 7 (Fundamentos do Harness de Agentes: Laços e Controle), sem alteração:
+Fixe primeiro a camada mais interna e o grafo passa a fazer sentido. Cada nó de modelo roda internamente o loop de `stop_reason` do Curso 7 (Fundamentos do Harness de Agente: Laços e Controle), sem alteração:
 
 ```javascript
 async function runAgent(client, system, userInput, tools, toolImpls) {
@@ -121,7 +121,7 @@ async function runAgent(client, system, userInput, tools, toolImpls) {
   });
 
   while (response.stop_reason === "tool_use") {
-    // —— Válvula 1: máximo de turnos. No início do corpo do laço, antes de turns++ ——
+    // —— Válvula 1: máximo de turnos. No início do corpo do loop, antes de turns++ ——
     if (turns >= MAX_TURNS) {
       return `Atingiu o máximo de turnos ${MAX_TURNS}, parando (a tarefa pode ser difícil demais ou o modelo travou)`;
     }
@@ -151,9 +151,9 @@ async function runAgent(client, system, userInput, tools, toolImpls) {
 }
 ```
 
-Os quatro passos no corpo do laço — empilhar assistant, executar ferramentas, empilhar tool_result, reatribuir `response` — são palavra por palavra idênticos aos da Lição 6 do Curso 7, até os comentários foram copiados. A Válvula 1 (máximo de turnos) está na posição original: no início do corpo do laço, antes do `turns++`. Deixar uma contagem máxima de iterações como condição de parada de laços é prática padrão para manter o controle[^S1].
+As quatro etapas no corpo do loop — empilhar assistant, executar ferramentas, empilhar tool_result, reatribuir `response` — são palavra por palavra idênticos aos da Lição 6 do Curso 7, até os comentários foram copiados. A Válvula 1 (máximo de turnos) está na posição original: no início do corpo do loop, antes do `turns++`. Deixar uma contagem máxima de iterações como condição de parada de loops é prática padrão para manter o controle[^S1].
 
-Comparado ao Curso 7, duas mudanças, ambas fora do corpo do laço: `client` e `system` deixaram de ser constantes de módulo e viraram parâmetros (três papéis precisam de stubs diferentes e prompts de sistema diferentes, então precisam ser passados); a contagem de tokens e chamadas saiu de dentro do corpo do laço para uma camada envolvente fora do cliente, e o interior do laço não mudou:
+Comparado ao Curso 7, duas mudanças, ambas fora do corpo do loop: `client` e `system` deixaram de ser constantes de módulo e viraram parâmetros (três papéis precisam de stubs diferentes e prompts de sistema diferentes, então precisam ser passados); a contagem de tokens e chamadas saiu de dentro do corpo do loop para uma camada envolvente fora do cliente, e o interior do loop não mudou:
 
 ```javascript
 function metered(client) {
@@ -172,7 +172,7 @@ function metered(client) {
 }
 ```
 
-Essa mudança tem um custo e ele precisa ser declarado: a Válvula 2 do Curso 7 (orçamento de tokens) originalmente dependia do valor acumulado dentro do corpo do laço; esse acumulador não está mais no laço, então a Válvula 2 também não fez a mudança. Neste grafo, a fila de respostas do stub de cada nó tem comprimento fixo, e esgotar a fila lança erro diretamente, sem possibilidade de descontrole; mas, quando você trocar os stubs por um cliente real, recoloque a Válvula 2 — ou faça `metered` lançar quando estourar o orçamento, ou mova a contagem de volta para o corpo do laço e restaure a forma original do Curso 7. A Válvula 3 (detecção de giro em falso) e a Válvula 4 (aprovação humana) igualmente não se mudaram; o motivo está listado adiante, na seção “Tabela de conciliação”.
+Essa mudança tem um custo e ele precisa ser declarado: a Válvula 2 do Curso 7 (orçamento de tokens) originalmente dependia do valor acumulado dentro do corpo do loop; esse acumulador não está mais no loop, então a Válvula 2 também não fez a mudança. Neste grafo, a fila de respostas do stub de cada nó tem comprimento fixo, e esgotar a fila lança erro diretamente, sem possibilidade de descontrole; mas, quando você trocar os stubs por um cliente real, recoloque a Válvula 2 — ou faça `metered` lançar quando estourar o orçamento, ou mova a contagem de volta para o corpo do loop e restaure a forma original do Curso 7. A Válvula 3 (detecção de giro em falso) e a Válvula 4 (aprovação humana) igualmente não se mudaram; o motivo está listado adiante, na seção “Tabela de conciliação”.
 
 A metade das ferramentas também é cópia: a resposta de um turno contém múltiplos blocos `tool_use`, devolvem-se outros tantos blocos `tool_result`, uma ferramenta lança e isso é embrulhado em `is_error: true` e devolvido ao modelo, em vez de derrubar o processo inteiro.
 
@@ -278,7 +278,7 @@ Por isso a primeira ação do nó de revisão é reler o conteúdo do arquivo:
 let reply = fs.readFileSync(full, "utf8").trim(); // Carrega a carga do arquivo, não vem carregada do nó anterior
 ```
 
-Esse passo parece redundante — está tudo no mesmo processo mesmo, é só passar a string direto. Mas ele compra duas coisas: o arquivo em `out/` vira a única fonte de verdade daquele chamado, e quem quer que o edite é o que a revisão verifica; e, no momento em que essa aresta precisar cruzar processos ou máquinas, só essa linha de `readFileSync` muda, e o contrato entre nós não se mexe.
+Essa etapa parece redundante — está tudo no mesmo processo mesmo, é só passar a string direto. Mas ele compra duas coisas: o arquivo em `out/` vira a única fonte de verdade daquele chamado, e quem quer que o edite é o que a revisão verifica; e, no momento em que essa aresta precisar cruzar processos ou máquinas, só essa linha de `readFileSync` muda, e o contrato entre nós não se mexe.
 
 ## Um teste rápido
 
@@ -288,19 +288,19 @@ A esta altura, três dos cinco nós do grafo estão completos: o roteamento é a
 {
   "id": "orc-zh-06-llm-as-glue",
   "label": "Julgar se a lógica de cola deve ficar a cargo de um modelo líder decidindo na hora",
-  "prompt": "Um colega termina de ler orchestrate.mjs e pergunta: “Por que fixar no código a lógica de cola de roteamento, fusão e gate? Não seria mais flexível ter um modelo líder observando os resultados intermediários e decidindo o próximo passo na hora?” Para esta leva de tarefas de chamados, como você deve responder?",
+  "prompt": "Um colega termina de ler orchestrate.mjs e pergunta: “Por que fixar no código a lógica de cola de roteamento, fusão e gate? Não seria mais flexível ter um modelo líder observando os resultados intermediários e decidindo a próxima etapa na hora?” Para esta leva de tarefas de chamados, como você deve responder?",
   "whyHere": "Três dos cinco nós são código puro, e o leitor acabou de ver três camadas determinísticas de cola em sequência. Este é o momento certo para verificar se ele consegue articular o que o “plano no código” compra, e quando vale a pena devolver a autoridade de decisão ao modelo.",
   "mode": "single",
   "choices": [
     {
       "id": "a",
-      "text": "Os passos destas tarefas já eram decomponíveis de antemão; fixá-los no código compra previsibilidade e consistência, os resultados intermediários permanecem em variáveis do script e não ocupam o contexto do modelo; trabalho verdadeiramente não decomponível é o que justifica devolver a autoridade de decisão ao modelo",
+      "text": "As etapas destas tarefas já eram decomponíveis de antemão; fixá-los no código compra previsibilidade e consistência, os resultados intermediários permanecem em variáveis do script e não ocupam o contexto do modelo; trabalho verdadeiramente não decomponível é o que justifica devolver a autoridade de decisão ao modelo",
       "correct": true,
-      "feedback": "Correto, e esta é precisamente a aplicação prática da distinção arquitetural entre fluxo de trabalho e agente: fluxo de trabalho é LLMs e ferramentas orquestrados através de caminhos de código predefinidos, agente é o modelo dirigindo autonomamente os próprios processos. Quando a tarefa é bem definida, o fluxo de trabalho fornece previsibilidade e consistência; quando são necessárias flexibilidade em escala e decisão dirigida pelo modelo, o agente é a escolha certa. Os cinco passos “chegam chamados → classificar → tratar por categoria → verificar → reportar” já estavam determinados antes da primeira linha de código; fazer o modelo redecidir a cada rodada se paga com imprevisibilidade e chamadas extras repetidas, comprando uma flexibilidade de que esta tarefa não precisa. Um benefício colateral é que os resultados intermediários não entram no contexto do modelo: o próprio script guarda o laço, as ramificações e os resultados intermediários, e o contexto do modelo guarda apenas o que ele precisa para este passo."
+      "feedback": "Correto, e esta é precisamente a aplicação prática da distinção arquitetural entre fluxo de trabalho e agente: fluxo de trabalho é LLMs e ferramentas orquestrados através de caminhos de código predefinidos, agente é o modelo dirigindo autonomamente os próprios processos. Quando a tarefa é bem definida, o fluxo de trabalho fornece previsibilidade e consistência; quando são necessárias flexibilidade em escala e decisão dirigida pelo modelo, o agente é a escolha certa. As cinco etapas “chegam chamados → classificar → tratar por categoria → verificar → reportar” já estavam determinados antes da primeira linha de código; fazer o modelo redecidir a cada rodada se paga com imprevisibilidade e chamadas extras repetidas, comprando uma flexibilidade de que esta tarefa não precisa. Um benefício colateral é que os resultados intermediários não entram no contexto do modelo: o próprio script guarda o loop, as ramificações e os resultados intermediários, e o contexto do modelo guarda apenas o que ele precisa para esta etapa."
     },
     {
       "id": "b",
-      "text": "Conduzir pelo modelo é obviamente mais inteligente: ter um modelo líder observando os resultados intermediários de cada passo e se adaptando na hora, com roteamento, fusão e gate todos podendo ajustar-se às condições ao vivo, é mais forte do que lógica fixada no código",
+      "text": "Conduzir pelo modelo é obviamente mais inteligente: ter um modelo líder observando os resultados intermediários de cada etapa e se adaptando na hora, com roteamento, fusão e gate todos podendo ajustar-se às condições ao vivo, é mais forte do que lógica fixada no código",
       "correct": false,
       "feedback": "“Mais inteligente” não tem onde ser convertido em valor aqui. A resposta da classificação tem apenas três valores legais, e o gate verifica “a resposta contém o id do chamado, contém palavras de enrolação” — são fatos conhecíveis que você confere numa passada; entregando-os a um modelo, você recebe uma resposta que pode diferir a cada vez, e ainda precisaria escrever código para apertá-la. E o custo real não é só esse: para um modelo conduzir, ele precisa ver os resultados intermediários, os seis textos completos de resposta precisam entrar no contexto dele, e esse conteúdo nunca mais será referenciado. Flexibilidade tem preço, compre-a apenas quando você genuinamente precisar."
     },
@@ -308,13 +308,13 @@ A esta altura, três dos cinco nós do grafo estão completos: o roteamento é a
       "id": "c",
       "text": "As duas abordagens dão mais ou menos no mesmo, a saída final é idêntica, e o resto é preferência pessoal e hábito de equipe, escolha qualquer uma",
       "correct": false,
-      "feedback": "Esta não é uma questão de estilo, é uma decisão com critério: os passos podem ser decompostos de antemão? Pode decompor → escreva no código, compre previsibilidade e consistência; não pode decompor — questões em aberto, passos imprevisíveis de antemão, sem caminho fixo para fixar no código — aí sim deve voltar para um laço autônomo. (Quando a contagem e o conteúdo das subtarefas não podem ser fixados no código mas os passos gerais continuam nas suas mãos, o orquestrador-workers da Lição 4 é a camada intermediária; o trabalho deste grafo nem precisa desse passo, pois classificação e despacho foram travados antes do código.) Tratar isso como questão de gosto tem como consequência mais comum criar um sistema que, sobre um fluxo de cinco passos, repensa a cada turno como prosseguir: caro, lento, e, quando algo dá errado, você não sabe qual linha corrigir."
+      "feedback": "Esta não é uma questão de estilo, é uma decisão com critério: as etapas podem ser decompostas de antemão? Pode decompor → escreva no código, compre previsibilidade e consistência; não pode decompor — questões em aberto, etapas imprevisíveis de antemão, sem caminho fixo para fixar no código — aí sim deve voltar para um loop autônomo. (Quando a contagem e o conteúdo das subtarefas não podem ser fixados no código mas as etapas gerais continuam nas suas mãos, o orquestrador-workers da Lição 4 é a camada intermediária; o trabalho deste grafo nem precisa dessa etapa, pois classificação e despacho foram travados antes do código.) Tratar isso como questão de gosto tem como consequência mais comum criar um sistema que, sobre um fluxo de cinco etapas, repensa a cada turno como prosseguir: caro, lento, e, quando algo dá errado, você não sabe qual linha corrigir."
     }
   ]
 }
 ```
 
-## Nó quatro: Laço de revisão — o gate filtra primeiro, as falhas voltam para a fornalha
+## Nó quatro: Loop de revisão — o gate filtra primeiro, as falhas voltam para a fornalha
 
 O nó de revisão faz verificar-corrigir-reverificar: rodar um verificador, corrigir o que falhou, repetir até passar ou parar de progredir[^S5]. É o único lugar deste grafo onde “a saída de um modelo é devolvida para reescrita”.
 
@@ -331,11 +331,11 @@ function gateCheck(ticketId, reply) {
 }
 ```
 
-Duas regras, ambas do tipo que o Curso 10 (Verificação e Garantia de Qualidade: Não Deixe o “Parece Certo” Passar) disse “se pode ser determinado deterministicamente, não pergunte a um avaliador”: a resposta precisa conter o id do chamado (os sistemas de suporte se indexam por ele) e não pode conter enrolação como “aguarde um momento”, “agradecemos a paciência” ou “resolveremos em breve”, sem conteúdo informativo. Nenhuma das duas exige compreensão semântica, inclusão de string basta, o resultado é o mesmo toda vez, e convenientemente produz uma string de relatório que pode ser realimentada direto ao worker.
+Duas regras, ambas do tipo que o Curso 10 (Verificação e garantia de qualidade: não deixe passar o que só “parece certo”) disse “se pode ser determinado deterministicamente, não pergunte a um avaliador”: a resposta precisa conter o id do chamado (os sistemas de suporte se indexam por ele) e não pode conter enrolação como “aguarde um momento”, “agradecemos a paciência” ou “resolveremos em breve”, sem conteúdo informativo. Nenhuma das duas exige compreensão semântica, inclusão de string basta, o resultado é o mesmo toda vez, e convenientemente produz uma string de relatório que pode ser realimentada direto ao worker.
 
 O avaliador LLM aqui poderia fazer “o tom da resposta é apropriado”, “os fatos excedem o que as ferramentas devolveram” — coisas realmente não julgáveis via `includes`. Mas ele precisa vir depois do gate: o gate é grátis e determinístico, deixe-o filtrar primeiro os problemas evidentes, e o que sobra vale gastar uma chamada para consultar um avaliador. Este grafo instalou apenas a camada de gate, porque os critérios de aceitação desta leva de chamados por acaso são expressáveis como regras; quando os critérios de aceitação incluírem palavras como “adequação de tom”, acrescente a camada de avaliador conforme a alocação de julgamento em camadas do Curso 10.
 
-O laço em si é assim:
+O loop em si é assim:
 
 ```javascript
 while (!gate.pass) {
@@ -345,7 +345,7 @@ while (!gate.pass) {
     break;
   }
   if (gate.report === lastReport) {
-    verdict = "no_progress"; // Duas rodadas seguidas com relatório idêntico, o laço não avança mais
+    verdict = "no_progress"; // Duas rodadas seguidas com relatório idêntico, o loop não avança mais
     break;
   }
   if (item.handler === "template") {
@@ -365,13 +365,13 @@ while (!gate.pass) {
 }
 ```
 
-Três instruções `break` correspondem a três maneiras de parar, casando com o que a Lição 5 declarou: passou (a condição do `while` fica naturalmente falsa), nenhum progresso adicional, atingiu o máximo de rodadas. O terceiro `if` é um remendo — as respostas da categoria `other` são geradas por template de código puro, não há worker para devolver, e, se o próprio template estiver quebrado, a única opção é o repasse direto. Esta execução não caiu nele (o template é constante e obrigatoriamente passa no gate); ele é mantido porque, se alguém corromper a string do template, prefiro ver um registro `no_rewriter` a um laço girando.
+Três instruções `break` correspondem a três maneiras de parar, casando com o que a Lição 5 declarou: passou (a condição do `while` fica naturalmente falsa), nenhum progresso adicional, atingiu o máximo de rodadas. O terceiro `if` é um remendo — as respostas da categoria `other` são geradas por template de código puro, não há worker para devolver, e, se o próprio template estiver quebrado, a única opção é o repasse direto. Esta execução não caiu nele (o template é constante e obrigatoriamente passa no gate); ele é mantido porque, se alguém corromper a string do template, prefiro ver um registro `no_rewriter` a um loop girando.
 
 O que é realimentado ao worker na reciclagem é direto: texto completo da versão anterior + relatório do gate + uma frase “corrija apenas os problemas nomeados no relatório e reescreva a resposta completa” (montada em `callWorker`).
 
 ### As duas maneiras de parar aconteceram de fato nesta execução
 
-Plantei dois roteiros nos stubs, fazendo cada saída do laço ser executada uma vez.
+Plantei dois roteiros nos stubs, fazendo cada saída do loop ser executada uma vez.
 
 **T-1005: Corrigido corretamente, pronto.** A primeira versão do worker de bug esqueceu o id do chamado (a primeira regra falha), o gate devolve `missing_ticket_id`, o worker acrescenta a linha de abertura conforme o relatório, e a segunda versão passa:
 
@@ -381,7 +381,7 @@ Plantei dois roteiros nos stubs, fazendo cada saída do laço ser executada uma 
 {"ts":"2026-08-29T16:48:48.377Z","run_id":"run-mtem7jnm","node":"review","event":"gate","ticket":"T-1005","round":1,"pass":true,"report":""}
 ```
 
-**T-1004: Revisado, mas não corrigido, e o laço parou sozinho.** A primeira versão do worker de billing escreveu “aguarde um momento”, e o gate devolve `filler_word:aguarde um momento`; o worker reescreveu uma versão, com a frase inteiramente diferente, mais longa, com uma explicação a mais, mas aquela expressão permanece. O relatório da segunda rodada é idêntico ao da primeira:
+**T-1004: Revisado, mas não corrigido, e o loop parou sozinho.** A primeira versão do worker de billing escreveu “aguarde um momento”, e o gate devolve `filler_word:aguarde um momento`; o worker reescreveu uma versão, com a frase inteiramente diferente, mais longa, com uma explicação a mais, mas aquela expressão permanece. O relatório da segunda rodada é idêntico ao da primeira:
 
 ```text
 {"ts":"2026-08-29T16:48:48.253Z","run_id":"run-mtem7jnm","node":"review","event":"gate","ticket":"T-1004","round":0,"pass":false,"report":"filler_word:aguarde um momento"}
@@ -389,7 +389,7 @@ Plantei dois roteiros nos stubs, fazendo cada saída do laço ser executada uma 
 {"ts":"2026-08-29T16:48:48.315Z","run_id":"run-mtem7jnm","node":"review","event":"gate","ticket":"T-1004","round":1,"pass":false,"report":"filler_word:aguarde um momento"}
 ```
 
-Neste momento `gate.report === lastReport` se sustenta, o laço julga que não há progresso adicional, para e marca este chamado como `needs_human`. Ele ainda tinha mais duas rodadas de orçamento (`MAX_REVIEW_ROUNDS` é 3), mas gastá-las seria desperdício — realimentando o mesmo relatório, o mais provável é voltar a mesma resposta. O valor da saída por “nenhum progresso adicional” está aqui: ela corta as perdas mais cedo do que o máximo de rodadas, e dá uma conclusão informativa — não “tentei três vezes e ainda falha”, mas “ele não entende este feedback”, que é precisamente o sinal para escalar a um humano.
+Neste momento `gate.report === lastReport` se sustenta, o loop julga que não há progresso adicional, para e marca este chamado como `needs_human`. Ele ainda tinha mais duas rodadas de orçamento (`MAX_REVIEW_ROUNDS` é 3), mas gastá-las seria desperdício — realimentando o mesmo relatório, o mais provável é voltar a mesma resposta. O valor da saída por “nenhum progresso adicional” está aqui: ela corta as perdas mais cedo do que o máximo de rodadas, e dá uma conclusão informativa — não “tentei três vezes e ainda falha”, mas “ele não entende este feedback”, que é precisamente o sinal para escalar a um humano.
 
 A diferença entre as duas saídas nos dados é imediatamente visível:
 
@@ -419,9 +419,9 @@ Os `gate_rounds` dos dois chamados são 1, e a contagem de rodadas sozinha não 
 
 O nó final também é código puro: imprime `state.nodes` e o detalhamento por chamado como duas tabelas, conta os `needs_human` e determina o código de saída. Todos passaram é 0, um precisa de humano é 1.
 
-O rastro se divide em dois arquivos, cada um com sua finalidade. `run.jsonl` é o log estruturado do Curso 11 (Observabilidade e Depuração: Enxergando Cada Passo do Seu Agente), um evento JSON por linha, cada um carregando `ts` e `run_id`, grepável depois — esta execução totalizou 39 linhas, e os trechos das seções anteriores foram todos extraídos dela literalmente.
+O rastro se divide em dois arquivos, cada um com sua finalidade. `run.jsonl` é o log estruturado do Curso 11 (Observabilidade e depuração: enxergando cada passo do seu agente), um evento JSON por linha, cada um carregando `ts` e `run_id`, grepável depois — esta execução totalizou 39 linhas, e os trechos das seções anteriores foram todos extraídos dela literalmente.
 
-`run-state.json` registra o rastro de execução (distinto de “o estado do grafo = aquelas poucas variáveis de script”), escrito no estilo do Curso 9 (Gestão de Estado e Persistência: Fazendo Tarefas Longas Sobreviverem a Interrupções): grava `.tmp` primeiro, depois troca atomicamente com `rename`; morto em qualquer momento, no disco está ou o estado completo anterior ou o novo estado completo, nunca meio JSON:
+`run-state.json` registra o rastro de execução (distinto de “o estado do grafo = aquelas poucas variáveis de script”), escrito no estilo do Curso 9 (Gerenciamento e persistência de estado: fazendo tarefas longas sobreviverem à interrupção): grava `.tmp` primeiro, depois troca atomicamente com `rename`; morto em qualquer momento, no disco está ou o estado completo anterior ou o novo estado completo, nunca meio JSON:
 
 ```javascript
 function saveState() {
@@ -432,7 +432,7 @@ function saveState() {
 }
 ```
 
-O momento da escrita é “persistir após cada passo pequeno”: após cada nó concluir, persiste uma vez; dentro do nó de revisão, após o julgamento de cada chamado, persiste de novo. O motivo que a Lição 5 citou — rastrear incrementalmente o resultado de cada agente é precisamente a premissa para recuperar uma execução dentro da mesma sessão[^S5]; um fluxo de trabalho que distribui o trabalho entre muitos agentes pequenos preserva mais progresso do que um agente longo[^S5]. Este grafo não é um runtime multiagente, mas a mesma afirmação vale aqui: seis chamados são seis unidades independentes de progresso, e morrer no meio da revisão não deveria fazer desaparecer junto o que já foi persistido (a fase de fan-out ainda não alcançou isso — veja o item 3 da Tabela de conciliação).
+O momento da escrita é “persistir após cada etapa pequena”: após cada nó concluir, persiste uma vez; dentro do nó de revisão, após o julgamento de cada chamado, persiste de novo. O motivo que a Lição 5 citou — rastrear incrementalmente o resultado de cada agente é precisamente a premissa para recuperar uma execução dentro da mesma sessão[^S5]; um fluxo de trabalho que distribui o trabalho entre muitos agentes pequenos preserva mais progresso do que um agente longo[^S5]. Este grafo não é um runtime multiagente, mas a mesma afirmação vale aqui: seis chamados são seis unidades independentes de progresso, e morrer no meio da revisão não deveria fazer desaparecer junto o que já foi persistido (a fase de fan-out ainda não alcançou isso — veja o item 3 da Tabela de conciliação).
 
 Para ver o efeito prático dessa afirmação, use `STOP_AFTER=merge` para parar o processo depois do fan-out e antes da revisão:
 
@@ -492,7 +492,7 @@ As contas de três nós estão registradas, a categoria, o tratador e os caminho
 Abaixo está o texto completo, um bloco contínuo; copie e cole em `orchestrate.mjs` num diretório vazio e depois `node orchestrate.mjs`. Zero dependências, sem necessidade de `npm i`, sem necessidade de `package.json` (o sufixo `.mjs` já declara que é um módulo ES) e sem necessidade de chave de API — o cliente de modelo é um stub. A primeira execução cria `inbox/`, `kb/`, `out/` e grava aqueles seis chamados.
 
 ```javascript
-// orchestrate.mjs —— pequeno grafo de processamento em lote de chamados: roteamento → fan-out → fusão → laço de revisão → relatório
+// orchestrate.mjs —— pequeno grafo de processamento em lote de chamados: roteamento → fan-out → fusão → loop de revisão → relatório
 // Zero dependências, node orchestrate.mjs roda direto. O cliente de modelo é um stub que reproduz uma fila fixa.
 import fs from "node:fs";
 import path from "node:path";
@@ -500,10 +500,10 @@ import path from "node:path";
 // ============ 0. Constantes e diretórios ============
 
 const MODEL = "claude-sonnet-5";
-const MAX_TURNS = 6;          // Teto do laço interno de um nó (Válvula 1 do Curso 7)
+const MAX_TURNS = 6;          // Teto do loop interno de um nó (Válvula 1 do Curso 7)
 const POOL_SIZE = Math.max(1, Number(process.env.POOL_SIZE) || 2); // Teto de concorrência do fan-out (Lição 3); 0/inválido cai para 1
 const STUB_LATENCY_MS = 60;   // Latência fixa do stub, substitui a ida e volta de rede real, para a coluna de tempo ter o que mostrar
-const MAX_REVIEW_ROUNDS = 3;  // Máximo de rodadas de reescrita do laço de revisão (Lição 5)
+const MAX_REVIEW_ROUNDS = 3;  // Máximo de rodadas de reescrita do loop de revisão (Lição 5)
 const FILLER_WORDS = ["aguarde um momento", "agradecemos a paciência", "resolveremos em breve"];
 const CATEGORIES = ["billing", "bug", "other"];
 
@@ -717,7 +717,7 @@ function makeStubClient(queue) {
   };
 }
 
-// Camada de medição por fora do cliente, o interior do laço permanece inalterado.
+// Camada de medição por fora do cliente, o interior do loop permanece inalterado.
 function metered(client) {
   const meter = { calls: 0, tokens: 0 };
   const wrapped = {
@@ -733,7 +733,7 @@ function metered(client) {
   return { client: wrapped, meter };
 }
 
-// ============ 3. Interior do nó: o laço do Curso 7, trazido literalmente ============
+// ============ 3. Interior do nó: o loop do Curso 7, trazido literalmente ============
 
 async function runAgent(client, system, userInput, tools, toolImpls) {
   const messages = [{ role: "user", content: userInput }];
@@ -748,7 +748,7 @@ async function runAgent(client, system, userInput, tools, toolImpls) {
   });
 
   while (response.stop_reason === "tool_use") {
-    // —— Válvula 1: máximo de turnos. No início do corpo do laço, antes de turns++ ——
+    // —— Válvula 1: máximo de turnos. No início do corpo do loop, antes de turns++ ——
     if (turns >= MAX_TURNS) {
       return `Atingiu o máximo de turnos ${MAX_TURNS}, parando (a tarefa pode ser difícil demais ou o modelo travou)`;
     }
@@ -1033,7 +1033,7 @@ function mergeNode(drafts) {
   return { items };
 }
 
-// ============ 10. Nó quatro: Laço de revisão (gate determinístico primeiro, verificar-corrigir-reverificar) ============
+// ============ 10. Nó quatro: Loop de revisão (gate determinístico primeiro, verificar-corrigir-reverificar) ============
 
 function gateCheck(ticketId, reply) {
   const problems = [];
@@ -1066,7 +1066,7 @@ async function reviewNode(items, byId) {
         break;
       }
       if (gate.report === lastReport) {
-        verdict = "no_progress"; // Duas rodadas seguidas com relatório idêntico, o laço não avança mais
+        verdict = "no_progress"; // Duas rodadas seguidas com relatório idêntico, o loop não avança mais
         break;
       }
       if (item.handler === "template") {
@@ -1173,7 +1173,7 @@ async function main() {
 main().catch((e) => { console.error(e); process.exit(3); }); // Falha grave sai com 3, distinto do 1 de needs_human
 ```
 
-Seiscentas e setenta e nove linhas no total, das quais cerca de cento e noventa são dados alimentados aos stubs (a tabela `SCRIPTS`, os textos originais dos seis chamados, a base de problemas conhecidos, o cliente stub); a lógica de orquestração propriamente dita — cinco nós, pool de concorrência, gate e ponto de entrada — são cerca de duzentas e cinquenta linhas, mais umas quarenta para observabilidade e rastro de estado. Essa escala é deliberada: um laço mais alguns padrões é genuinamente algo implementável em poucas linhas de código[^S1].
+Seiscentas e setenta e nove linhas no total, das quais cerca de cento e noventa são dados alimentados aos stubs (a tabela `SCRIPTS`, os textos originais dos seis chamados, a base de problemas conhecidos, o cliente stub); a lógica de orquestração propriamente dita — cinco nós, pool de concorrência, gate e ponto de entrada — são cerca de duzentas e cinquenta linhas, mais umas quarenta para observabilidade e rastro de estado. Essa escala é deliberada: um loop mais alguns padrões é genuinamente algo implementável em poucas linhas de código[^S1].
 
 ## Montagem da verificação
 
@@ -1183,54 +1183,54 @@ Toda saída de terminal desta lição veio de execuções reais deste script, n�
 
 O stub também acrescenta um atraso fixo de 60ms, substituindo a ida e volta de rede real. Sem ele, todo nó daria 0ms e o efeito do pool de concorrência não apareceria na tabela-resumo — a comparação com `POOL_SIZE=1` acima (490ms contra 244ms) depende disso.
 
-**Dois roteiros de laço plantados nos stubs.** O laço de revisão precisa girar de verdade, o que exige algo genuinamente reprovando no gate. Então:
+**Dois roteiros de loop plantados nos stubs.** O loop de revisão precisa girar de verdade, o que exige algo genuinamente reprovando no gate. Então:
 
 - `T-1005#1` (primeira versão do worker de bug) omite deliberadamente o id do chamado, disparando `missing_ticket_id`; `T-1005#2` acrescenta a linha de abertura e a segunda versão passa — isso demonstra a saída de conclusão normal do “verificar-corrigir-reverificar”.
 - `T-1004#1` e `T-1004#2` (as duas versões do worker de billing) carregam ambas “aguarde um momento”. As frases das duas versões são inteiramente diferentes, os comprimentos diferem, mas o gate procura se aquela expressão está presente, então as strings de relatório das duas rodadas são idênticas, disparando “nenhum progresso adicional” — isso demonstra a saída de corte de perdas.
 
-A escrita dos dois roteiros tem ofício: não fazer a segunda versão repetir literalmente a primeira (assim até um humano veria que é um laço morto), mas fazê-la “revisada, porém não corrigida corretamente”. Esse é o modo de falha mais comum em laços reais, e precisamente o que o critério “duas rodadas seguidas com relatório idêntico” captura.
+A escrita dos dois roteiros tem ofício: não fazer a segunda versão repetir literalmente a primeira (assim até um humano veria que é um loop morto), mas fazê-la “revisada, porém não corrigida corretamente”. Esse é o modo de falha mais comum em loops reais, e precisamente o que o critério “duas rodadas seguidas com relatório idêntico” captura.
 
-**Parada antecipada controlada.** `STOP_AFTER=merge` para o processo depois do fan-out e antes da revisão, com código de saída 2. É a versão simplificada do `CRASH_AFTER` do Curso 9: tornar “interromper em qual passo” um parâmetro precisamente especificável, em vez de depender da sorte para acertá-lo. O `run-state.json` em estado `drafted` acima veio dessa execução.
+**Parada antecipada controlada.** `STOP_AFTER=merge` para o processo depois do fan-out e antes da revisão, com código de saída 2. É a versão simplificada do `CRASH_AFTER` do Curso 9: tornar “interromper em qual etapa” um parâmetro precisamente especificável, em vez de depender da sorte para acertá-lo. O `run-state.json` em estado `drafted` acima veio dessa execução.
 
 ## Tabela de conciliação: este grafo deve dívidas às lições anteriores, quitadas linha a linha
 
 Num curso que chega à sua prática final, o erro mais fácil é derrubar em silêncio regras estabelecidas antes. Então conciliamos linha a linha aqui, com as discrepâncias escritas explicitamente.
 
-**1. O corpo do laço bate com o Curso 7.** Os quatro passos no corpo do laço — empilhar assistant, executar ferramentas, empilhar tool_result, reatribuir `response` — são palavra por palavra idênticos aos da Lição 6 do Curso 7, e até os comentários não mudaram. A Válvula 1 também está na posição original. **Diferenças declaradas**: a assinatura de `runAgent` ganhou dois parâmetros, `client` e `system` (três papéis precisam de stubs diferentes e prompts de sistema diferentes), e a chamada de `create` ganhou um campo `system`; a medição de tokens saiu do corpo do laço para a camada envolvente `metered`, de modo que a Válvula 2 do Curso 7 (orçamento de tokens) não veio junto, e a Válvula 3 (detecção de giro em falso) e a Válvula 4 (aprovação humana) também não se mudaram — as ferramentas deste grafo são apenas leitura de arquivo e consulta de pedido, ambas operações somente leitura, sem ações de alto impacto que exijam aprovação; e a fila do stub é finita, sem como girar indefinidamente. Antes de conectar a API real, essas três válvulas precisam ser reinstaladas.
+**1. O corpo do loop bate com o Curso 7.** As quatro etapas no corpo do loop — empilhar assistant, executar ferramentas, empilhar tool_result, reatribuir `response` — são palavra por palavra idênticos aos da Lição 6 do Curso 7, e até os comentários não mudaram. A Válvula 1 também está na posição original. **Diferenças declaradas**: a assinatura de `runAgent` ganhou dois parâmetros, `client` e `system` (três papéis precisam de stubs diferentes e prompts de sistema diferentes), e a chamada de `create` ganhou um campo `system`; a medição de tokens saiu do corpo do loop para a camada envolvente `metered`, de modo que a Válvula 2 do Curso 7 (orçamento de tokens) não veio junto, e a Válvula 3 (detecção de giro em falso) e a Válvula 4 (aprovação humana) também não se mudaram — as ferramentas deste grafo são apenas leitura de arquivo e consulta de pedido, ambas operações somente leitura, sem ações de alto impacto que exijam aprovação; e a fila do stub é finita, sem como girar indefinidamente. Antes de conectar a API real, essas três válvulas precisam ser reinstaladas.
 
 **2. Prompts de delegação com os quatro elementos completos (Lição 4).** Os três prompts — roteador, worker de billing, worker de bug — escreveram cada um as quatro seções completas de objetivo, formato de saída, orientação de ferramentas e limites da tarefa, uma linha cada, e podem ser comparados linha a linha[^S2].
 
 **3. O pool de concorrência tem teto, e a fusão repassa referências e não cargas (Lição 3).** O `limit` de `runPool` é teto rígido, e a diferença de tempo entre `POOL_SIZE=1` e `POOL_SIZE=2` já foi verificada. De `merge` em diante repassa-se adiante `{id, category, handler, file, oneLine}`, o texto completo fica em `out/`, e o nó de revisão o lê de volta do arquivo por conta própria[^S2]. **Diferença declarada**: o pool da Lição 3 era “a mesma leva de subtarefas rodando em paralelo”, aqui o pool abrange três tipos de tratador — dois workers de modelo mais um template de código puro, cuja entrada no pool custa quase nenhum tempo. A semântica do pool não mudou (a contagem de tarefas em voo não excede o teto), apenas as tarefas em si são heterogêneas. Também uma coisa que a Lição 3 estabeleceu e aqui foi omitida por brevidade do script: a Lição 3 exigia `try/catch` separado por pista, para que a falha de uma pista não derrubasse o lote inteiro, e `runPool` não tem esse envoltório — o custo é que, na fase de fan-out, se qualquer pista lançar, a leva inteira de rascunhos não será persistida. Antes de conectar a API real isso precisa ser acrescentado, pois timeout de pista única em rede real é normal.
 
-**4. Gate antes do avaliador, e condições de parada do laço batem com a Lição 5.** O primeiro filtro é código determinístico, não modelo; esta lição não instalou a camada de avaliador LLM, porque os critérios de aceitação desta leva de chamados por acaso são expressáveis como regras, e instalá-la seria dinheiro desperdiçado — o julgamento em camadas do Curso 10 segue esta ordem: o que é julgável deterministicamente primeiro, e o que sobra consulta o avaliador. As condições de parada do laço são três: passou, nenhum progresso adicional, atingiu o máximo de rodadas[^S5][^S1], e os conceitos correspondem um a um aos da Lição 5. **Mas nomes de campo e de valores mudaram**: a Lição 5 aterrissava no campo `reason`, com valores `passed`/`no-progress`/`max-rounds`; aqui aterrissa no campo `stop`, com valores `gate_pass`/`no_progress`/`max_rounds` (o critério trocou de avaliador para gate, e o hífen também virou sublinhado conforme a convenção snake_case desta lição); além disso, o `rounds` da Lição 5 conta vezes de geração, com o rascunho contando como rodada 1, enquanto o `gate_rounds` desta lição conta vezes de reescrita, com o rascunho sendo rodada 0 — então, para o mesmo chamado, os pontos de partida da contagem de rodadas das duas lições diferem em um. **Diferença declarada**: o código tem uma quarta saída, `no_rewriter` (template de código puro não tem worker para devolver). Isso não é um padrão que a Lição 5 omitiu, é a situação específica deste grafo — o laço da Lição 5 pressupunha “o produtor é um modelo”, e aqui uma categoria de produtores é template. Esta execução não caiu nesse ramo.
+**4. Gate antes do avaliador, e condições de parada do loop batem com a Lição 5.** O primeiro filtro é código determinístico, não modelo; esta lição não instalou a camada de avaliador LLM, porque os critérios de aceitação desta leva de chamados por acaso são expressáveis como regras, e instalá-la seria dinheiro desperdiçado — o julgamento em camadas do Curso 10 segue esta ordem: o que é julgável deterministicamente primeiro, e o que sobra consulta o avaliador. As condições de parada do loop são três: passou, nenhum progresso adicional, atingiu o máximo de rodadas[^S5][^S1], e os conceitos correspondem um a um aos da Lição 5. **Mas nomes de campo e de valores mudaram**: a Lição 5 aterrissava no campo `reason`, com valores `passed`/`no-progress`/`max-rounds`; aqui aterrissa no campo `stop`, com valores `gate_pass`/`no_progress`/`max_rounds` (o critério trocou de avaliador para gate, e o hífen também virou sublinhado conforme a convenção snake_case desta lição); além disso, o `rounds` da Lição 5 conta vezes de geração, com o rascunho contando como rodada 1, enquanto o `gate_rounds` desta lição conta vezes de reescrita, com o rascunho sendo rodada 0 — então, para o mesmo chamado, os pontos de partida da contagem de rodadas das duas lições diferem em um. **Diferença declarada**: o código tem uma quarta saída, `no_rewriter` (template de código puro não tem worker para devolver). Isso não é um padrão que a Lição 5 omitiu, é a situação específica deste grafo — o loop da Lição 5 pressupunha “o produtor é um modelo”, e aqui uma categoria de produtores é template. Esta execução não caiu nesse ramo.
 
-**5. A expressão “grafo” bate com a declaração da Lição 5.** “Grafo” e “nó” no texto inteiro são metáfora de engenharia própria desta lição, a Lição 5 já declarou isso explicitamente ao introduzir o sistema visual, e não é conceito oficial de nenhum material primário; a âncora primária em que pode se apoiar é apenas aquela: o próprio script do fluxo de trabalho guarda o laço, as ramificações e os resultados intermediários[^S5]. Esta lição não acrescentou terminologia nova — “máquina de estados” e “objeto de estado passado entre nós” não foram usados; a “aresta” definida pela Lição 5 (de quem a saída alimenta quem) apareceu apenas uma vez, ao explicar o fluxo de dados `merge → review`, e não é vocabulário novo. `routed` / `drafts` / `items` são apenas três variáveis locais comuns.
+**5. A expressão “grafo” bate com a declaração da Lição 5.** “Grafo” e “nó” no texto inteiro são metáfora de engenharia própria desta lição, a Lição 5 já declarou isso explicitamente ao introduzir o sistema visual, e não é conceito oficial de nenhum material primário; a âncora primária em que pode se apoiar é apenas aquela: o próprio script do fluxo de trabalho guarda o loop, as ramificações e os resultados intermediários[^S5]. Esta lição não acrescentou terminologia nova — “máquina de estados” e “objeto de estado passado entre nós” não foram usados; a “aresta” definida pela Lição 5 (de quem a saída alimenta quem) apareceu apenas uma vez, ao explicar o fluxo de dados `merge → review`, e não é vocabulário novo. `routed` / `drafts` / `items` são apenas três variáveis locais comuns.
 
-**6. A escrita atômica de `run-state.json` bate com o Curso 9.** Grava `.tmp` primeiro, depois troca com `renameSync`, sem faltar um passo. O momento da escrita também segue o calibre daquele curso: persistir uma vez após cada passo pequeno concluir, não uma vez após a execução inteira concluir.
+**6. A escrita atômica de `run-state.json` bate com o Curso 9.** Grava `.tmp` primeiro, depois troca com `renameSync`, sem faltar uma etapa. O momento da escrita também segue o calibre daquele curso: persistir uma vez após cada etapa pequena concluir, não uma vez após a execução inteira concluir.
 
 **7. O calibre de observabilidade tem a mesma forma do Curso 11, mas granularidade mais grossa.** Um evento JSON por linha, cada um carregando `ts` e `run_id`, grepável depois. **Quatro diferenças**: (a) o logger do Curso 11 registra resumo de conteúdo (forma, comprimento, primeiros caracteres), e esta lição registra apenas id, categoria, nome de arquivo, string de relatório e contagens, sem registrar o texto completo da resposta — o texto completo já está em `out/`; (b) o campo de associação que o Curso 11 chama de `trace_id` aqui se chama `run_id`; (c) o núcleo daquele curso é usar `span_id`/`parent_id` para encadear uma árvore de rastro, e este grafo, embora tenha aninhamento de três camadas nó→worker→ferramenta, não implementou o vínculo pai-filho, então não há árvore de rastro; (d) `initLog()` limpa `run.jsonl` a cada execução, mantendo apenas a mais recente, e para fazer a comparação entre execuções do Curso 11 (`v-good` contra `v-bug`) é preciso mudar para anexar em arquivos separados por `run_id`. Para conectar este grafo a um sistema de rastro real, os campos de span do Curso 11 precisam ser acrescentados seguindo aquele padrão.
 
-**8. O padrão orquestrador-workers, esta lição intencionalmente não implementou (Lição 4).** No orquestrador-workers da Lição 4, a chave é “quantos despachar, o que cada um faz” ser decidido pelo modelo observando a entrada na hora; este grafo não é assim — como os seis chamados se classificam e para qual worker cada categoria vai foram travados em `CATEGORIES` e em três prompts constantes antes de escrever a primeira linha de código. Esta é precisamente a aplicação direta do “se pode predefinir, não torne dinâmico” da Lição 4: a forma deste trabalho é conhecida, e a autoridade de decisão não deveria voltar ao modelo. Então, estritamente falando, foram soldados neste arquivo quatro padrões (encadeamento, roteamento, paralelização-seccionamento, laço de revisão), a votação complementa o quinto no exercício de Nível 2, e o orquestrador-workers é o que a natureza desta leva de tarefas barra.
+**8. O padrão orquestrador-workers, esta lição intencionalmente não implementou (Lição 4).** No orquestrador-workers da Lição 4, a chave é “quantos despachar, o que cada um faz” ser decidido pelo modelo observando a entrada na hora; este grafo não é assim — como os seis chamados se classificam e para qual worker cada categoria vai foram travados em `CATEGORIES` e em três prompts constantes antes de escrever a primeira linha de código. Esta é precisamente a aplicação direta do “se pode predefinir, não torne dinâmico” da Lição 4: a forma deste trabalho é conhecida, e a autoridade de decisão não deveria voltar ao modelo. Então, estritamente falando, foram soldados neste arquivo quatro padrões (encadeamento, roteamento, paralelização-seccionamento, loop de revisão), a votação complementa o quinto no exercício de Nível 2, e o orquestrador-workers é o que a natureza desta leva de tarefas barra.
 
 ## Limites
 
-Este grafo administra algo pequeno: um processo, uma leva de chamados, roda e sai. Vale a pena construí-lo porque os cinco passos “chegam chamados → classificar → tratar por categoria → verificar → reportar” foram travados antes de escrever a primeira linha de código. Se a tarefa virar “descubra o que este cliente de fato enfrentou nos últimos seis meses, e quantos passos são necessários você mesmo julga”, então este grafo é a arquitetura errada — esse tipo de problema em aberto, em que você não consegue prever os passos de antemão nem fixar um caminho no código, pertence intrinsecamente a um laço autônomo[^S1].
+Este grafo administra algo pequeno: um processo, uma leva de chamados, roda e sai. Vale a pena construí-lo porque as cinco etapas “chegam chamados → classificar → tratar por categoria → verificar → reportar” foram travados antes de escrever a primeira linha de código. Se a tarefa virar “descubra o que este cliente de fato enfrentou nos últimos seis meses, e quantas etapas são necessárias você mesmo julga”, então este grafo é a arquitetura errada — esse tipo de problema em aberto, em que você não consegue prever as etapas de antemão nem fixar um caminho no código, pertence intrinsecamente a um loop autônomo[^S1].
 
 Vários limites, declarados explicitamente:
 
 **O fan-out é síncrono, e vai doer em escala.** O pool em `fanoutNode` precisa esperar o lote inteiro concluir antes de entrar em `merge`. Esse é precisamente o gargalo que aquele sistema real em produção reconheceu: a execução síncrona simplifica a coordenação, mas cria gargalos no fluxo de informação — um subagente demorando demais e o sistema inteiro fica travado esperando[^S2]. Seis chamados, cada um com no máximo duas chamadas, e esse gargalo não dói nada; seiscentos chamados, cada um com dez chamadas, e ele vira “o mais lento determina o tempo de relógio do lote inteiro”. Se mudar para assíncrono, é preciso calcular o custo: o assíncrono deixa os agentes trabalharem concorrentemente e criarem novos sob demanda, mas acrescenta dificuldade em coordenação de resultados, consistência de estado e propagação de erros entre subagentes[^S2] — esses três não existem na versão síncrona, porque a ordem é determinada pelo código.
 
-**As duas regras do laço de revisão são rasas e frágeis.** `includes("aguarde um momento")` vai marcar erradamente frases como “não é preciso aguarde um momento algum, já resolvemos” como enrolação. Esse é o velho problema advertido pelo Curso 10: validadores determinísticos rígidos demais julgam o correto como incorreto. Para produção real, essas duas regras precisam ser calibradas contra uma pequena leva de respostas reais, ou rebaixadas para “sinalizar para rerrevisão do avaliador” em vez de devolver diretamente para reescrita.
+**As duas regras do loop de revisão são rasas e frágeis.** `includes("aguarde um momento")` vai marcar erradamente frases como “não é preciso aguarde um momento algum, já resolvemos” como enrolação. Esse é o velho problema advertido pelo Curso 10: validadores determinísticos rígidos demais julgam o correto como incorreto. Para produção real, essas duas regras precisam ser calibradas contra uma pequena leva de respostas reais, ou rebaixadas para “sinalizar para rerrevisão do avaliador” em vez de devolver diretamente para reescrita.
 
 **Ao trocar para a API real, troque apenas o stub, a estrutura não se mexe.** `makeStubClient(queue)` vira `new Anthropic()`, apaga-se a tabela `SCRIPTS` inteira, e o resto não muda uma linha — `runAgent` sempre foi escrito para a forma `stop_reason` / `tool_use` / `tool_result` da API real, e `model` e `max_tokens` sempre foram carregados. Depois da troca, três coisas vão mudar: o resultado da classificação vai oscilar (os mesmos chamados, duas execuções podem cair em categorias diferentes), as rodadas de gate vão oscilar, a contagem de tokens vai oscilar; uma execução custa dinheiro e tempo; e as três válvulas não mudadas do Curso 7 precisam ser reinstaladas.
 
-**Cada camada de complexidade acrescentada precisa passar pelo portão do “melhora mensurável”.** Cada padrão deste grafo pode ser removido individualmente: sem roteamento, um prompt genérico também responde chamados; sem fan-out, rodar os seis em série também termina; sem laço de revisão, conferência manual por amostragem também é um método. Se as métricas caem após a remoção, e quanto caem, só testando para saber. Só quando a complexidade genuinamente melhora os resultados é que vale a pena acrescentá-la[^S1].
+**Cada camada de complexidade acrescentada precisa passar pelo portão do “melhora mensurável”.** Cada padrão deste grafo pode ser removido individualmente: sem roteamento, um prompt genérico também responde chamados; sem fan-out, rodar os seis em série também termina; sem loop de revisão, conferência manual por amostragem também é um método. Se as métricas caem após a remoção, e quanto caem, só testando para saber. Só quando a complexidade genuinamente melhora os resultados é que vale a pena acrescentá-la[^S1].
 
 ## 💻 Exercícios
 
 <!-- exercises -->
 
-### Nível 1: Ler o diagrama — o que de fato aconteceu no laço
+### Nível 1: Ler o diagrama — o que de fato aconteceu no loop
 
 Abaixo está a tabela-resumo de uma execução completa deste grafo, mais os registros de dois chamados em `run-state.json` (resultados de execução real; os milissegundos e o `run_id` mudam a cada vez):
 
@@ -1275,20 +1275,20 @@ T-1006   other     template          0           gate_pass       pass
 }
 ```
 
-Sem escrever código, responda três perguntas: (1) Quais dos seis chamados entraram no laço de revisão, cada um girou quantas rodadas, e de qual campo você leu isso? (2) Os `gate_rounds` de T-1004 e T-1005 são ambos 1; por que um dá `pass` e o outro `needs_human`? A evidência está em qual campo, e como se lê? (3) Suponha que o processo seja morto logo depois de o fan-out concluir e antes de a revisão começar: o que `run-state.json` consegue preservar, o que se perde? Depois de reiniciar, de qual passo dá para retomar?
+Sem escrever código, responda três perguntas: (1) Quais dos seis chamados entraram no loop de revisão, cada um girou quantas rodadas, e de qual campo você leu isso? (2) Os `gate_rounds` de T-1004 e T-1005 são ambos 1; por que um dá `pass` e o outro `needs_human`? A evidência está em qual campo, e como se lê? (3) Suponha que o processo seja morto logo depois de o fan-out concluir e antes de a revisão começar: o que `run-state.json` consegue preservar, o que se perde? Depois de reiniciar, de qual etapa dá para retomar?
 
 <!-- rubric -->
-- (1) T-1004 e T-1005 entraram no laço, cada um girou 1 rodada; a base é a coluna `Rodadas` da tabela por chamado ser diferente de zero, ou o `gate_rounds` de `run-state.json` ser maior que 0; os outros quatro são 0, o que significa que o rascunho passou no gate de primeira. As 2 rodadas da linha `review` da tabela-resumo são a soma de 1 rodada de cada um desses dois
+- (1) T-1004 e T-1005 entraram no loop, cada um girou 1 rodada; a base é a coluna `Rodadas` da tabela por chamado ser diferente de zero, ou o `gate_rounds` de `run-state.json` ser maior que 0; os outros quatro são 0, o que significa que o rascunho passou no gate de primeira. As 2 rodadas da linha `review` da tabela-resumo são a soma de 1 rodada de cada um desses dois
 - (2) A linha divisória é `gate_reports`, não `gate_rounds`: T-1005 tem apenas um relatório, `missing_ticket_id`, o que significa que, após a reescrita, a segunda versão passou na verificação e não produziu um segundo relatório, então `stop` é `gate_pass`; T-1004 tem duas entradas de conteúdo idêntico, `filler_word:aguarde um momento`, o que significa que, após a reescrita, o relatório do gate não mudou nada, disparando “duas rodadas seguidas com relatório idêntico julgado sem progresso adicional”, então `stop` é `no_progress` e `status` é `needs_human`. É preciso apontar que `gate_rounds` conta vezes de reescrita e `gate_reports` registra cada relatório reprovado (incluindo o último), e que os dois não são equivalentes
 - (3) Preservado: `nodes` tem o tempo e o uso dos três nós `route` / `fanout` / `merge`; a `category`, o `handler`, o `file` e a `one_line` dos seis chamados; e os seis arquivos de rascunho já persistidos em `out/`. Perdido: o veredito da revisão, com todos os chamados parados em `status: "drafted"`, `stop: null`, `gate_reports: []`. Depois de reiniciar dá para ler os rascunhos de volta de `out/` e começar direto pelo nó de revisão, sem precisar reexecutar route e fan-out — porque o estado é persistido uma vez após cada nó concluir, não uma vez após a execução inteira concluir
-- Explicar o significado desse “rastro incremental”: registrar incrementalmente o resultado de cada passo durante a execução é precisamente a premissa para uma execução ser recuperável; e isso se combina com a escrita atômica “grava .tmp e depois rename” do Curso 9 — morto naquele instante, no disco está ou o estado completo anterior ou o novo estado completo
+- Explicar o significado desse “rastro incremental”: registrar incrementalmente o resultado de cada etapa durante a execução é precisamente a premissa para uma execução ser recuperável; e isso se combina com a escrita atômica “grava .tmp e depois rename” do Curso 9 — morto naquele instante, no disco está ou o estado completo anterior ou o novo estado completo
 
 <!-- answer -->
-(1) Entraram no laço T-1004 e T-1005, cada um girando 1 rodada. O campo mais direto é a coluna `Rodadas` da tabela por chamado (em `run-state.json` corresponde a `gate_rounds`): esses dois são 1, os outros quatro são 0. O 0 significa que o rascunho passou no gate na primeira verificação, sem o worker ser chamado de volta nenhuma vez. Aquele 2 na linha `review` da tabela-resumo é a soma de 1 rodada de cada um desses dois, não algum deles tendo girado duas rodadas.
+(1) Entraram no loop T-1004 e T-1005, cada um girando 1 rodada. O campo mais direto é a coluna `Rodadas` da tabela por chamado (em `run-state.json` corresponde a `gate_rounds`): esses dois são 1, os outros quatro são 0. O 0 significa que o rascunho passou no gate na primeira verificação, sem o worker ser chamado de volta nenhuma vez. Aquele 2 na linha `review` da tabela-resumo é a soma de 1 rodada de cada um desses dois, não algum deles tendo girado duas rodadas.
 
-(2) Olhando só para `gate_rounds` de fato não dá para distinguir sucesso de fracasso — ele conta “quantas vezes o worker foi chamado de volta para reescrever”, e se o resultado da reescrita foi bom ou ruim, não lhe interessa. A evidência real é `gate_reports`, que registra cada relatório reprovado, incluindo o último, que fez o laço parar. O array de T-1005 tem apenas uma entrada, `missing_ticket_id`: o rascunho estava sem o id do chamado e foi devolvido; a segunda versão reescrita o acrescentou, o gate passou, e não se produziu outro relatório, então `stop` é registrado como `gate_pass` e `status` é `pass`. O array de T-1004 tem duas entradas, e as strings são idênticas, ambas `filler_word:aguarde um momento`: o rascunho escreveu “aguarde um momento” e foi devolvido; o worker reescreveu uma versão — a frase mudou, ficou mais longa, explicou mais — mas aquela expressão continuou lá, e o relatório devolvido pelo gate ficou caractere por caractere igual ao da rodada anterior. O critério do laço é “o relatório desta rodada igual ao da anterior significa nenhum progresso adicional”, então ele não gastou as duas rodadas restantes de orçamento, parou direto, marcou `needs_human` e registrou `no_progress` em `stop`. Numa frase: `gate_rounds` conta vezes de reescrita, `gate_reports` reflete se cada reescrita produziu um resultado diferente.
+(2) Olhando só para `gate_rounds` de fato não dá para distinguir sucesso de fracasso — ele conta “quantas vezes o worker foi chamado de volta para reescrever”, e se o resultado da reescrita foi bom ou ruim, não lhe interessa. A evidência real é `gate_reports`, que registra cada relatório reprovado, incluindo o último, que fez o loop parar. O array de T-1005 tem apenas uma entrada, `missing_ticket_id`: o rascunho estava sem o id do chamado e foi devolvido; a segunda versão reescrita o acrescentou, o gate passou, e não se produziu outro relatório, então `stop` é registrado como `gate_pass` e `status` é `pass`. O array de T-1004 tem duas entradas, e as strings são idênticas, ambas `filler_word:aguarde um momento`: o rascunho escreveu “aguarde um momento” e foi devolvido; o worker reescreveu uma versão — a frase mudou, ficou mais longa, explicou mais — mas aquela expressão continuou lá, e o relatório devolvido pelo gate ficou caractere por caractere igual ao da rodada anterior. O critério do loop é “o relatório desta rodada igual ao da anterior significa nenhum progresso adicional”, então ele não gastou as duas rodadas restantes de orçamento, parou direto, marcou `needs_human` e registrou `no_progress` em `stop`. Numa frase: `gate_rounds` conta vezes de reescrita, `gate_reports` reflete se cada reescrita produziu um resultado diferente.
 
-(3) A parte preservada não é pouca. `nodes` já tem as três contas completas de `route`, `fanout` e `merge` (tempo, contagem de chamadas de modelo, tokens); os seis chamados têm cada um `category`, `handler`, `file` e `one_line`; e os seis arquivos de rascunho do diretório `out/` estão todos gravados e persistidos. Perde-se apenas o trecho de revisão — todos os chamados param em `status: "drafted"`, `stop: null`, `gate_reports` como array vazio, e quem deve reescrever e quem deve ser repassado ainda não foi julgado. Por isso, depois de reiniciar dá para pular completamente route e fan-out (os produtos desses dois passos estão todos no disco), ler os seis rascunhos de volta de `out/` e entrar direto no nó de revisão. Isso é possível graças ao momento da escrita do estado: persistir uma vez após cada nó concluir e, dentro da revisão, persistir de novo após cada chamado julgado, em vez de esperar a execução inteira concluir para gravar. Registrar incrementalmente o resultado de cada passo é precisamente a premissa para uma execução ser retomável dentro da mesma sessão; estender o estado até o disco, nesta lição, é uma elevação de um degrau acrescentada por nós; combine isso com a troca atômica “grava `.tmp` e depois `rename`” e, morto em qualquer momento, no disco estará um ou outro estado completo, sem deixar meio JSON que você nem consegue ler de volta.
+(3) A parte preservada não é pouca. `nodes` já tem as três contas completas de `route`, `fanout` e `merge` (tempo, contagem de chamadas de modelo, tokens); os seis chamados têm cada um `category`, `handler`, `file` e `one_line`; e os seis arquivos de rascunho do diretório `out/` estão todos gravados e persistidos. Perde-se apenas o trecho de revisão — todos os chamados param em `status: "drafted"`, `stop: null`, `gate_reports` como array vazio, e quem deve reescrever e quem deve ser repassado ainda não foi julgado. Por isso, depois de reiniciar dá para pular completamente route e fan-out (os produtos dessas duas etapas estão todos no disco), ler os seis rascunhos de volta de `out/` e entrar direto no nó de revisão. Isso é possível graças ao momento da escrita do estado: persistir uma vez após cada nó concluir e, dentro da revisão, persistir de novo após cada chamado julgado, em vez de esperar a execução inteira concluir para gravar. Registrar incrementalmente o resultado de cada etapa é precisamente a premissa para uma execução ser retomável dentro da mesma sessão; estender o estado até o disco, nesta lição, é uma elevação de um degrau acrescentada por nós; combine isso com a troca atômica “grava `.tmp` e depois `rename`” e, morto em qualquer momento, no disco estará um ou outro estado completo, sem deixar meio JSON que você nem consegue ler de volta.
 
 <!-- hint -->
 Primeiro distinga o que cada um dos dois campos conta: um conta “quantas vezes o worker foi chamado de volta”, o outro registra “o que cada relatório de verificação disse”. O primeiro número dos dois chamados é igual, e o comprimento e o conteúdo do segundo campo são diferentes — a diferença se esconde aí.
@@ -1302,11 +1302,11 @@ A categoria `other` tem um chamado de tom difícil de calibrar — T-1006: “Us
 
 Acrescente um nó de votação a este grafo: mesmo chamado, mesma tarefa, rodada uma vez a partir de dois ângulos[^S1], e depois use código puro para comparar as duas versões e levar a superior para a fusão. As regras de comparação são apenas duas, e nenhuma pode perguntar ao modelo: primeiro use as regras determinísticas do gate para eliminar (tem palavra proibida ou está sem o id do chamado, sai direto), e entre as sobreviventes escolha a mais curta (respostas a clientes não devem se estender).
 
-Requisitos: os prompts dos dois ângulos precisam ter todos os quatro elementos; as duas chamadas precisam passar honestamente por `runAgent` (ou seja, passar pelo laço completo), com os stubs dando a cada uma sua fila de respostas; o processo de seleção precisa deixar rastro no terminal e em `run.jsonl`, para as pessoas saberem por que aquela versão foi escolhida. Depois de escrever, rode de verdade uma vez e cole a saída. Responda também uma pergunta: por que usar comparação em código puro aqui, em vez de chamar um modelo para julgar qual versão é melhor?
+Requisitos: os prompts dos dois ângulos precisam ter todos os quatro elementos; as duas chamadas precisam passar honestamente por `runAgent` (ou seja, passar pelo loop completo), com os stubs dando a cada uma sua fila de respostas; o processo de seleção precisa deixar rastro no terminal e em `run.jsonl`, para as pessoas saberem por que aquela versão foi escolhida. Depois de escrever, rode de verdade uma vez e cole a saída. Responda também uma pergunta: por que usar comparação em código puro aqui, em vez de chamar um modelo para julgar qual versão é melhor?
 
 <!-- rubric -->
 - Os dois ângulos são pontos de entrada diferentes para a mesma tarefa (por exemplo, “acolher a emoção primeiro” contra “apenas os fatos”), não a divisão da tarefa ao meio — isto é votação, não seccionamento
-- As duas chamadas passam pelo laço completo de `runAgent`, cada uma com uma fila de respostas de stub; a contagem de chamadas de modelo e os tokens mostram o aumento correspondente na tabela-resumo (2 chamadas a mais em relação à versão base)
+- As duas chamadas passam pelo loop completo de `runAgent`, cada uma com uma fila de respostas de stub; a contagem de chamadas de modelo e os tokens mostram o aumento correspondente na tabela-resumo (2 chamadas a mais em relação à versão base)
 - Os prompts dos dois ângulos escrevem os quatro elementos completos: objetivo, formato de saída, orientação de ferramentas, limites da tarefa
 - A seleção é código puro: primeiro roda `gateCheck` para eliminar, depois escolhe a mais curta por comprimento entre as candidatas aprovadas; a ordem das duas regras está escrita com clareza, e é possível dizer qual regra foi decisiva desta vez
 - Rastro: o terminal tem uma linha mostrando o veredito e o comprimento de cada candidata, mais quem foi escolhida ao final; `run.jsonl` tem o evento estruturado correspondente
@@ -1488,18 +1488,18 @@ Para a seleção não escreva outro conjunto de regras — `gateCheck` já está
 
 ## Recapitulação
 
-- Quatro padrões soldados em um arquivo (a votação complementa o quinto no exercício, e o orquestrador-workers está intencionalmente ausente porque o despacho pode ser predefinido), e a afirmação “plano no código” ganha forma concreta: a dúzia de linhas de `main()` é todo o fluxo de controle, e as três variáveis comuns `routed` / `drafts` / `items` são todo o estado. LLMs e ferramentas são orquestrados através de caminhos de código predefinidos[^S1], e o próprio script guarda o laço, as ramificações e os resultados intermediários, enquanto o contexto do modelo guarda apenas o que ele precisa para este passo[^S5]
+- Quatro padrões soldados em um arquivo (a votação complementa o quinto no exercício, e o orquestrador-workers está intencionalmente ausente porque o despacho pode ser predefinido), e a afirmação “plano no código” ganha forma concreta: a dúzia de linhas de `main()` é todo o fluxo de controle, e as três variáveis comuns `routed` / `drafts` / `items` são todo o estado. LLMs e ferramentas são orquestrados através de caminhos de código predefinidos[^S1], e o próprio script guarda o loop, as ramificações e os resultados intermediários, enquanto o contexto do modelo guarda apenas o que ele precisa para esta etapa[^S5]
 - Nem todo nó precisa ser um modelo: dos cinco nós, dois chamam modelos, enquanto `merge`, `report` e o primeiro filtro do gate são todos código puro, e a categoria `other` vai por template de string. Onde código determinístico consegue dar a mesma resposta, não há motivo para pagar o dinheiro e a latência de uma chamada
 - O valor do roteamento não está naquela chamada, mas nas dez linhas de código de aperto depois dela: o texto livre do modelo é prensado em um de três rótulos legais, e os ramos a jusante só reconhecem valores que o código examinou; prompts especializados são o dividendo que a classificação comprou[^S1]
 - A concorrência do fan-out precisa ter teto, e a fusão precisa repassar referências e não cargas — a saída vai para o disco, e adiante seguem apenas referências leves[^S2], com o nó de revisão lendo de volta do arquivo por conta própria. O fan-out síncrono não dói nesta escala, mas em escala grande vira gargalo[^S2], e mudar para assíncrono exige pagar três custos: coordenação de resultados, consistência de estado, propagação de erros entre subagentes[^S2]
-- O laço de revisão é verificar-corrigir-reverificar, até passar ou não haver progresso adicional[^S5], mais uma rede de segurança de máximo de rodadas[^S1]. O gate determinístico vem antes do avaliador; o critério “duas rodadas seguidas com relatório idêntico” corta as perdas mais cedo do que o máximo de rodadas, e a conclusão que dá é mais informativa: não “tentei três vezes e falha”, mas “ele não entende este feedback”
+- O loop de revisão é verificar-corrigir-reverificar, até passar ou não haver progresso adicional[^S5], mais uma rede de segurança de máximo de rodadas[^S1]. O gate determinístico vem antes do avaliador; o critério “duas rodadas seguidas com relatório idêntico” corta as perdas mais cedo do que o máximo de rodadas, e a conclusão que dá é mais informativa: não “tentei três vezes e falha”, mas “ele não entende este feedback”
 - O rastro incremental traz recuperabilidade: persistir uma vez após cada nó concluir é precisamente a premissa para uma execução ser continuável dentro da mesma sessão[^S5] (continuar entre processos ou entre máquinas é uma elevação de um degrau própria desta lição, depois de persistir o estado em disco); combine com a troca atômica de gravar `.tmp` e depois `rename` e, morto em qualquer momento, o disco tem um estado completo legível de volta
-- Este grafo administra um processo, uma leva de chamados, trabalho de passos travados. Problemas em aberto com passos imprevisíveis devem voltar a laços autônomos[^S1]; cada camada de complexidade acrescentada precisa passar pelo portão do “melhora mensurável”[^S1]
+- Este grafo administra um processo, uma leva de chamados, trabalho de etapas travadas. Problemas em aberto com etapas imprevisíveis devem voltar a loops autônomos[^S1]; cada camada de complexidade acrescentada precisa passar pelo portão do “melhora mensurável”[^S1]
 
 Doze lições completas aqui.
 
-Olhando para trás, o que você tem agora veio peça por peça: no Curso 1 (Claude Code Skills: Construa Seus Próprios Fluxos de Trabalho com IA) você escreveu seu primeiro prompt e aprendeu a enunciar requisitos com clareza; depois vieram chamada de ferramentas, fluxos de trabalho, skills, colaboração multiagente, até o Curso 7 — aquele curso fez você escrever um laço por conta própria, `while (response.stop_reason === "tool_use")`, e a partir daquele dia agentes deixaram de ser uma caixa-preta para você e viraram um pedaço de código que você consegue ler. O Curso 8 (Engenharia de Contexto: Gastar Atenção Finita Onde Ela Conta) ensinou você a administrar o contexto dele, para o laço não girar até a janela estourar. O Curso 9 ensinou você a fazê-lo sobreviver a interrupções, retomando de onde parou quando morto. O Curso 10 ensinou você a verificar a saída dele, separando “parece pronto” de “pronto”. O Curso 11 ensinou você a enxergar o processo dele, para que, quando as coisas quebram, haja logs e rastros para consultar. Este curso ensinou você a compor múltiplos laços em um grafo que guarda o próprio plano.
+Olhando para trás, o que você tem agora veio peça por peça: no Curso 1 (Claude Code Skills: crie seus próprios fluxos de trabalho com IA) você escreveu seu primeiro prompt e aprendeu a enunciar requisitos com clareza; depois vieram chamada de ferramentas, fluxos de trabalho, skills, colaboração multiagente, até o Curso 7 — aquele curso fez você escrever um loop por conta própria, `while (response.stop_reason === "tool_use")`, e a partir daquele dia agentes deixaram de ser uma caixa-preta para você e viraram um pedaço de código que você consegue ler. O Curso 8 (Context Engineering: gastando a atenção finita onde ela conta) ensinou você a administrar o contexto dele, para o loop não girar até a janela estourar. O Curso 9 ensinou você a fazê-lo sobreviver a interrupções, retomando de onde parou quando morto. O Curso 10 ensinou você a verificar a saída dele, separando “parece pronto” de “pronto”. O Curso 11 ensinou você a enxergar o processo dele, para que, quando as coisas quebram, haja logs e rastros para consultar. Este curso ensinou você a compor múltiplos loops em um grafo que guarda o próprio plano.
 
-Essas seis coisas são seis facetas de uma só: **em código que você escreveu, você está controlando uma coisa não determinística.** O laço é a sua escrita, o contexto é a sua administração, os checkpoints são os seus salvamentos, os critérios de aceitação são a sua definição, os logs são o seu print, o plano é o seu arranjo. O modelo é muito forte, mas ele trabalha dentro deste código de controle que você construiu.
+Essas seis coisas são seis facetas de uma só: **em código que você escreveu, você está controlando uma coisa não determinística.** O loop é a sua escrita, o contexto é a sua administração, os checkpoints são os seus salvamentos, os critérios de aceitação são a sua definição, os logs são o seu print, o plano é o seu arranjo. O modelo é muito forte, mas ele trabalha dentro deste código de controle que você construiu.
 
-O passo final aterrissa em ação concreta: troque o `makeStubClient(queue)` de `orchestrate.mjs` por `new Anthropic()`, apague a tabela `SCRIPTS`, reinstale as três válvulas não mudadas do Curso 7, e então despeje em `inbox/` a leva real de tarefas empilhadas do seu trabalho — chamados reais, logs reais, pendências reais — e rode pela primeira vez. Provavelmente algumas vão cair em `needs_human`; é exatamente essa a cara que este grafo deve ter.
+A etapa final aterrissa em ação concreta: troque o `makeStubClient(queue)` de `orchestrate.mjs` por `new Anthropic()`, apague a tabela `SCRIPTS`, reinstale as três válvulas não mudadas do Curso 7, e então despeje em `inbox/` a leva real de tarefas empilhadas do seu trabalho — chamados reais, logs reais, pendências reais — e rode pela primeira vez. Provavelmente algumas vão cair em `needs_human`; é exatamente essa a cara que este grafo deve ter.

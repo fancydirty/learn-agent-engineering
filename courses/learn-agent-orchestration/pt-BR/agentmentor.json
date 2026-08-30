@@ -19,7 +19,7 @@
       "Encadeamento com portões programáticos; roteamento para prompts especializados",
       "As variantes de paralelização (seccionamento, votação) e o fan-out limitado",
       "Orquestrador-workers: a decomposição decidida pelo modelo sob um limite de concorrência imposto por código",
-      "O laço de revisão evaluator-optimizer e quando ele compensa",
+      "O loop de revisão evaluator-optimizer e quando ele compensa",
       "Compor os padrões em um script de orquestração determinístico (o “grafo” deste curso)"
     ],
     "assumedEnvironment": "Um ambiente Node.js, acesso ao terminal, um editor de texto e o código do harness do curso 7 disponível para ser estendido",
@@ -29,11 +29,11 @@
       "A lição 2 transforma o loop único já conhecido em uma cadeia de três estágios com portões, e depois acrescenta o roteamento",
       "A lição 3 acrescenta a paralelização, com agregação no código e um teto de concorrência explícito",
       "A lição 4 torna a decomposição dinâmica sob orquestrador-workers, com o despacho de quatro elementos",
-      "A lição 5 acrescenta o laço de revisão e compõe os padrões; a lição 6 eleva o harness do curso 7 ao script determinístico completo"
+      "A lição 5 acrescenta o loop de revisão e compõe os padrões; a lição 6 eleva o harness do curso 7 ao script determinístico completo"
     ]
   },
   "learnerBrief": "O leitor-alvo concluiu os onze primeiros cursos, escreve o loop do harness e lê JavaScript. Já consegue rodar bem um loop; ainda não consegue pôr roteamento, fan-out, merge e revisão em volta de vários loops com o plano guardado no código. O curso o leva a situar sistemas no espectro de determinismo, a implementar como código os cinco padrões comprovados em produção, a encarar o balanço real de custos (ganho de 90,2% contra 15× em tokens, concorrência com teto, disciplina no despacho) e a elevar o próprio harness a um script de orquestração determinístico com um rastro de execução passo a passo.",
-  "scope": "Coberto: fluxo de trabalho vs agente e quem detém o plano, encadeamento com portões, roteamento, paralelização (seccionamento e votação) com fan-out limitado e merge que passa referências em vez de payloads, orquestrador-workers com despachos de quatro elementos, o laço de revisão evaluator-optimizer, a composição de padrões na metáfora de “grafo” deste curso, e um script de orquestração determinístico feito na prática sobre o harness do curso 7. Não coberto: frameworks de orquestração de terceiros (LangGraph e afins não são mencionados), princípios de colaboração entre múltiplos agentes (curso 6), conceitos e diagramas de fluxo de trabalho (curso 2). Profundidade: de um loop a um script de orquestração legível, executável e reexecutável.",
+  "scope": "Coberto: fluxo de trabalho vs agente e quem detém o plano, encadeamento com portões, roteamento, paralelização (seccionamento e votação) com fan-out limitado e merge que passa referências em vez de payloads, orquestrador-workers com despachos de quatro elementos, o loop de revisão evaluator-optimizer, a composição de padrões na metáfora de “grafo” deste curso, e um script de orquestração determinístico feito na prática sobre o harness do curso 7. Não coberto: frameworks de orquestração de terceiros (LangGraph e afins não são mencionados), princípios de colaboração entre múltiplos agentes (curso 6), conceitos e diagramas de fluxo de trabalho (curso 2). Profundidade: de um loop a um script de orquestração legível, executável e reexecutável.",
   "status": {
     "stage": "generated",
     "generationComplete": true,
@@ -65,9 +65,9 @@
       "load": 5,
       "readable": 5
     },
-    "terminalTask": "Quem aprende consegue elevar um harness de loop único a um script de orquestração determinístico — rotear, distribuir três workers sob um pool imposto por código, fazer o merge por referências, rodar um laço de revisão que devolve o melhor rascunho e reportar com rastro de execução — e conciliá-lo linha a linha com as promessas feitas pelas lições e pelos cursos anteriores.",
+    "terminalTask": "Quem aprende consegue elevar um harness de loop único a um script de orquestração determinístico — rotear, distribuir três workers sob um pool imposto por código, fazer o merge por referências, rodar um loop de revisão que devolve o melhor rascunho e reportar com rastro de execução — e conciliá-lo linha a linha com as promessas feitas pelas lições e pelos cursos anteriores.",
     "interactionCheck": "Seis blocos agentmentor-check, um por lição (janela maior na L1; cadeia vs prompt único na L2; fan-out sem limite na L3; despacho vago na L4; o grafo é nosso na L5; o LLM como cola na L6), preservados da variante em inglês com ids, modes, número de opções e posições de resposta correta idênticos; label, prompt, whyHere, o texto das opções e o feedback são traduções para o português ajustadas ao mal-entendido próprio de cada lição. Os exercícios mantêm a estrutura de níveis da variante em inglês, com rubric, answer e hints em cada nível.",
-    "learnerFitCheck": "O curso pressupõe os onze cursos anteriores: o loop do harness, os despachos, os evals e a observabilidade. O eixo de determinismo, os portões, o fan-out limitado, a decomposição dinâmica e o laço de revisão são ensinados do zero em ordem de dependência; quem aprende só monta o script completo na lição 6, depois de todos os pré-requisitos. O primeiro exercício da lição 1 pede apenas um julgamento de qual gatilho se aplica a uma tarefa grande demais de quem lê.",
+    "learnerFitCheck": "O curso pressupõe os onze cursos anteriores: o loop do harness, os despachos, os evals e a observabilidade. O eixo de determinismo, os portões, o fan-out limitado, a decomposição dinâmica e o loop de revisão são ensinados do zero em ordem de dependência; quem aprende só monta o script completo na lição 6, depois de todos os pré-requisitos. O primeiro exercício da lição 1 pede apenas um julgamento de qual gatilho se aplica a uma tarefa grande demais de quem lê.",
     "decision": "ship",
     "blockers": [],
     "promotionNotes": [

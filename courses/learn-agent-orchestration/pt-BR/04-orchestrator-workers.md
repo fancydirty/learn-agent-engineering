@@ -17,7 +17,7 @@ Agora considere uma tarefa diferente:
 
 > “Investigue os problemas de desempenho nesta base de código.”
 
-Quantas partes? Quais partes? Você não consegue fixar isso no código. Talvez o gargalo esteja nas consultas ao banco de dados, então você despacharia alguém para varrer os pontos de chamada do ORM. Talvez esteja num laço de caminho quente, então você mandaria alguém ler a saída do profiler. Talvez seja o tamanho do artefato de build, sem relação com o tempo de execução. Quais arquivos mudar, quais direções investigar — você tem de olhar este repositório específico, esta descrição específica do problema, antes de saber.
+Quantas partes? Quais partes? Você não consegue fixar isso no código. Talvez o gargalo esteja nas consultas ao banco de dados, então você despacharia alguém para varrer os pontos de chamada do ORM. Talvez esteja num loop de caminho quente, então você mandaria alguém ler a saída do profiler. Talvez seja o tamanho do artefato de build, sem relação com o tempo de execução. Quais arquivos mudar, quais direções investigar — você tem de olhar este repositório específico, esta descrição específica do problema, antes de saber.
 
 Em outras palavras: **a própria decomposição precisa ser calculada em tempo de execução**. Seu código não guarda mais a decisão de “dividir em quais partes”; guarda apenas o mecanismo de “como despachar, como coletar, como sintetizar”. Quem toma essa decisão? Um LLM.
 
@@ -56,7 +56,7 @@ async function orchestrate(userTask) {
     outputSchema: DispatchList,    // { dispatches: [{ objective, outputFormat, tools, boundaries, budget }] }
   });
 
-  // 2) Cada despacho roda como um laço de worker completo (o loop do Curso 7).
+  // 2) Cada despacho roda como um loop de worker completo (o loop do Curso 7).
   //    dispatches.length é calculado pelo modelo, então o teto de concorrência
   //    precisa ser imposto pelo código — use o pool da Lição 3, nunca Promise.all puro
   const results = await pool(plan.dispatches, LIMIT, (d) =>
@@ -72,7 +72,7 @@ async function orchestrate(userTask) {
 }
 ```
 
-Compare isto linha a linha com o código de fan-out da Lição 3; você vai ver que só o etapa 1 foi acrescentado. Esse etapa acrescentado substitui a previsibilidade do sistema inteiro — que é também por que a contabilidade das seções seguintes precisa ser detalhada item por item.
+Compare isto linha a linha com o código de fan-out da Lição 3; você vai ver que só a etapa 1 foi acrescentada. Essa etapa acrescentada substitui a previsibilidade do sistema inteiro — que é também por que a contabilidade das seções seguintes precisa ser detalhada item por item.
 
 ## Como é um sistema real em produção
 
@@ -86,11 +86,11 @@ Note o “analisa, desenvolve uma estratégia” — essa é a decisão em tempo
 
 Vale extrair mais uma citação definicional: um sistema multiagente consiste em múltiplos agentes (LLMs usando ferramentas autonomamente em um loop) trabalhando juntos[^S2].
 
-Esse parêntese deve soar familiar. **Um worker não é nada de novo — é o loop do harness que você escreveu no Curso 7 desta série.** Orquestrador-workers não introduz uma nova unidade de execução; introduz “um loop iniciando outra leva de laços”. Você já sabe escrever esse loop. Esta lição ensina a conectá-los.
+Esse parêntese deve soar familiar. **Um worker não é nada de novo — é o loop do harness que você escreveu no Curso 7 desta série.** Orquestrador-workers não introduz uma nova unidade de execução; introduz “um loop iniciando outra leva de loops”. Você já sabe escrever esse loop. Esta lição ensina a conectá-los.
 
 A mesma retrospectiva explica por que o fan-out ajuda: a essência da busca é compressão — destilar percepções de um corpus vasto. Subagentes facilitam a compressão operando em paralelo com suas próprias janelas de contexto, explorando aspectos diferentes da questão simultaneamente antes de condensar os tokens mais importantes para o agente líder de pesquisa. Cada subagente também fornece separação de responsabilidades — ferramentas, prompts e trajetórias de exploração distintas — o que reduz a dependência de caminho e permite investigações completas e independentes[^S2].
 
-“Janelas de contexto independentes” — você já fez essas contas na Lição 3. Aqui elas reaparecem em outro papel: não apenas capacidade, mas **isolamento**. Três investigações não conseguem ver os passos intermediários umas das outras, então não serão desviadas pelos erros umas das outras.
+“Janelas de contexto independentes” — você já fez essas contas na Lição 3. Aqui elas reaparecem em outro papel: não apenas capacidade, mas **isolamento**. Três investigações não conseguem ver as etapas intermediárias umas das outras, então não serão desviadas pelos erros umas das outras.
 
 ## A frente do balanço: 90,2% e aqueles 80%
 
@@ -102,7 +102,7 @@ O número mais famoso dessa retrospectiva é também o mais citado errado. Eis a
 - **Opus 4 como líder + subagentes Sonnet 4** — é o resultado daquele pareamento específico. Uma combinação diferente de modelos não promete nada.
 - **Destaca-se especialmente em consultas em largura** — aquelas que exigem múltiplas direções independentes simultaneamente. Tarefas com dependências profundas (cada etapa espera a conclusão do anterior) não estão no escopo dessa afirmação.
 
-Mais uma disciplina crítica: **esse número compara multiagente contra agente único, não “orquestração estruturada contra laços”.** Você não pode usá-lo para argumentar “mover o fluxo de controle para o código é melhor do que deixar o modelo rodar um loop” — essa é outra afirmação, e nenhum dos materiais primários desta lição os compara. Esta lição usa repetidamente o eixo “quem guarda o plano”, mas não há dado de benchmark primário nesse eixo, apenas compromissos de engenharia.
+Mais uma disciplina crítica: **esse número compara multiagente contra agente único, não “orquestração estruturada contra loops”.** Você não pode usá-lo para argumentar “mover o fluxo de controle para o código é melhor do que deixar o modelo rodar um loop” — essa é outra afirmação, e nenhum dos materiais primários desta lição os compara. Esta lição usa repetidamente o eixo “quem guarda o plano”, mas não há dado de benchmark primário nesse eixo, apenas compromissos de engenharia.
 
 Por que multiagente é eficaz em geral? A retrospectiva oferece uma explicação menos romântica — note que a análise de apoio vem de outra avaliação, não daquela que produziu os 90,2%: sistemas multiagente funcionam principalmente porque ajudam a gastar tokens suficientes para resolver o problema. Na análise deles da avaliação BrowseComp (que testa a capacidade de agentes de navegação de localizar informações difíceis de achar), três fatores explicaram 95% da variância de desempenho, e o uso de tokens sozinho explica 80%, com o número de chamadas de ferramenta e a escolha do modelo como os outros dois fatores explicativos[^S2]. Eles dizem que essa descoberta valida a arquitetura deles, que distribui trabalho entre agentes com janelas de contexto separadas para adicionar mais capacidade de raciocínio paralelo[^S2].
 
@@ -292,7 +292,7 @@ Sua tarefa:
 
 **Despacho C (estruturas algorítmicas super-lineares)**
 
-- Objetivo: Em `src/core/`, encontrar estruturas que degradam de forma super-linear conforme o tamanho da entrada cresce — travessias aninhadas, buscas lineares dentro de laços, objetos grandes construídos repetidamente em corpos de loop.
+- Objetivo: Em `src/core/`, encontrar estruturas que degradam de forma super-linear conforme o tamanho da entrada cresce — travessias aninhadas, buscas lineares dentro de loops, objetos grandes construídos repetidamente em corpos de loop.
 - Formato de saída: Mesmo schema JSON, máximo de 5 itens; preencha `self_time_pct` com `null`; `reason` deve informar a estrutura de aninhamento e a expressão da taxa de crescimento (ex.: “loop externo sobre n, `indexOf` interno também é n, juntos n²”).
 - Ferramentas e fontes: `read_file` e `grep`, caminhos restritos a `src/core/`. Não leia o profile — evite chegar à mesma leva de conclusões que A.
 - Limites: Não modifique nenhum código; não entre em `src/server/`; não dê propostas de reescrita; não rode benchmarks.
@@ -383,4 +383,4 @@ As questões 2 e 3 são pareadas: cada coisa que o agente líder **não consegue
 - Sistemas multiagente têm comportamentos emergentes; pequenas mudanças no agente líder podem mudar de forma imprevisível o comportamento dos subagentes; entender padrões de interação importa, não apenas agentes individuais[^S2]; a última milha frequentemente vira a maior parte da jornada; bases de código que funcionam na máquina do desenvolvedor exigem engenharia significativa para virar sistemas confiáveis em produção[^S2]; as práticas que acompanham são salvaguardas determinísticas (lógica de retentativa, checkpoints regulares)[^S2] e rainbow deployments — deslocar tráfego gradualmente mantendo as duas versões rodando, evitando perturbar agentes em execução[^S2]
 - Este é o mais caro dos quatro padrões aprendidos até agora: antes de começar, confirme que a decomposição de fato não pode ser predefinida (se puder, volte ao seccionamento da Lição 3), depois confirme que o valor da tarefa suporta 15×; se estiver incerto, use a pista do Curso 10 para medir uma linha de base primeiro — só adicione complexidade quando isso comprovadamente melhorar os resultados[^S1]
 
-[>> Lição 5: O laço de revisão, e compor padrões em um grafo](./05-evaluator-and-graphs.md)
+[>> Lição 5: O loop de revisão, e compor padrões em um grafo](./05-evaluator-and-graphs.md)

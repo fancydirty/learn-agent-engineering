@@ -107,7 +107,7 @@ agent_run                 ← 실행 하나, 루트 기록
 
 이 표 말고는 **나머지 모든 코드 줄이 세 버전에 공유됩니다**. 도구는 진짜로 디스크를 읽고 씁니다. `list_files` 는 진짜로 `readdirSync` 하고, `read_file` 은 진짜로 파일을 읽으며 파일이 없으면 진짜로 던지고, `write_file` 은 진짜로 `summary.md` 를 디스크에 씁니다. 그러니 `v-bug` 의 그 에러는 위조된 에러 객체가 아니라 파일 시스템이 진짜로 그 파일을 못 찾은 것입니다.
 
-분명히 해 둘 것. 스텁은 '모델 쪽이 재현 가능하다'를 풀지 '에이전트가 결정적이다'를 풀지 않습니다. 실제로 돌리면 같은 프롬프트라도 두 번이 서로 다른 도구를 고르고 다른 경로를 갈 수 있습니다[^S1]. 이 관측 가능성 계층의 가치가 정확히 여기 있습니다. 경로는 매번 다르지만 매번 되짚어 볼 기록이 남습니다.
+분명히 해 둘 것. 스텁은 '모델 쪽이 재현 가능하다'를 풀지 '에이전트가 결정론적이다'를 풀지 않습니다. 실제로 돌리면 같은 프롬프트라도 두 번이 서로 다른 도구를 고르고 다른 경로를 갈 수 있습니다[^S1]. 이 관측 가능성 계층의 가치가 정확히 여기 있습니다. 경로는 매번 다르지만 매번 되짚어 볼 기록이 남습니다.
 
 분명히 말해 둘 것이 하나 더 있습니다. 스텁이 모델 쪽을 고정하기 때문에 전체 재실행이 성립하는 것이고, 실제 API 를 붙이면 에러 지점부터 복구로 돌아갑니다. 이번 레슨이 전체 재실행을 감행하는 이유는 모델 쪽이 스텁으로 고정돼 있어서입니다. 재실행이 새 변수를 들이지 않으므로 한 줄씩 대조가 성립합니다. 실제 API 를 붙이면 스텁은 사라지고, 레슨 5의 방식으로 돌아갑니다. 에러 지점부터 복구하는 것입니다.
 
@@ -458,7 +458,7 @@ async function main() {
   const messages = [
     {
       role: "user",
-      content: "data/ 디렉터리의 매출 CSV 를 지역별 합계로 집계해 summary.md 에 쓰세요. 파일에 실제로 존재하는 데이터만 사용하세요.",
+      content: "data/ 디렉터리의 매출 CSV 를 지역별 합계로 집계해 summary.md 에 써 줘. 파일에 실제로 존재하는 데이터만 써.",
     },
   ];
 
@@ -994,7 +994,7 @@ function main() {
 
   console.log(`A: ${a.file}  trace_id=${a.trace_id}`);
   console.log(`B: ${b.file}  trace_id=${b.trace_id}`);
-  console.log(`\n${"지표".padEnd(11)}${pad("A", 7)}${pad("B", 8)}   증감`);
+  console.log(`\n${"메트릭".padEnd(10)}${pad("A", 7)}${pad("B", 8)}   증감`);
   const rows = [
     ["model_calls", a.model_calls, b.model_calls, false],
     ["tool_calls", a.tool_calls, b.tool_calls, false],
@@ -1033,7 +1033,7 @@ $ node compare-runs.mjs runs/v-good/run.log.jsonl runs/v-good/run.log.jsonl
 A: runs/v-good/run.log.jsonl  trace_id=tr-48ed2acc
 B: runs/v-good/run.log.jsonl  trace_id=tr-48ed2acc
 
-지표               A       B   증감
+메트릭             A       B   증감
 model_calls        4       4   ±0
 tool_calls         5       5   ±0
 errors             0       0   ±0
@@ -1061,7 +1061,7 @@ $ node compare-runs.mjs runs/v-good/run.log.jsonl runs/v-fixed/run.log.jsonl
 A: runs/v-good/run.log.jsonl  trace_id=tr-48ed2acc
 B: runs/v-fixed/run.log.jsonl  trace_id=tr-a7f63476
 
-지표               A       B   증감
+메트릭             A       B   증감
 model_calls        4       5   +1
 tool_calls         5       6   +1
 errors             0       1   +1

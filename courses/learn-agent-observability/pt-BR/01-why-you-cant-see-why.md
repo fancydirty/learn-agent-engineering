@@ -173,7 +173,7 @@ O critério de julgamento é simples: **o investimento em observabilidade deve s
 
 Há uma linha que não tem nada a ver com escala: se o agente pode tomar ações — escrever arquivos, enviar requisições, gastar dinheiro — não pule os testes. A natureza autônoma dos agentes implica custos mais altos e potencial de erros cumulativos. A recomendação é testar extensivamente em ambientes isolados (sandbox), junto com as devidas proteções[^S2].
 
-Quanto a saber se você acertou: a chave do sucesso, como em qualquer recurso baseado em LLM, é medir o desempenho e iterar sobre as implementações[^S2]. E a pré-condição da medição é ter o que medir — o que fecha o laço com o que este curso está resolvendo.
+Quanto a saber se você acertou: a chave do sucesso, como em qualquer recurso baseado em LLM, é medir o desempenho e iterar sobre as implementações[^S2]. E a pré-condição da medição é ter o que medir — o que fecha o ciclo com o que este curso está resolvendo.
 
 ## 💻 Exercícios
 

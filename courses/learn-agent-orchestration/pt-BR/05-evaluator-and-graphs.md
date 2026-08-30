@@ -1,19 +1,19 @@
-# Lição 5: O laço de revisão, e compor padrões em um grafo
+# Lição 5: O loop de revisão, e compor padrões em um grafo
 
 > Objetivos de aprendizado:
-> - Implementar um laço de revisar-e-refinar (gerar um rascunho, avaliá-lo, revisar com base no feedback) e usar dois critérios de decisão para determinar se vale a pena construir esse loop
+> - Implementar um loop de revisar-e-refinar (gerar um rascunho, avaliá-lo, revisar com base no feedback) e usar dois critérios de decisão para determinar se vale a pena construir esse loop
 > - Escrever condições de parada mais espertas do que “no máximo N rodadas”, e colocar verificações determinísticas antes do avaliador
 > - Compor cinco padrões no que esta lição chama de “grafo”, e documentar nos seus próprios materiais que esse sistema visual é uma metáfora própria ancorada numa citação específica de fonte primária
 >
-> Pré-requisitos: Ler as Lições 1–4 (quem guarda o plano, encadeamento e roteamento, paralelização, orquestrador-workers), saber escrever à mão um laço de harness dirigido por `stop_reason` | Anterior: [<< Lição 4](./04-orchestrator-workers.md) | Próxima: [Lição 6 >>](./06-build-a-graph.md)
+> Pré-requisitos: Ler as Lições 1–4 (quem guarda o plano, encadeamento e roteamento, paralelização, orquestrador-workers), saber escrever à mão um loop de harness dirigido por `stop_reason` | Anterior: [<< Lição 4](./04-orchestrator-workers.md) | Próxima: [Lição 6 >>](./06-build-a-graph.md)
 
-## O rascunho que está sempre a um etapa do fim
+## O rascunho que está sempre a uma etapa do fim
 
-Você pede a um agente que escreva um plano de migração de banco de dados. O primeiro rascunho volta com aparência razoável: contexto, passos, janela de tempo, tudo presente. Mas você identifica dois buracos num relance — a seção de rollback só diz “reverta se necessário”, e não há classificação de risco em lugar nenhum. Você digita duas linhas de feedback apontando isso, o segundo rascunho volta, os dois buracos estão preenchidos, e o conjunto todo sobe um patamar de qualidade.
+Você pede a um agente que escreva um plano de migração de banco de dados. O primeiro rascunho volta com aparência razoável: contexto, etapas, janela de tempo, tudo presente. Mas você identifica dois buracos num relance — a seção de rollback só diz “reverta se necessário”, e não há classificação de risco em lugar nenhum. Você digita duas linhas de feedback apontando isso, o segundo rascunho volta, os dois buracos estão preenchidos, e o conjunto todo sobe um patamar de qualidade.
 
 Você repetiu esse processo dezenas de vezes. Toda vez é a mesma coisa: a saída fica aquém, o humano fornece duas frases de feedback, a saída melhora perceptivelmente.
 
-O problema não é que o modelo escreva mal. O problema é que **as suas duas frases de feedback não são difíceis de produzir**. “Os passos de rollback precisam incluir comandos específicos”, “Cada etapa precisa de uma classificação de risco” — são coisas que um checklist cobriria. Se você consegue articular isso com clareza, o modelo provavelmente também consegue. Então por que precisa ser você dizendo isso toda vez?
+O problema não é que o modelo escreva mal. O problema é que **as suas duas frases de feedback não são difíceis de produzir**. “As etapas de rollback precisam incluir comandos específicos”, “Cada etapa precisa de uma classificação de risco” — são coisas que um checklist cobriria. Se você consegue articular isso com clareza, o modelo provavelmente também consegue. Então por que precisa ser você dizendo isso toda vez?
 
 Essa forma merece ser escrita como um loop.
 
@@ -21,9 +21,9 @@ Essa forma merece ser escrita como um loop.
 
 A fonte primária define isso em uma frase: uma chamada de LLM gera uma resposta enquanto outra fornece avaliação e feedback em um loop[^S1].
 
-Os quatro padrões das primeiras quatro lições têm, cada um, sua própria topologia: o encadeamento decompõe uma tarefa em uma sequência de passos, com cada etapa processando a saída do anterior[^S1]; o roteamento classifica e depois despacha para tarefas de acompanhamento especializadas[^S1]; a paralelização roda coisas simultaneamente e agrega os resultados programaticamente[^S1]; o orquestrador-workers tem um LLM central decompondo tarefas dinamicamente, delegando a workers e sintetizando resultados[^S1]. Todos compartilham um traço: os dados fluem para a frente. O laço de revisão é o primeiro padrão **com uma aresta de retorno** — a saída volta para o nó de geração.
+Os quatro padrões das primeiras quatro lições têm, cada um, sua própria topologia: o encadeamento decompõe uma tarefa em uma sequência de etapas, com cada etapa processando a saída da anterior[^S1]; o roteamento classifica e depois despacha para tarefas de acompanhamento especializadas[^S1]; a paralelização roda coisas simultaneamente e agrega os resultados programaticamente[^S1]; o orquestrador-workers tem um LLM central decompondo tarefas dinamicamente, delegando a workers e sintetizando resultados[^S1]. Todos compartilham um traço: os dados fluem para a frente. O loop de revisão é o primeiro padrão **com uma aresta de retorno** — a saída volta para o nó de geração.
 
-Como isso se parece em um produto? A documentação de fluxos de trabalho dinâmicos do Claude Code dá uma descrição em linguagem simples: rodar um verificador, corrigir o que falhou e repetir até passar ou parar de progredir[^S5]. Outra descrição cobre um uso diferente da mesma divisão de trabalho: ter agentes independentes revisando adversarialmente os achados uns dos outros antes de serem reportados[^S5]. Essa é uma revisão cruzada única antes do relatório, sem aresta de retorno e sem iteração — agrupá-la no laço de revisão é a categorização desta lição, não o texto original descrevendo a mesma topologia.
+Como isso se parece em um produto? A documentação de fluxos de trabalho dinâmicos do Claude Code dá uma descrição em linguagem simples: rodar um verificador, corrigir o que falhou e repetir até passar ou parar de progredir[^S5]. Outra descrição cobre um uso diferente da mesma divisão de trabalho: ter agentes independentes revisando adversarialmente os achados uns dos outros antes de serem reportados[^S5]. Essa é uma revisão cruzada única antes do relatório, sem aresta de retorno e sem iteração — agrupá-la no loop de revisão é a categorização desta lição, não o texto original descrevendo a mesma topologia.
 
 ### Um conceito, três nomes
 
@@ -39,13 +39,13 @@ Há mais uma divisão de trabalho a esclarecer. O Curso 10 desta série gasta um
 
 Os critérios de aplicabilidade da fonte primária: este fluxo de trabalho é particularmente eficaz quando temos critérios de avaliação claros e quando o refinamento iterativo entrega valor mensurável; os dois sinais de bom encaixe são, primeiro, que as respostas do LLM podem ser comprovadamente melhoradas quando um humano articula seu feedback; e segundo, que o LLM consegue fornecer esse feedback[^S1].
 
-Você já viu essa citação antes. O Curso 10 desta série citou exatamente essa frase ao responder a pergunta “vale a pena construir um laço de revisar-revisar”. Mesmos critérios, reenquadrados em contexto de orquestração — exceto que desta vez você está implementando a resposta como um loop no fluxo de controle.
+Você já viu essa citação antes. O Curso 10 desta série citou exatamente essa frase ao responder a pergunta “vale a pena construir um loop de revisar-revisar”. Mesmos critérios, reenquadrados em contexto de orquestração — exceto que desta vez você está implementando a resposta como um loop no fluxo de controle.
 
 Destrinchados, esses dois sinais protegem contra modos de falha diferentes:
 
 **O primeiro sinal protege contra “revisar não ajuda”.** Algumas tarefas não vão melhorar num segundo rascunho por mais claramente que você formule o feedback — porque o problema é falta de dados de entrada ou uma tarefa definida de forma vaga, não a redação da saída. Nesse caso, construir um loop significa apenas que você está pagando duas vezes para obter duas versões igualmente inutilizáveis. O método de validação é rude mas eficaz: **faça você mesmo, manualmente, três vezes**. Em quantas dessas três a saída ficou “claramente melhor depois do feedback humano”? Se em duas de três o “feedback não ajudou”, não construa o loop.
 
-**O segundo sinal protege contra “o avaliador não consegue dar esse tipo de feedback”.** Mesmo que o feedback humano funcione, você ainda tem de perguntar: o próprio modelo consegue fornecer o mesmo tipo de feedback? Se o seu feedback depende de coisas que só você sabe (do que este cliente reclamou no trimestre passado, o que o jurídico comunicou verbalmente semana passada), o modelo não tem essa informação, então o feedback que ele der será outra coisa completamente diferente. Nesse caso, ou você alimenta essa informação no prompt do avaliador — transformando-a em critérios que o modelo consegue avaliar — ou aceita que este etapa precisa de um humano.
+**O segundo sinal protege contra “o avaliador não consegue dar esse tipo de feedback”.** Mesmo que o feedback humano funcione, você ainda tem de perguntar: o próprio modelo consegue fornecer o mesmo tipo de feedback? Se o seu feedback depende de coisas que só você sabe (do que este cliente reclamou no trimestre passado, o que o jurídico comunicou verbalmente semana passada), o modelo não tem essa informação, então o feedback que ele der será outra coisa completamente diferente. Nesse caso, ou você alimenta essa informação no prompt do avaliador — transformando-a em critérios que o modelo consegue avaliar — ou aceita que esta etapa precisa de um humano.
 
 **Há uma precondição que entra em vigor ainda antes desses dois sinais: os critérios de avaliação precisam ser claros.** Quando os critérios não são claros, o loop produz com confiabilidade um tipo específico de falha — o avaliador dá feedback apontando para direções diferentes ou até contraditórias a cada rodada, a saída fica em pingue-pongue entre duas versões, as rodadas se esgotam e o rascunho final é pior que o primeiro. Isso não é culpa do loop. É que os critérios ainda não foram definidos.
 
@@ -55,9 +55,9 @@ A distinção definicional da fonte primária entre sistemas determinísticos e 
 
 Avaliadores são não determinísticos. Toda regra que “o código consegue decidir definitivamente” entregue a um avaliador significa que você está usando algo que pode dar resultados diferentes a cada vez para avaliar algo que deveria dar o mesmo resultado sempre — e ainda pagando por uma chamada extra de modelo.
 
-O Curso 10 desta série chama essa disciplina de pontuação em camadas: use código para o que o código consegue decidir, entregue ao modelo apenas o que o código não consegue. Esta lição copia isso direto para a ordenação dos nós do loop. A citação da Lição 2 continua valendo aqui — você pode adicionar verificações programáticas em qualquer etapa intermediário para garantir que o processo ainda está no rumo[^S1]. Todo rascunho no loop é um etapa intermediário.
+O Curso 10 desta série chama essa disciplina de pontuação em camadas: use código para o que o código consegue decidir, entregue ao modelo apenas o que o código não consegue. Esta lição copia isso direto para a ordenação dos nós do loop. A citação da Lição 2 continua valendo aqui — você pode adicionar verificações programáticas em qualquer etapa intermediária para garantir que o processo ainda está no rumo[^S1]. Todo rascunho no loop é uma etapa intermediária.
 
-Aplicado ao exemplo do plano de migração: “Cada etapa tem um comando de rollback correspondente?” pode ser decidido definitivamente com regex ou parsing estruturado — isso é um gate. “Os comandos de rollback estão escritos de forma crível?” precisa de um avaliador. A falha do primeiro nem sequer acorda o avaliador; basta informar ao redator quais passos estão faltando e seguir em frente.
+Aplicado ao exemplo do plano de migração: “Cada etapa tem um comando de rollback correspondente?” pode ser decidido definitivamente com regex ou parsing estruturado — isso é um gate. “Os comandos de rollback estão escritos de forma crível?” precisa de um avaliador. A falha do primeiro nem sequer acorda o avaliador; basta informar ao redator quais etapas estão faltando e seguir em frente.
 
 ## O esqueleto de código do loop
 
@@ -106,13 +106,13 @@ async function reviewLoop(task) {
 
 Alguns detalhes merecem menção individual.
 
-**`runAgent` é um laço de harness completo.** Isso não mudou desde a Lição 2: todo `await runAgent(...)` neste script tem, por trás, o loop dirigido por `stop_reason` do Curso 7 desta série rodando. Isto é apenas mais uma camada de fluxo de controle escrito em código envolvendo o loop.
+**`runAgent` é um loop de harness completo.** Isso não mudou desde a Lição 2: todo `await runAgent(...)` neste script tem, por trás, o loop dirigido por `stop_reason` do Curso 7 desta série rodando. Isto é apenas mais uma camada de fluxo de controle escrito em código envolvendo o loop.
 
 **Esses valores de `reason` são desfechos diferentes, não os colapse num booleano (sistemas reais frequentemente precisam subdividir mais — por exemplo, falha repetida no gate ganha seu próprio balde).** `passed` pode ser entregue diretamente; `max-rounds` significa que as rodadas se esgotaram sem passar, provavelmente precisa de repasse a humano; `no-progress` significa que o modelo travou, queimar mais dinheiro não vai melhorar. Esses três desfechos devem ser três linhas separadas nos seus dados de observabilidade — a abordagem de logging que o Curso 11 desta série ensina deve aterrissar neste campo `reason` aqui.
 
 **Falha no gate também conta como rodada.** Antes do `continue`, `rounds` já foi incrementado. Isso é intencional: falhar repetidamente no gate significa que o prompt do redator tem um problema, deixá-lo tentar indefinidamente só queima dinheiro no mesmo buraco.
 
-**Você precisa dos dois tipos de condição de parada.** A fonte primária, ao discutir laços de agente, diz: a tarefa frequentemente termina ao ser concluída, mas também é comum incluir condições de parada (como um número máximo de iterações) para manter o controle[^S1]. É daí que vem o “no máximo N rodadas” — é um fusível, garantindo que este código pare em qualquer circunstância. O mecanismo de parada por “nenhum progresso adicional” vem de outro lugar: rodar um verificador, corrigir o que falhou e repetir até passar ou parar de progredir[^S5]. Ele é mais esperto que o fusível porque observa **se esta rodada superou a anterior**, não quantas rodadas já rodaram.
+**Você precisa dos dois tipos de condição de parada.** A fonte primária, ao discutir loops de agente, diz: a tarefa frequentemente termina ao ser concluída, mas também é comum incluir condições de parada (como um número máximo de iterações) para manter o controle[^S1]. É daí que vem o “no máximo N rodadas” — é um fusível, garantindo que este código pare em qualquer circunstância. O mecanismo de parada por “nenhum progresso adicional” vem de outro lugar: rodar um verificador, corrigir o que falhou e repetir até passar ou parar de progredir[^S5]. Ele é mais esperto que o fusível porque observa **se esta rodada superou a anterior**, não quantas rodadas já rodaram.
 
 Nota não subir significa sair — essa é a implementação mais fácil, mas não a única. Se o seu avaliador não emite nota, você pode passar a observar **se a contagem de itens reprovados diminuiu**; se a tarefa em si tem alta variância, você pode trocar por “só sair depois de duas rodadas consecutivas sem melhora” com um contador `stalled`. Qual você escolhe depende de quão estável é o seu avaliador, não de qual soa mais sofisticado. (Note o `bestDraft` no esqueleto: sair quando a nota não sobe pressupõe que você está sempre segurando o rascunho de maior nota; rastrear apenas `bestScore` sem `bestDraft` faz com que as saídas `no-progress` e `max-rounds` entreguem a versão atual, que é pior.)
 
@@ -138,7 +138,7 @@ Essa frase já nomeia os três elementos de um grafo: loop (aresta de retorno), 
 
 No sistema visual desta lição:
 
-- **Nó (node)** = um loop `runAgent`, ou um pedaço de código puro (gate, classificação, agregação, loteamento). Rotular o tipo de cada nó é a ação mais valiosa ao desenhar — ela obriga você a responder “este etapa precisa mesmo do modelo?”.
+- **Nó (node)** = um loop `runAgent`, ou um pedaço de código puro (gate, classificação, agregação, loteamento). Rotular o tipo de cada nó é a ação mais valiosa ao desenhar — ela obriga você a responder “esta etapa precisa mesmo do modelo?”.
 - **Aresta (edge)** = “de quem a saída alimenta quem”. Uma aresta não é uma estrutura de dados, é apenas a próxima linha de código lendo a variável da linha anterior.
 - **Estado (state)** = variáveis do script. A âncora primária tem uma frase aqui também: os resultados intermediários permanecem em variáveis do script em vez de aterrissar no contexto do modelo[^S5]. **Não existe conceito oficial de “um objeto de estado passado entre nós”** — essa é uma expressão que tomamos emprestada de outros domínios; esta lição não constrói essa abstração, apenas passa as variáveis de que você precisar.
 
@@ -160,7 +160,7 @@ No sistema visual desta lição:
       "id": "b",
       "text": "Responda: grafo, nó e aresta são termos gerais de engenharia de software, usados em compiladores e fluxo de dados há décadas — são conhecimento comum e não precisam de explicação de origem na documentação.",
       "correct": false,
-      "feedback": "Esse é exatamente o problema. Os termos são de fato gerais, mas você os está usando na documentação como se fossem a classificação oficial deste conjunto de padrões de orquestração de agentes — os leitores vão naturalmente supor que “laço de revisão é um tipo de nó oficial dentro dos cinco padrões”. O que está sendo mal lido não é a palavra “grafo” em si, mas a relação dela com as fontes primárias."
+      "feedback": "Esse é exatamente o problema. Os termos são de fato gerais, mas você os está usando na documentação como se fossem a classificação oficial deste conjunto de padrões de orquestração de agentes — os leitores vão naturalmente supor que “loop de revisão é um tipo de nó oficial dentro dos cinco padrões”. O que está sendo mal lido não é a palavra “grafo” em si, mas a relação dela com as fontes primárias."
     },
     {
       "id": "c",
@@ -189,7 +189,7 @@ Orquestrador-     ┌──> W? ──┐                   A bifurcação é di
   workers      A ─┼──> W? ──┼──> fusão          arestas e o que cada uma faz, A
                   └──> W? ──┘                   decide depois de ver a entrada
 
-Laço de        A ──> J ──┐                      Um loop com uma aresta de retorno
+Loop de        A ──> J ──┐                      Um loop com uma aresta de retorno
   revisão      ^         │
                └──não────┘
 ```
@@ -198,7 +198,7 @@ A anotação daquela quarta forma merece releitura. Paralelização e orquestrad
 
 ### Um exemplo de composição
 
-Emendando roteamento, fan-out, fusão e laço de revisão:
+Emendando roteamento, fan-out, fusão e loop de revisão:
 
 ```text
 [classifica] ─┬─ simples ──> [resposta direta] ─────────────────> entrega
@@ -217,7 +217,7 @@ Emendando roteamento, fan-out, fusão e laço de revisão:
 
 Tipos de nó: [ ] = loop runAgent    { } = código puro
 Aresta = de quem a saída alimenta quem. {gate} é verificação determinística, vem antes de [revisão]; falha no gate ou “não” na revisão devolvem ambos para [rascunho].
-[classifica] é desenhado como laço de modelo em vez de {código puro} porque a fronteira reembolso/técnico/reclamação é difusa — quando as fronteiras são claras, troque por um classificador tradicional (isto é pontuação em camadas: use código primeiro quando o código consegue decidir).
+[classifica] é desenhado como loop de modelo em vez de {código puro} porque a fronteira reembolso/técnico/reclamação é difusa — quando as fronteiras são claras, troque por um classificador tradicional (isto é pontuação em camadas: use código primeiro quando o código consegue decidir).
 ```
 
 A Lição 6 implementa **uma variante deste grafo**: aquela leva de chamados por acaso tem critérios de aceitação que podem ser todos escritos como regras, então a camada [revisão] degrada para um {gate}, e o fan-out muda de “um item complexo para três workers” para “uma leva de chamados, cada um despachado a um tratador”. Quais partes mudaram e por quê — a abertura da Lição 6 lista ponto a ponto. Olhe a forma aqui primeiro, o código espera até a próxima lição.
@@ -226,7 +226,7 @@ A Lição 6 implementa **uma variante deste grafo**: aquela leva de chamados por
 
 Mover o fluxo de controle para o código entrega mais do que apenas “compreensível”. Alguns benefícios têm respaldo primário:
 
-**O rastreamento passo a etapa traz recuperabilidade.** O runtime rastreia o resultado de cada agente conforme a execução avança, e é isso que torna uma execução retomável dentro da mesma sessão[^S5]. Traduzido para o sistema visual desta lição: todo nó do grafo é naturalmente um local de checkpoint — o nó termina, o resultado aterrissa numa variável do script, e essa variável é o registro de “até onde chegamos”. O projeto de checkpoints ensinado no Curso 9 desta série não precisa de fundação separada aqui; as fronteiras de nó são pontos de pouso naturais.
+**O rastreamento passo a passo traz recuperabilidade.** O runtime rastreia o resultado de cada agente conforme a execução avança, e é isso que torna uma execução retomável dentro da mesma sessão[^S5]. Traduzido para o sistema visual desta lição: todo nó do grafo é naturalmente um local de checkpoint — o nó termina, o resultado aterrissa numa variável do script, e essa variável é o registro de “até onde chegamos”. O projeto de checkpoints ensinado no Curso 9 desta série não precisa de fundação separada aqui; as fronteiras de nó são pontos de pouso naturais.
 
 **Fan-out de granularidade fina preserva mais progresso.** Nas palavras da fonte primária: um fluxo de trabalho que distribui o trabalho entre muitos agentes pequenos preserva mais progresso do que um agente longo[^S5]. Um agente longo de quarenta minutos quebra, quarenta minutos perdidos; quarenta nós pequenos de um minuto e um quebra, você perde um minuto e sabe qual minuto.
 
@@ -248,7 +248,7 @@ Benefícios declarados, agora as restrições.
 
 Um modo de falha merece prevenção especial no fim deste curso: **escolher primeiro uma topologia bacana e depois procurar tarefas para enfiar nela.**
 
-A ordem deveria ser inversa. Desenhe primeiro a forma de dependência da própria tarefa — quais passos precisam entrar em fila (a saída do etapa anterior é a entrada do próximo), quais passos não se afetam (tanto faz quem roda primeiro), qual etapa precisa ver a entrada antes de saber em quantas partes dividir, qual etapa tem saída que precisa de alguém para criticar antes de ser confiável. Terminado esse desenho, quais padrões usar está basicamente decidido: os lugares de fila são encadeamentos, os lugares mutuamente independentes são leques, os lugares de ver-então-decidir são orquestradores, os lugares que precisam de crítica são laços.
+A ordem deveria ser inversa. Desenhe primeiro a forma de dependência da própria tarefa — quais etapas precisam entrar em fila (a saída da etapa anterior é a entrada da próxima), quais etapas não se afetam (tanto faz quem roda primeiro), qual etapa precisa ver a entrada antes de saber em quantas partes dividir, qual etapa tem saída que precisa de alguém para criticar antes de ser confiável. Terminado esse desenho, quais padrões usar está basicamente decidido: os lugares de fila são encadeamentos, os lugares mutuamente independentes são leques, os lugares de ver-então-decidir são orquestradores, os lugares que precisam de crítica são loops.
 
 Padrões são nomes para formas de tarefa, não um cardápio do qual você pode escolher arbitrariamente.
 
@@ -260,21 +260,21 @@ O código completo e executável de composição está na Lição 6. Esta liçã
 
 <!-- exercises -->
 
-### Nível 1: Desenhar dois grafos e projetar condições de parada para os laços
+### Nível 1: Desenhar dois grafos e projetar condições de parada para os loops
 
 Sem código. Use o sistema visual desta lição para desenhar um diagrama ASCII para cada uma das duas tarefas abaixo (em blocos ```text), **rotulando cada nó como loop `runAgent` ou código puro**.
 
-**Tarefa um · Chamados de clientes**: Chega um chamado, classifique primeiro (reembolso / técnico / reclamação), roteie por categoria para fluxos de tratamento diferentes; depois do tratamento, faça pontuação de risco, os de alto risco precisam passar por um laço de revisão antes do envio, os de baixo risco vão direto.
+**Tarefa um · Chamados de clientes**: Chega um chamado, classifique primeiro (reembolso / técnico / reclamação), roteie por categoria para fluxos de tratamento diferentes; depois do tratamento, faça pontuação de risco, os de alto risco precisam passar por um loop de revisão antes do envio, os de baixo risco vão direto.
 
 **Tarefa dois · Avaliação de 40 módulos de código**: Uma execução avalia 40 módulos, agrupe-os em lotes e abra em leque para avaliação paralela, termine e funda, e então tenha um nó escrevendo o relatório-resumo; o relatório precisa passar por um gate (os 40 módulos têm conclusões? notas na faixa válida? referências parseáveis?), falhar significa devolver para reescrita.
 
-Depois de desenhar, projete condições de parada para o laço de cada grafo (o laço de revisão da tarefa um, o loop do gate de relatório da tarefa dois): o máximo de rodadas é fusível obrigatório e não participa da escolha; entre “passou” e “nenhum progresso adicional”, decida qual é o mecanismo de parada principal e explique por que manteve ou descartou o outro.
+Depois de desenhar, projete condições de parada para o loop de cada grafo (o loop de revisão da tarefa um, o loop do gate de relatório da tarefa dois): o máximo de rodadas é fusível obrigatório e não participa da escolha; entre “passou” e “nenhum progresso adicional”, decida qual é o mecanismo de parada principal e explique por que manteve ou descartou o outro.
 
 <!-- rubric -->
 
 - Ambos os grafos rotulam cada nó como `runAgent` ou código puro, e classificam classificar, pontuar risco, lotear, fundir e gate como código puro (classificar usando LLM também vale se você explicar por que não um classificador tradicional)
 - O grafo da tarefa um tem um ponto de bifurcação real (três ou mais arestas mutuamente exclusivas), o grafo da tarefa dois mostra tanto a ação de abrir em leque quanto a de fundir
-- Ambos os laços desenham a aresta de retorno (falha → volta ao nó de geração), não desenhada como linha reta
+- Ambos os loops desenham a aresta de retorno (falha → volta ao nó de geração), não desenhada como linha reta
 - Cada loop mantém o fusível de máximo de rodadas e esclarece principal/secundário entre “passou” e “nenhum progresso adicional”, com raciocínio amarrado à natureza da tarefa
 - “Nenhum progresso adicional” é definido como quantidade decidível (a nota não subiu, a contagem de itens reprovados não diminuiu), não apenas “o modelo parece não ter melhorado”
 - Declara o que acontece depois de cada desfecho de parada (entregar / repassar a humano / escalar), não colapsa os três desfechos num booleano
@@ -341,7 +341,7 @@ Descarte “máximo de rodadas” como mecanismo principal (você pode sobrepor 
 
 <!-- hint -->
 
-Ao rotular tipos de nó, se você empacar em “este etapa conta como código puro?”, pergunte: **Dada a mesma entrada rodada duas vezes, a saída deste etapa vai diferir?** Vai diferir = `runAgent`, não vai = código puro. Os nós do seu grafo que fazem agregação, filtragem e decisões provavelmente caem todos no segundo caso.
+Ao rotular tipos de nó, se você empacar em “esta etapa conta como código puro?”, pergunte: **Dada a mesma entrada rodada duas vezes, a saída desta etapa vai diferir?** Vai diferir = `runAgent`, não vai = código puro. Os nós do seu grafo que fazem agregação, filtragem e decisões provavelmente caem todos no segundo caso.
 
 <!-- hint -->
 
@@ -351,11 +351,11 @@ Ao projetar condições de parada, pense primeiro com clareza **qual é a ação
 
 Sem código. Use os dois sinais de decisão desta lição — (1) quando um humano articula o feedback com clareza, a saída de fato melhora comprovadamente; (2) o LLM também consegue fornecer esse feedback — para julgar cada um dos três cenários abaixo, e dê sua recomendação de tratamento.
 
-**Cenário um · Polimento de texto**: Um gerador de manchetes para landing page de marketing. A gerente de produto diz que o texto gerado atualmente é “utilizável mas sem graça”, ela fornece dois ou três pontos específicos toda vez (o diferencial não aparece na primeira frase, a chamada para ação é fraca demais, o comprimento excede o limite de duas linhas no celular), e a versão depois do feedback dela é perceptivelmente melhor. A equipe pergunta se deve acrescentar um laço de revisão.
+**Cenário um · Polimento de texto**: Um gerador de manchetes para landing page de marketing. A gerente de produto diz que o texto gerado atualmente é “utilizável mas sem graça”, ela fornece dois ou três pontos específicos toda vez (o diferencial não aparece na primeira frase, a chamada para ação é fraca demais, o comprimento excede o limite de duas linhas no celular), e a versão depois do feedback dela é perceptivelmente melhor. A equipe pergunta se deve acrescentar um loop de revisão.
 
 **Cenário dois · Verificação de totais financeiros**: Um agente que gera resumos financeiros mensais a partir de recibos brutos. Vários totais no resumo frequentemente não fecham; alguém propõe acrescentar um “agente auditor” para ler o resumo, apontar as partes mal calculadas, devolver para recálculo, repetir até o agente auditor aprovar.
 
-**Cenário três · Estilo de nomenclatura de componentes**: Um agente que nomeia novos componentes e escreve documentação. As avaliações de três colegas de frontend sobre a saída são cronicamente inconsistentes: A diz que os nomes são prolixos demais, B diz que não são descritivos o bastante, C acha que qualquer um serve mas que o tom da documentação é formal demais. Alguém propõe acrescentar um laço de revisão com um “agente revisor de estilo” como guardião.
+**Cenário três · Estilo de nomenclatura de componentes**: Um agente que nomeia novos componentes e escreve documentação. As avaliações de três colegas de frontend sobre a saída são cronicamente inconsistentes: A diz que os nomes são prolixos demais, B diz que não são descritivos o bastante, C acha que qualquer um serve mas que o tom da documentação é formal demais. Alguém propõe acrescentar um loop de revisão com um “agente revisor de estilo” como guardião.
 
 <!-- rubric -->
 
@@ -378,7 +378,7 @@ Recomendação: Solidifique os três pontos dela na rubrica do avaliador, mas **
 
 Os dois sinais não são o ponto principal aqui — há um julgamento que entra em vigor ainda antes: o código consegue decidir isso definitivamente. Se um total está correto é um problema determinístico: pegue os números dos recibos brutos e some de novo, não bate significa que não bate, resultado idêntico toda vez. Ter um avaliador não determinístico avaliando algo que deveria ser determinístico custa duas coisas (uma chamada extra de modelo) mais um risco (o próprio avaliador pode marcar erradamente o correto como errado ou deixar o errado passar).
 
-Recomendação: Escreva um verificador, use código para recalcular cada total e cada relação cruzada, falha significa jogar “qual item, valor calculado, valor devido” direto de volta ao nó de geração. Isso ainda é um loop, forma igual à do laço de revisão, mas o nó dentro do loop é código puro, não um agente — esta é a disciplina de pontuação em camadas do Curso 10: use código para o que o código consegue decidir, entregue ao modelo apenas o que o código não consegue. Se você realmente quiser deixar um lugar para o modelo, deixe para partes que o código não decide, como “a narrativa textual do resumo condiz com os números?”.
+Recomendação: Escreva um verificador, use código para recalcular cada total e cada relação cruzada, falha significa jogar “qual item, valor calculado, valor devido” direto de volta ao nó de geração. Isso ainda é um loop, forma igual à do loop de revisão, mas o nó dentro do loop é código puro, não um agente — esta é a disciplina de pontuação em camadas do Curso 10: use código para o que o código consegue decidir, entregue ao modelo apenas o que o código não consegue. Se você realmente quiser deixar um lugar para o modelo, deixe para partes que o código não decide, como “a narrativa textual do resumo condiz com os números?”.
 
 **Cenário três: Não construa o loop primeiro, defina os critérios primeiro.**
 
@@ -386,7 +386,7 @@ O sinal um já não é atendido: o feedback dos três colegas se contradiz, o qu
 
 Se você forçar a construção, vai obter com confiabilidade aquela falha previsível: o feedback do avaliador aponta direções diferentes a cada rodada, os nomes ficam em pingue-pongue entre prolixo e conciso, as rodadas se esgotam, o rascunho final não é melhor que o primeiro, e os três colegas continuam cada um com suas queixas — você apenas automatizou uma discussão inconclusiva enquanto pagava por cada rodada.
 
-Recomendação: Faça as três pessoas primeiro sentarem e escreverem as regras de nomenclatura num checklist decidível (usar abreviações ou não, verbo primeiro ou substantivo primeiro, no máximo quantas palavras, a documentação usa qual pessoa). Uma vez que o checklist exista, o sinal um e o sinal dois vão ambos se sustentar, aí volte para construir o loop, e a maior parte das condições já poderá ser decidida definitivamente num gate. **A lição real deste cenário: laços de revisão não produzem critérios, apenas executam critérios.**
+Recomendação: Faça as três pessoas primeiro sentarem e escreverem as regras de nomenclatura num checklist decidível (usar abreviações ou não, verbo primeiro ou substantivo primeiro, no máximo quantas palavras, a documentação usa qual pessoa). Uma vez que o checklist exista, o sinal um e o sinal dois vão ambos se sustentar, aí volte para construir o loop, e a maior parte das condições já poderá ser decidida definitivamente num gate. **A lição real deste cenário: loops de revisão não produzem critérios, apenas executam critérios.**
 
 <!-- hint -->
 
@@ -400,7 +400,7 @@ Se algum cenário travar você, tente interpretar o papel do avaliador: disponha
 
 ## Recapitulação
 
-- Revisar-e-refinar é uma chamada de LLM gerando uma resposta enquanto outra fornece avaliação e feedback em um loop[^S1]; sua forma de produto é “rodar um verificador, corrigir o que falhou, repetir até passar ou parar de progredir”[^S5], e a revisão cruzada adversarial é outro uso da mesma divisão de trabalho (revisão cruzada única, sem aresta de retorno), sendo a categorização desta lição agrupá-la no laço de revisão[^S5]. O Curso 6 desta série a chama de produtor-revisor, que é nosso vocabulário didático, e o vocabulário primário é evaluator-optimizer[^S1].
+- Revisar-e-refinar é uma chamada de LLM gerando uma resposta enquanto outra fornece avaliação e feedback em um loop[^S1]; sua forma de produto é “rodar um verificador, corrigir o que falhou, repetir até passar ou parar de progredir”[^S5], e a revisão cruzada adversarial é outro uso da mesma divisão de trabalho (revisão cruzada única, sem aresta de retorno), sendo a categorização desta lição agrupá-la no loop de revisão[^S5]. O Curso 6 desta série a chama de produtor-revisor, que é nosso vocabulário didático, e o vocabulário primário é evaluator-optimizer[^S1].
 - Valer a pena construir depende de dois sinais: as respostas do LLM podem ser comprovadamente melhoradas quando um humano articula seu feedback, e o LLM também consegue fornecer esse feedback; é particularmente eficaz quando os critérios de avaliação são claros e o refinamento iterativo entrega valor mensurável[^S1]. Quando os critérios não são claros, defina os critérios primeiro, não construa o loop primeiro.
 - Condições de parada não são de um tipo só: condições de parada como número máximo de iterações são usadas para manter o controle[^S1], e “nenhum progresso adicional” é outro mecanismo de parada mais econômico[^S5]; três desfechos (passou / rodadas esgotadas / sem progresso) mapeiam para três ações distintas a jusante, não colapse num booleano. Gates determinísticos vêm antes dos avaliadores.
 - Cinco padrões podem ser compostos: estes blocos de construção não são prescritivos, são padrões comuns que desenvolvedores podem moldar e combinar para se ajustar a casos de uso diferentes, e a chave para o sucesso é medir desempenho e iterar sobre as implementações[^S1].

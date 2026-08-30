@@ -86,7 +86,7 @@ Esse número precisa ser usado com os seus três qualificadores: é um número d
 ```agentmentor-check
 {
   "id": "orc-zh-03-unbounded-fanout",
-  "label": "Julgue o que acontece com um fan-out ilimitado de 200 vias",
+  "label": "Julgar o que acontece com um fan-out ilimitado de 200 vias",
   "prompt": "O time precisa revisar 200 documentos. Um colega leu a seção de paralelização, escreveu `const reports = await Promise.all(docs.map((d) => runAgent(client, reviewTask(d))))`, mandando os 200 de uma vez, com o raciocínio “são independentes de qualquer forma, mais paralelo é mais rápido”. O que acontece quando esse código vai para produção?",
   "whyHere": "Acabamos de cobrir os três benefícios do fan-out, exatamente quando é mais fácil ler “as subtarefas são independentes” diretamente como “paralelização ilimitada tudo bem”, então quem aprende precisa conferir se está levando em conta tetos de concorrência e custo de agregação",
   "mode": "single",

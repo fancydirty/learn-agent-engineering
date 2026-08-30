@@ -96,7 +96,7 @@ URL: https://www.anthropic.com/engineering/writing-tools-for-agents
 
 - authority: authoritative-guide
 
-도구 엔지니어링 아티클입니다(2025-09). 이 코스가 여기서 가져오는 것은 두 가지뿐입니다. 결정론적 시스템과 비결정적 시스템의 정의상 대비(코스 전체의 어휘 토대입니다), 그리고 '코드가 이끄는 에이전틱 while 루프 하나에 과제 하나'입니다. 레슨6의 도식이 조합하려는 단위가 바로 그것입니다.
+도구 엔지니어링 아티클입니다(2025-09). 이 코스가 여기서 가져오는 것은 두 가지뿐입니다. 결정론적 시스템과 비결정론적 시스템의 정의상 대비(코스 전체의 어휘 토대입니다), 그리고 '코드가 이끄는 에이전틱 while 루프 하나에 과제 하나'입니다. 레슨6의 도식이 조합하려는 단위가 바로 그것입니다.
 
 핵심 인용:
 > "In computing, deterministic systems produce the same output every time given identical inputs, while non-deterministic systems—like agents—can generate varied responses even with the same starting conditions."

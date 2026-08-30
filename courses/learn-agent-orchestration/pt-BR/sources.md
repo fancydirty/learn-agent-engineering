@@ -135,7 +135,7 @@ URL: https://code.claude.com/docs/en/workflows
 
 - authority: official-docs
 
-A documentação de fluxos de trabalho dinâmicos do Claude Code — a implementação, no nível do produto, da ideia de “a orquestração mora no código”, e a página mais próxima deste curso: o eixo de quem detém o plano; o próprio script do fluxo de trabalho guarda o laço, as ramificações e os resultados intermediários, enquanto o contexto do modelo guarda apenas a resposta final; os resultados intermediários ficam em variáveis do script; fan-out e coleta, checar-corrigir-checar de novo até não haver mais progresso; concorrência de 16 e teto de 1.000 agentes por execução; o acompanhamento incremental dos resultados traz recuperabilidade, e um fan-out mais granular preserva mais progresso do que um agente longo.
+A documentação de fluxos de trabalho dinâmicos do Claude Code — a implementação, no nível do produto, da ideia de “a orquestração mora no código”, e a página mais próxima deste curso: o eixo de quem detém o plano; o próprio script do fluxo de trabalho guarda o loop, as ramificações e os resultados intermediários, enquanto o contexto do modelo guarda apenas a resposta final; os resultados intermediários ficam em variáveis do script; fan-out e coleta, checar-corrigir-checar de novo até não haver mais progresso; concorrência de 16 e teto de 1.000 agentes por execução; o acompanhamento incremental dos resultados traz recuperabilidade, e um fan-out mais granular preserva mais progresso do que um agente longo.
 
 Citação principal:
 > "A dynamic workflow is a JavaScript script that orchestrates subagents at scale. Claude writes the script for the task you describe, and a runtime executes it in the background while your session stays responsive."
