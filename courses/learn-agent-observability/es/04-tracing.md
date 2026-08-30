@@ -103,7 +103,7 @@ Dos trampas de configuración más en las que es fácil pisar:
 {
   "id": "obs-zh-04-silent-telemetry",
   "label": "Una semana, cero datos: ¿no pasa nada o no hay nada conectado?",
-  "prompt": "Conectaste la exportación de OpenTelemetry para el agente de tu equipo, commiteaste la configuración, la desplegaste y pasó una semana. Abres el panel: ni un solo punto de datos. Ni spans, ni métricas, ni eventos. El agente estuvo atendiendo usuarios toda la semana; nadie se quejó. ¿Cómo habría que juzgar la situación?",
+  "prompt": "Conectaste la exportación de OpenTelemetry para el agente de tu equipo, hiciste commit de la configuración, la desplegaste y pasó una semana. Abres el panel: ni un solo punto de datos. Ni spans, ni métricas, ni eventos. El agente estuvo atendiendo usuarios toda la semana; nadie se quejó. ¿Cómo habría que juzgar la situación?",
   "whyHere": "Esta sección acaba de explicar que el fallo de exportación es silencioso por defecto. Cero datos es la señal que peor interpretan quienes recién empiezan, y esta es la aplicación más directa del conocimiento de mecanismos de esta lección: primero distinguir «el agente está bien» de «el pipeline no está conectado», y recién entonces decidir qué revisar.",
   "mode": "single",
   "choices": [
@@ -139,7 +139,7 @@ Esto da una secuencia natural de adopción:
 2. **Después enciende los eventos de log**. Resultados de herramientas y decisiones de permisos: estos eventos estructurados son la materia prima de los patrones de lectura diagnóstica de la lección 3.
 3. **Enciende las trazas cuando te topes con un problema que no puedas explicar**. Son lo más caro y lo más detallado: las necesitas cuando de verdad tienes que «ver la forma de una ejecución».
 
-El destino de exportación es cualquier backend que acepte el OpenTelemetry Protocol (OTLP); los docs nombran algunos: Honeycomb, Datadog, Grafana, Langfuse o un colector autoalojado[^S6]. Cuál elegir queda fuera del alcance de este curso; solo diré esto: que las tres señales sean independientes significa que puedes probar el agua con la pieza más chica primero, sin esperar a que la infraestructura completa esté lista.
+El destino de exportación es cualquier backend que acepte el OpenTelemetry Protocol (OTLP); los docs nombran algunos: Honeycomb, Datadog, Grafana, Langfuse o un colector autoalojado[^S6]. Cuál elegir queda fuera del alcance de este curso; solo diré esto: que las tres señales sean independientes significa que puedes tantear el terreno con la pieza más chica primero, sin esperar a que la infraestructura completa esté lista.
 
 ## De paso: ese mismo lote de eventos también es un rastro de auditoría
 
@@ -310,7 +310,7 @@ Manejo: después de completar el interruptor y el endpoint de las trazas, ejecut
 
 **Escenario C: a la traza del script corto le falta la cola**
 
-Causa más probable: la exportación por lotes chocó con un proceso de vida corta. La CLI agrupa la telemetría en lotes y exporta a intervalos; en una salida limpia intenta hacer flush de los datos pendientes, pero ese flush está acotado por un timeout corto, así que todavía se pueden perder spans si el colector responde lento; y si el proceso es matado antes de que la CLI termine su apagado, todo lo que quede en el búfer del lote se pierde[^S6]. Por defecto las trazas y los logs se exportan cada 5 segundos[^S6]: un script de CI que termina en pocos segundos se juega toda su telemetría de cola al flush de salida, y si el flush se corta por timeout (o CI simplemente mata el proceso), se perdió; cuanto más largo el intervalo de exportación, más se acumula en el búfer esperando el flush. Esto también explica por qué las ejecuciones largas locales no muestran problemas: cuando corres el tiempo suficiente, cada lote tiene su oportunidad de salir en el intervalo regular.
+Causa más probable: la exportación por lotes chocó con un proceso de vida corta. La CLI agrupa la telemetría en lotes y exporta a intervalos; en una salida limpia intenta hacer flush de los datos pendientes, pero ese flush está acotado por un timeout corto, así que todavía se pueden perder spans si el colector responde lento; y si el proceso es matado antes de que la CLI termine su apagado, todo lo que quede en el búfer del lote se pierde[^S6]. Por defecto las trazas y los logs se exportan cada 5 segundos[^S6]: un script de CI que termina en pocos segundos se juega toda su telemetría de cola al flush de salida, y si el flush se corta por timeout (o CI simplemente mata el proceso), se perdió; cuanto más largo el intervalo de exportación, más se acumula en el búfer esperando el flush. Esto también explica por qué las ejecuciones largas locales no muestran problemas: cuando la ejecución se alarga lo suficiente, cada lote tiene su oportunidad de salir en el intervalo regular.
 
 Secuencia de verificación:
 

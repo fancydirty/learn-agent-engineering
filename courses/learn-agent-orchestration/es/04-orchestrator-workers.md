@@ -9,15 +9,15 @@
 
 ## El hueco que dejó abierto la Lección 3
 
-En la Lección 3 escribiste seccionamiento: partir una tarea en subtareas independientes, ejecutarlas a la vez, y luego agregar los resultados con código. Vuelve a mirar ese código—¿dónde vive la lógica de la partición? Está en el arreglo que codificaste a mano: `SECTIONS = ['security', 'performance', 'readability']`. Las tres ramas quedaron decididas cuando escribiste el código; el tiempo de ejecución apenas las ejecuta.
+En la Lección 3 escribiste seccionamiento: partir una tarea en subtareas independientes, ejecutarlas a la vez, y luego agregar los resultados con código. Vuelve a mirar ese código—¿dónde vive la lógica de la partición? Está en el arreglo que codificaste a mano: `SECTIONS = ['security', 'performance', 'readability']`. Las tres ramas quedaron decididas cuando escribiste el código; el tiempo de ejecución solo las ejecuta.
 
 Este enfoque funciona bajo una suposición rígida: **ya sabes en tiempo de escritura cómo dividir la tarea**. La revisión de código encaja en esa suposición porque las dimensiones de revisión son estables—cambias de repositorio y sigues revisando los mismos aspectos.
 
 Ahora considera una tarea distinta:
 
-> «Investiga los problemas de rendimiento de este código base.»
+> «Investiga los problemas de rendimiento de esta base de código.»
 
-¿Cuántas piezas? ¿Cuáles piezas? No lo puedes codificar a mano. Tal vez el cuello de botella esté en las consultas a la base de datos, así que despacharías a alguien a escanear los sitios de llamada del ORM. Tal vez esté en un bucle de ruta caliente, así que mandarías a alguien a leer la salida del profiler. Tal vez sea el tamaño del artefacto de compilación, sin relación con el tiempo de ejecución. Qué archivos cambiar, qué direcciones investigar—tienes que mirar este repositorio concreto, esta descripción concreta del problema, antes de saberlo.
+¿Cuántas piezas? ¿Cuáles piezas? No lo puedes fijar en duro. Tal vez el cuello de botella esté en las consultas a la base de datos, así que despacharías a alguien a escanear los sitios de llamada del ORM. Tal vez esté en un bucle de ruta caliente, así que mandarías a alguien a leer la salida del profiler. Tal vez sea el tamaño del artefacto de compilación, sin relación con el tiempo de ejecución. Qué archivos cambiar, qué direcciones investigar—tienes que mirar este repositorio concreto, esta descripción concreta del problema, antes de saberlo.
 
 Dicho de otro modo: **la descomposición misma debe computarse en tiempo de ejecución**. Tu código ya no guarda la decisión de «en qué piezas partirlo»; solo guarda el mecanismo de «cómo despachar, cómo recolectar, cómo sintetizar». ¿Quién toma esa decisión? Un LLM.
 
@@ -38,7 +38,7 @@ El término que usa es "topographically similar" (topográficamente similar): pa
 | | Seccionamiento (Lección 3) | Orquestador-trabajadores (esta lección) |
 |---|---|---|
 | Quién decide la partición | Tú, al escribir el código | El LLM orquestador, en tiempo de ejecución |
-| Contenido de la subtarea | Codificado a mano | Puede diferir en cada ejecución |
+| Contenido de la subtarea | Fijado en duro | Puede diferir en cada ejecución |
 | Cantidad de subtareas | Fija | Determinada por la entrada |
 | ¿Puedes escribir de antemano el prompt de cada rama? | Sí | No—solo puedes aportar plantillas |
 
@@ -102,7 +102,7 @@ El número más famoso de esta retrospectiva es también el que más se cita mal
 - **Opus 4 como líder + subagentes Sonnet 4**—el resultado de ese emparejamiento concreto. Otra combinación de modelos no promete nada.
 - **Destaca especialmente en consultas de amplitud primero**—las que requieren varias direcciones independientes simultáneamente. Las tareas con dependencias profundas (cada paso espera la conclusión del anterior) quedan fuera del alcance de este enunciado.
 
-Una disciplina crítica más: **este número compara multiagente contra agente único, no «orquestación estructurada contra bucles».** No lo puedes usar para argumentar que «mover el control de flujo al código le gana a dejar que el modelo corra un bucle»—esa es otra afirmación, y ninguno de los materiales primarios de esta lección los compara. Esta lección usa una y otra vez el eje de «quién sostiene el plan», pero no hay datos primarios de benchmark sobre ese eje, solo compromisos de ingeniería.
+Una disciplina crítica más: **este número compara el multiagente con el agente único, no «orquestación estructurada frente a bucles».** No lo puedes usar para argumentar que «mover el control de flujo al código le gana a dejar que el modelo ejecute un bucle»—esa es otra afirmación, y ninguno de los materiales primarios de esta lección los compara. Esta lección usa una y otra vez el eje de «quién sostiene el plan», pero no hay datos primarios de benchmark sobre ese eje, solo compromisos de ingeniería.
 
 ¿Por qué es efectivo el multiagente en general? La retrospectiva ofrece una explicación menos romántica—nota que su análisis de respaldo viene de otra evaluación, no de la que produce el 90,2 %: los sistemas multiagente funcionan principalmente porque ayudan a gastar suficientes tokens para resolver el problema. En su análisis de la evaluación BrowseComp (que pone a prueba la capacidad de los agentes de navegación para localizar información difícil de encontrar), tres factores explicaron el 95 % de la varianza de rendimiento, y el uso de tokens por sí solo explica el 80 %, con la cantidad de llamadas a herramientas y la elección del modelo como los otros dos factores explicativos[^S2]. Dicen que este hallazgo valida su arquitectura, que distribuye el trabajo entre agentes con ventanas de contexto separadas para agregar más capacidad de razonamiento en paralelo[^S2].
 
@@ -116,9 +116,9 @@ Estos dos números aparecieron en la Lección 1; aquí va la cita completa. La m
 
 Pon los números de ambas secciones lado a lado: de un lado, 90,2 % (bajo condiciones específicas); del otro, 15×. La sección anterior dejó claro que la ganancia de rendimiento viene principalmente de gastar tokens, así que la factura más alta no es un efecto secundario—es **la otra mitad del mismo mecanismo**.
 
-¿Cómo operacionalizas «el valor de la tarea tiene que corresponder»? En realidad te está pidiendo responder una pregunta de negocio antes que una técnica: si esta investigación sale bien, ¿cuánto vale? Si la respuesta es «le ahorra media hora a una persona del equipo», la factura de 15× probablemente no se paga sola. Si la respuesta es «evita un incidente en producción», eso ya es otra historia.
+¿Cómo operacionalizas «el valor de la tarea tiene que corresponder»? En realidad te está pidiendo responder una pregunta de negocio antes que una técnica: si esta investigación sale bien, ¿cuánto vale? Si la respuesta es «le ahorra media hora a alguien de ingeniería», la factura de 15× probablemente no se paga sola. Si la respuesta es «evita un incidente en producción», eso ya es otra historia.
 
-La retrospectiva traza además un límite más duro: algunos dominios que requieren que todos los agentes compartan el mismo contexto, o que implican muchas dependencias entre agentes, hoy no encajan bien con los sistemas multiagente. Por ejemplo, la mayoría de las tareas de programación implican menos tareas verdaderamente paralelizables que la investigación, y los agentes LLM todavía no son buenos coordinándose y delegando a otros agentes en tiempo real[^S2]. A la inversa, han encontrado que los sistemas multiagente destacan en tareas valiosas que implican paralelización pesada, información que excede una sola ventana de contexto, y trato con numerosas herramientas complejas[^S2].
+La retrospectiva traza además un límite más duro: algunos dominios que requieren que todos los agentes compartan el mismo contexto, o que implican muchas dependencias entre agentes, hoy no encajan bien con los sistemas multiagente. Por ejemplo, la mayoría de las tareas de programación implican menos tareas verdaderamente paralelizables que la investigación, y los agentes LLM todavía no son muy buenos coordinándose y delegando a otros agentes en tiempo real[^S2]. A la inversa, han encontrado que los sistemas multiagente destacan en tareas valiosas que implican paralelización pesada, información que excede una sola ventana de contexto, y la interacción con numerosas herramientas complejas[^S2].
 
 Hay dos frases aquí que deben leerse juntas, o las malentenderás: la fuente oficial del patrón usa la programación como ejemplo de «las subtareas no se pueden predecir»[^S1], mientras que la retrospectiva multiagente dice que la mayoría de las tareas de programación implican menos tareas verdaderamente paralelizables que la investigación[^S2]. No se contradicen—hablan de dos cosas distintas. La primera dice que **la descomposición debe computarse dinámicamente**; la segunda dice que **puede que las subtareas computadas no corran todas simultáneamente**. La descomposición dinámica no implica paralelismo inevitable. Un orquestador puede perfectamente computar cinco subtareas, y luego ejecutar tres en secuencia y dos en paralelo.
 
@@ -184,11 +184,11 @@ Este conjunto de números apareció en la apertura del curso 6; aquí se usa de 
 
 Una disciplina de citación sobre estos números: **su identidad es «reglas que ellos incrustaron en sus propios prompts», no estándares de la industria, ni escalas que debas copiar al pie de la letra.** Tu distribución de tareas, la velocidad de tus herramientas y tus modelos son todos distintos de los suyos. Lo verdaderamente portable es la práctica en sí—**escribir las reglas de asignación explícitamente en el prompt del orquestador, en vez de esperar que el orquestador se autorregule**.
 
-¿Qué pasa si no las escribes? La retrospectiva aporta la escena: los sistemas multiagente tienen diferencias clave frente a los sistemas de agente único, incluido un crecimiento rápido de la complejidad de coordinación. Los agentes tempranos cometían errores como lanzar 50 subagentes para consultas simples, rastrear la web sin fin buscando fuentes inexistentes, y distraerse entre sí con actualizaciones excesivas[^S2].
+¿Qué pasa si no las escribes? La retrospectiva aporta la escena: los sistemas multiagente tienen diferencias clave frente a los sistemas de agente único, incluido un crecimiento rápido de la complejidad de coordinación. Los primeros agentes cometían errores como lanzar 50 subagentes para consultas simples, rastrear la web sin fin buscando fuentes inexistentes, y distraerse entre sí con actualizaciones excesivas[^S2].
 
 "Spawning 50 subagents for simple queries" (lanzar 50 subagentes para consultas simples)—convierte eso usando el balance de la sección anterior y lo entenderás: según sus datos, multiagente es unas 15× los tokens de un chat[^S2], así que este tipo de fan-out desbocado empuja ese multiplicador mucho más arriba. Las reglas de cuota no son tacañería; son **el medio para mantener el costo y el valor de la tarea en el mismo orden de magnitud**.
 
-¿Cómo escribes esta regla en el prompt de tu propio orquestador? Sigue su forma y rellena tu propia escala: clasifica tus tareas en unos pocos niveles, especifica para cada nivel el techo de cantidad de subagentes y el techo de llamadas a herramientas por subagente, y luego agrega una cláusula del tipo «si superas el techo, devuelve los hallazgos actuales; no continúes». Esto puede reducir la probabilidad de desbocamiento, pero sigue siendo apenas un prompt—para modelos no deterministas, un techo escrito en el prompt siempre es solo un consejo. La compuerta real está del lado del código: el `LIMIT` del `pool` del esqueleto. La capa del prompt se ocupa de la «autoconciencia del modelo»; la capa del código se ocupa del «respaldo». Necesitas las dos.
+¿Cómo escribes esta regla en el prompt de tu propio orquestador? Sigue su forma y rellena tu propia escala: clasifica tus tareas en unos pocos niveles, especifica para cada nivel el techo de cantidad de subagentes y el techo de llamadas a herramientas por subagente, y luego agrega una cláusula del tipo «si superas el techo, devuelve los hallazgos actuales; no continúes». Esto puede reducir la probabilidad de desbocamiento, pero sigue siendo solo un prompt—para modelos no deterministas, un techo escrito en el prompt siempre es solo un consejo. La compuerta real está del lado del código: el `LIMIT` del `pool` del esqueleto. La capa del prompt se ocupa de la «autoconciencia del modelo»; la capa del código se ocupa del «respaldo». Necesitas las dos.
 
 ## Cuellos de botella síncronos, y el precio de la asincronía
 
@@ -204,7 +204,7 @@ Tres puntos de «no puede», cada uno correspondiente a una pérdida real:
 
 Segundo párrafo, el costo del otro camino: la ejecución asíncrona habilitaría paralelismo adicional—agentes trabajando de forma concurrente y creando subagentes nuevos cuando haga falta. Pero esta asincronía agrega desafíos en la coordinación de resultados, la consistencia de estado, y la propagación de errores entre los subagentes[^S2].
 
-Fíjate en el tono de esta frase: el material primario **enumera estos tres puntos como desafíos**, no como problemas resueltos. Así que esta lección no te va a dar «el esquema de orquestación asíncrona recomendado oficialmente»—eso no existe. Si te vas a asíncrono por tu cuenta, estos tres puntos son tuyos para cargar:
+Fíjate en el tono de esta frase: el material primario **enumera estos tres puntos como desafíos**, no como problemas resueltos. Así que esta lección no te va a dar «el esquema de orquestación asíncrona recomendado oficialmente»—eso no existe. Si te vas a asíncrono por tu cuenta, estos tres puntos te toca cargarlos a ti:
 
 - **Coordinación de resultados**: los trabajadores vuelven a cuentagotas; «cuándo hemos terminado lo suficiente para empezar la síntesis» es un juicio que debes definir tú.
 - **Consistencia de estado**: el agente líder cambió el alcance de la investigación sobre la marcha; los trabajadores en curso siguen usando el alcance viejo; las premisas de ambos lados se bifurcaron.
@@ -220,7 +220,7 @@ Algunas lecciones de ingeniería más de la misma retrospectiva; cada una es cor
 
 Impacto en tu trabajo diario: **cambia el prompt del orquestador, y debes volver a ejecutar la suite de evaluación entera; no puedes limitarte a revisar la salida del propio orquestador**. La pista de evaluación del curso 10 entra en juego aquí—es el único instrumento que tienes para ver si un cambio pequeño sacó de rumbo a los subagentes.
 
-**La última milla a menudo se vuelve la mayor parte del viaje**: al construir agentes de IA, la última milla a menudo se vuelve la mayor parte del viaje. Los códigos base que funcionan en las máquinas de desarrollo requieren ingeniería significativa para volverse sistemas de producción confiables. La naturaleza compuesta de los errores en los sistemas agénticos significa que problemas menores para el software tradicional pueden descarrilar por completo a los agentes[^S2].
+**La última milla a menudo se vuelve la mayor parte del viaje**: al construir agentes de IA, la última milla a menudo se vuelve la mayor parte del viaje. Las bases de código que funcionan en las máquinas de desarrollo requieren ingeniería significativa para volverse sistemas de producción confiables. La naturaleza compuesta de los errores en los sistemas agénticos significa que problemas menores para el software tradicional pueden descarrilar por completo a los agentes[^S2].
 
 Dos prácticas que la acompañan: combinan la adaptabilidad de los agentes de IA construidos sobre Claude con salvaguardas deterministas como lógica de reintento y puntos de control periódicos[^S2]; usan despliegues arcoíris para evitar interrumpir a los agentes en curso, desplazando gradualmente el tráfico de las versiones viejas a las nuevas mientras mantienen ambas en ejecución simultáneamente[^S2].
 
@@ -232,7 +232,7 @@ A esta altura ya viste cuatro de los cinco patrones. Ordenados por costo, orques
 
 Así que antes de empezar, hazte tres preguntas en orden:
 
-**Primera, ¿se puede codificar la partición a mano?** Si sí, vuelve a la Lección 3 y usa seccionamiento. En seccionamiento, el prompt de cada rama está pulido a mano; en orquestador-trabajadores, los despachos los genera el modelo sobre la marcha—el primero tiene un techo de calidad más alto y es más fácil de depurar. **Si lo puedes predefinir, no lo vuelvas dinámico.**
+**Primera, ¿se puede fijar la partición en duro?** Si sí, vuelve a la Lección 3 y usa seccionamiento. En seccionamiento, el prompt de cada rama está pulido a mano; en orquestador-trabajadores, los despachos los genera el modelo sobre la marcha—el primero tiene un techo de calidad más alto y es más fácil de depurar. **Si lo puedes predefinir, no lo vuelvas dinámico.**
 
 **Segunda, ¿vale esta tarea tanto dinero?** Según sus datos, multiagente es unas 15× los tokens de un chat[^S2], y para ser viable económicamente, el valor de la tarea debe ser lo bastante alto como para pagar por el aumento[^S2]. Este es un juicio de negocio, no técnico, pero hay que hacerlo antes de escribir código.
 
@@ -254,7 +254,7 @@ Volvieron tres informes: dos con contenido muy superpuesto, el tercero sobre vel
 
 Entorno dado (sin código, solo prompts):
 
-- Estructura del repositorio: `src/core/` (algoritmos y estructuras de datos), `src/server/` (rutas de manejo de peticiones), `profiles/latest.cpuprofile` (un perfil de CPU ya generado)
+- Estructura del repositorio: `src/core/` (algoritmos y estructuras de datos), `src/server/` (rutas de manejo de solicitudes), `profiles/latest.cpuprofile` (un perfil de CPU ya generado)
 - Los trabajadores solo tienen tres herramientas disponibles: `read_file`, `grep`, `read_profile`
 - Ninguno de los tres trabajadores puede modificar código
 
@@ -281,12 +281,12 @@ Tu tarea:
 - Objetivo: A partir del perfil de CPU existente, encontrar las 3 funciones con mayor porcentaje de self-time, y aportar sus ubicaciones en el código fuente.
 - Formato de salida: arreglo JSON, máximo 3 ítems, cada uno `{ "file": string, "line": number, "self_time_pct": number, "reason": string }`, ordenado por `self_time_pct` descendente.
 - Herramientas y fuentes: usar solo `read_profile` para leer `profiles/latest.cpuprofile`; usar `read_file` para abrir los archivos fuente coincidentes y confirmar los números de línea. No usar `grep` para escaneos de todo el repositorio.
-- Límites: no modificar código; no meterse en `src/server/` a analizar rutas de peticiones (esa es la tarea de B); no evaluar complejidad algorítmica (esa es la tarea de C); si detectas un bug sospechoso, apenas anótalo en `reason`, no lo expandas.
+- Límites: no modificar código; no meterse en `src/server/` a analizar rutas de solicitudes (esa es la tarea de B); no evaluar complejidad algorítmica (esa es la tarea de C); si detectas un bug sospechoso, solo anótalo en `reason`, no lo expandas.
 
-**Despacho B (E/S repetida en rutas de peticiones)**
+**Despacho B (E/S repetida en rutas de solicitudes)**
 
-- Objetivo: En las rutas de manejo de peticiones de `src/server/`, encontrar llamadas a fuentes de datos que se leen repetidamente dentro de una misma petición (la misma clave/consulta leída varias veces).
-- Formato de salida: el mismo esquema JSON, máximo 5 ítems; rellenar `self_time_pct` con `null` si no aplica; `reason` debe declarar el objeto que se lee repetidamente y cuántas veces dentro de una petición.
+- Objetivo: En las rutas de manejo de solicitudes de `src/server/`, encontrar llamadas a fuentes de datos que se leen repetidamente dentro de una misma solicitud (la misma clave/consulta leída varias veces).
+- Formato de salida: el mismo esquema JSON, máximo 5 ítems; rellenar `self_time_pct` con `null` si no aplica; `reason` debe declarar el objeto que se lee repetidamente y cuántas veces dentro de una solicitud.
 - Herramientas y fuentes: `grep` y `read_file`, rutas restringidas a `src/server/`. No leer el perfil (A lo está leyendo).
 - Límites: no modificar código; no meterse en `src/core/`; no juzgar complejidad algorítmica; no proponer arreglos, solo reportar fenómenos y ubicaciones.
 
@@ -299,13 +299,13 @@ Tu tarea:
 
 **Justificación de cuota (una línea)**
 
-> Esta es una investigación de «comparación multidireccional», más pesada que la búsqueda simple de datos pero muy lejos de necesitar más de 10 subagentes con división explícita de responsabilidades, así que lanzo 3 trabajadores con un techo de 12 llamadas cada uno; si un trabajador supera el techo, devuelve los hallazgos actuales y para. El nivel de comparación es el "direct comparisons might need 2-4 subagents with 10-15 calls each" (las comparaciones directas podrían necesitar 2-4 subagentes con 10-15 llamadas cada uno) de la retrospectiva pública—esas son reglas que ellos incrustaron en sus propios prompts, no un estándar de la industria; yo apenas le pido prestado el orden de magnitud.
+> Esta es una investigación de «comparación multidireccional», más pesada que la búsqueda simple de datos pero muy lejos de necesitar más de 10 subagentes con división explícita de responsabilidades, así que lanzo 3 trabajadores con un techo de 12 llamadas cada uno; si un trabajador supera el techo, devuelve los hallazgos actuales y para. El nivel de comparación es el "direct comparisons might need 2-4 subagents with 10-15 calls each" (las comparaciones directas podrían necesitar 2-4 subagentes con 10-15 llamadas cada uno) de la retrospectiva pública—esas son reglas que ellos incrustaron en sus propios prompts, no un estándar de la industria; yo solo le pido prestado el orden de magnitud.
 
 **Por qué esta partición**: los tres despachos se dividen por **fuente de evidencia** (perfil / sitios de llamada del lado servidor / estructura algorítmica del núcleo), no por dimensiones vagas como «tres aspectos del rendimiento». Fuentes que no se superponen producen naturalmente conclusiones que no se superponen. Los tres usan el mismo esquema, así que la etapa de síntesis del orquestador puede primero usar código para fusionar por `file`, y después hacer que el modelo juzgue solamente los conflictos fusionados.
 
 <!-- hint -->
 
-No te apures a escribir objetivos. Primero pregúntate: **cuando vuelvan estos tres informes, ¿cómo los voy a combinar en una sola conclusión?** Los campos del formato de salida y el techo de cantidad de ítems deberían derivarse hacia atrás de ese plan de combinación. Si no logras figurarte cómo combinarlos, tus objetivos están mal partidos.
+No te apures a escribir objetivos. Primero pregúntate: **cuando vuelvan estos tres informes, ¿cómo los voy a combinar en una sola conclusión?** Los campos del formato de salida y el techo de cantidad de ítems deberían derivarse hacia atrás de ese plan de combinación. Si no te queda claro cómo combinarlos, tus objetivos están mal partidos.
 
 <!-- hint -->
 
@@ -318,7 +318,7 @@ Una orquestación se ejecutó así (el tiempo empieza cuando el agente líder en
 - Minuto 0: el agente líder despacha a los trabajadores A, B y C simultáneamente.
 - Minuto 3: A devuelve resultados.
 - Minuto 4: B devuelve resultados.
-- Minuto 25: C nunca devolvió nada; se alcanza el tiempo límite de 25 minutos del lado del trabajador, C se juzga como agotado, no devuelve nada.
+- Minuto 25: C nunca devolvió nada; se alcanza el tiempo límite de 25 minutos del lado del trabajador, se considera que C agotó su tiempo, no devuelve nada.
 - Minuto 25: esta tanda por fin termina; el agente líder empieza la síntesis.
 
 El agente líder ejecuta a los subagentes de forma **síncrona**: espera a que la tanda entera termine antes de continuar.
@@ -343,8 +343,8 @@ Responde tres cosas (sin código):
 **1. Desperdicio de espera, tres perspectivas**
 
 - **Perspectiva de latencia**: tiempo de reloj de la tanda entera = 25 minutos, determinado por el trabajador más lento, C. Si C no existiera, esta tanda podría terminar en el minuto 4. Así que C por sí solo agregó `25 − 4 = 21` minutos de latencia.
-- **Perspectiva de salida ociosa**: el resultado de A lleva sin usarse desde el minuto 3, sentado `25 − 3 = 22` minutos; el resultado de B estuvo sentado `25 − 4 = 21` minutos. En total `22 + 21 = 43` minutos de «completado pero inutilizable». El propio agente líder también está bloqueado durante esta ventana: desde el minuto 4 hasta el minuto 25, 21 minutos en total, sostiene dos resultados completos pero no puede empezar la síntesis, no puede reorientar, no puede reportar antes.
-- **Perspectiva de consumo**: los tres trabajadores estuvieron en ejecución en realidad `3 + 4 + 25 = 32` minutos-trabajador, de los cuales los 25 minutos de C no produjeron nada por agotarse el tiempo, lo que representa `25 ÷ 32 ≈ 78 %`. Dicho de otro modo, más de tres cuartos del tiempo de ejecución de esta tanda no produjeron salida usable—y los tokens correspondientes igual se cobran.
+- **Perspectiva de salida ociosa**: el resultado de A lleva sin usarse desde el minuto 3, en espera `25 − 3 = 22` minutos; el resultado de B estuvo en espera `25 − 4 = 21` minutos. En total `22 + 21 = 43` minutos de «completado pero inutilizable». El propio agente líder también está bloqueado durante esta ventana: desde el minuto 4 hasta el minuto 25, 21 minutos en total, sostiene dos resultados completos pero no puede empezar la síntesis, no puede reorientar, no puede reportar antes.
+- **Perspectiva de consumo**: los tres trabajadores en realidad estuvieron en ejecución `3 + 4 + 25 = 32` minutos-trabajador, de los cuales los 25 minutos de C no produjeron nada por agotarse el tiempo, lo que representa `25 ÷ 32 ≈ 78 %`. Dicho de otro modo, más de tres cuartos del tiempo de ejecución de esta tanda no produjeron salida usable—y los tokens correspondientes igual se cobran.
 
 **2. Tres cosas que el agente líder no puede hacer bajo el modelo síncrono**
 
@@ -355,8 +355,8 @@ Responde tres cosas (sin código):
 **3. Al pasar a asíncrono, tres costos nuevos que cargar**
 
 - **Coordinación de resultados**. Después de pasar a asíncrono, A vuelve en el minuto 3, B en el minuto 4, y C podría no volver nunca. «Cuándo hemos terminado lo suficiente para empezar la síntesis» ya no tiene respuesta natural—la debes definir tú: ¿esperar un tiempo límite fijo? ¿Seguir después de recolectar 2? ¿O actualizar las conclusiones de forma incremental cada vez que llega una? Manifestación concreta sobre esta línea de tiempo: en el minuto 4 sostienes dos resultados; ¿debería empezar la síntesis ahora? El código debe tener un criterio explícito.
-- **Consistencia de estado**. El beneficio de lo asíncrono es que el agente líder puede estrechar el alcance de la investigación en el minuto 6 basándose en los resultados de A y B. Pero C sigue en ejecución bajo el alcance viejo desde el minuto 0. Si C efectivamente devuelve un resultado en el minuto 20, ese resultado está construido sobre una premisa que quedó revocada—necesitas una forma de identificarlo y marcarlo, o entrará a la síntesis como «un resultado legítimo».
-- **Propagación de errores entre los subagentes**. Asíncrono significa que el agente líder puede despachar a D y E en el minuto 8 basándose en la salida intermedia de C. Después de que C agota su tiempo en el minuto 25, ¿los resultados de D y E siguen contando? Están construidos sobre una investigación que nunca terminó. Quién debería volver a ejecutarse, de quién se anulan los resultados, hasta dónde se propaga el fallo por esta cadena de lanzamientos—el modelo síncrono no tiene este problema (el fallo de C es apenas un resultado vacío); lo asíncrono requiere un conjunto explícito de reglas.
+- **Consistencia de estado**. El beneficio de lo asíncrono es que el agente líder puede estrechar el alcance de la investigación en el minuto 6 basándose en los resultados de A y B. Pero C sigue en ejecución bajo el alcance viejo desde el minuto 0. Si C efectivamente devuelve un resultado en el minuto 20, ese resultado está construido sobre una premisa que quedó invalidada—necesitas una forma de identificarlo y marcarlo, o entrará a la síntesis como «un resultado legítimo».
+- **Propagación de errores entre los subagentes**. Asíncrono significa que el agente líder puede despachar a D y E en el minuto 8 basándose en la salida intermedia de C. Después de que C agota su tiempo en el minuto 25, ¿los resultados de D y E siguen contando? Están construidos sobre una investigación que nunca terminó. Quién debería volver a ejecutarse, de quién se anulan los resultados, hasta dónde se propaga el fallo por esta cadena de lanzamientos—el modelo síncrono no tiene este problema (el fallo de C es solo un resultado vacío); lo asíncrono requiere un conjunto explícito de reglas.
 
 Los materiales primarios enumeran estos tres como **desafíos no resueltos**, no como recetas. Así que si efectivamente te vas a asíncrono, trata estos tres como tareas de diseño propias, no como copiar la tarea.
 
@@ -380,7 +380,7 @@ Las preguntas 2 y 3 están emparejadas: cada cosa que el agente líder **no pued
 - Cada subagente necesita un objetivo, un formato de salida, guía sobre las herramientas y fuentes a usar, y límites claros de la tarea; sin descripciones detalladas de la tarea, los agentes duplican trabajo, dejan huecos, o no logran encontrar la información necesaria[^S2]—los «prompts de delegación autocontenidos» del curso 6 se expanden en estos cuatro puntos
 - A los agentes les cuesta juzgar el esfuerzo apropiado, así que escribe las reglas de asignación en el prompt: su escala es búsqueda simple de datos 1 agente 3-10 llamadas, comparaciones directas 2-4 subagentes 10-15 llamadas cada uno, investigación compleja más de 10 subagentes con división clara[^S2]; sin reglas escritas ya vieron las consecuencias—lanzar 50 subagentes para consultas simples, rastrear la web sin fin buscando fuentes inexistentes, distraerse entre sí con actualizaciones excesivas[^S2]
 - La ejecución síncrona simplifica la coordinación pero bloquea el flujo de información: el agente líder no puede reorientar sobre la marcha, los subagentes no se pueden coordinar, el sistema entero puede quedar bloqueado por un solo subagente[^S2]; lo asíncrono habilita más paralelismo, al costo de la coordinación de resultados, la consistencia de estado, y la propagación de errores entre los subagentes—estos tres son desafíos en los materiales primarios, no soluciones resueltas[^S2]
-- Los sistemas multiagente tienen comportamientos emergentes; cambios pequeños en el agente líder pueden cambiar de forma impredecible el comportamiento de los subagentes; importa entender los patrones de interacción, no solo los agentes individuales[^S2]; la última milla a menudo se vuelve la mayor parte del viaje; los códigos base que funcionan en las máquinas de desarrollo requieren ingeniería significativa para volverse sistemas de producción confiables[^S2]; las prácticas que la acompañan son salvaguardas deterministas (lógica de reintento, puntos de control periódicos)[^S2] y despliegues arcoíris—desplazar el tráfico gradualmente manteniendo ambas versiones en ejecución, evitando interrumpir a los agentes en curso[^S2]
+- Los sistemas multiagente tienen comportamientos emergentes; cambios pequeños en el agente líder pueden cambiar de forma impredecible el comportamiento de los subagentes; importa entender los patrones de interacción, no solo los agentes individuales[^S2]; la última milla a menudo se vuelve la mayor parte del viaje; las bases de código que funcionan en las máquinas de desarrollo requieren ingeniería significativa para volverse sistemas de producción confiables[^S2]; las prácticas que la acompañan son salvaguardas deterministas (lógica de reintento, puntos de control periódicos)[^S2] y despliegues arcoíris—desplazar el tráfico gradualmente manteniendo ambas versiones en ejecución, evitando interrumpir a los agentes en curso[^S2]
 - Este es el más caro de los cuatro patrones aprendidos hasta ahora: antes de empezar, confirma que la descomposición verdaderamente no se puede predefinir (si se puede, vuelve al seccionamiento de la Lección 3), y después confirma que el valor de la tarea puede sostener 15×; si tienes dudas, usa la pista del curso 10 para medir primero una línea base—añade complejidad solo cuando mejora demostrablemente los resultados[^S1]
 
 [>> Lección 5: El bucle de revisión, y componer patrones en un grafo](./05-evaluator-and-graphs.md)

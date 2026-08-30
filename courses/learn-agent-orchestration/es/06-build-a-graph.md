@@ -3,7 +3,7 @@
 > Objetivos de aprendizaje:
 > - Soldar el enrutamiento, el fan-out, la fusión, el bucle de revisión y el informe de las primeras cinco lecciones en un solo `orchestrate.mjs`: el plan vive en el código, cada nodo sigue ejecutando el bucle de `stop_reason` del curso 7 (Fundamentos del arnés de agente: bucles y control), y los resultados intermedios se quedan en variables del script
 > - Poner el bucle de revisión a girar de verdad, y ver las dos formas en que puede parar—un ticket corregido según el informe de la compuerta y listo, otro devolviendo informes idénticos dos rondas seguidas, juzgado sin más progreso, marcado needs_human
-> - Persistir la traza de ejecución del grafo entero en `run-state.json` y `run.jsonl`, y después conciliarla contra la tabla resumen de la ejecución real: qué nodo gastó cuánto tiempo, cuántas llamadas al modelo, cuántos tokens, cuántas rondas de compuerta
+> - Persistir la traza de ejecución del grafo entero en `run-state.json` y `run.jsonl`, y después conciliarla con la tabla resumen de la ejecución real: qué nodo gastó cuánto tiempo, cuántas llamadas al modelo, cuántos tokens, cuántas rondas de compuerta
 >
 > Requisitos: Completaste las Lecciones 1–5, puedes ejecutar el bucle del arnés del curso 7 (Fundamentos del arnés de agente: bucles y control) | Anterior: [<< Lección 5](./05-evaluator-and-graphs.md)
 
@@ -52,7 +52,7 @@ Vale la pena quedarse mirando ese `1` final. No es un error—es un veredicto: s
 
 Empieza por el esqueleto del script. Usar «grafo» y «nodo» es el vocabulario que introdujo la Lección 5—es un sistema visual nuestro, no un concepto oficial, y descansa en exactamente un ancla primaria: el script del flujo de trabajo mismo retiene el bucle, las bifurcaciones y los resultados intermedios[^S5]. El fragmento de abajo es la implementación literal de ese enunciado:
 
-La Lección 5 dibujó primero un grafo compuesto; este grafo es una **variante** de aquel, con tres diferencias: la Lección 5 partía por dificultad en «simple / complejo», aquí partimos por tema en `billing` / `bug` / `other`; el fan-out de la Lección 5 era «un ticket complejo despachado a tres trabajadores y después fusionado», aquí es seccionamiento—«seis tickets, a cada uno se le asigna un manejador»; la arista de retorno de la Lección 5 volvía a un nodo `[borrador]` aparte, aquí vuelve al trabajador original. Por qué todos estos cambios está recogido en la sección «Tabla de conciliación» del final.
+La Lección 5 dibujó primero un grafo compuesto; este grafo es una **variante** de aquel, con tres diferencias: la Lección 5 partía por dificultad en «simple / complejo», aquí partimos por tema en `billing` / `bug` / `other`; el fan-out de la Lección 5 era «un ticket complejo despachado a tres trabajadores y después fusionado», aquí es seccionamiento—«seis tickets, a cada uno se le asigna un manejador»; la arista de retorno de la Lección 5 volvía a un nodo `[borrador]` aparte, aquí vuelve al trabajador original. El porqué de todos estos cambios está recogido en la sección «Tabla de conciliación» del final.
 
 ```javascript
 async function main() {
@@ -174,11 +174,11 @@ function metered(client) {
 
 Este cambio tiene un costo y hay que declararlo: la válvula 2 del curso 7 (presupuesto de tokens) se apoyaba originalmente en el acumulador del cuerpo del bucle; ese acumulador ya no está en el bucle, así que la válvula 2 tampoco hizo la mudanza. En este grafo, la cola de respuestas del stub de cada nodo tiene largo fijo y agotarla lanza directamente, así que no se puede desbocar; pero cuando cambies los stubs por un cliente real, vuelve a poner la válvula 2—o haces que `metered` lance al pasarse del presupuesto, o mueves el conteo de vuelta al cuerpo del bucle y restauras la forma original del curso 7. La válvula 3 (detección de giro en falso) y la válvula 4 (aprobación humana) tampoco se mudaron; la razón está en la sección «Tabla de conciliación» más adelante.
 
-La mitad de las herramientas también está copiada: la respuesta de un turno contiene varios bloques `tool_use`, se devuelven esa misma cantidad de bloques `tool_result`, y si una herramienta lanza se envuelve en `is_error: true` y se le pasa de vuelta al modelo, en vez de tumbar el proceso entero.
+La parte de las herramientas también está copiada: la respuesta de un turno contiene varios bloques `tool_use`, se devuelven esa misma cantidad de bloques `tool_result`, y si una herramienta lanza se envuelve en `is_error: true` y se le pasa de vuelta al modelo, en vez de tumbar el proceso entero.
 
 ## Nodo uno: enrutamiento—una llamada barata, y después ajustar la salida
 
-El enrutamiento clasifica una entrada y la dirige hacia tareas de seguimiento especializadas[^S1]. Es la llamada al modelo más barata del grafo: una petición clasifica los seis, sin herramientas, sin escribir respuestas.
+El enrutamiento clasifica una entrada y la dirige hacia tareas de seguimiento especializadas[^S1]. Es la llamada al modelo más barata del grafo: una solicitud clasifica los seis, sin herramientas, sin escribir respuestas.
 
 ```javascript
 async function routeNode(tickets) {
@@ -270,7 +270,7 @@ La versión del trabajador de bug cambia el contenido a consultar la base de pro
 
 `merge` es código puro, cero llamadas al modelo. Hace dos cosas: escribir cada borrador en `out/`, y después recolectar un manifiesto liviano para aguas abajo—`{id, category, handler, file, oneLine}`, una ruta de archivo más un resumen de una línea, no seis respuestas completas. (Al mismo tiempo también crea un registro para cada ticket en `run-state.json`, con los campos que se ven en la sección 9 del código completo.)
 
-Esto trae a un script de un solo proceso el consejo de ingeniería de los sistemas multiagente: hacer que los agentes especializados guarden sus salidas en sistemas externos y le pasen de vuelta al coordinador solo referencias livianas[^S2]. En aquella retrospectiva, este consejo resolvía el inflado de contexto de «todo se retransmite vía el agente líder»; aquí resuelve la versión a pequeña escala de lo mismo—el nodo de revisión necesita «qué archivo hay que revisar», no los seis textos completos apilados en una variable que se pasa de mano en mano.
+Esto trae a un script de un solo proceso el consejo de ingeniería de los sistemas multiagente: hacer que los agentes especializados guarden sus salidas en sistemas externos y le pasen de vuelta al coordinador solo referencias livianas[^S2]. En aquella retrospectiva, este consejo resolvía el inflado de contexto de «todo se retransmite vía el agente líder»; aquí resuelve la versión a pequeña escala de lo mismo—el nodo de revisión necesita «qué archivo debería revisarse», no los seis textos completos apilados en una variable que se pasa de mano en mano.
 
 Por eso la primera acción del nodo de revisión es releer el contenido desde el archivo:
 
@@ -419,7 +419,7 @@ Los `gate_rounds` de los dos tickets son 1, así que la cantidad de rondas por s
 
 El último nodo también es código puro: imprimir `state.nodes` y el desglose por ticket como dos tablas, contar los `needs_human`, determinar el código de salida. Todos pasaron es 0, uno requiere persona es 1.
 
-La traza se parte en dos archivos, cada uno con su propósito. `run.jsonl` es el registro estructurado del curso 11 (Observabilidad y depuración: ver cada paso que da tu agente), un evento JSON por línea, cada uno llevando `ts` y `run_id`, grepeable después del hecho—esta ejecución totalizó 39 líneas, y los extractos de las secciones anteriores están todos grepeados de ahí tal cual.
+La traza se parte en dos archivos, cada uno con su propósito. `run.jsonl` es el log estructurado del curso 11 (Observabilidad y depuración: ver cada paso que da tu agente), un evento JSON por línea, cada uno llevando `ts` y `run_id`, grepeable después del hecho—esta ejecución totalizó 39 líneas, y los extractos de las secciones anteriores están todos grepeados de ahí tal cual.
 
 `run-state.json` registra la traza de ejecución (distinta del «estado del grafo = esas pocas variables del script»), escrita al estilo del curso 9 (Gestión de estado y persistencia: hacer que las tareas largas sobrevivan a las interrupciones): primero se escribe `.tmp` y después un `rename` de intercambio atómico, así que si te matan en cualquier momento, en disco está o el estado completo anterior o el estado completo nuevo, nunca medio JSON:
 
@@ -708,7 +708,7 @@ function makeStubClient(queue) {
           throw new Error("Cliente stub: create debe traer model y max_tokens");
         }
         if (i >= queue.length) {
-          throw new Error(`Cola del stub agotada: la petición ${i + 1} no tiene respuesta preparada`);
+          throw new Error(`Cola del stub agotada: la solicitud ${i + 1} no tiene respuesta preparada`);
         }
         await new Promise((r) => setTimeout(r, STUB_LATENCY_MS));
         return queue[i++];
@@ -1190,7 +1190,7 @@ El stub además agrega un retardo fijo de 60 ms que reemplaza el viaje de red re
 
 La escritura de los dos guiones tiene su artesanía: no hacer que la segunda versión repita textualmente la primera (así hasta una persona vería que es un bucle muerto), sino hacerla «corregida, pero no arreglada». Este es el modo de fallo más común en los bucles reales, y es exactamente lo que atrapa el criterio de «dos rondas seguidas con informe idéntico».
 
-**Las constantes que dependen del idioma se localizaron junto con los textos.** Tres constantes de este script están atadas al idioma de las respuestas, así que se movieron con él: `FILLER_WORDS` guarda las muletillas en español que efectivamente aparecen en las respuestas de los stubs (si se dejaran las de otro idioma, la compuerta nunca dispararía y el bucle de revisión no giraría ni una vez); `oneLineOf` corta por el punto de la oración en español; y `pad` cuenta puntos de código en vez de aplicar la regla de ancho doble, porque los acentos y la ñ ocupan una sola columna y con la regla de ancho doble las tablas quedarían desalineadas. La lógica de control no cambió en ninguno de los tres casos—cambió el dato dependiente del idioma que esa lógica consume.
+**Las constantes que dependen del idioma se localizaron junto con los textos.** Tres constantes de este script están atadas al idioma de las respuestas, así que se movieron con él: `FILLER_WORDS` guarda las muletillas en español que efectivamente aparecen en las respuestas de los stubs (si se dejaran las de otro idioma, la compuerta nunca dispararía y el bucle de revisión no giraría ni una vez); `oneLineOf` corta por el punto de la oración en español y recorta a 60 caracteres, el ancho que necesita el español para que el resumen siga diciendo algo; y `pad` cuenta puntos de código en vez de aplicar la regla de ancho doble, porque los acentos y la ñ ocupan una sola columna y con la regla de ancho doble las tablas quedarían desalineadas. La lógica de control del grafo no cambió en ninguno de los tres casos—lo que se movió es lo que depende del idioma: las cadenas que busca la compuerta, el carácter por el que se corta la oración y la regla de ancho de columna.
 
 **Parada temprana controlada.** `STOP_AFTER=merge` detiene el proceso después del fan-out y antes de la revisión, con código de salida 2. Es la versión simplificada del `CRASH_AFTER` del curso 9: hacer que «en qué paso se interrumpe» sea un parámetro especificable con precisión, en vez de depender de la suerte para dar con él. El `run-state.json` en estado `drafted` de más arriba salió de esa ejecución.
 
@@ -1222,7 +1222,7 @@ Varios límites, declarados explícitamente:
 
 **El fan-out es síncrono y va a doler a escala.** El pool de `fanoutNode` debe esperar a que la tanda entera se complete antes de entrar a `merge`. Este es precisamente el cuello de botella que aquel sistema real en producción reconoció: la ejecución síncrona simplifica la coordinación, pero crea cuellos de botella en el flujo de información—un subagente que se demora una eternidad y el sistema entero atascado esperando[^S2]. Seis tickets, a lo sumo dos llamadas cada uno, y este cuello de botella no duele nada; seiscientos tickets, diez llamadas cada uno, y se vuelve «el más lento determina el tiempo de reloj de la tanda entera». Si conviene cambiar a asíncrono hay que calcular el costo: lo asíncrono deja a los agentes trabajar de forma concurrente y lanzar nuevos bajo demanda, pero agrega dificultad en la coordinación de resultados, la consistencia de estado y la propagación de errores entre los subagentes[^S2]—esos tres no existen en la versión síncrona, porque el orden lo determina el código.
 
-**Las dos reglas del bucle de revisión son superficiales y frágiles.** `includes("espera un poco")` va a marcar mal frases como «no hace falta que esperes ni un poco, ya está resuelto». Este es el viejo problema del que advertía el curso 10: los validadores deterministas demasiado estrictos juzgan lo correcto como incorrecto. Para producción real, estas dos reglas necesitan calibrarse contra una tanda pequeña de respuestas reales, o degradarse a «marcar para que el juez lo revise de nuevo» en vez de mandarlo de vuelta a reescribir directamente.
+**Las dos reglas del bucle de revisión son superficiales y frágiles.** `includes("espera un poco")` va a marcar mal frases como «el sistema espera un poco antes de reintentar el cobro, así que el cargo aparece mañana». Este es el viejo problema del que advertía el curso 10: los validadores deterministas demasiado estrictos juzgan lo correcto como incorrecto. Para producción real, estas dos reglas necesitan calibrarse con una tanda pequeña de respuestas reales, o degradarse a «marcar para que el juez lo revise de nuevo» en vez de mandarlo de vuelta a reescribir directamente.
 
 **Cambiar a la API real es cambiar solo el stub, la estructura no se mueve.** Cambia `makeStubClient(queue)` por `new Anthropic()`, borra la tabla `SCRIPTS` entera, y el resto no cambia ni una línea—`runAgent` siempre estuvo escrito con la forma `stop_reason` / `tool_use` / `tool_result` de la API real, y `model` y `max_tokens` siempre se llevaron. Tras el cambio van a cambiar tres cosas: el resultado de la clasificación va a fluctuar (los mismos tickets, dos ejecuciones podrían caer en categorías distintas), las rondas de compuerta van a fluctuar, y el conteo de tokens va a fluctuar; una ejecución va a costar dinero y tiempo; y las tres válvulas del curso 7 que no se movieron hay que instalarlas de vuelta.
 

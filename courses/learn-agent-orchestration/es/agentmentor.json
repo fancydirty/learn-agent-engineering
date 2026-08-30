@@ -32,7 +32,7 @@
       "La lección 5 añade el bucle de revisión y compone los patrones; la lección 6 sube el arnés del curso 7 al script determinista completo"
     ]
   },
-  "learnerBrief": "El lector objetivo ha terminado los primeros once cursos, escribe el bucle del arnés y lee JavaScript. Sabe hacer correr bien un bucle, pero todavía no sabe poner enrutamiento, fan-out, fusión y revisión alrededor de varios bucles con el plan sostenido en código. El curso lo lleva a situar sistemas en el espectro de determinismo, a implementar como código los cinco patrones probados en producción, a mirar de frente el libro de cuentas real (la mejora del 90.2% frente a los 15× de tokens, la concurrencia acotada, la disciplina del prompt de delegación) y a subir su propio arnés a un script de orquestación determinista con un rastro de auditoría paso a paso.",
+  "learnerBrief": "El lector objetivo ha terminado los primeros once cursos, escribe el bucle del arnés y lee JavaScript. Sabe ejecutar bien un bucle, pero todavía no sabe poner enrutamiento, fan-out, fusión y revisión alrededor de varios bucles con el plan sostenido en código. El curso lo lleva a situar sistemas en el espectro de determinismo, a implementar como código los cinco patrones probados en producción, a mirar de frente el libro de cuentas real (la mejora del 90,2 % frente a los 15× de tokens, la concurrencia acotada, la disciplina del prompt de delegación) y a subir su propio arnés a un script de orquestación determinista con un rastro de auditoría paso a paso.",
   "scope": "Se cubre: flujo de trabajo frente a agente y quién tiene el plan, el encadenamiento con compuertas, el enrutamiento, la paralelización (seccionamiento y votación) con fan-out acotado y una fusión que pasa referencias en vez de cargas útiles, orquestador-trabajadores con prompts de delegación de cuatro elementos, el bucle evaluator-optimizer, la composición de patrones bajo la metáfora del «grafo» propia de este curso, y un script de orquestación determinista y práctico sobre el arnés del curso 7. No se cubre: frameworks de orquestación de terceros (LangGraph y compañía no aparecen), los principios de colaboración multiagente (curso 6) ni los conceptos y el dibujo de flujos de trabajo (curso 2). Profundidad: de un solo bucle a un script de orquestación que se puede leer, ejecutar y volver a ejecutar.",
   "status": {
     "stage": "generated",
@@ -44,12 +44,12 @@
     "diagramUse": "Los diagramas se mantienen exactamente donde los usa la variante en inglés, y sobre todo el diagrama de composición de la lección 5, cuya topología —incluidos el nodo de compuerta y la clasificación entendida como una llamada al modelo— venía validada por la revisión; las etiquetas se reescribieron en español y la topología quedó intacta. No se añadió ni se quitó ningún diagrama.",
     "weakestPoints": [
       "El «grafo» es de forma explícita una metáfora de ingeniería propia de este curso, no vocabulario oficial: el texto lo dice allí donde se apoya en el término, y la revisión tiene que mantener esa honestidad intacta",
-      "Las cifras del 90.2% y de 15× son los números que reportó un sistema en producción bajo su propia evaluación, y se presentan como tales y no como constantes",
+      "Las cifras del 90,2 % y de 15× son los números que reportó un sistema en producción bajo su propia evaluación, y se presentan como tales y no como constantes",
       "El proyecto final construye a propósito una VARIANTE del grafo de la lección 5, con todas las diferencias declaradas en una tabla de reconciliación en lugar de unificadas en el código: quien pase la tabla por encima puede no darse cuenta de que los nombres difieren por declaración y no por descuido",
       "Al ser una traducción al español de una variante en inglés verificada, la deriva idiomática es el riesgo residual: las citas de las fuentes se conservaron verbatim en inglés y el código ejecutable mantiene la lógica idéntica, pero la prosa se vertió a un español natural en lugar de traducirse palabra por palabra, así que la revisión debe comprobar la equivalencia de significado con las lecciones en inglés"
     ],
     "followUpChecks": [
-      "Ejecutar course-guard sobre el directorio es y actualizar status.guardStatus con el resultado real (ahora está en pending)",
+      "Verificar que cada término del glosario aparece verbatim en las lecciones en es (comprobación de anclaje de las tarjetas)",
       "Pasada de renderizado en learn.agentmentor.dev /es/agent-orchestration/... tras el despliegue: las 6 lecciones más el README, con las tarjetas interactivas hidratadas",
       "Verificar que cada ancla [^Sn] de las lecciones en es tiene su bloque ## Sn correspondiente en el sources.md en es",
       "Confirmar que los ids de los seis bloques de comprobación y las posiciones de respuesta correcta son idénticos byte a byte a la variante en inglés (b/c/a/b/c/a en orden de lección)",
@@ -65,9 +65,9 @@
       "load": 5,
       "readable": 5
     },
-    "terminalTask": "La persona que aprende puede subir un arnés de un solo bucle a un script de orquestación determinista —enrutar, hacer fan-out a tres trabajadores bajo un pool impuesto por el código, fusionar por referencias, hacer correr un bucle de revisión que devuelve el mejor borrador y reportar con un rastro de auditoría— y reconciliarlo línea a línea con lo que prometieron las lecciones y los cursos anteriores.",
+    "terminalTask": "La persona que aprende puede subir un arnés de un solo bucle a un script de orquestación determinista —enrutar, hacer fan-out a tres trabajadores bajo un pool impuesto por el código, fusionar por referencias, ejecutar un bucle de revisión que devuelve el mejor borrador y reportar con un rastro de auditoría— y reconciliarlo línea a línea con lo que prometieron las lecciones y los cursos anteriores.",
     "interactionCheck": "Seis bloques agentmentor-check, uno por lección (una ventana más grande en la L1, la cadena frente a un solo prompt en la L2, el fan-out sin tope en la L3, la delegación vaga en la L4, el grafo es nuestro en la L5 y el LLM como pegamento en la L6), conservados desde la variante en inglés con ids, modos, número de opciones y posiciones de respuesta correcta idénticos; label, prompt, whyHere, el texto de las opciones y el feedback son traducciones al español ajustadas al malentendido propio de cada lección. Los ejercicios mantienen la estructura de niveles de la variante en inglés, con rubric, answer e hints en cada nivel.",
-    "learnerFitCheck": "El curso presupone los once cursos previos: el bucle del arnés, los prompts de delegación, las evaluaciones y la observabilidad. El eje del determinismo, las puertas, el fan-out acotado, la descomposición dinámica y el bucle de revisión se enseñan desde cero en orden de dependencia; la persona ensambla el script completo por primera vez en la lección 6, después de todos los prerrequisitos. El primer ejercicio de la lección 1 solo pide decidir qué disparador aplica a una tarea propia que se quedó grande.",
+    "learnerFitCheck": "El curso presupone los once cursos previos: el bucle del arnés, los prompts de delegación, las evaluaciones y la observabilidad. El eje del determinismo, las compuertas, el fan-out acotado, la descomposición dinámica y el bucle de revisión se enseñan desde cero en orden de dependencia; la persona ensambla el script completo por primera vez en la lección 6, después de todos los prerrequisitos. El primer ejercicio de la lección 1 solo pide decidir qué disparador aplica a una tarea propia que se quedó grande.",
     "decision": "ship",
     "blockers": [],
     "promotionNotes": [
@@ -79,7 +79,6 @@
   },
   "nextSteps": [
     "Ejecutar course-guard sobre la variante en es y corregir lo que señale",
-    "Actualizar status.guardStatus una vez que el guard se haya ejecutado de verdad",
     "Desplegar learn.agentmentor.dev y comprobar que las páginas /es se renderizan con las tarjetas interactivas hidratadas",
     "Producir las variantes de idioma restantes usando esta misma variante en inglés como base de traducción",
     "Animar a quienes aprenden a orquestar una tarea real de su propia lista pendiente como proyecto de consolidación tras el curso"

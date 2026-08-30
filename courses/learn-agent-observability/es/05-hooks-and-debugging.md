@@ -40,11 +40,11 @@ SessionStart                       ← empieza la sesión (arranca todo runAgent
 SessionEnd                         ← termina la sesión
 ```
 
-Elegir mal la cadencia te da números difíciles de explicar: si quieres contar «cuántas llamadas a herramientas usó una tarea» pero te enganchas a la compuerta por turno, solo vas a obtener cero. Antes de elegir un evento, pregunta: ¿cuántas veces por sesión ocurre lo que estoy contando?
+Elegir mal la cadencia te da números difíciles de explicar: si quieres contar «cuántas llamadas a herramientas usó una tarea» pero te enganchas a la puerta por turno, solo vas a obtener cero. Antes de elegir un evento, pregunta: ¿cuántas veces por sesión ocurre lo que estoy contando?
 
 Un detalle que vale la pena señalar: `SessionStart` se dispara cuando abres una sesión nueva **y también cuando reanudas una existente**[^S5]. El curso 9 cubrió `--resume`: desde la perspectiva del bucle eso no es «empezar de cero», pero igual toca la campana de `SessionStart`. Si escribes «inicializar un log nuevo cuando arranca la sesión», la primera vez que uses resume vas a sobrescribir el tramo anterior.
 
-## Detalles de las compuertas útiles para la observabilidad
+## Detalles de las puertas útiles para la observabilidad
 
 **`PreToolUse` se ejecuta después de que Claude crea los parámetros de la herramienta y antes de procesar la llamada**[^S5]. Este hueco importa: los parámetros están finalizados (puedes ver exactamente qué pretende usar el modelo) pero la herramienta todavía no se ejecutó. La lección 2 cubrió un caso real: el equipo descubrió que Claude añadía innecesariamente `2025` al parámetro query de la herramienta de búsqueda, sesgando los resultados[^S3]. La evidencia de este tipo de bug vive en los parámetros que `PreToolUse` puede ver.
 
@@ -104,7 +104,7 @@ Este es el log JSON Lines de la lección 3, salvo que quien escribe el log cambi
 
 **Primera: los subprocesos de hook no heredan las variables de exportador OTEL_\*.** Hay un conjunto de variables que no se hereda: Claude Code elimina las variables de exportador `OTEL_*` de cada subproceso que lanza, incluidos los hooks[^S5].
 
-Esta frase mata directamente una idea muy natural: «el arnés ya tiene configurados el endpoint, el protocolo y las cabeceras de autenticación. Importo un SDK de OTel en mi hook y las variables de entorno funcionan sin más». No van a funcionar. Cuando el proceso del manejador arranca, esas variables ya fueron removidas. Los datos o no se exportan o van a dar al endpoint por defecto y se desvanecen. No esperes que nadie grite para avisarte: la lección 4 cubrió que la exportación de la propia CLI falla en silencio[^S6], y por defecto el exportador que armes tú en el hook no va a ser más ruidoso; cuando no llega ningún dato al backend, ambos lados están callados.
+Esta frase mata directamente una idea muy natural: «el arnés ya tiene configurados el endpoint, el protocolo y las cabeceras de autenticación. Importo un SDK de OTel en mi hook y las variables de entorno funcionan sin más». No van a funcionar. Cuando el proceso del manejador arranca, esas variables ya fueron eliminadas. Los datos o no se exportan o van a dar al endpoint por defecto y se desvanecen. No esperes que nadie grite para avisarte: la lección 4 cubrió que la exportación de la propia CLI falla en silencio[^S6], y por defecto el exportador que armes tú en el hook no va a ser más ruidoso; cuando no llega ningún dato al backend, ambos lados están callados.
 
 Tienes dos caminos hacia adelante: o el hook lleva su propia configuración de exportación completa (escribe explícitamente el endpoint y la autenticación en el script, no dependas de la herencia), o directamente no emitas telemetría desde el hook y deja que escriba un log estructurado que alinearás con la telemetría en el backend usando IDs. El segundo camino tiene soporte oficial: el UUID que identifica el prompt de usuario que se está procesando en el payload del hook coincide con el atributo `prompt.id` de los eventos de OpenTelemetry, así que puedes correlacionar la salida del hook con la telemetría de un solo prompt[^S5]. Cada lado escribe lo suyo y al final unes por el mismo prompt id: el mismo truco del «hilvanar en un árbol usando IDs de correlación» de la lección 4, solo que esta vez entre dos fuentes de datos.
 
@@ -118,7 +118,7 @@ Un recordatorio atado a tu máquina: los hooks de comando ejecutan comandos de s
 {
   "id": "obs-zh-05-hook-otel-shortcut",
   "label": "Reutilizar la configuración OTel del arnés dentro de un hook",
-  "prompt": "Un colega te muestra su enfoque: en el manejador del hook PostToolUse, importa directamente el SDK de OTel y emite un span por cada llamada a herramienta. Su razonamiento es «el arnés ya configuró el endpoint OTLP y las cabeceras de autenticación como variables de entorno, el hook es un subproceso que él lanza, así que el entorno se hereda naturalmente; no hace falta configuración extra». ¿Cómo le va a salir este enfoque?",
+  "prompt": "Un colega te muestra su enfoque: en el manejador del hook PostToolUse, importa directamente el SDK de OTel y emite un span por cada llamada a herramienta. Su razonamiento es «el arnés ya configuró el endpoint OTLP y las cabeceras de autenticación como variables de entorno, el hook es un subproceso que lanza el arnés, así que el entorno se hereda naturalmente; no hace falta configuración extra». ¿Cómo le va a salir este enfoque?",
   "whyHere": "Acá se conectan los hilos de «los hooks son puntos de inserción» y «los pipelines de telemetría te mienten»: un enfoque que suena a prueba de balas queda explícitamente negado por la documentación de primera mano, y el fallo es silencioso.",
   "mode": "single",
   "choices": [
@@ -138,7 +138,7 @@ Un recordatorio atado a tu máquina: los hooks de comando ejecutan comandos de s
       "id": "c",
       "text": "Va a funcionar, el único problema es el momento: PostToolUse se dispara después de que termina la ejecución de la herramienta, así que la hora de inicio del span solo se puede calcular hacia atrás, y la duración queda imprecisa.",
       "correct": false,
-      "feedback": "La semántica de la duración sí importa: ese campo de milisegundos de ejecución del payload excluye el tiempo de espera de permiso y PreToolUse. Pero esa no es la causa de muerte de este enfoque. Su causa de muerte es que las variables del exportador son removidas, así que los datos nunca salen."
+      "feedback": "La semántica de la duración sí importa: ese campo de milisegundos de ejecución del payload excluye el tiempo de espera de permiso y PreToolUse. Pero esa no es la causa de muerte de este enfoque. Su causa de muerte es que las variables del exportador se eliminan, así que los datos nunca salen."
     }
   ]
 }
@@ -177,11 +177,11 @@ La importancia de este paso no es técnica, es psicológica. «El agente se romp
 
 Lee desde el principio hacia adelante y encuentra **el primer paso donde el comportamiento empieza a desviarse de lo esperado**. ¿Por qué insistir en «el primero»? Porque que falle un paso puede hacer que los agentes exploren trayectorias completamente distintas, con resultados impredecibles[^S1]. Los absurdos que ves al final (referenciar archivos inexistentes, dar error una y otra vez, tomar el camino largo) son en su mayoría ruido río abajo. Arreglas el evento #8 y probablemente solo estás limpiando lo que ensució el evento #4.
 
-Juzgar la «desviación» tiene algunas formas útiles[^S3]: llamó a una herramienta que no debía llamar, llamó a la herramienta correcta con parámetros equivocados, llamó a la herramienta correcta demasiadas pocas veces, o procesó mal la respuesta de la herramienta. La última es la más difícil de detectar porque la herramienta devolvió éxito, todo está verde en los logs; lo que está mal es la interpretación que hizo el agente de ese resultado exitoso.
+Juzgar la «desviación» tiene algunas formas útiles[^S3]: llamó a una herramienta que no debía llamar, llamó a la herramienta correcta con parámetros equivocados, llamó a la herramienta correcta demasiado pocas veces, o procesó mal la respuesta de la herramienta. La última es la más difícil de detectar porque la herramienta devolvió éxito, todo está verde en los logs; lo que está mal es la interpretación que hizo el agente de ese resultado exitoso.
 
 ### Paso tres: reproducir y observar
 
-El enfoque oficial: para entender los efectos de los prompts, **construyeron simulaciones usando los prompts y las herramientas exactas del sistema, y después miraron a los agentes trabajar paso a paso**; esto reveló de inmediato modos de fallo como agentes que seguían cuando ya tenían resultados suficientes, que usaban consultas de búsqueda demasiado verbosas o que seleccionaban herramientas incorrectas[^S1].
+El enfoque oficial: para entender los efectos de los prompts, **construyeron simulaciones usando exactamente los prompts y las herramientas del sistema, y después miraron a los agentes trabajar paso a paso**; esto reveló de inmediato modos de fallo como agentes que seguían cuando ya tenían resultados suficientes, que usaban consultas de búsqueda demasiado verbosas o que seleccionaban herramientas incorrectas[^S1].
 
 Vale la pena pensar en ese «reveló de inmediato». Estos mismos bugs son invisibles en las métricas agregadas (la tasa de éxito es bastante alta), requieren lectura línea por línea para notarse en los logs a posteriori, pero cuando lo miras ejecutarse paso a paso, el ojo humano detecta «ya tiene suficiente y sigue buscando» en segundos. Dos cosas hay que controlar durante la reproducción: la entrada debe ser idéntica (prompts y definiciones de herramientas sin cambios) y la observación debe ser paso a paso.
 
@@ -205,7 +205,7 @@ Puede que hayas visto en otros lados un conjunto de técnicas para hacer reprodu
 
 Estas prácticas sí existen en ingeniería. Los laboratorios prácticos de los cursos 8 a 10 usan ese mismo enfoque de cliente stub: guardas el `tool_result` de una ejecución real, devuelves los mismos datos siempre después, y el lado de la herramienta se vuelve determinista. Sirve para verificar «¿la línea de código que cambié rompió la lógica de parseo?».
 
-Pero hay dos cosas que decir. Primero, **estas técnicas no tienen respaldo de fuentes de primera mano**. Di citas para cada paso del flujo de cinco pasos de arriba. Para este párrafo no doy ninguna, porque genuinamente no las hay. Si ves a alguien afirmar «la recomendación oficial es temperatura 0 para reproducir problemas de agentes», pídele el enlace.
+Pero hay dos cosas que decir. Primero, **estas técnicas no tienen respaldo de fuentes de primera mano**. Puse citas para cada paso del flujo de cinco pasos de arriba. Para este párrafo no doy ninguna, porque genuinamente no las hay. Si ves a alguien afirmar «la recomendación oficial es temperatura 0 para reproducir problemas de agentes», pídele el enlace.
 
 Segundo, fijan menos de lo que parece. Poner stubs a los retornos de herramientas fija el entorno; el lado del modelo sigue siendo no determinista[^S1]. Así que convierte «dos variables moviéndose» en «una variable moviéndose»: eso es valioso, pero no es el tipo de reproducción de «la misma entrada debe dar la misma salida». No lo trates como una garantía, trátalo como reducción de ruido.
 
@@ -277,7 +277,7 @@ Tienes tres necesidades de observabilidad. Para cada una, escribe: **qué evento
 **Necesidad 3**
 
 - Eventos `SessionStart` (momento del recordatorio) más `SessionEnd` (momento de registrar el estado pendiente), ambos en la cadencia «una vez por sesión». Los campos usan el identificador de sesión para emparejar «quién dejó qué».
-- Trampa: **`SessionStart` se dispara tanto al abrir una sesión nueva como al reanudar una existente.** Recuerda sin condiciones y a cada sesión fresca le van a decir «tienes tareas sin terminar»; la gente va a dejar de leer rápido.
+- Trampa: **`SessionStart` se dispara tanto al abrir una sesión nueva como al reanudar una existente.** Recuérdaselo sin condiciones y a cada sesión fresca le van a decir «tienes tareas sin terminar»; la gente va a dejar de leer rápido.
 - Método de distinción (versión robusta, no atada a ningún nombre de campo concreto): haz que `SessionEnd` juzgue si al terminar quedó trabajo sin completar y, si es así, escriba un archivo de instantánea nombrado según el identificador de sesión; `SessionStart` hace una sola cosa: revisar si existe la instantánea correspondiente, recordar solo si la encuentra y borrarla después de leerla. Las sesiones frescas no encuentran instantánea y naturalmente no se disparan. Esto además resuelve otro problema: la información necesaria para juzgar «sin terminar» está más completa al final de la sesión.
 - Trampa relacionada: un manejador escrito como «`SessionStart` inicializa un log fresco y vacío» va a borrar el tramo anterior la primera vez que se use resume.
 
@@ -291,7 +291,7 @@ Pista: las tres trampas están enterradas en tres detalles: la primera se relaci
 
 ### Nivel 2: Un expediente, recorrer los cinco pasos
 
-**Síntoma**: el usuario reporta «el informe de resumen que me dio referencia archivos que no existen en absoluto».
+**Síntoma**: el usuario reporta «el informe de resumen que me dio hace referencia a archivos que no existen en absoluto».
 
 Filtras por el prompt id de este prompt y obtienes este resumen de eventos (el prompt original era «lee el directorio reports/, resume las conclusiones de los tres informes semanales de este trimestre»):
 
@@ -360,7 +360,7 @@ Qué mirar: **la primera acción del modelo tras recibir `entries` vacío**. Fij
 
 El objeto machacado no es el agente entero, es el comportamiento de esta única herramienta en el límite de los resultados vacíos. Concretamente dos cosas:
 
-- **Forma de retorno**: `{"entries": []}` lleva demasiada poca información para el modelo. El mismo vacío puede devolverse de forma más explícita, por ejemplo distinguiendo «la ruta existe pero no tiene entradas» de «la ruta no existe», para que el modelo sepa cuál de las dos reportar.
+- **Forma de retorno**: `{"entries": []}` lleva demasiado poca información para el modelo. El mismo vacío puede devolverse de forma más explícita, por ejemplo distinguiendo «la ruta existe pero no tiene entradas» de «la ruta no existe», para que el modelo sepa cuál de las dos reportar.
 - **Descripción de la herramienta**: ¿explica qué significa un resultado vacío, qué hacer después de recibir un resultado vacío?
 
 El método es usar esta herramienta docenas de veces repetidamente, cubriendo distintas formas de ruta: inexistente, existe-pero-vacía, con-contenido, permisos-insuficientes; ejecutar muchas veces para cada tipo, observar cómo interpreta el modelo el valor de retorno cada vez, qué porcentaje inventa nombres de archivo. El sentido de las docenas de veces está justo acá: ejecuta tres o cinco veces y el bug de «a veces inventa» podría no aparecer ni una vez. Así fue como se usó el agente oficial de prueba de herramientas.

@@ -21,7 +21,7 @@ Así que empiezas a adivinar.
 
 Las tres conjeturas se ven idénticas desde el lado del usuario: el agente no puede encontrar información que está obviamente ahí.
 
-Esto no te pasa solo a ti. Cuando el equipo de Anthropic hizo una retrospectiva de su sistema multiagente de investigación, anotaron exactamente el mismo problema: los usuarios reportaban que los agentes «no encontraban información obvia», pero ellos no podían ver por qué. ¿Los agentes estaban usando malas consultas de búsqueda? ¿Eligiendo fuentes pobres? ¿Topándose con fallos de herramientas?[^S1] Las mismas tres preguntas, sin respuestas.
+Esto no te pasa solo a ti. Cuando el equipo de Anthropic hizo una retrospectiva de su sistema multiagente de investigación, anotaron exactamente el mismo problema: los usuarios reportaban que los agentes «no encontraban información obvia», pero ellos no podían ver por qué. ¿Los agentes estaban usando malas consultas de búsqueda? ¿Eligiendo fuentes de baja calidad? ¿Topándose con fallos de herramientas?[^S1] Las mismas tres preguntas, sin respuestas.
 
 ## La vía de evaluación solo responde «¿se rompió?»
 
@@ -61,7 +61,7 @@ Esta no es una frase de ninguna documentación oficial — es el encuadre de est
       "id": "c",
       "text": "No funciona. Incluso con prompts idénticos, dos ejecuciones pueden tomar caminos diferentes pero igual de válidos. Para reconstruir qué pasó necesitas los registros que esa ejecución específica dejó atrás.",
       "correct": true,
-      "feedback": "Correcto. Los puntos de interrupción asumen que «la segunda ejecución llegará a la misma línea». Los agentes no lo garantizan. Así que el centro de gravedad de la depuración se corre de «ejecútalo otra vez» a «qué dejó atrás la última ejecución» — y ese es el problema que resuelve la observabilidad."
+      "feedback": "Correcto. Los puntos de interrupción dan por sentado que «la segunda ejecución llegará a la misma línea». Los agentes no lo garantizan. Así que el centro de gravedad de la depuración se desplaza de «ejecútalo otra vez» a «qué dejó atrás la última ejecución» — y ese es el problema que resuelve la observabilidad."
     }
   ]
 }
@@ -71,7 +71,7 @@ Esta no es una frase de ninguna documentación oficial — es el encuadre de est
 
 Primero, definiciones. Un sistema **determinista** significa: dale la misma entrada y produce la misma salida cada vez. Un sistema **no determinista** es lo contrario — los agentes son sistemas de este tipo. En computación, los sistemas deterministas producen la misma salida cada vez ante entradas idénticas, mientras que los sistemas no deterministas —como los agentes— pueden generar respuestas variadas incluso con las mismas condiciones iniciales[^S3].
 
-Esto le quita el piso a la depuración tradicional. Los agentes toman decisiones dinámicas y son no deterministas entre ejecuciones, incluso con prompts idénticos. Eso hace más difícil depurarlos[^S1]. Las evaluaciones tradicionales suelen asumir que la IA sigue los mismos pasos cada vez: dada la entrada X, el sistema debería seguir el camino Y para producir la salida Z. Pero los sistemas multiagente no funcionan así. Incluso con puntos de partida idénticos, los agentes podrían tomar caminos válidos completamente diferentes para llegar a su meta[^S1].
+Esto le quita el piso a la depuración tradicional. Los agentes toman decisiones dinámicas y son no deterministas entre ejecuciones, incluso con prompts idénticos. Eso hace más difícil depurarlos[^S1]. Las evaluaciones tradicionales suelen suponer que la IA sigue los mismos pasos cada vez: dada la entrada X, el sistema debería seguir el camino Y para producir la salida Z. Pero los sistemas multiagente no funcionan así. Incluso con puntos de partida idénticos, los agentes podrían tomar caminos válidos completamente diferentes para llegar a su meta[^S1].
 
 Así se ve en la práctica:
 
@@ -90,7 +90,7 @@ Ninguno de los dos caminos está mal, y ambos estados finales pasarían. Pero si
 
 Los puntos de interrupción son igual de inútiles. Un punto de interrupción se para sobre una línea de código, con la condición previa de que «la segunda ejecución llegará a esta línea con el mismo contexto». Pero donde los agentes se equivocan a menudo no es en tu código — es en una decisión del modelo. Y aunque quisieras pausar, no sabrías en qué turno pausar: esta vez se rompe en el turno 3, la próxima vez quizá en el turno 11, o quizá no se rompa nada.
 
-Podrías pensar en bajar la temperatura de muestreo o en grabar y reproducir las respuestas de herramienta. Estas técnicas de ingeniería sí reducen algo del ruido, y este curso no te desalienta de usarlas. Pero cambian la ejecución que estás haciendo en tu laboratorio, no la que ya falló en producción — esa se fue, y lo único que dejó atrás son sus registros.
+Podrías pensar en bajar la temperatura de muestreo o en grabar y reproducir las respuestas de herramienta. Estas técnicas de ingeniería sí reducen algo del ruido, y este curso no te desaconseja usarlas. Pero cambian la ejecución que estás haciendo en tu laboratorio, no la que ya falló en producción — esa se fue, y lo único que dejó atrás son sus registros.
 
 El equipo de Anthropic tomó un camino distinto. Lo llaman «pensar como tus agentes»: construir una simulación usando exactamente los mismos prompts y herramientas del sistema, y después observar a los agentes trabajar paso a paso. Esto reveló de inmediato modos de fallo: agentes que seguían adelante cuando ya tenían resultados suficientes, que usaban consultas de búsqueda demasiado verbosas o que seleccionaban herramientas incorrectas[^S1].
 
@@ -183,7 +183,7 @@ En cuanto a saber si lo hiciste bien: la clave del éxito, como con cualquier fu
 
 No se requiere código. Abajo hay tres síntomas con los que te toparías en producción, cada uno con solo la información visible desde el lado del usuario:
 
-1. El informe de investigación del agente cita un archivo llamado `docs/pricing-2024.md`, pero ese archivo no existe en el repositorio.
+1. El informe de investigación del agente cita un archivo llamado `docs/pricing-2024.md`, pero ese archivo no existe en absoluto en el repositorio.
 2. La misma tarea de archivado tomó 12 turnos ayer y terminó. Hoy llegó al turno 47 antes de detenerse, con más o menos el mismo resultado.
 3. El usuario pregunta «ayúdame a revisar cuántas veces aparece este error en nuestro código», y el agente responde con una explicación larga de qué significa el error.
 
@@ -202,7 +202,7 @@ Para cada síntoma:
 
 **Síntoma 1: el informe cita un nombre de archivo inexistente**
 
-- Etapa de decisión del modelo: las herramientas de recuperación devolvieron archivos todos reales, pero al escribir el informe el modelo mezcló nombres de archivo o inventó uno siguiendo las convenciones de nombres. Evidencia — lista los parámetros de cada llamada a `read_file` / `read_doc` de esa ejecución y revisa si este nombre de archivo alguna vez apareció como parámetro. Si nunca apareció, se fabricó durante la generación.
+- Etapa de decisión del modelo: las herramientas de recuperación devolvieron archivos que eran todos reales, pero al escribir el informe el modelo mezcló nombres de archivo o inventó uno siguiendo las convenciones de nombres. Evidencia — lista los parámetros de cada llamada a `read_file` / `read_doc` de esa ejecución y revisa si este nombre de archivo alguna vez apareció como parámetro. Si nunca apareció, se fabricó durante la generación.
 - Etapa de entrada/salida de herramienta: la herramienta de recuperación sí devolvió este nombre porque el índice se construyó hace tres semanas y el archivo se renombró o borró después. Evidencia — mira el cuerpo de respuesta crudo del `search` de ese turno y ve si trae este nombre de archivo.
 - Etapa de flujo de control: al leer el archivo la herramienta lanzó «no existe», pero el arnés se tragó la excepción y solo puso una cadena vacía en `tool_result`, así que el modelo siguió con su suposición previa. Evidencia — mira si el contenido de `tool_result` de ese turno está vacío y si trae un marcador de error.
 - Por qué son indistinguibles: los tres caminos terminan con el mismo informe conteniendo el mismo nombre de archivo falso, y ningún campo los separa.
@@ -217,7 +217,7 @@ Para cada síntoma:
 **Síntoma 3: respondió la pregunta equivocada**
 
 - Etapa de decisión del modelo: el modelo interpretó «cuántas veces aparece» como «qué significa». Evidencia — revisa si llamó a la herramienta de recuperación en el turno 1, o si simplemente empezó a generar una respuesta.
-- Etapa de entrada/salida de herramienta: la herramienta de recuperación dio error o devolvió vacío, así que el modelo cayó de vuelta en responder desde su conocimiento paramétrico. Evidencia — el contenido de `tool_result` de ese turno y sus marcadores de error.
+- Etapa de entrada/salida de herramienta: la herramienta de recuperación dio error o devolvió vacío, así que el modelo recurrió a responder desde su conocimiento paramétrico. Evidencia — el contenido de `tool_result` de ese turno y sus marcadores de error.
 - Etapa de contexto: el historial previo a este turno se truncó o comprimió, así que el calificativo del usuario «en nuestro código» ya no estaba presente en los `messages` realmente enviados. Evidencia — mira los `messages` enviados en esa solicitud, no los que creías haber enviado.
 - Por qué son indistinguibles: en los tres casos el usuario recibe texto «fuera de tema pero que se lee fluido». Para distinguirlos necesitas ver tanto «qué entró» como «qué volvió».
 
@@ -227,7 +227,7 @@ Prepárate tres cajones: la decisión del modelo, la entrada y salida de la herr
 
 <!-- hint -->
 
-Al escribir la evidencia, oblígate a llegar al nivel de campo: no «revisa los logs», sino «revisa el contenido de `tool_result` de ese turno y si venía marcado como error». Si no puedes llegar al nivel de campo, significa que todavía no has descifrado qué dejar en los registros — que es exactamente lo que las Lecciones 2 y 3 te harán hacer con las manos.
+Al escribir la evidencia, oblígate a llegar al nivel de campo: no «revisa los logs», sino «revisa el contenido de `tool_result` de ese turno y si venía marcado como error». Si no puedes llegar al nivel de campo, significa que todavía no has descifrado qué dejar en los registros — que es exactamente lo que las Lecciones 2 y 3 te harán hacer en la práctica.
 
 ### Nivel 2: Desarmar paso a paso el flujo de depuración tradicional
 
@@ -247,7 +247,7 @@ Para cada paso, responde dos preguntas:
 
 <!-- rubric -->
 
-- Los cuatro pasos se tratan individualmente, cada uno con el por-qué-falla y la dirección de reemplazo escritos, incluyendo el fácilmente saltable Paso 4 «arreglar y verificar».
+- Los cuatro pasos se tratan individualmente, cada uno con el por-qué-falla y la dirección de reemplazo escritos, incluido el Paso 4 «arreglar y verificar», que es fácil de saltarse.
 - La razón del fallo está anclada en mecanismos específicos (no determinismo entre ejecuciones, un paso que falla y hace divergir toda la trayectoria, capas de abstracción o registros faltantes que esconden la evidencia), no en afirmaciones vagas como «porque los modelos son inciertos».
 - La dirección de reemplazo dice «qué evidencia obtener y cómo organizarla», no «instala el producto de observabilidad X». Dar la dirección sin desarrollar los detalles de implementación también cuenta como aprobado.
 
@@ -267,19 +267,19 @@ Dirección de reemplazo: Cambia «pausar en una línea» por «registrar una ent
 
 **Paso 3: Avanzar paso a paso**
 
-Razón del fallo: Avanzar paso a paso asume que los cambios de estado son locales y predecibles. Pero los agentes tienen estado y los errores se acumulan; que un paso falle puede hacer que toda la trayectoria diverja. El paso 5 que recorres a mano probablemente no sea la misma cosa que el paso 5 de la ejecución que falló.
+Razón del fallo: Avanzar paso a paso supone que los cambios de estado son locales y predecibles. Pero los agentes tienen estado y los errores se acumulan; que un paso falle puede hacer que toda la trayectoria diverja. El paso 5 que recorres a mano probablemente no sea la misma cosa que el paso 5 de la ejecución que falló.
 
 Dirección de reemplazo: No leas una ejecución como una secuencia lineal de comandos; léela como un árbol — todas las solicitudes al modelo y ejecuciones de herramienta disparadas por un prompt agrupadas juntas, con la actividad de subagentes anidada dentro del padre. Lo que buscas no es «qué línea estaba mal» sino **la primera divergencia**: a partir de qué paso esta ejecución se volvió distinta de la exitosa. Cómo construir el árbol es contenido de la Lección 4; el flujo para encontrar la divergencia está en la Lección 5.
 
 **Paso 4: Arreglar y verificar**
 
-Razón del fallo: Una ejecución en verde no significa que esté arreglado, porque la siguiente ejecución podría tomar un camino distinto. Y los cambios menores se propagan en cascada hasta convertirse en cambios grandes de comportamiento; un ajuste pequeño en el agente principal puede cambiar de forma impredecible a los subagentes. Mirar solo este caso ponerse verde hace fácil confundir «esta vez no cayó en esa rama» con «arreglado».
+Razón del fallo: Una ejecución en verde no significa que esté arreglado, porque la siguiente ejecución podría tomar un camino distinto. Y los cambios menores se propagan en cascada hasta convertirse en cambios grandes de comportamiento; un ajuste pequeño en el agente principal puede cambiar de forma impredecible a los subagentes. Si solo miras que este caso se ponga en verde, es fácil confundir «esta vez no cayó en esa rama» con «arreglado».
 
 Dirección de reemplazo: Después del cambio, vuelve al conjunto de evaluación y ejecuta en lote (el sistema del Curso 10 de esta serie), mirando al mismo tiempo si la distribución del comportamiento en los datos de observabilidad se movió — conteo de llamadas a herramientas, conteo de turnos, tasas de error. La evaluación responde «¿mejoraron las cosas en general?», la observación responde «¿la razón por la que mejoraron es la que yo creía?».
 
 <!-- hint -->
 
-En los cuatro pasos tradicionales, cada paso depende en secreto de una condición previa: reproducir depende de «la misma entrada debe recorrer el mismo camino», el punto de interrupción depende de «el problema está en alguna línea de código», avanzar paso a paso depende de «los cambios de estado son locales», verificar depende de «pasar una vez significa pasar». Escribe estas cuatro condiciones previas al pie de la letra primero, y después pregunta una por una si cada una sigue siendo válida para los agentes.
+En los cuatro pasos tradicionales, cada paso depende en secreto de una condición previa: reproducir depende de «la misma entrada debe recorrer el mismo camino», el punto de interrupción depende de «el problema está en alguna línea de código», avanzar paso a paso depende de «los cambios de estado son locales», verificar depende de «pasar una vez significa pasar». Escribe primero estas cuatro condiciones previas al pie de la letra, y después pregunta una por una si cada una sigue siendo válida para los agentes.
 
 <!-- hint -->
 

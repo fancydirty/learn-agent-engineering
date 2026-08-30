@@ -13,7 +13,7 @@ Le pides a un agente que escriba un plan de migración de base de datos. El prim
 
 Has repetido este proceso decenas de veces. Cada vez es lo mismo: la salida se queda corta, una persona aporta dos frases de retroalimentación, la salida mejora notablemente.
 
-El problema no es que el modelo escriba mal. El problema es que **tus dos frases de retroalimentación no son difíciles de producir**. «Los pasos de reversión deben incluir comandos concretos», «Cada paso necesita una clasificación de riesgo»—estas son cosas que una lista de verificación podría cubrir. Si tú lo puedes articular con claridad, el modelo probablemente también. Entonces, ¿por qué tienes que ser tú quien lo dice cada vez?
+El problema no es que el modelo escriba mal. El problema es que **tus dos frases de retroalimentación no son difíciles de producir**. «Los pasos de reversión deben incluir comandos concretos», «Cada paso necesita una clasificación de riesgo»—estas son cosas que una lista de verificación podría cubrir. Si tú lo puedes articular con claridad, el modelo probablemente también. Entonces, ¿por qué tienes que ser tú quien lo diga cada vez?
 
 Esta forma vale la pena escribirla como un bucle.
 
@@ -21,7 +21,7 @@ Esta forma vale la pena escribirla como un bucle.
 
 La fuente primaria lo define en una frase: una llamada a un LLM genera una respuesta mientras otra aporta evaluación y retroalimentación en un bucle[^S1].
 
-Los cuatro patrones de las primeras cuatro lecciones tienen cada uno su propia topología: el encadenamiento descompone una tarea en una secuencia de pasos, donde cada paso procesa la salida del anterior[^S1]; el enrutamiento clasifica y luego despacha hacia tareas de seguimiento especializadas[^S1]; la paralelización ejecuta cosas simultáneamente y agrega los resultados por programa[^S1]; orquestador-trabajadores hace que un LLM central descomponga dinámicamente las tareas, delegue en trabajadores y sintetice los resultados[^S1]. Todos comparten un rasgo: los datos fluyen hacia adelante. El bucle de revisión es el primer patrón **con una arista de retorno**—la salida vuelve en bucle al nodo de generación.
+Los cuatro patrones de las primeras cuatro lecciones tienen cada uno su propia topología: el encadenamiento descompone una tarea en una secuencia de pasos, donde cada paso procesa la salida del anterior[^S1]; el enrutamiento clasifica y luego despacha hacia tareas de seguimiento especializadas[^S1]; la paralelización ejecuta cosas simultáneamente y agrega los resultados programáticamente[^S1]; orquestador-trabajadores hace que un LLM central descomponga dinámicamente las tareas, delegue en trabajadores y sintetice los resultados[^S1]. Todos comparten un rasgo: los datos fluyen hacia adelante. El bucle de revisión es el primer patrón **con una arista de retorno**—la salida vuelve en bucle al nodo de generación.
 
 ¿Cómo se ve en un producto? La documentación de flujos de trabajo dinámicos de Claude Code da una descripción en lenguaje llano: ejecutar un verificador, corregir lo que falló, y repetir hasta que pase o deje de haber progreso[^S5]. Otra descripción cubre un uso distinto de la misma división del trabajo: hacer que agentes independientes revisen de forma adversarial los hallazgos de los demás antes de que se reporten[^S5]. Esa es una revisión cruzada única antes de reportar, sin arista de retorno y sin iteración—meterla dentro del bucle de revisión es una categorización de esta lección, no que el texto original describa la misma topología.
 
@@ -33,7 +33,7 @@ El curso 6 de esta serie, que enseña colaboración multiagente, llama a esta di
 
 Tres nombres, una forma. La diferencia está en desde qué ángulo lo miras: al hablar de roles de colaboración ves dos actores, al hablar de patrones de orquestación ves una arista de retorno, al hablar de capacidades de producto ves una técnica de calidad reutilizable.
 
-Hay una división del trabajo más que aclarar. El curso 10 de esta serie dedica un curso entero a enseñarte **cómo ser un buen juez**: cómo escribir rúbricas, cómo restringir el formato de salida del juez, por qué el juez necesita su propio contexto independiente, por qué el trabajador no debería ser también el juez. Ese curso enseña la calidad del juez en sí. Esta lección no repite esos temas. Esta lección enseña **cómo cablear al juez dentro del flujo de control**—en qué parte del bucle se sienta, cuándo se ejecuta, cuántas rondas se ejecuta, cuándo se detiene.
+Hay una división del trabajo más que aclarar. El curso 10 de esta serie dedica un curso entero a enseñarte **cómo ser un buen juez**: cómo escribir rúbricas, cómo restringir el formato de salida del juez, por qué el juez necesita su propio contexto independiente, por qué el trabajador no debería ser también el juez. Ese curso enseña la calidad del juez en sí. Esta lección no repite esos temas. Esta lección enseña **cómo cablear al juez dentro del flujo de control**—en qué parte del bucle se ubica, cuándo se ejecuta, cuántas rondas se ejecuta, cuándo se detiene.
 
 ## Cuándo vale la pena construir este bucle
 
@@ -43,9 +43,9 @@ Ya viste esta cita antes. El curso 10 de esta serie citó exactamente esta frase
 
 Desglosadas, estas dos señales protegen cada una contra modos de fallo distintos:
 
-**La primera señal protege contra «corregir no ayuda».** Algunas tareas no mejorarán en un segundo borrador por más clara que enuncies la retroalimentación—porque el problema son datos de entrada faltantes o una tarea definida de forma vaga, no la redacción de la salida. En este caso, construir un bucle solo significa que pagas dos veces para obtener dos versiones igual de inutilizables. El método de validación es tosco pero efectivo: **hazlo tú mismo a mano tres veces**. ¿Cuántas de esas tres fueron «claramente mejor después de la retroalimentación humana»? Si dos de tres fueron «la retroalimentación no ayudó», no construyas el bucle.
+**La primera señal protege contra «corregir no ayuda».** Algunas tareas no mejorarán en un segundo borrador por más claramente que enuncies la retroalimentación—porque el problema son datos de entrada faltantes o una tarea definida de forma vaga, no la redacción de la salida. En este caso, construir un bucle solo significa que pagas dos veces para obtener dos versiones igual de inutilizables. El método de validación es tosco pero efectivo: **hazlo tú mismo a mano tres veces**. ¿Cuántas de esas tres fueron «claramente mejor después de la retroalimentación humana»? Si dos de tres fueron «la retroalimentación no ayudó», no construyas el bucle.
 
-**La segunda señal protege contra «el juez no puede dar ese tipo de retroalimentación».** Aun si la retroalimentación humana funciona, todavía debes preguntar: ¿puede el modelo mismo aportar el mismo tipo de retroalimentación? Si tu retroalimentación depende de cosas que solo tú sabes (de qué se quejó este cliente el trimestre pasado, qué informó legal de palabra la semana pasada), el modelo no tiene esa información, así que la retroalimentación que dé será algo completamente distinto. En ese caso, o alimentas esa información dentro del prompt del juez—conviértela en criterios que el modelo pueda evaluar—o aceptas que este paso necesita a una persona.
+**La segunda señal protege contra «el juez no puede dar ese tipo de retroalimentación».** Aun si la retroalimentación humana funciona, todavía debes preguntar: ¿puede el modelo mismo aportar el mismo tipo de retroalimentación? Si tu retroalimentación depende de cosas que solo tú sabes (de qué se quejó este cliente el trimestre pasado, qué informó de palabra el área legal la semana pasada), el modelo no tiene esa información, así que la retroalimentación que dé será algo completamente distinto. En ese caso, o alimentas esa información dentro del prompt del juez—conviértela en criterios que el modelo pueda evaluar—o aceptas que este paso necesita a una persona.
 
 **Hay una precondición que entra en juego incluso antes que estas dos señales: los criterios de evaluación deben ser claros.** Cuando los criterios no son claros, el bucle produce de forma confiable un tipo específico de fallo—el juez da retroalimentación que apunta en direcciones distintas o incluso contradictorias en cada ronda, la salida rebota entre dos versiones, las rondas se agotan, y el borrador final es peor que el primero. Esto no es culpa del bucle. Es que los criterios todavía no se han definido.
 
@@ -55,9 +55,9 @@ La distinción definicional de la fuente primaria entre sistemas deterministas y
 
 Los jueces son no deterministas. Cada regla que «el código puede decidir de forma definitiva» y que le entregas a un juez significa que estás usando algo que podría dar resultados distintos cada vez para evaluar algo que debería dar el mismo resultado siempre—y además pagando por una llamada extra al modelo.
 
-El curso 10 de esta serie llama a esta disciplina puntuación por capas: usa código para lo que el código puede decidir, y entrégale al modelo solo lo que el código no puede. Esta lección la copia tal cual al ordenamiento de nodos del bucle. La cita de la Lección 2 sigue aplicando aquí—puedes añadir chequeos programáticos en cualquier paso intermedio para asegurar que el proceso sigue en curso[^S1]. Cada borrador del bucle es un paso intermedio.
+El curso 10 de esta serie llama a esta disciplina puntuación por capas: usa código para lo que el código puede decidir, y entrégale al modelo solo lo que el código no puede. Esta lección la copia tal cual al ordenamiento de nodos del bucle. La cita de la Lección 2 sigue aplicando aquí—puedes añadir comprobaciones programáticas en cualquier paso intermedio para asegurarte de que el proceso sigue en curso[^S1]. Cada borrador del bucle es un paso intermedio.
 
-Aplicado al ejemplo del plan de migración: «¿cada paso tiene su comando de reversión correspondiente?» se puede decidir de forma definitiva con expresiones regulares o parseo estructurado—eso es una compuerta. «¿Están escritos de forma creíble los comandos de reversión?» necesita un juez. Que falle el primero ni siquiera despierta al juez; apenas dile a quien escribe qué pasos faltan y sigue adelante.
+Aplicado al ejemplo del plan de migración: «¿cada paso tiene su comando de reversión correspondiente?» se puede decidir de forma definitiva con expresiones regulares o parseo estructurado—eso es una compuerta. «¿Están escritos de forma creíble los comandos de reversión?» necesita un juez. Que falle el primero ni siquiera despierta al juez; solo dile a quien escribe qué pasos faltan y sigue adelante.
 
 ## El esqueleto de código del bucle
 
@@ -108,7 +108,7 @@ Vale la pena señalar unos cuantos detalles por separado.
 
 **`runAgent` es un bucle de arnés completo.** Esto no ha cambiado desde la Lección 2: detrás de cada `await runAgent(...)` de este script está en ejecución el bucle impulsado por `stop_reason` del curso 7 de esta serie. Esto es apenas otra capa de flujo de control escrito en código envuelta alrededor del bucle.
 
-**Estos valores de `reason` son desenlaces distintos, no los colapses en un booleano (los sistemas reales a menudo necesitan subdividir más—por ejemplo, que la compuerta falle repetidamente merece su propio balde).** `passed` se puede entregar directamente; `max-rounds` significa que las rondas se agotaron sin pasar, y probablemente necesita traspaso a una persona; `no-progress` significa que el modelo se atascó, y quemar más dinero no lo va a mejorar. Estos tres desenlaces deberían ser tres líneas separadas en tus datos de observabilidad—el enfoque de registro que enseña el curso 11 de esta serie debería aterrizar aquí, sobre este campo `reason`.
+**Estos valores de `reason` son desenlaces distintos, no los colapses en un booleano (los sistemas reales a menudo necesitan subdividir más—por ejemplo, que la compuerta falle repetidamente merece su propia categoría).** `passed` se puede entregar directamente; `max-rounds` significa que las rondas se agotaron sin pasar, y probablemente necesita traspaso a una persona; `no-progress` significa que el modelo se atascó, y quemar más dinero no lo va a mejorar. Estos tres desenlaces deberían ser tres líneas separadas en tus datos de observabilidad—el enfoque de logs que enseña el curso 11 de esta serie debería aterrizar aquí, sobre este campo `reason`.
 
 **Que falle la compuerta también cuenta como ronda.** Antes del `continue`, `rounds` ya se incrementó. Esto es intencional: fallar la compuerta repetidamente significa que el prompt de quien escribe tiene un problema, y dejarlo reintentar indefinidamente solo quema dinero en el mismo hueco.
 
@@ -130,7 +130,7 @@ Dicho de otro modo, para «cómo componer», la fuente primaria da permiso, no u
 
 Copia esta frase a tu propia documentación de arquitectura. Las palabras «grafo», «nodo», «arista», «DAG», «máquina de estados» aparecen cero veces en todas las fuentes primarias que cita esta lección. El vocabulario de las fuentes primarias es flujos de trabajo, patrones, orquestador-trabajadores, fan-out—está hablando de un catálogo de patrones, no de estructura topológica.
 
-Aun así necesitamos usar la palabra «grafo», porque cuando cinco patrones se sientan juntos necesitas un lenguaje para hablar de ellos con claridad, y «grafo» es la opción de menor esfuerzo. Pero esta metáfora debe tener un punto de anclaje, o es apenas jerga inventada. El ancla es esta frase que sí existe de verdad en los materiales primarios: el script del flujo de trabajo mismo retiene el bucle, las bifurcaciones y los resultados intermedios, mientras que el contexto del modelo retiene solo la respuesta final[^S5].
+Aun así necesitamos usar la palabra «grafo», porque cuando cinco patrones conviven necesitas un lenguaje para hablar de ellos con claridad, y «grafo» es la opción de menor esfuerzo. Pero esta metáfora debe tener un punto de anclaje, o es apenas jerga inventada. El ancla es esta frase que sí existe de verdad en los materiales primarios: el script del flujo de trabajo mismo retiene el bucle, las bifurcaciones y los resultados intermedios, mientras que el contexto del modelo retiene solo la respuesta final[^S5].
 
 Esa frase ya nombra los tres elementos de un grafo: bucle (arista de retorno), bifurcación (punto de bifurcación), resultados intermedios (estado). Todo lo que hacemos es ponerle un nombre a cada uno.
 
@@ -140,7 +140,7 @@ En el sistema visual de esta lección:
 
 - **Nodo** = un bucle `runAgent`, o una pieza de código puro (compuerta, clasificación, agregación, agrupamiento en lotes). Etiquetar el tipo de cada nodo es la acción más valiosa al dibujar—te obliga a responder «¿este paso necesita de verdad al modelo?».
 - **Arista** = «quién alimenta a quién con su salida». Una arista no es una estructura de datos, apenas la siguiente línea de código que lee la variable de la línea anterior.
-- **Estado** = variables del script. El ancla primaria también tiene una frase aquí: los resultados intermedios se quedan en variables del script en vez de aterrizar en el contexto del modelo[^S5]. **No existe ningún concepto oficial de «un objeto de estado que se pasa entre nodos»**—esa es una expresión que tomamos prestada de otros dominios; esta lección no construye esa abstracción, apenas pasa las variables que necesites.
+- **Estado** = variables del script. El ancla primaria también tiene una frase aquí: los resultados intermedios se quedan en variables del script en vez de aterrizar en el contexto del modelo[^S5]. **No existe ningún concepto oficial de «un objeto de estado que se pasa entre nodos»**—esa es una expresión que tomamos prestada de otros dominios; esta lección no construye esa abstracción, simplemente pasa las variables que necesites.
 
 ```agentmentor-check
 {
@@ -214,6 +214,10 @@ Hilando enrutamiento, fan-out, fusión y bucle de revisión:
                                                                   │ sí
                                                                   v
                                                               entregar
+
+Tipos de nodo: [ ] = bucle runAgent    { } = código puro
+Arista = quién alimenta a quién con su salida. {compuerta} es chequeo determinista, va antes de [revisión]; que falle la compuerta o que [revisión] diga no patean ambos de vuelta a [borrador].
+[clasificar] se dibuja como bucle de modelo y no como {código puro} porque la frontera reembolso/técnico/queja es difusa—cuando las fronteras son claras, cámbialo por un clasificador tradicional (esto es puntuación por capas: usa código primero cuando el código puede decidir).
 ```
 
 La Lección 6 implementa **una variante de este grafo**: esa tanda de tickets resulta tener criterios de aceptación que se pueden escribir todos como reglas, así que la capa de [revisión] degrada a una {compuerta}, y el fan-out pasa de «un ítem complejo hacia tres trabajadores» a «una tanda de tickets, cada uno despachado a un manejador». Qué partes cambiaron y por qué—la apertura de la Lección 6 las enumera punto por punto. Mira primero la forma que hay aquí; el código espera hasta la lección siguiente.
@@ -238,11 +242,11 @@ Dichos los beneficios, ahora las restricciones.
 
 **El reintento y el tiempo límite a nivel de nodo son práctica de ingeniería, no diseño oficial.** Las fuentes primarias mencionan esto solo como una oración subordinada (salvaguardas deterministas como lógica de reintento y puntos de control periódicos[^S2]). Así que lo que sigue está escrito como práctica de ingeniería; no vas a encontrar su respaldo en ninguna documentación primaria: envuelve cada nodo `runAgent` en un tiempo límite, y tras agotarse o bien reintenta o bien marca ese nodo como fallido y continúa; la cantidad de reintentos depende de la naturaleza del nodo (los nodos de recuperación de solo lectura pueden reintentar varias veces, los nodos con efectos secundarios idealmente no se reintentan solos ni una vez); cuando un nodo falla, distingue «esta arista se puede saltar» de «el grafo entero debe detenerse», y no dejes que el fallo de un nodo opcional arrastre la ejecución completa. Esto es sentido común corriente de sistemas distribuidos, apenas aplicado a los agentes—no lo trates como algo nuevo.
 
-**La profundidad está acotada.** La referencia a nivel de producto está ahí mismo: por omisión, un subagente puede lanzar subagentes propios, hasta tres capas por debajo de la conversación principal[^S4]. Tres capas no es un umbral que inventó esta lección, pero el mensaje es claro—la profundidad de anidamiento en productos reales no es ilimitada, y alguien pensó en serio dónde parar. Tu grafo debería tener una respuesta parecida. Si el grafo que dibujaste tiene cinco capas de anidamiento, sospecha primero que la tarea está descompuesta demasiado fino; no te pongas a pensar en cómo soportar más profundidad.
+**La profundidad está acotada.** La referencia a nivel de producto está ahí mismo: por omisión, un subagente puede lanzar subagentes propios, hasta tres capas por debajo de la conversación principal[^S4]. Tres capas no es un umbral que inventó esta lección, pero el mensaje es claro—la profundidad de anidamiento en productos reales no es ilimitada, y alguien pensó en serio dónde parar. Tu grafo debería tener una respuesta parecida. Si el grafo que dibujaste tiene cinco capas de anidamiento, sospecha primero que la tarea está descompuesta con un grano demasiado fino; no te pongas a pensar en cómo admitir más profundidad.
 
 ## El grafo no es el objetivo, es una descripción de la forma de la tarea
 
-Hay un modo de fallo que vale especialmente la pena prevenir al final de este curso: **elegir primero una topología vistosa, y después buscar tareas que meterle adentro.**
+Hay un modo de fallo que vale especialmente la pena prevenir al final de este curso: **elegir primero una topología vistosa, y después buscar tareas para meterle adentro.**
 
 El orden debería invertirse. Dibuja primero la forma de dependencias propia de la tarea—qué pasos deben hacer fila (la salida del paso anterior es la entrada del siguiente), qué pasos no se afectan entre sí (da igual cuál se ejecute primero), qué paso necesita ver la entrada antes de saber en cuántas piezas partirse, qué paso necesita que alguien critique su salida antes de que sea confiable. Terminado ese dibujo, qué patrones usar queda básicamente decidido: los lugares donde se hace fila son cadenas, los lugares mutuamente independientes son abanicos, los lugares de ver-y-luego-decidir son orquestadores, los lugares que necesitan crítica son bucles.
 
@@ -258,7 +262,7 @@ El código de composición completo y ejecutable está en la Lección 6. Esta le
 
 ### Nivel 1: Dibujar dos grafos y diseñar condiciones de parada para los bucles
 
-Sin código. Usa el sistema visual de esta lección para dibujar un diagrama ASCII para cada una de las dos tareas de abajo (en cercas ```text), **etiquetando cada nodo como bucle `runAgent` o como código puro**.
+Sin código. Usa el sistema visual de esta lección para dibujar un diagrama ASCII para cada una de las dos tareas de abajo (en bloques ```text), **etiquetando cada nodo como bucle `runAgent` o como código puro**.
 
 **Tarea uno · Tickets de clientes**: Llega un ticket, primero se clasifica (reembolso / técnico / queja), se enruta por categoría hacia flujos de manejo distintos; después del manejo, se hace puntaje de riesgo, los de riesgo alto deben pasar por un bucle de revisión antes de enviarse, los de riesgo bajo se envían directamente.
 
@@ -268,7 +272,7 @@ Después de dibujar, diseña condiciones de parada para el bucle de cada grafo (
 
 <!-- rubric -->
 
-- Los dos grafos etiquetan cada nodo como `runAgent` o código puro, y clasifican, puntúan riesgo, agrupan en lotes, fusionan y compuertan como código puro (clasificar usando un LLM también vale si explicas por qué no un clasificador tradicional)
+- Los dos grafos etiquetan cada nodo como `runAgent` o código puro, y marcan como código puro clasificar, puntuar riesgo, agrupar en lotes, fusionar y la compuerta (clasificar usando un LLM también vale si explicas por qué no un clasificador tradicional)
 - El grafo de la tarea uno tiene un punto de bifurcación real (tres o más aristas mutuamente excluyentes), el grafo de la tarea dos muestra tanto la acción de fan-out como la de fusión
 - Los dos bucles dibujan la arista de retorno (falla → de vuelta al nodo de generación), no dibujada como línea recta
 - Cada bucle conserva el fusible de cantidad máxima de rondas y aclara cuál es principal y cuál secundario entre «pasa» y «no hay más progreso», con un razonamiento atado a la naturaleza de la tarea
@@ -319,7 +323,7 @@ Descarta «no hay más progreso». Razón: este bucle evalúa **cumplimiento**�
     v          v          v          v          v
 [evaluar]  [evaluar]  [evaluar]  [evaluar]  [evaluar]  runAgent × 5, por módulo dentro del lote
     │          │          │          │          │
-    └──────────┴──────────┬──────────┴──────────┘     código puro: recolectar resultados, registrar fallos, rellenar si hace falta
+    └──────────┴──────────┬──────────┴──────────┘     fusión — código puro: recolectar resultados, registrar fallos, rellenar si hace falta
                           │
                  [escribir resumen] <─────────────┐   runAgent
                           │                       │
@@ -332,7 +336,7 @@ Descarta «no hay más progreso». Razón: este bucle evalúa **cumplimiento**�
 
 **Condiciones de parada de la tarea dos: pasa + no hay más progreso.**
 
-Esta compuerta revisa **huecos enumerables** (qué módulos carecen de conclusión, qué referencias no se pueden parsear), así que «hay progreso» se puede definir de forma muy rígida: ¿bajó la cantidad de ítems que fallan de esta ronda comparada con la anterior? Si bajó, continúa; si no bajó, para—que pase una ronda con la cantidad de huecos sin cambios suele significar que la causa raíz está aguas arriba (los resultados de evaluación de esos módulos venían vacíos desde el principio), y reescribir el nodo del informe cien veces no los va a materializar. Detenerse en este punto y entregarle a una persona la lista de huecos más el registro de fallos de aguas arriba es más útil que seguir quemando dinero.
+Esta compuerta revisa **huecos enumerables** (qué módulos carecen de conclusión, qué referencias no se pueden parsear), así que «hay progreso» se puede definir de forma muy rígida: ¿bajó la cantidad de ítems que fallan de esta ronda comparada con la anterior? Si bajó, continúa; si no bajó, para—que pase una ronda con la cantidad de huecos sin cambios suele significar que la causa raíz está aguas arriba (los resultados de evaluación de esos módulos venían vacíos desde el principio), y reescribir el nodo del informe cien veces no los va a materializar. Detenerse en este punto y entregarle a una persona la lista de huecos más el log de fallos de aguas arriba es más útil que seguir quemando dinero.
 
 Descarta «máximo de rondas» como mecanismo principal (puedes superponer un valor grande como fusible de respaldo, digamos 10, pero normalmente no debería dispararse). Razón: «no hay más progreso» decide antes y con más precisión para esta tarea; el techo de rondas solo entra a jugar cuando aquel falla.
 
@@ -367,9 +371,9 @@ Sin código. Usa las dos señales de decisión de esta lección—(1) cuando una
 
 **Escenario uno: Vale la pena construirlo.**
 
-La señal uno se cumple, y la evidencia está hecha—la retroalimentación de la persona de producto lleva a versiones notablemente mejores, y este ciclo de «la retroalimentación humana funciona» ya se ejecutó muchas veces a mano, no hace falta volver a validarlo. La señal dos también se cumple: sus tres puntos (posición del argumento de venta, fuerza de la llamada a la acción, largo) se pueden escribir todos en una rúbrica, y el modelo puede perfectamente dar el mismo tipo de retroalimentación. Los criterios de evaluación también son razonablemente claros.
+La señal uno se cumple, y la evidencia ya está ahí—la retroalimentación de la persona de producto lleva a versiones notablemente mejores, y este ciclo de «la retroalimentación humana funciona» ya se ejecutó muchas veces a mano, no hace falta volver a validarlo. La señal dos también se cumple: sus tres puntos (posición del argumento de venta, fuerza de la llamada a la acción, largo) se pueden escribir todos en una rúbrica, y el modelo puede perfectamente dar el mismo tipo de retroalimentación. Los criterios de evaluación también son razonablemente claros.
 
-Recomendación: solidifica sus tres puntos en la rúbrica del juez, pero **no le entregues al juez «excede el límite de dos líneas en móvil»**—usa el conteo de caracteres para decidirlo de forma definitiva, ponlo en una compuerta. Las condiciones de parada usan «pasa + máximo de rondas», con las rondas fijadas en 2–3; los textos tienden a volverse más planos con demasiadas correcciones, así que el máximo de rondas aquí no es apenas un fusible, es en sí mismo un control de calidad. Si las rondas se agotan sin pasar, entrega la versión final más la retroalimentación del juez a la persona de producto para el corte final.
+Recomendación: solidifica sus tres puntos en la rúbrica del juez, pero **no le entregues al juez «excede el límite de dos líneas en móvil»**—usa el conteo de caracteres para decidirlo de forma definitiva, ponlo en una compuerta. Las condiciones de parada usan «pasa + máximo de rondas», con las rondas fijadas en 2–3; los textos tienden a volverse más planos con demasiadas correcciones, así que el máximo de rondas aquí no es solo un fusible, es en sí mismo un control de calidad. Si las rondas se agotan sin pasar, entrega la versión final más la retroalimentación del juez a la persona de producto para el corte final.
 
 **Escenario dos: No debería construirse este agente auditor.**
 
@@ -381,7 +385,7 @@ Recomendación: escribe un verificador, usa código para recalcular cada total y
 
 La señal uno ya no se cumple: la retroalimentación de las tres personas se contradice entre sí, lo que significa que no hay una retroalimentación de consenso del tipo «mejora cuando una persona la aporta»—implementas la retroalimentación de A y B queda más insatisfecho. La señal dos todavía menos, el modelo no puede dar una retroalimentación sobre la que ni siquiera las personas han llegado a consenso. La precondición de «criterios de evaluación claros» directamente no se sostiene aquí.
 
-Si lo construyes a la fuerza, obtendrás de forma confiable ese fallo predecible: la retroalimentación del juez apunta en direcciones distintas cada ronda, los nombres rebotan entre verbosos y escuetos, las rondas se agotan, el borrador final no es mejor que el primero, y las tres personas siguen teniendo cada una sus quejas—apenas automatizaste una discusión sin conclusión mientras pagabas por cada ronda.
+Si lo construyes a la fuerza, obtendrás de forma confiable ese fallo predecible: la retroalimentación del juez apunta en direcciones distintas cada ronda, los nombres rebotan entre verbosos y escuetos, las rondas se agotan, el borrador final no es mejor que el primero, y las tres personas siguen teniendo cada una sus quejas—solo automatizaste una discusión sin conclusión mientras pagabas por cada ronda.
 
 Recomendación: que las tres personas primero se sienten y escriban las reglas de nombres en una lista de verificación decidible (usar abreviaturas o no, verbo primero o sustantivo primero, máximo cuántas palabras, la documentación en qué persona). Una vez que exista la lista, la señal uno y la señal dos se van a sostener las dos, y ahí sí vuelve a construir el bucle, y para entonces la mayoría de las condiciones ya se podrán decidir de forma definitiva en una compuerta. **La verdadera lección de este escenario: los bucles de revisión no producen criterios, solo ejecutan criterios.**
 

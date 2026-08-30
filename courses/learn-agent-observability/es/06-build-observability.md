@@ -2,7 +2,7 @@
 
 > Objetivos de aprendizaje:
 > - Cablear una capa de observabilidad funcional en tu propio arnés: logs estructurados JSON Lines, árbol de trazas reconstruido desde los logs, resumen de métricas en una línea
-> - Recorrer una tarea con error real desde síntoma → filtrado → primer punto de divergencia → arreglo → comparación de la nueva ejecución (lado del modelo fijado con stubs para permitir reejecuciones completas; con APIs reales se vuelve a recuperar-desde-el-error), y explicar qué absurdos son causas frente a cuáles son contagio
+> - Recorrer una tarea con error real desde síntoma → filtrado → primer punto de divergencia → arreglo → comparación de la reejecución (lado del modelo fijado con stubs para permitir reejecuciones completas; con APIs reales se vuelve a recuperar-desde-el-error), y explicar qué absurdos son causas frente a cuáles son contagio
 > - Trazar los límites de esta capa de observabilidad: cubre un proceso, una ejecución; el contenido viene desactivado por defecto; los umbrales no se inventan
 >
 > Requisitos: Completar las lecciones 1–5, tener a mano y funcionando el bucle del arnés del curso 7 (Fundamentos del arnés de agentes: bucles y control) | Anterior: [Lección 5 <<](./05-hooks-and-debugging.md)
@@ -42,7 +42,7 @@ El trabajo de esta lección es convertir «no se puede decir» en «se puede ver
 
 ## El kit de observabilidad de tres piezas: qué registrar
 
-Cuando ejecutas agentes en producción necesitas visibilidad sobre cuatro cosas: qué herramientas llamaron, cuánto tardó cada solicitud al modelo, cuántos tokens se gastaron, dónde ocurrieron los fallos[^S6]. El enfoque oficial es exportar esto como trazas, métricas y eventos de log de OpenTelemetry; esta lección no incorpora ninguna librería de OTel, armamos a mano una versión mínima de tres piezas:
+Cuando ejecutas agentes en producción necesitas visibilidad sobre cuatro cosas: qué herramientas llamaron, cuánto tardó cada solicitud al modelo, cuántos tokens se gastaron, dónde ocurrieron los fallos[^S6]. El enfoque oficial es exportar esto como trazas, métricas y eventos de log de OpenTelemetry; esta lección no incorpora ninguna biblioteca de OTel, armamos a mano una versión mínima de tres piezas:
 
 1. **Logs estructurados**: una entrada JSON Lines por solicitud al modelo, una por llamada a herramienta, escritas en `run.log.jsonl`.
 2. **Árbol de trazas**: terminada la ejecución, reconstruir las relaciones padre-hijo desde ese JSONL e imprimirlo indentado.
@@ -76,7 +76,7 @@ El diseño de campos de abajo es el enfoque de ingeniería de esta lección, no 
 | `span_id` / `parent_id` | Id de este registro / del registro padre | Reconstruye el árbol, se apoya en él para reconocer «quién está bajo quién» |
 | `kind` | `model_call` / `tool_call` / `agent_run` | Primer campo que usas al filtrar |
 | `name` | `turn-2` / `read_file` | Lo primero que mira el ojo humano |
-| `duration_ms` | Tiempo gastado en este paso | Encontrar cuellos de botella de rendimiento, también sirve para ver «¿está trabado?» |
+| `duration_ms` | Tiempo gastado en este paso | Encontrar cuellos de botella de rendimiento, también sirve para ver «¿está estancado?» |
 | `tokens` | in / out de la llamada al modelo | El uso de tokens por sí solo es la variable explicativa individual más fuerte en los datos oficiales[^S1] |
 | `tool_input` / `tool_result` | Forma + longitud + fragmento truncado | Juzgar «¿son correctos los parámetros?», «¿el retorno está vacío?» |
 | `error` | Fragmento del mensaje de error, `null` si no hay | Primer campo por el que filtrar al localizar |
@@ -530,7 +530,7 @@ async function main() {
       `errors=${m.errors} tokens_in=${m.tokens_in} tokens_out=${m.tokens_out} ` +
       `tokens_total=${m.tokens_in + m.tokens_out} wall=${m.wall_ms}ms`
   );
-  console.log(`Log: runs/${version}/run.log.jsonl　Artefacto: runs/${version}/summary.md`);
+  console.log(`Log: runs/${version}/run.log.jsonl  Artefacto: runs/${version}/summary.md`);
   process.exit(exitCode);
 }
 
@@ -565,7 +565,7 @@ agent_run  sales-summary  1ms  trace_id=tr-cdb9b3ff
 
 === Resumen de métricas (v-good) ===
 rounds=4 model_calls=4 tool_calls=5 errors=0 tokens_in=5303 tokens_out=730 tokens_total=6033 wall=1ms
-Log: runs/v-good/run.log.jsonl　Artefacto: runs/v-good/summary.md
+Log: runs/v-good/run.log.jsonl  Artefacto: runs/v-good/summary.md
 ```
 
 Tu `trace_id`, tu `span_id`, tu `ts` y los milisegundos van a diferir de los míos: los ids se generan al azar en cada ejecución y los milisegundos son duración genuina. Fuera de eso, cada línea debería coincidir palabra por palabra.
@@ -638,7 +638,7 @@ agent_run  sales-summary  1ms  trace_id=tr-ebad58f6
 
 === Resumen de métricas (v-bug) ===
 rounds=4 model_calls=4 tool_calls=5 errors=1 tokens_in=5350 tokens_out=750 tokens_total=6100 wall=1ms
-Log: runs/v-bug/run.log.jsonl　Artefacto: runs/v-bug/summary.md
+Log: runs/v-bug/run.log.jsonl  Artefacto: runs/v-bug/summary.md
 ```
 
 El artefacto está efectivamente mal:
@@ -726,7 +726,7 @@ for (const line of fs.readFileSync("all-runs.log.jsonl", "utf8").split("\n").fil
 tool_call read_file {"path":"data/2026-q1-sourth.csv"} -> ENOENT: no such file or directory, open 'data/2026-q1-sourth…
 ```
 
-Este es el punto de divergencia. Fíjate en **cómo se reconoció**: no adivinando, sino con tres campos: `trace_id` acota el alcance a esta única ejecución, que `error` sea distinto de null lo separa de los otros diez registros, y `tool_input.head` te dice dónde se torcieron los parámetros. Tres campos, ninguno prescindible.
+Este es el punto de divergencia. Fíjate en **cómo se reconoció**: no adivinando, sino con tres campos: `trace_id` acota el alcance a esta única ejecución, que `error` sea distinto de null lo distingue entre los diez registros, y `tool_input.head` te dice dónde se torcieron los parámetros. Tres campos, ninguno prescindible.
 
 ### Paso tres: reconocer los absurdos de río abajo como contagio, no arreglarlos por separado
 
@@ -800,7 +800,7 @@ agent_run  sales-summary  1ms  trace_id=tr-0c316ca3
 
 === Resumen de métricas (v-fixed) ===
 rounds=5 model_calls=5 tool_calls=6 errors=1 tokens_in=7521 tokens_out=838 tokens_total=8359 wall=1ms
-Log: runs/v-fixed/run.log.jsonl　Artefacto: runs/v-fixed/summary.md
+Log: runs/v-fixed/run.log.jsonl  Artefacto: runs/v-fixed/summary.md
 ```
 
 La forma del árbol cambió: ese ERROR de `turn-2` sigue en su lugar original, pero debajo le creció un `turn-3` con una relectura usando el nombre de archivo correcto. El artefacto es correcto:
@@ -1089,7 +1089,7 @@ Y ese `±0` de la línea `wall_ms` tampoco te lo tomes en serio: el cliente stub
 
 <!-- hint -->
 
-`load()` solo necesita un `readFileSync` más un `split("\n")`, y después todas las estadísticas son `filter` y `reduce` sobre el mismo arreglo. Acumular `byTool` con un `Map` es lo más fácil; al buscar la unión de los nombres de herramienta de ambos lados acuérdate de usar `new Set([...a.keys(), ...b.keys()])`, si no las herramientas exclusivas de un lado se van a filtrar.
+`load()` solo necesita un `readFileSync` más un `split("\n")`, y después todas las estadísticas son `filter` y `reduce` sobre el mismo arreglo. Acumular `byTool` con un `Map` es lo más fácil; al buscar la unión de los nombres de herramienta de ambos lados acuérdate de usar `new Set([...a.keys(), ...b.keys()])`, si no las herramientas exclusivas de un lado se te van a escapar.
 
 <!-- hint -->
 

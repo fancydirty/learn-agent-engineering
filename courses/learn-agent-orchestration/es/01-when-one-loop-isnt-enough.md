@@ -49,7 +49,7 @@ Una capa más arriba. Anthropic clasifica todas estas variaciones como **sistema
 
 Un término fundamental más, que usarás una y otra vez en las próximas lecciones. **En computación, los sistemas deterministas producen la misma salida cada vez ante entradas idénticas, mientras que los sistemas no deterministas —como los agentes— pueden generar respuestas variadas incluso con las mismas condiciones iniciales**[^S3].
 
-Aplica esa definición a tu `while` y verás que son dos cosas cosidas entre sí: cómo enviar la solicitud, cómo ejecutar las llamadas a herramientas, cuándo parar —eso es determinista, lo escribiste tú en código—; mientras que «qué hay que buscar con grep a continuación, si este informe ya está terminado» —eso es no determinista, lo decide el modelo en el momento—. La cirugía que estás a punto de practicar consiste en mover el poder de decisión entre estas dos mitades.
+Aplica esa definición a tu `while` y verás que son dos cosas cosidas entre sí: cómo enviar la solicitud, cómo ejecutar las llamadas a herramientas, cuándo parar —eso es determinista, lo escribiste tú en código—; mientras que «qué buscar con grep a continuación, si este informe ya está terminado» —eso es no determinista, lo decide el modelo en el momento—. La cirugía que estás a punto de practicar consiste en mover el poder de decisión entre estas dos mitades.
 
 ## El eje de «quién tiene el plan»
 
@@ -77,7 +77,7 @@ Para los dos extremos de este eje, la guía oficial le dedica a cada uno una ora
 
 **Disparador dos: cuando la tarea es más grande de lo que un solo agente puede retener en contexto, o cuando el mismo paso necesita ejecutarse a lo largo de muchos elementos**[^S5]. Estas dos oraciones juntas describen exactamente el escenario de los 40 módulos del principio. Fíjate en la segunda: la cantidad de elementos es una razón por sí misma, sin importar si cada elemento es difícil.
 
-**Disparador tres: cuando una tarea lateral inundaría tu conversación principal**. La descripción del escenario en la documentación de subagentes: cuando una tarea lateral inundaría tu conversación principal con resultados de búsqueda, registros o contenidos de archivos que no volverás a consultar, despacha un subagente, que hace ese trabajo en su propio contexto y devuelve solo el resumen[^S4], **preservando el contexto al mantener la exploración y la implementación fuera de tu conversación principal**[^S4]. Nota que este disparador receta «despachar un subagente»: el plan sigue quedándose en manos del modelo; eso y «mover el plan al código» son dos cosas distintas. Las columnas B y C del ejercicio de Nivel 2 desglosarán esta distinción.
+**Disparador tres: cuando una tarea lateral inundaría tu conversación principal**. La descripción del escenario en la documentación de subagentes: cuando una tarea lateral inundaría tu conversación principal con resultados de búsqueda, logs o contenidos de archivos que no volverás a consultar, despacha un subagente, que hace ese trabajo en su propio contexto y devuelve solo el resumen[^S4], **preservando el contexto al mantener la exploración y la implementación fuera de tu conversación principal**[^S4]. Fíjate en que este disparador prescribe «despachar un subagente»: el plan sigue quedándose en manos del modelo; eso y «mover el plan al código» son dos cosas distintas. Las columnas B y C del ejercicio de Nivel 2 desglosarán esta distinción.
 
 Mira este código para hacerte una idea de qué forma queda después del cambio:
 
@@ -98,8 +98,8 @@ El bucle sigue siendo aquel bucle: dentro de `runHarnessLoop` está el `while` q
 ```agentmentor-check
 {
   "id": "orc-zh-01-bigger-window",
-  "label": "Ventana insuficiente, o forma equivocada",
-  "prompt": "Tu evaluación de migración de 40 módulos se vino abajo: después del módulo 30 empieza a contaminar unas conclusiones con otras y a saltarse elementos de la revisión. Un colega le echa un vistazo y dice: 'Nada más cambia a un modelo con más contexto. No hace falta cambiar la arquitectura.' ¿Cuál de estos juicios se sostiene mejor?",
+  "label": "¿Ventana insuficiente o forma equivocada?",
+  "prompt": "Tu evaluación de migración de 40 módulos se vino abajo: después del módulo 30 empieza a contaminar unas conclusiones con otras y a saltarse elementos de la revisión. Un colega le echa un vistazo y dice: «Solo cambia a un modelo con más contexto. No hace falta cambiar la arquitectura». ¿Cuál de estos juicios se sostiene mejor?",
   "whyHere": "Acabas de leer los disparadores para subir de nivel. El error de juicio más común no es ignorar que la orquestación existe, sino tratar un problema de forma como un problema de capacidad; esta pregunta separa los dos.",
   "mode": "single",
   "choices": [
@@ -111,7 +111,7 @@ El bucle sigue siendo aquel bucle: dentro de `runHarnessLoop` está el `while` q
     },
     {
       "id": "b",
-      "text": "Cambiar de ventana solo pospone el punto de colapso: la raíz es el mismo paso ejecutándose a lo largo de muchos elementos, con el residuo previo consumiendo la atención posterior. Habría que mover el plan al código.",
+      "text": "Cambiar de ventana solo pospone el punto de colapso: la raíz es el mismo paso ejecutándose a lo largo de muchos elementos, con el residuo previo consumiendo la atención posterior; mueve el plan al código.",
       "correct": true,
       "feedback": "Correcto. Esta tarea activa dos disparadores a la vez: «más grande de lo que un solo agente puede retener en contexto» y «el mismo paso necesita ejecutarse a lo largo de muchos elementos»; ambas son señales del nivel de la forma. Después de mover el plan al código, cada uno de los 40 módulos ejecuta un bucle de arnés limpio, la calidad de la evaluación del módulo 30 ya no queda determinada por el residuo de los primeros 29, y los resultados intermedios se quedan en variables del script."
     },
@@ -147,7 +147,7 @@ Antes de empezar a aprender los cinco patrones, abre el libro de cuentas.
 
 ¿Qué tan caro? Anthropic aporta un conjunto de observaciones de sus propios datos: **los agentes suelen usar unas 4× más tokens que las interacciones de chat, y los sistemas multiagente usan unas 15× más tokens que los chats**[^S2]. Así que su conclusión es: **para ser económicamente viables, los sistemas multiagente requieren tareas donde el valor de la tarea sea lo bastante alto como para pagar por el rendimiento añadido**[^S2].
 
-Fíjate en el contexto de este número: viene de sus propios datos, no de un banco de pruebas universal, y no dice «todos los enfoques de orquestación cuestan 15× más». Pero la dirección es clara: cada paso que das hacia «más agentes, más paralelismo», la cuenta salta un escalón. Un límite rápido: este multiplicador mide sistemas multiagente respecto al chat, no la etiqueta de precio de «mover el plan al código» en sí; los materiales primarios nunca dieron una cifra de costo independiente para los scripts de orquestación. Esto es también por lo que a esos 40 módulos les vale la pena subir de nivel y a los 12 renombres no: no porque uno sea «complejo» y el otro «simple», sino porque una evaluación de migración que ahorra dos semanas de retrabajo puede permitirse este costo.
+Fíjate en el contexto de este número: viene de sus propios datos, no de un banco de pruebas universal, y no dice «todos los enfoques de orquestación cuestan 15× más». Pero la dirección es clara: cada paso que das hacia «más agentes, más paralelismo», la cuenta salta un escalón. Un límite rápido: este multiplicador mide sistemas multiagente respecto al chat, no la etiqueta de precio de «mover el plan al código» en sí; los materiales primarios nunca dieron una cifra de costo independiente para los scripts de orquestación. Esta es también la razón por la que a esos 40 módulos les vale la pena subir de nivel y a los 12 renombres no: no porque uno sea «complejo» y el otro «simple», sino porque una evaluación de migración que ahorra dos semanas de retrabajo puede permitirse este costo.
 
 ## Las cinco lecciones que siguen
 
@@ -216,7 +216,7 @@ Dos capas de razonamiento. Primera capa, cantidad de pasos impredecible: solo de
 
 <!-- hint -->
 
-Antes de correr a juzgar, separa primero los **pasos** de cada tarea de sus **elementos**: ¿los pasos de esta tarea son fijos o se determinan sobre la marcha? ¿Cuántos elementos hay que repetir? «Pasos fijos + muchos elementos» y «pasos no fijos» te llevarán a categorías completamente distintas.
+Antes de apresurarte a juzgar, separa primero los **pasos** de cada tarea de sus **elementos**: ¿los pasos de esta tarea son fijos o se determinan sobre la marcha? ¿Cuántos elementos hay que repetir? «Pasos fijos + muchos elementos» y «pasos no fijos» te llevarán a categorías completamente distintas.
 
 <!-- hint -->
 
@@ -248,7 +248,7 @@ Completa esta tabla (los signos de interrogación son lo que tienes que llenar).
 
 | | A: Un bucle grande | B: El modelo como orquestador | C: El plan escrito en un script |
 | --- | --- | --- | --- |
-| Quién tiene el plan | El modelo, de forma **implícita**. El plan nunca se escribió, está escondido en el historial de la conversación, tienes que escarbar en los registros para adivinar el camino que pretendía seguir: esta es exactamente la definición de «los LLM dirigen dinámicamente sus propios procesos y mantienen el control sobre cómo cumplen las tareas»[^S1] | El modelo, un poco más **explícito**. Dice en cada turno «ahora despacho a alguien para que mire el módulo de pedidos», pero sigue decidiendo turno a turno[^S5] | **El script**. El script mismo retiene el bucle, las bifurcaciones y los resultados intermedios, de modo que el contexto de Claude retiene solo la respuesta final[^S5] |
+| Quién tiene el plan | El modelo, de forma **implícita**. El plan nunca se escribió, está escondido en el historial de la conversación, tienes que escarbar en los logs para adivinar el camino que pretendía seguir: esta es exactamente la definición de «los LLM dirigen dinámicamente sus propios procesos y mantienen el control sobre cómo cumplen las tareas»[^S1] | El modelo, un poco más **explícito**. Dice en cada turno «ahora despacho a alguien para que mire el módulo de pedidos», pero sigue decidiendo turno a turno[^S5] | **El script**. El script mismo retiene el bucle, las bifurcaciones y los resultados intermedios, de modo que el contexto de Claude retiene solo la respuesta final[^S5] |
 | Dónde aterrizan los resultados intermedios | Todo en el mismo arreglo `messages`: la salida de grep de 40 módulos, los archivos leídos, los rastros de giros equivocados y vueltas atrás, compartiendo una línea de tiempo | De vuelta a la conversación principal. Cuando los subagentes terminan, sus resultados vuelven a tu conversación principal; ejecutar muchos subagentes que devuelven cada uno resultados detallados puede consumir contexto considerable[^S4] | Se queda en variables del script, no aterriza en el contexto del modelo[^S5] |
 | Cuando se cae en el módulo 25, qué se pierde | Casi todo. El progreso es ese mismo historial de conversación; cuando la sesión desaparece, el progreso desaparece; incluso si los primeros 24 cayeron a disco, no tienes un punto de entrada limpio de «continuar desde el módulo 25» | La misma pérdida del estado entero de orquestación de la conversación principal. Peor todavía, tras reiniciar el modelo tiene que volver a pensar el plan: su plan anterior nunca se escribió en ninguna parte | **Condicionado a que persistas cada resultado sobre la marcha** (escribir las variables del script a archivos es una línea de código): pierdes solo el módulo 25 en sí, y el punto de entrada para continuar desde el 26 ya está listo; si lo guardaste solo en memoria, el proceso muere y pierdes tanto como en A. Correspondiente a: el runtime del flujo de trabajo rastrea el resultado de cada agente a medida que avanza la ejecución, lo que hace que una ejecución sea reanudable **dentro de la misma sesión**[^S5]; la recuperación entre procesos sigue exigiendo que persistas tú |
 
@@ -266,7 +266,7 @@ Llena primero la fila del medio. Piensa con claridad en qué contenedor **existe
 
 <!-- hint -->
 
-A B se le juzga fácilmente como «más o menos igual que C» porque también aísla el trabajo sucio de cada módulo en el contexto independiente del subagente. Piensa en esto: después de que el subagente termina, ¿adónde **va** ese resultado? Para el módulo 25, ¿cuántos resúmenes hay sentados en la conversación principal?
+Es fácil juzgar B como «más o menos igual que C» porque también aísla el trabajo sucio de cada módulo en el contexto independiente del subagente. Piensa en esto: después de que el subagente termina, ¿adónde **va** ese resultado? Para el módulo 25, ¿cuántos resúmenes hay sentados en la conversación principal?
 
 <!-- /exercises -->
 

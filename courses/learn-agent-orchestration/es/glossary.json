@@ -126,7 +126,7 @@
     "distractor_rationale": "Es la pregunta central que este curso usa para juzgar la arquitectura, no terminología oficial."
   },
   {
-    "term": "el script del flujo de trabajo retiene él mismo el bucle, las bifurcaciones y los resultados intermedios",
+    "term": "el script del flujo de trabajo mismo retiene el bucle, las bifurcaciones y los resultados intermedios",
     "def": "La oración de los materiales primarios que describe el flujo de trabajo, y también el único ancla primaria de la metáfora del «grafo» de este curso: el plan está en el script, y el contexto del modelo retiene solo la respuesta final.",
     "source": "[^S5]",
     "pitfall": "Usar esta oración para probar que «los grafos le ganan a los bucles»: solo dice que el plan está en el script, no compara quién es más fuerte.",
@@ -162,7 +162,7 @@
   },
   {
     "term": "componer patrones en un grafo",
-    "def": "La metáfora de ingeniería propia de este curso, no terminología oficial: un sistema de visualización usado para aclarar relaciones al combinar los cinco patrones. Su único ancla primaria es «el script del flujo de trabajo retiene él mismo el bucle, las bifurcaciones y los resultados intermedios».",
+    "def": "La metáfora de ingeniería propia de este curso, no terminología oficial: un sistema de visualización usado para aclarar relaciones al combinar los cinco patrones. Su único ancla primaria es «el script del flujo de trabajo mismo retiene el bucle, las bifurcaciones y los resultados intermedios».",
     "source": "[^S5]",
     "pitfall": "Escribir «grafo» como categoría oficial en la documentación de arquitectura: quien lo lea creerá que es el concepto formal de la orquestación.",
     "distractor_rationale": "Grafo, nodo, arista, DAG y máquina de estados aparecen cero veces en todas las fuentes primarias de este curso; no los trates como categorías oficiales."
@@ -197,7 +197,7 @@
   },
   {
     "term": "90,2 %",
-    "def": "La mejora del sistema multiagente sobre el de agente único, que solo se sostiene con el contexto completo: su evaluación interna de investigación, con un agente principal Opus 4 y subagentes Sonnet 4, destacando especialmente en consultas de amplitud primero.",
+    "def": "La mejora del sistema multiagente sobre el de agente único, que solo se sostiene con el contexto completo: su evaluación interna de investigación, con un agente líder Opus 4 y subagentes Sonnet 4, destacando especialmente en consultas de amplitud primero.",
     "source": "[^S2]",
     "pitfall": "Usarlo para argumentar que «los grafos le ganan a los bucles» o que «el multiagente es universalmente mejor»: compara multiagente frente a agente único, no orquestación frente a bucles.",
     "distractor_rationale": "Distinto del 90 % (número de aceleración): uno es mejora de calidad, el otro es reducción de latencia."
@@ -218,7 +218,7 @@
   },
   {
     "term": "90 %",
-    "def": "Tras introducir dos niveles de paralelismo (el agente principal levanta 3 a 5 subagentes en paralelo, los subagentes usan 3 o más herramientas en paralelo), el porcentaje máximo en que se recortó el tiempo de investigación para consultas complejas. Es un número de latencia, no de calidad.",
+    "def": "Tras introducir dos niveles de paralelismo (el agente líder levanta 3 a 5 subagentes en paralelo, los subagentes usan 3 o más herramientas en paralelo), el porcentaje máximo en que se recortó el tiempo de investigación para consultas complejas. Es un número de latencia, no de calidad.",
     "source": "[^S2]",
     "pitfall": "Tratarlo como mejora de calidad, o aplicarlo a consultas simples: está limitado a la latencia de las consultas complejas.",
     "distractor_rationale": "Un carácter de diferencia con el 90,2 %, pero dos cosas distintas: este es aceleración, aquel es calidad de multiagente frente a agente único."
@@ -255,7 +255,7 @@
     "term": "ejecución síncrona",
     "def": "El modo de ejecución donde el orquestador espera a que todos los trabajadores terminen antes de continuar. Cuello de botella: un paso estanca a toda la tanda en espera, y los resultados vuelven todos al orquestador.",
     "source": "[^S2]",
-    "pitfall": "Creer que lo síncrono siempre es lento y correr a lo asíncrono: lo asíncrono exige cargar tres costos nuevos: coordinación, consistencia de estado y propagación de errores.",
+    "pitfall": "Creer que lo síncrono siempre es lento y lanzarse a lo asíncrono: lo asíncrono exige cargar tres costos nuevos: coordinación, consistencia de estado y propagación de errores.",
     "distractor_rationale": "Contrasta con lo asíncrono: lo síncrono es simple pero tiene cuellos de botella, lo asíncrono es flexible pero la complejidad explota."
   },
   {
@@ -267,7 +267,7 @@
   },
   {
     "term": "sistemas de artefactos",
-    "def": "Hacer que agentes especializados creen sus salidas como cosas que persisten de forma independiente (archivos, registros externos), en vez de retransmitirlo todo a través del agente principal. «Pasa referencias, no cargas útiles» se apoya en esto.",
+    "def": "Hacer que agentes especializados creen sus salidas como cosas que persisten de forma independiente (archivos, registros externos), en vez de retransmitirlo todo a través del agente líder. «Pasa referencias, no cargas útiles» se apoya en esto.",
     "source": "[^S2]",
     "pitfall": "Sin un lugar externo donde aterrizar, toda la salida solo puede pasar por la conversación principal, que se llena rápido.",
     "distractor_rationale": "Los artefactos y las «referencias ligeras» son dos caras de la misma moneda: el artefacto es lo que se guarda afuera, la referencia es el asa que apunta a él."
@@ -280,7 +280,7 @@
     "distractor_rationale": "Es el sustituto de la carga útil, no una versión comprimida de ella."
   },
   {
-    "term": "comportamiento emergente",
+    "term": "comportamientos emergentes",
     "def": "En los sistemas multiagente, el comportamiento global que no se puede predecir mirando paso a paso, producido por el apilamiento de las pequeñas decisiones de cada subagente; los cambios diminutos se amplifican a lo largo de la cadena.",
     "source": "[^S2]",
     "pitfall": "Creer que afinar cada trabajador vuelve controlable el conjunto: la emergencia significa que el comportamiento global hay que observarlo por separado.",
@@ -326,7 +326,7 @@
     "def": "La propiedad de poder dar respuestas distintas incluso con las mismas condiciones iniciales: los agentes son de este tipo.",
     "source": "[^S3]",
     "pitfall": "Investigarlo con la intuición del depurado tradicional de «reproduce una vez y pon un punto de interrupción»: no se puede reproducir.",
-    "distractor_rationale": "Fácil de confundir con los bugs ocasionales de concurrencia: estos últimos al menos corren en el mismo código determinista."
+    "distractor_rationale": "Fácil de confundir con los bugs ocasionales de concurrencia: estos últimos al menos se ejecutan en el mismo código determinista."
   },
   {
     "term": "un bucle por tarea de evaluación",
@@ -386,7 +386,7 @@
   },
   {
     "term": "25 hilos concurrentes",
-    "def": "El techo de concurrencia que soporta Managed Agents; el coordinador puede llamar a varias copias del mismo agente, cada una abriendo un hilo.",
+    "def": "El techo de concurrencia que admite Managed Agents; el coordinador puede llamar a varias copias del mismo agente, cada una abriendo un hilo.",
     "source": "[^S6]",
     "pitfall": "Creer que los techos de concurrencia de distintos productos son universales: 20/16/25 son los números respectivos de tres implementaciones distintas.",
     "distractor_rationale": "Se lista junto a los 20 de Claude Code y los 16 del runtime de flujos de trabajo; no los mezcles."
@@ -434,7 +434,7 @@
     "distractor_rationale": "Emparejada con el fan-out; si la agregación la hace el código (paralelización) o el modelo (orquestador-trabajadores) es la distinción clave."
   },
   {
-    "term": "carga útil",
+    "term": "cargas útiles",
     "def": "El contenido detallado de la salida del trabajador en sí. El reflujo de la carga útil en la fusión explota el contexto, así que pasa referencias, no cargas útiles.",
     "source": "[^S2]",
     "pitfall": "Confundir la carga útil con la referencia, pasando el texto completo de vuelta como «referencia».",
@@ -498,7 +498,7 @@
   },
   {
     "term": "cliente stub",
-    "def": "Un doble de prueba que usa una cola fija de respuestas para hacerse pasar por la API real: client.messages.create() devuelve respuestas preestablecidas en orden, dejando que toda la orquestación corra sin dependencias y de forma reproducible.",
+    "def": "Un doble de prueba que usa una cola fija de respuestas para hacerse pasar por la API real: client.messages.create() devuelve respuestas preestablecidas en orden, dejando que toda la orquestación se ejecute sin dependencias y de forma reproducible.",
     "source": "[^S3]",
     "pitfall": "La longitud de la cola del stub es fija, y agotarla lanza directamente; antes de conectar el cliente real, no olvides reinstalar las válvulas que no se movieron.",
     "distractor_rationale": "Reemplaza el lado del modelo, así que cuando los stubs quedan clavados, las reejecuciones completas no introducen no determinismo."

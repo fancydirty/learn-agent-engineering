@@ -1,7 +1,7 @@
 # Lección 2: Encadenar y enrutar: encadenamiento y enrutamiento
 
 > Objetivos de aprendizaje:
-> - Partir un prompt de cuatro tareas en una cadena y enunciar qué estás cambiando y qué estás ganando
+> - Partir un prompt de cuatro tareas en una cadena y enunciar qué estás intercambiando y qué estás ganando
 > - Instalar compuertas programáticas entre las etapas de la cadena para que los resultados intermedios que no califican se detengan donde corresponde
 > - Decidir cuándo una tarea necesita encadenamiento, enrutamiento, ambos o ninguno, y escribir la llamada de enrutamiento como una sola llamada barata con la salida apretada
 >
@@ -35,7 +35,7 @@ La entrada de cada segmento es la salida del segmento anterior. Si un eslabón s
 
 ## Cada etapa es un bucle de arnés completo
 
-Una etapa de la cadena no es «una llamada a la API»: es **un bucle de arnés completo**. El mismo bucle while que escribiste a mano en el curso 7 de esta serie: envía los mensajes, revisa `stop_reason`, si es `tool_use` entonces ejecuta la herramienta y devuelve el resultado, si no devuelve el texto.
+Una etapa de la cadena no es «una llamada a la API»: es **un bucle de arnés completo**. El mismo bucle while que escribiste a mano en el curso 7 de esta serie: envía los mensajes, revisa `stop_reason`, si es `tool_use` entonces ejecuta la herramienta y devuelve el resultado, si no, devuelve el texto.
 
 Este uso tiene una fuente. Cuando Anthropic describió cómo evaluar agentes, la configuración recomendada era exactamente esta forma: llamadas directas a la API del LLM, bucles agénticos simples (bucles while que envuelven llamadas alternadas a la API del LLM y a herramientas), un bucle por tarea de evaluación, y a cada agente de evaluación se le da un solo prompt de tarea y tus herramientas[^S3]. Aquel artículo trataba de evaluación, pero el bloque de construcción en sí es de propósito general: una tarea, un bucle, impulsado por código. El encadenamiento es ensartar estos bloques con el código decidiendo el orden.
 
@@ -194,7 +194,7 @@ Para cada una de las cuatro tareas de abajo, decide si usar encadenamiento, enru
 
 1. El buzón de clientes recibe cientos de correos al día; las tres categorías reembolso/incidencia/facturación tienen tratamientos completamente distintos, actualmente comparten un solo prompt, y cambiar la redacción para una categoría afecta a otra.
 2. Un contrato en inglés necesita primero una revisión que produzca una opinión de riesgo estructurada (cada punto con la ubicación de la cláusula, el nivel de riesgo y una explicación), y luego traducir esa opinión a versiones en chino y japonés para equipos distintos.
-3. Una cola mixta de tickets: hay tanto «restablecer contraseña», que se responde en un paso, como «falló la migración de datos», que requiere revisar registros, diagnosticar, proponer una solución y escribir una respuesta —tareas de varios pasos—.
+3. Una cola mixta de tickets: hay tanto «restablecer contraseña», que se responde en un paso, como «falló la migración de datos», que requiere revisar logs, diagnosticar, proponer una solución y escribir una respuesta —tareas de varios pasos—.
 4. La persona usuaria escribe una oración en un cuadro de entrada y necesitas corregir las erratas y devolver la oración corregida.
 
 <!-- rubric -->
@@ -220,9 +220,9 @@ La compuerta va entre revisión y traducción, revisando estructura y no conteni
 
 **3. Tickets mixtos — ambos.**
 
-Enrutamiento por fuera, encadenamiento por dentro. El clasificador va a la entrada de la cola, juzgando no el tema sino la complejidad, y las categorías pueden ser `respondible-en-un-paso / requiere-diagnóstico / otros`. «Respondible en un paso» va directo a una llamada o incluso a una plantilla; «requiere diagnóstico» se expande en una cadena: revisar registros → diagnosticar la causa → proponer solución → escribir respuesta. Esto es despacho por dificultad, la misma categoría que el escalamiento del vocabulario oficial: esa entrada dice consultar a un agente o modelo más capaz para un subconjunto de subtareas complejas[^S6], solo que aquí se cambia «agente más capaz» por expandir una cadena.
+Enrutamiento por fuera, encadenamiento por dentro. El clasificador va a la entrada de la cola, juzgando no el tema sino la complejidad, y las categorías pueden ser `respondible-en-un-paso / requiere-diagnóstico / otros`. «Respondible en un paso» va directo a una llamada o incluso a una plantilla; «requiere diagnóstico» se expande en una cadena: revisar logs → diagnosticar la causa → proponer solución → escribir respuesta. Esto es despacho por dificultad, la misma categoría que el escalamiento del vocabulario oficial: esa entrada dice consultar a un agente o modelo más capaz para un subconjunto de subtareas complejas[^S6], solo que aquí se cambia «agente más capaz» por expandir una cadena.
 
-Dentro de la cadena hay al menos dos compuertas de código puro: la salida de la etapa de diagnóstico tiene que llevar al menos una referencia a una línea de registro (revisar el formato de marca de tiempo con una expresión regular), y la salida de la etapa de escritura de respuesta tiene que contener el número de ticket que dio la etapa de solución (revisión de inclusión de cadena). Si el clasificador de complejidad mismo es difícil de afinar, cámbialo por «trata primero como respondible en un paso, y si la salida no pasa la compuerta entonces escala».
+Dentro de la cadena hay al menos dos compuertas de código puro: la salida de la etapa de diagnóstico tiene que llevar al menos una referencia a una línea de log (revisar el formato de marca de tiempo con una expresión regular), y la salida de la etapa de escritura de respuesta tiene que contener el número de ticket que dio la etapa de solución (revisión de inclusión de cadena). Si el clasificador de complejidad mismo es difícil de afinar, cámbialo por «trata primero como respondible en un paso, y si la salida no pasa la compuerta entonces escala».
 
 **4. Corrección de erratas de una oración — ninguno.**
 
@@ -230,7 +230,7 @@ Una llamada basta. No hay subtareas fijas que se puedan separar limpiamente («e
 
 <!-- hint -->
 
-Antes de correr a juzgar patrones, hazle a cada tarea dos preguntas: ¿lo que entra es «una cosa» o «varias clases de cosas»? Si es una cosa, ¿se puede partir en pasos que sean cada uno más simple y en un orden fijo? Si la primera pregunta responde «varias clases de cosas», piensa en enrutamiento; si la segunda responde «sí», piensa en encadenamiento.
+Antes de apresurarte a juzgar patrones, hazle a cada tarea dos preguntas: ¿lo que entra es «una cosa» o «varias clases de cosas»? Si es una cosa, ¿se puede partir en pasos que sean cada uno más simple y en un orden fijo? Si la primera pregunta responde «varias clases de cosas», piensa en enrutamiento; si la segunda responde «sí», piensa en encadenamiento.
 
 <!-- hint -->
 
