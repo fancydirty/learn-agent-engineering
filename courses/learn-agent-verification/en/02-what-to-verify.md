@@ -23,7 +23,7 @@ Traditional evaluation carries a deeply buried default assumption: given input X
 
 What's truly uncomfortable isn't just "the path will vary"—it's this sentence:
 
-> Because we don't always know what the right steps are, we usually can't just check if agents followed the "correct" steps we prescribed in advance. Instead, we need flexible evaluation methods that judge whether agents achieved the right outcomes while also following a reasonable process[^S2].
+> Because we don’t always know what the right steps are, we usually can't just check if agents followed the “correct” steps we prescribed in advance. Instead, we need flexible evaluation methods that judge whether agents achieved the right outcomes while also following a reasonable process[^S2].
 
 "We don't always know what the right steps are"—that's the key. The path you recorded isn't the only correct path. It's just **the path you happened to take** that time. You elevated it to the answer key, so every other approach became an error.
 

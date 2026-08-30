@@ -577,7 +577,7 @@ async function runSuite(version) {
 
 // ============ 7. Relatório ============
 
-const CJK = /[ᄀ-ᅟ⺀-꓏가-힣豈-﫿︰-﹏＀-｠￠-￦]/;
+const CJK = /[ᄀ-ᅟ⺀-꓏가-힣豈-﫿︰-﹏＀-｠￠-￦]/;
 const width = (s) => [...String(s)].reduce((n, ch) => n + (CJK.test(ch) ? 2 : 1), 0);
 const pad = (s, n) => String(s) + " ".repeat(Math.max(0, n - width(s)));
 const padL = (s, n) => " ".repeat(Math.max(0, n - width(s))) + String(s);
