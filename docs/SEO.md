@@ -27,6 +27,21 @@ Current state (configured 2026-08-30):
 - `public/robots.txt` allows all crawlers and points at the sitemap.
 - `app/sitemap.ts` generates entries for every locale/course/lesson/glossary/sources page.
 
+## Indexing campaign (started 2026-09-15)
+
+GSC 页面索引状态（2026-09-15）：150 已收录 / 692 未收录，其中 673 为
+"已发现 - 尚未编入索引"（新站正常，等待抓取）；16 个 404 均为主域
+agentmentor.dev 的旧课程 URL，与本站无关，Google 会自然清出。
+
+手动收录请求（每日配额约 10-12 条）：
+- 2026-09-15 已请求 11 页：/en/courses、/zh/courses、全部 12 门课的 en
+  目录页中的 9 门（agent-observability、agent-verification、
+  agent-state-persistence 因配额顺延）。
+- 后续批次脚本：`~/.claude/scripts/gsc-learn-agentmentor/gsc-queue.sh`
+  （基于 ego-browser 自动化 GSC 网址检查 → 请求编入索引，触到配额自动停）。
+- 策略：只手动请求课程库页 + 课程目录页（枢纽页）；440+ 课时页靠枢纽页
+  内链和 sitemap 让 Google 自行发现，无需逐页请求。
+
 ## Monitoring checklist
 - GSC → 编制索引/站点地图: watch for crawl errors after content changes.
 - GA4 realtime + acquisition reports: https://analytics.google.com/analytics/web/#/p552080514
