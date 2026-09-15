@@ -79,5 +79,8 @@ export const defaultMetadata: Metadata = {
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+    other: {
+      "msvalidate.01": "5A09691A7293BD69A21ED34C7B937485",
+    },
   },
 };
