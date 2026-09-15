@@ -48,9 +48,13 @@ agentmentor.dev 的旧课程 URL，与本站无关，Google 会自然清出。
 - 已把 sitemap 全部 654 个 URL 提交至 api.indexnow.org（HTTP 200，覆盖
   Bing/Yandex/Naver/Seznam）。内容更新部署后跑 `scripts/indexnow-submit.sh`
   重新推送即可。
-- Bing Webmaster Tools 仪表盘尚未开通：Microsoft 账号（fancydirty@gmail.com
-  Google 登录）触发"帐户已锁定"，需人工完成人机验证后才能进入并从 GSC 导入站点。
-  IndexNow 提交不依赖该账号，收录不受影响；开通仪表盘只是为了看数据。
+- Bing Webmaster Tools 已开通（Microsoft 账号经 Google fancydirty@gmail.com 登录）：
+  - `learn.agentmentor.dev` 已添加并通过 XML 文件验证
+    （`public/BingSiteAuth.xml` + `msvalidate.01` meta 双保险，都在 repo 里），
+    sitemap 已提交。报告数据约 48 小时后出现。
+  - 主域 `agentmentor.dev` 的 sitemap（27 URL）也已代为提交，"无 sitemap"警告即将消除。
+  - 主域剩余建议（inbound links 不足、旧页面标题/描述过短）属于主站仓库与外链建设，
+    与本仓库无关；旧课程页已 404，相关警告会随重抓自然消失。
 
 ## Monitoring checklist
 - GSC → 编制索引/站点地图: watch for crawl errors after content changes.
