@@ -42,6 +42,16 @@ agentmentor.dev 的旧课程 URL，与本站无关，Google 会自然清出。
 - 策略：只手动请求课程库页 + 课程目录页（枢纽页）；440+ 课时页靠枢纽页
   内链和 sitemap 让 Google 自行发现，无需逐页请求。
 
+## Bing / IndexNow (2026-09-15)
+
+- IndexNow key 文件：`public/f3705a770ce94ece9aa3974eb3c8b332.txt`。
+- 已把 sitemap 全部 654 个 URL 提交至 api.indexnow.org（HTTP 200，覆盖
+  Bing/Yandex/Naver/Seznam）。内容更新部署后跑 `scripts/indexnow-submit.sh`
+  重新推送即可。
+- Bing Webmaster Tools 仪表盘尚未开通：Microsoft 账号（fancydirty@gmail.com
+  Google 登录）触发"帐户已锁定"，需人工完成人机验证后才能进入并从 GSC 导入站点。
+  IndexNow 提交不依赖该账号，收录不受影响；开通仪表盘只是为了看数据。
+
 ## Monitoring checklist
 - GSC → 编制索引/站点地图: watch for crawl errors after content changes.
 - GA4 realtime + acquisition reports: https://analytics.google.com/analytics/web/#/p552080514
